@@ -1,0 +1,108 @@
+name: Ground truth — real costs, timelines or process detail
+description: Supply verified operating detail for a country. The highest-value contribution to this project.
+title: "[ground truth] "
+labels: ["ground-truth", "needs-verification"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you — this is the contribution the project needs most.
+
+        `docs/context/` is deliberately empty of regulatory and cost detail. We left it
+        that way rather than filling it with plausible guesses, because a learner who
+        spots a wrong figure stops trusting the whole tool, and fixing it later does not
+        repair that.
+
+        **Lived experience of a process is more valuable here than published guidance.**
+        Where the official process and the actual process differ, we want both — the gap
+        is itself worth teaching.
+
+  - type: dropdown
+    id: country
+    attributes:
+      label: Country
+      options:
+        - Tanzania
+        - Kenya
+        - Uganda
+        - Rwanda
+        - Ethiopia
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Formalisation — registration, incorporation, licences
+        - Tax — thresholds, regimes, compliance burden
+        - Standards and certification
+        - Finance and payments — including mobile money
+        - Labour — wages, contracts, statutory obligations
+        - Markets and value chains
+        - Operating realities — power, cold chain, logistics
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: detail
+    attributes:
+      label: What is it
+      description: The process, requirement or cost. Be specific — "what a food producer needs before a supermarket will list them", not "certification".
+    validations:
+      required: true
+
+  - type: textarea
+    id: cost
+    attributes:
+      label: Cost
+      description: Real cost including the parts people forget — travel, agents, facilitation, repeat visits, professional fees. State the currency and the date it applied.
+    validations:
+      required: true
+
+  - type: textarea
+    id: time
+    attributes:
+      label: Time
+      description: >-
+        How long it actually takes, not the official figure. Lead time is frequently the
+        binding constraint and is almost always understated in official sources.
+    validations:
+      required: true
+
+  - type: textarea
+    id: unlocks
+    attributes:
+      label: What it unlocks, and what happens if you skip it
+      description: Which customers, markets or opportunities open up. What the consequence of not doing it is, and when it catches up with you.
+
+  - type: textarea
+    id: source
+    attributes:
+      label: Source
+      description: >-
+        Direct experience, a named person or organisation, or a published source with a
+        date. Uncited figures can't be checked or refreshed later, so we can't use them.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: confidence
+    attributes:
+      label: Confidence
+      options:
+        - I have done this myself, recently
+        - I have done this myself, but a while ago
+        - I work with people who do this routinely
+        - Published source, not personally verified
+    validations:
+      required: true
+
+  - type: textarea
+    id: divergence
+    attributes:
+      label: Official process vs. actual process
+      description: Where they differ. Optional, and often the most useful thing in the issue.

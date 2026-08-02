@@ -1,0 +1,27 @@
+# Normalise line endings across contributors' platforms.
+* text=auto eol=lf
+
+*.md   text diff=markdown
+*.yml  text
+*.yaml text
+*.json text
+*.js   text
+*.ts   text
+*.html text
+*.css  text
+*.svg  text
+
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.webp binary
+*.mp3  binary
+*.ogg  binary
+*.woff binary
+*.woff2 binary
+
+# Mark content licensed under CC BY-SA 4.0 rather than MIT.
+# See LICENSE-CONTENT and docs/adr/0003-dual-licensing.md.
+docs/**    linguist-documentation
+memory/**  linguist-documentation

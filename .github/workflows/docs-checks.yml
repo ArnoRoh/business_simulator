@@ -1,0 +1,65 @@
+name: Docs checks
+
+# Stack-agnostic checks. There is no application code yet (see memory/DECISIONS.md
+# D-001), so these validate the documentation and memory system instead: that internal
+# links resolve, and that the memory files the project depends on still exist.
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  links:
+    name: Internal links resolve
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check relative Markdown links
+        run: bash scripts/check-links.sh
+
+  memory:
+    name: Memory system intact
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check required memory files exist
+        run: |
+          set -euo pipefail
+          missing=0
+          for f in \
+            AGENTS.md \
+            CLAUDE.md \
+            memory/PROJECT_STATE.md \
+            memory/DECISIONS.md \
+            memory/OPEN_QUESTIONS.md \
+            memory/GLOSSARY.md \
+            memory/sessions/TEMPLATE.md \
+            docs/adr/template.md
+          do
+            if [ ! -f "$f" ]; then
+              echo "::error file=$f::Required file is missing: $f"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            echo "The memory system is load-bearing here — see AGENTS.md section 5."
+            exit 1
+          fi
+          echo "All required files present."
+
+      - name: Warn if no session entry exists
+        run: |
+          set -euo pipefail
+          count=$(find memory/sessions -name '*.md' ! -name 'TEMPLATE.md' | wc -l)
+          if [ "$count" -eq 0 ]; then
+            echo "::warning::No session entries in memory/sessions/. See AGENTS.md section 5."
+          else
+            echo "$count session entr(y/ies) recorded."
+          fi

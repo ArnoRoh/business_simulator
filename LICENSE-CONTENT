@@ -1,0 +1,76 @@
+Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
+
+Copyright (c) 2026 Arno Rohwedder and Business Simulator contributors
+
+
+SCOPE
+=====
+
+This licence applies to the LEARNING CONTENT and DOCUMENTATION in this
+repository, including:
+
+  - curriculum materials and capability maps
+  - scenarios, scenario data, and content authored as data
+  - regional and operating-context documentation
+  - design documentation under docs/
+  - project memory under memory/
+
+It does NOT apply to source code, which is licensed under the MIT License.
+See LICENSE.
+
+Where a file's classification is genuinely ambiguous, the more permissive
+licence (MIT) applies unless the file states otherwise. Record any such call
+in memory/DECISIONS.md.
+
+See docs/adr/0003-dual-licensing.md for the reasoning behind dual licensing.
+
+
+SUMMARY (not a substitute for the licence)
+==========================================
+
+You are free to:
+
+  Share  — copy and redistribute the material in any medium or format
+  Adapt  — remix, transform, and build upon the material
+           for any purpose, including commercially.
+
+Under the following terms:
+
+  Attribution — You must give appropriate credit, provide a link to the
+    licence, and indicate if changes were made. You may do so in any
+    reasonable manner, but not in any way that suggests the licensor
+    endorses you or your use.
+
+  ShareAlike — If you remix, transform, or build upon the material, you
+    must distribute your contributions under the same licence as the
+    original.
+
+  No additional restrictions — You may not apply legal terms or
+    technological measures that legally restrict others from doing anything
+    the licence permits.
+
+
+FULL LICENCE TEXT
+=================
+
+The complete legal text of the Creative Commons Attribution-ShareAlike 4.0
+International Public License is available at:
+
+  https://creativecommons.org/licenses/by-sa/4.0/legalcode
+
+A human-readable summary is available at:
+
+  https://creativecommons.org/licenses/by-sa/4.0/
+
+By exercising the Licensed Rights, You accept and agree to be bound by the
+terms and conditions of that licence.
+
+
+NOTE ON THE BACKGROUND MATERIAL
+===============================
+
+docs/context/transformational-entrepreneurship.md was authored by the project
+owner and contributed to this repository under the terms above. It summarises
+and comments on third-party research and publications, which remain the
+property of their respective authors; references to that work are made for
+the purpose of discussion and analysis.
