@@ -37,3 +37,4 @@ believed something is how we avoid drifting back into it by accident.
 | [0002](./0002-mobile-first-offline-pwa.md) | Deliver as a mobile-first, offline-capable PWA | Accepted |
 | [0003](./0003-dual-licensing.md) | MIT for code, CC BY-SA 4.0 for content | Accepted |
 | [0004](./0004-simulator-as-selection-instrument.md) | Simulator as selection instrument, not business-plan trainer | Accepted |
+| [0005](./0005-simulator-as-stage-zero-gate.md) | Simulator as a stage-zero completion gate | **Proposed** — see [Q-009](../../memory/OPEN_QUESTIONS.md) |

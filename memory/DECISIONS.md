@@ -91,3 +91,20 @@ otherwise have to be researched at arm's length and would likely be wrong.
 truth. Building region-generic content first — rejected because vague content is what
 makes these tools unconvincing to the people using them.
 **Revisit if:** A pilot partner is secured in another country first.
+
+---
+
+## Pending — proposed, not decided
+
+Entries below are **not decisions.** They are recorded here so the index is complete and
+so nobody has to hunt for them. Do not act on them as settled.
+
+- **[ADR-0005](../docs/adr/0005-simulator-as-stage-zero-gate.md) — Simulator as a
+  stage-zero completion gate.** *Status: Proposed.* Proposed by Claude in
+  [session 002](./sessions/2026-08-02-002-pedagogy-and-timing-ideation.md); awaiting the
+  project owner's ruling via [Q-009](./OPEN_QUESTIONS.md). Would settle the
+  prerequisite-vs-during question by placing the simulator as the gate into a ~$500
+  discovery experiment, with completion rather than performance as the gate. Several
+  further proposals from that session — predict-then-reveal, far-transfer testing,
+  pre/post plus delayed retest — are recorded in the session entry and are likewise
+  unratified.

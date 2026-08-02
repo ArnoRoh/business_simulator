@@ -38,10 +38,15 @@ every other design decision sits downstream of it.
 **Raised:** 2026-08-02 · **Owner:** Project owner
 **Question:** Is there a named grant programme, training provider or funder this is an
 on-ramp for? What does their selection process consume today, and what could it
-realistically ingest from us?
+realistically ingest from us? **Added 2026-08-02 (session 002):** does any available
+partner run a *staged* portfolio, or are they all single-shot grant competitions?
 **Why it matters:** The evidence trail is the point of the tool. Designing it without
 knowing the consumer risks producing a record nobody can use. Also determines whether
 we need export formats, an API, or just a printable summary.
+**Escalated by session 002.** Under the proposed stage-zero design
+([ADR-0005](../docs/adr/0005-simulator-as-stage-zero-gate.md)) this moves onto the
+critical path: a stage-zero gate only exists if there is a stage 1 to gate into. A
+partner running a single-shot competition cannot host that design at all.
 **Current assumption:** Designing the behavioural record to be self-contained and
 human-readable, so it degrades gracefully if no integration exists.
 
@@ -53,9 +58,52 @@ test runs six to twelve weeks in reality.
 **Why it matters:** A short session cannot generate a meaningful behavioural signal; a
 multi-week engagement is a completely different product with retention, notification
 and facilitation requirements. Drives the offline and data-sync design directly.
-**Current assumption:** None.
+**Partly answered by session 002, not closed.** The proposed assessment design —
+pre/post on a novel scenario plus a delayed retest at ~4 weeks — implies a multi-session
+engagement rather than a single tutorial. That follows only if
+[Q-009](#q-009--confirm-or-reject-the-stage-zero-placement--blocking) is answered
+affirmatively, so this stays open.
+**Current assumption:** Multi-session, pending Q-009.
+
+### Q-009 — Confirm or reject the stage-zero placement  [BLOCKING]
+**Raised:** 2026-08-02 (session 002) · **Owner:** Project owner
+**Question:** Does the owner accept the proposal in
+[ADR-0005](../docs/adr/0005-simulator-as-stage-zero-gate.md) — that the simulator gates
+entry to a ~$500 discovery experiment, that **completion** rather than performance is
+the gate, and that the behavioural record informs the *next* stage transition rather
+than the current one?
+**Why it matters:** Everything from session 002 sits downstream. If accepted, ADR-0005
+moves to `Accepted` and `docs/game-design.md`, `docs/assessment.md` and
+`docs/curriculum.md` all need revision to match. If rejected, the during-programme-only
+alternative is most likely correct, and the project scopes down to a teaching tool.
+**Current assumption:** None. **The proposal is Claude's, not the owner's** — do not
+proceed as though it were settled.
 
 ## Open
+
+### Q-010 — How do we handle assessment/selection interference?  [open]
+**Raised:** 2026-08-02 (session 002) · **Owner:** Project owner
+**Question:** Measuring learning and generating a selection signal interfere. Told they
+are being assessed, learners perform — which corrupts the learning measurement. Not told,
+and selection use becomes a consent violation that `SECURITY.md` already forbids. How is
+this resolved in practice?
+**Why it matters:** Affects both the validity of any learning claim and the honesty of
+the consent flow. Gets worse the higher the stakes attached to the record.
+**Current assumption:** Full transparency about what is recorded, accept the resulting
+performance effect, and rely on instruments robust to it — transfer tests and prediction
+calibration are much harder to fake than knowledge tests, since performing convincingly
+still requires understanding the system.
+
+### Q-011 — Does "compelling rather than fun" actually retain learners?  [open]
+**Raised:** 2026-08-02 (session 002) · **Owner:** Project owner / field testing
+**Question:** Session 002 argued against game-style fun on the grounds that tight
+feedback loops and a legible optimisable system teach a false model of business, and
+proposed recognition, consequence, character and prediction instead. Does that actually
+hold people through a multi-session engagement?
+**Why it matters:** If not, completion rates collapse — and under ADR-0005 completion is
+the gate, so a retention failure is also a selection failure.
+**Current assumption:** Untested, and it is an argument rather than evidence. Needs field
+testing, not more reasoning.
 
 ### Q-003 — Can simulated behaviour predict real firm outcomes at all?  [open]
 **Raised:** 2026-08-02 · **Owner:** Project owner / research partner
@@ -65,6 +113,10 @@ of weakly-validated selection signals — we should not exempt ourselves.
 **Why it matters:** If simulated behaviour is no better than a pitch score, the
 selection purpose collapses and this is a teaching tool only. That is still valuable,
 but it is a different product with different claims.
+**Session 002 note:** the stage-zero design would generate the data to answer this as a
+by-product — simulator behaviour → who received a discovery experiment → who succeeded at
+a paid trial. That is an argument in favour of ADR-0005, and it does not make the
+question any less open in the meantime.
 **Current assumption:** We claim only "observed in-simulation behaviour", never
 "predicted real-world performance", until validated. Encoded in `docs/assessment.md`.
 
