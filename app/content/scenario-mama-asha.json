@@ -1,0 +1,1256 @@
+{
+  "id": "mama-asha",
+  "version": 1,
+  "unverified": true,
+  "title": "Mama Asha's Food Stall",
+  "blurb": "You sell mandazi and chai near a busy bus stand. Grow it without losing it.",
+  "currency": "TZS",
+  "startState": {
+    "week": 1,
+    "cash": 150000,
+    "price": 500,
+    "unitCost": 300,
+    "demand": 200,
+    "capacity": 180,
+    "reputation": 50,
+    "hygiene": 60,
+    "formality": 0,
+    "staff": 0,
+    "ownerHours": 60,
+    "ownerHoursUsed": 45,
+    "rent": 20000,
+    "wagePerStaff": 30000,
+    "spoilRate": 0.5
+  },
+  "turns": [
+    {
+      "id": "t01",
+      "concept": "unit-economics",
+      "conceptLabel": "Unit economics",
+      "scene": "stall-small",
+      "situation": "You fry mandazi every morning and sell them by the bus stand. Most weeks you run out before midday. About twenty people walk away because you have nothing left. You have never worked out what one mandazi really costs you to make.",
+      "info": [
+        {
+          "id": "count-cost",
+          "label": "Sit down and add up your costs",
+          "costHours": 2,
+          "costCash": 0,
+          "reveals": "Flour, oil, sugar and charcoal come to about 300 for each mandazi. You sell at 500. So each one leaves you 200 before rent."
+        },
+        {
+          "id": "count-turnaways",
+          "label": "Count the people who leave empty handed",
+          "costHours": 1,
+          "costCash": 0,
+          "reveals": "You count 21 in one morning. They wanted to buy. You simply had none left."
+        }
+      ],
+      "decision": {
+        "prompt": "What do you do?",
+        "predictQuestion": "Before you find out — what happens to your weekly profit?",
+        "predictChoices": [
+          {
+            "id": "up_lot",
+            "label": "Up a lot"
+          },
+          {
+            "id": "up_bit",
+            "label": "Up a little"
+          },
+          {
+            "id": "same",
+            "label": "About the same"
+          },
+          {
+            "id": "down",
+            "label": "Goes down"
+          }
+        ],
+        "options": [
+          {
+            "id": "make-more",
+            "label": "Buy more flour and make 20 more each week",
+            "detail": "Costs you cash up front to fill the gap you can see.",
+            "effects": {
+              "capacity": 20,
+              "cash": -15000
+            },
+            "predictAnswer": "up_bit",
+            "outcome": "You now make enough for everyone who comes. Nobody is turned away. You sell twenty more each week, and each one leaves you 200.",
+            "lesson": "You were losing sales you had already earned. Filling that gap was the cheapest growth available to you."
+          },
+          {
+            "id": "raise-price",
+            "label": "Raise the price to 650",
+            "detail": "You will lose some customers. You are not sure how many.",
+            "effects": {
+              "price": 650,
+              "demand": -30
+            },
+            "predictAnswer": "up_lot",
+            "outcome": "Thirty customers stop coming. But the ones who stay now leave you 350 each instead of 200. You sell fewer and earn much more.",
+            "lesson": "Losing customers is not the same as losing money. What matters is what you keep from each sale, not how many people you serve."
+          },
+          {
+            "id": "do-nothing",
+            "label": "Change nothing for now",
+            "detail": "The business works. Do not risk it.",
+            "effects": {},
+            "predictAnswer": "same",
+            "outcome": "The week runs as it always does. You sell out by midday and twenty people walk away again.",
+            "lesson": "Doing nothing is also a decision. It costs you the sales you keep turning away."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t02",
+      "concept": "pricing",
+      "conceptLabel": "Pricing",
+      "scene": "stall-busy",
+      "situation": "A new woman has started selling mandazi thirty metres from you. Hers are smaller and cheaper. Some of your regulars have tried her. A few came back and said yours taste better.",
+      "info": [
+        {
+          "id": "check-competitor",
+          "label": "Go and buy one of hers",
+          "costHours": 1,
+          "costCash": 400,
+          "reveals": "Hers is smaller and drier. She sells at 400. Yours is bigger and people say it is better."
+        }
+      ],
+      "decision": {
+        "prompt": "How do you respond?",
+        "predictQuestion": "What happens to your weekly profit?",
+        "predictChoices": [
+          {
+            "id": "up_lot",
+            "label": "Up a lot"
+          },
+          {
+            "id": "up_bit",
+            "label": "Up a little"
+          },
+          {
+            "id": "same",
+            "label": "About the same"
+          },
+          {
+            "id": "down",
+            "label": "Goes down"
+          }
+        ],
+        "options": [
+          {
+            "id": "match-price",
+            "label": "Cut your price to match hers",
+            "detail": "Do not let her take your customers.",
+            "effects": {
+              "price": 400,
+              "demand": 25
+            },
+            "predictAnswer": "down",
+            "outcome": "You get some customers back. But you now keep only 100 from each mandazi instead of what you had. You are working the same hours for much less.",
+            "lesson": "Cutting price to fight a cheaper seller is the fastest way to lose money. You gave away your margin to win sales you were mostly already making."
+          },
+          {
+            "id": "hold-quality",
+            "label": "Keep your price and make yours clearly better",
+            "detail": "A little more sugar and a slightly bigger size.",
+            "effects": {
+              "unitCost": 305,
+              "reputation": 12
+            },
+            "predictAnswer": "same",
+            "outcome": "Your costs rise only slightly, so this week looks much like the last. Over the following weeks word spreads that yours are worth the extra.",
+            "lesson": "Competing on quality barely shows up this week. It works through reputation, which moves slowly — which is exactly why people give up on it too early."
+          },
+          {
+            "id": "ignore",
+            "label": "Ignore her and carry on",
+            "detail": "She may not last.",
+            "effects": {
+              "demand": -60,
+              "reputation": -10
+            },
+            "predictAnswer": "down",
+            "outcome": "She lasts. You lose a slice of your customers to her and do nothing about it.",
+            "lesson": "Ignoring a competitor is a choice to let them decide how much of the market you keep."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t03",
+      "concept": "cash-vs-profit",
+      "conceptLabel": "Cash and profit",
+      "scene": "kitchen",
+      "situation": "Your flour supplier offers you a deal. Buy a month of flour at once and pay ten percent less for it. But you must pay the whole amount today, in cash.",
+      "info": [
+        {
+          "id": "check-cash",
+          "label": "Count what you actually have",
+          "costHours": 1,
+          "costCash": 0,
+          "reveals": "You have enough to take the deal. But it would leave you very little for anything unexpected this month."
+        }
+      ],
+      "decision": {
+        "prompt": "Do you take the deal?",
+        "predictQuestion": "What happens to your weekly profit?",
+        "predictChoices": [
+          {
+            "id": "up_lot",
+            "label": "Up a lot"
+          },
+          {
+            "id": "up_bit",
+            "label": "Up a little"
+          },
+          {
+            "id": "same",
+            "label": "About the same"
+          },
+          {
+            "id": "down",
+            "label": "Goes down"
+          }
+        ],
+        "options": [
+          {
+            "id": "take-deal",
+            "label": "Take the bulk deal",
+            "detail": "A large payment today, cheaper flour all month.",
+            "effects": {
+              "unitCost": "-30",
+              "cash": -90000
+            },
+            "predictAnswer": "up_bit",
+            "outcome": "Each mandazi now costs you 30 less to make. Your profit rises. But your cash box is nearly empty, and it will stay that way for weeks.",
+            "lesson": "Profit went up and cash went down, at the same time, from the same decision. These are two different things and a business can die of one while the other looks healthy."
+          },
+          {
+            "id": "half-deal",
+            "label": "Take half the deal",
+            "detail": "Two weeks of flour instead of a month.",
+            "effects": {
+              "unitCost": "-15",
+              "cash": -45000
+            },
+            "predictAnswer": "up_bit",
+            "outcome": "You get part of the saving and keep some cash back. Less gain, less risk.",
+            "lesson": "You do not always have to choose between all and nothing. Taking part of a deal is often the right size of risk."
+          },
+          {
+            "id": "refuse",
+            "label": "Say no and keep your cash",
+            "detail": "You would rather be able to handle a surprise.",
+            "effects": {},
+            "predictAnswer": "same",
+            "outcome": "You pay the usual price. Your cash box stays comfortable.",
+            "lesson": "Keeping cash for surprises has a real cost — the saving you turned down. That can still be the right choice."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t04",
+      "concept": "customer-relations",
+      "conceptLabel": "Customers",
+      "scene": "stall-busy",
+      "situation": "The same twelve people buy from you almost every morning. Drivers, conductors, two teachers. One of them asks whether you could keep six aside for him each day, because he often arrives after you have sold out.",
+      "info": [
+        {
+          "id": "ask-regulars",
+          "label": "Ask your regulars what they want",
+          "costHours": 2,
+          "costCash": 0,
+          "reveals": "Four of them say the same thing. They would pay in advance for the week if it meant they were sure of getting some."
+        }
+      ],
+      "decision": {
+        "prompt": "What do you do?",
+        "predictQuestion": "What happens to your weekly profit?",
+        "predictChoices": [
+          {
+            "id": "up_lot",
+            "label": "Up a lot"
+          },
+          {
+            "id": "up_bit",
+            "label": "Up a little"
+          },
+          {
+            "id": "same",
+            "label": "About the same"
+          },
+          {
+            "id": "down",
+            "label": "Goes down"
+          }
+        ],
+        "options": [
+          {
+            "id": "reserve-paid",
+            "label": "Offer a weekly arrangement, paid in advance",
+            "detail": "They pay on Monday for the whole week.",
+            "effects": {
+              "cash": 20000,
+              "reputation": 10
+            },
+            "predictAnswer": "same",
+            "outcome": "Five people sign up and pay on Monday for the whole week. Your weekly profit does not move at all — but the money is now in your hand at the start of the week instead of the end.",
+            "lesson": "Being paid earlier does not make you more profit. It makes you safer, because you are no longer lending your customers money without knowing it."
+          },
+          {
+            "id": "reserve-free",
+            "label": "Keep some aside for him as a favour",
+            "detail": "No arrangement, no payment. Just goodwill.",
+            "effects": {
+              "reputation": 5
+            },
+            "predictAnswer": "same",
+            "outcome": "He is grateful. Some mornings he does not come, and the six you held back go unsold until later.",
+            "lesson": "Goodwill is real but it does not pay rent. An informal favour puts the risk on you and the benefit on them."
+          },
+          {
+            "id": "first-come",
+            "label": "Tell him it is first come, first served",
+            "detail": "Simple and fair to everyone.",
+            "effects": {
+              "demand": -60,
+              "reputation": -5
+            },
+            "predictAnswer": "down",
+            "outcome": "He shrugs and starts buying elsewhere on the days he is late. Two others do the same. You lose them quietly, without an argument.",
+            "lesson": "Treating your best customers exactly like everyone else is a decision to let some of them go — and they rarely tell you they are going."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t05",
+      "concept": "market-sizing",
+      "conceptLabel": "How big is your market",
+      "scene": "market",
+      "situation": "You are thinking about a second spot, outside the secondary school two streets away. You do not know how many people would buy there. You have never counted.",
+      "info": [
+        {
+          "id": "count-school",
+          "label": "Stand outside the school for two mornings and count",
+          "costHours": 4,
+          "costCash": 0,
+          "reveals": "About 340 people pass between seven and eight. Most are students with very little money. Perhaps 40 could buy something at your price."
+        },
+        {
+          "id": "ask-vendor",
+          "label": "Ask the woman selling peanuts there",
+          "costHours": 1,
+          "costCash": 0,
+          "reveals": "She says mornings are busy but the students spend almost nothing. Her good money comes from teachers and parents."
+        }
+      ],
+      "decision": {
+        "prompt": "What do you do about the school spot?",
+        "predictQuestion": "What happens to your weekly profit?",
+        "predictChoices": [
+          {
+            "id": "up_lot",
+            "label": "Up a lot"
+          },
+          {
+            "id": "up_bit",
+            "label": "Up a little"
+          },
+          {
+            "id": "same",
+            "label": "About the same"
+          },
+          {
+            "id": "down",
+            "label": "Goes down"
+          }
+        ],
+        "options": [
+          {
+            "id": "open-second",
+            "label": "Rent the second spot and split your stock",
+            "detail": "More rent, and your mandazi spread across two places.",
+            "effects": {
+              "rent": 15000,
+              "demand": 25,
+              "ownerHoursUsed": 8
+            },
+            "predictAnswer": "down",
+            "outcome": "You pay rent in two places. The school crowd is large but buys little. You spend your morning running between the two and sell out at neither.",
+            "lesson": "A crowd is not a market. Three hundred people who cannot afford your price are worth less than forty who can."
+          },
+          {
+            "id": "test-small",
+            "label": "Try it for two mornings with a small batch",
+            "detail": "No rent. Just carry a basket and see.",
+            "effects": {
+              "demand": 4,
+              "ownerHoursUsed": 3
+            },
+            "predictAnswer": "same",
+            "outcome": "You sell a little. Enough to learn that the teachers buy and the students mostly look. Cheap knowledge.",
+            "lesson": "Testing something small before committing costs almost nothing and tells you what counting alone cannot."
+          },
+          {
+            "id": "stay-put",
+            "label": "Stay where you are",
+            "detail": "The bus stand works.",
+            "effects": {},
+            "predictAnswer": "same",
+            "outcome": "Nothing changes. You still wonder about the school.",
+            "lesson": "Not expanding is safe, but you are guessing about the school instead of knowing."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t06",
+      "concept": "record-keeping",
+      "conceptLabel": "Keeping records",
+      "scene": "kitchen",
+      "situation": "You now sell mandazi, chai and a few samosas. Someone asks you which one makes you the most money. You realise you have no idea. It is all one pile of cash at the end of the day.",
+      "info": [
+        {
+          "id": "try-remember",
+          "label": "Try to work it out from memory",
+          "costHours": 2,
+          "costCash": 0,
+          "reveals": "You cannot. You know roughly what comes in altogether, but not which item it came from, and not what each one cost you."
+        }
+      ],
+      "decision": {
+        "prompt": "What do you do?",
+        "predictQuestion": "What happens to your weekly profit?",
+        "predictChoices": [
+          {
+            "id": "up_lot",
+            "label": "Up a lot"
+          },
+          {
+            "id": "up_bit",
+            "label": "Up a little"
+          },
+          {
+            "id": "same",
+            "label": "About the same"
+          },
+          {
+            "id": "down",
+            "label": "Goes down"
+          }
+        ],
+        "options": [
+          {
+            "id": "start-book",
+            "label": "Keep a simple book — what you sold, what you spent",
+            "detail": "Twenty minutes every evening. It is time you do not have.",
+            "effects": {
+              "keepsRecords": true,
+              "ownerHoursUsed": 3
+            },
+            "predictAnswer": "same",
+            "outcome": "It costs you time and changes nothing this week. But after three weeks you can see that the samosas take the most work and bring the least back.",
+            "lesson": "Records do not make money by themselves. They let you see which parts of your business are carrying the others — and you cannot fix what you cannot see."
+          },
+          {
+            "id": "drop-samosa",
+            "label": "Guess it is the samosas and stop making them",
+            "detail": "They feel like the most trouble.",
+            "effects": {
+              "demand": -80,
+              "ownerHoursUsed": -4
+            },
+            "predictAnswer": "down",
+            "outcome": "You free up time. You also lose the customers who came for samosas and bought chai as well. You still do not know whether you were right.",
+            "lesson": "Acting on a guess can be worse than doing nothing, because now you have changed something and still cannot tell if it helped."
+          },
+          {
+            "id": "no-book",
+            "label": "Carry on as you are",
+            "detail": "The money comes in. That is enough.",
+            "effects": {},
+            "predictAnswer": "same",
+            "outcome": "Nothing changes. The question stays unanswered.",
+            "lesson": "This works while the business is small enough to hold in your head. It stops working shortly after that."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t07",
+      "concept": "operations",
+      "conceptLabel": "Capacity",
+      "scene": "kitchen",
+      "situation": "You are frying on one small charcoal stove. It takes you four hours every morning and your arm aches. A second-hand deep fryer is for sale in town. It would double how much you can make in the same time.",
+      "info": [
+        {
+          "id": "inspect-fryer",
+          "label": "Go and look at the fryer before buying",
+          "costHours": 3,
+          "costCash": 2000,
+          "reveals": "It works, but the thermostat is broken. It will need a repair soon. The seller knows this and drops the price."
+        }
+      ],
+      "decision": {
+        "prompt": "What do you do?",
+        "predictQuestion": "What happens to your weekly profit?",
+        "predictChoices": [
+          {
+            "id": "up_lot",
+            "label": "Up a lot"
+          },
+          {
+            "id": "up_bit",
+            "label": "Up a little"
+          },
+          {
+            "id": "same",
+            "label": "About the same"
+          },
+          {
+            "id": "down",
+            "label": "Goes down"
+          }
+        ],
+        "options": [
+          {
+            "id": "buy-fryer",
+            "label": "Buy the fryer",
+            "detail": "A deposit now, then a repayment every week. Much more capacity.",
+            "effects": {
+              "capacity": 90,
+              "cash": -120000,
+              "rent": 12000,
+              "ownerHoursUsed": -6
+            },
+            "predictAnswer": "down",
+            "outcome": "You can make far more now. But your customers have not grown, so much of it goes unsold, and the repayment leaves whether you sell it or not.",
+            "lesson": "Being able to make more does not mean you can sell more. Buying on credit turns a one-off purchase into a cost that arrives every week, in good weeks and bad."
+          },
+          {
+            "id": "buy-and-push",
+            "label": "Buy the fryer and start selling to the guesthouse nearby",
+            "detail": "The same deposit and weekly repayment — but with a customer lined up first.",
+            "effects": {
+              "capacity": 220,
+              "demand": 220,
+              "cash": -120000,
+              "rent": 12000,
+              "ownerHoursUsed": -3
+            },
+            "predictAnswer": "up_lot",
+            "outcome": "The guesthouse takes a standing order every morning. The new capacity is filled almost immediately, and your arm stops aching.",
+            "lesson": "Find the customer before you build the capacity, not after. The machine only pays when there is demand waiting for it."
+          },
+          {
+            "id": "keep-stove",
+            "label": "Keep the charcoal stove",
+            "detail": "It is slow but it is paid for.",
+            "effects": {},
+            "predictAnswer": "same",
+            "outcome": "Nothing changes. You keep frying by hand, four hours a morning.",
+            "lesson": "Your own labour feels free because no money leaves your hand. It is not free — it is the time you cannot spend on anything else."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t08",
+      "concept": "logistics",
+      "conceptLabel": "Getting things there",
+      "scene": "truck",
+      "situation": "The guesthouse wants delivery by six in the morning, before their guests come down. You have been carrying everything yourself on foot, and twice you have been late.",
+      "info": [
+        {
+          "id": "ask-guesthouse",
+          "label": "Ask the guesthouse what happens if you are late",
+          "costHours": 1,
+          "costCash": 0,
+          "reveals": "The manager says one more late delivery and they will find someone else. He is not angry. He is just telling you."
+        }
+      ],
+      "decision": {
+        "prompt": "How do you get there on time?",
+        "predictQuestion": "What happens to your weekly profit?",
+        "predictChoices": [
+          {
+            "id": "up_lot",
+            "label": "Up a lot"
+          },
+          {
+            "id": "up_bit",
+            "label": "Up a little"
+          },
+          {
+            "id": "same",
+            "label": "About the same"
+          },
+          {
+            "id": "down",
+            "label": "Goes down"
+          }
+        ],
+        "options": [
+          {
+            "id": "hire-boda",
+            "label": "Pay a boda rider to deliver every morning",
+            "detail": "A weekly cost, but you stop being the one carrying baskets.",
+            "effects": {
+              "rent": 12000,
+              "reputation": 8,
+              "ownerHoursUsed": -5
+            },
+            "predictAnswer": "down",
+            "outcome": "Deliveries are on time every day. It costs you money every week, and it buys back five hours and a customer you were about to lose.",
+            "lesson": "Paying for reliability looks like pure cost on paper. What it actually buys is the customer you would otherwise lose."
+          },
+          {
+            "id": "wake-earlier",
+            "label": "Wake up an hour earlier and carry it yourself",
+            "detail": "Costs nothing in money.",
+            "effects": {
+              "ownerHoursUsed": 6
+            },
+            "predictAnswer": "same",
+            "outcome": "You are on time. You are also exhausted by nine in the morning, and you still have the whole day ahead of you.",
+            "lesson": "Solving a problem with your own hours is not free. You have a fixed number of them and you are already using most of them."
+          },
+          {
+            "id": "ask-later",
+            "label": "Ask the guesthouse to accept a later delivery",
+            "detail": "It costs nothing to ask.",
+            "effects": {
+              "demand": -60,
+              "reputation": -6
+            },
+            "predictAnswer": "down",
+            "outcome": "They say no. Their guests come down at six thirty. They thank you and start buying from someone else.",
+            "lesson": "A big customer's requirements are usually not negotiable, because they have their own customers to serve."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t09",
+      "concept": "food-safety",
+      "conceptLabel": "Food safety",
+      "scene": "kitchen",
+      "situation": "You have been reusing your frying oil for longer than you used to, because oil is expensive. Two customers have mentioned that the mandazi taste different. One said her stomach was upset, though she was not sure it was yours.",
+      "info": [
+        {
+          "id": "taste-test",
+          "label": "Taste yesterday's batch yourself",
+          "costHours": 1,
+          "costCash": 0,
+          "reveals": "There is a bitter edge you had stopped noticing. Your customers noticed before you did."
+        }
+      ],
+      "decision": {
+        "prompt": "What do you do?",
+        "predictQuestion": "What happens to your weekly profit?",
+        "predictChoices": [
+          {
+            "id": "up_lot",
+            "label": "Up a lot"
+          },
+          {
+            "id": "up_bit",
+            "label": "Up a little"
+          },
+          {
+            "id": "same",
+            "label": "About the same"
+          },
+          {
+            "id": "down",
+            "label": "Goes down"
+          }
+        ],
+        "options": [
+          {
+            "id": "change-oil",
+            "label": "Change the oil more often and cover the food properly",
+            "detail": "Your costs go up. Nothing else visibly changes this week.",
+            "effects": {
+              "unitCost": "+25",
+              "hygiene": 30,
+              "reputation": 6
+            },
+            "predictAnswer": "down",
+            "outcome": "Each mandazi costs a little more to make. The taste comes back. Nobody thanks you, because customers rarely notice a problem that stopped happening.",
+            "lesson": "Food safety costs money now and pays you back by preventing something that never happens. That makes it very easy to keep putting off."
+          },
+          {
+            "id": "keep-oil",
+            "label": "Carry on. Oil is expensive and nobody has proved anything",
+            "detail": "Save the money.",
+            "effects": {
+              "hygiene": -25,
+              "reputation": -8
+            },
+            "predictAnswer": "same",
+            "outcome": "Your costs stay low this week. Word about the taste spreads slowly, the way word always does.",
+            "lesson": "A food safety problem does not arrive as a bill. It arrives later, as customers who quietly stop coming."
+          },
+          {
+            "id": "dilute",
+            "label": "Mix a little fresh oil into the old",
+            "detail": "A compromise that costs less.",
+            "effects": {
+              "unitCost": "+20",
+              "hygiene": 8
+            },
+            "predictAnswer": "down",
+            "outcome": "The taste improves slightly. The underlying problem is still there, just slower.",
+            "lesson": "Half-solving a safety problem often costs you most of the money and buys you little of the protection."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t10",
+      "concept": "setback",
+      "conceptLabel": "A bad week",
+      "scene": "stall-empty",
+      "situation": "A power cut ran for two days. Your fridge stopped. The milk for the chai spoiled, and so did a large batch of dough. You threw away a great deal of food. Two regular customers saw you doing it.",
+      "info": [
+        {
+          "id": "count-loss",
+          "label": "Work out exactly what you lost",
+          "costHours": 2,
+          "costCash": 0,
+          "reveals": "The wasted stock is most of a week's profit. Painful, but survivable. The bigger problem is the two customers who watched."
+        }
+      ],
+      "decision": {
+        "prompt": "What now?",
+        "predictQuestion": "What happens to your weekly profit?",
+        "predictChoices": [
+          {
+            "id": "up_lot",
+            "label": "Up a lot"
+          },
+          {
+            "id": "up_bit",
+            "label": "Up a little"
+          },
+          {
+            "id": "same",
+            "label": "About the same"
+          },
+          {
+            "id": "down",
+            "label": "Goes down"
+          }
+        ],
+        "options": [
+          {
+            "id": "smaller-batches",
+            "label": "Make smaller batches more often",
+            "detail": "Less waste when something goes wrong. Slightly less efficient.",
+            "effects": {
+              "unitCost": "-3",
+              "cash": -20000,
+              "ownerHoursUsed": 4
+            },
+            "predictAnswer": "same",
+            "outcome": "You lose a little efficiency and a lot of risk. The next time something goes wrong, you throw away far less.",
+            "lesson": "You cannot stop power cuts. You can decide how much they cost you when they happen."
+          },
+          {
+            "id": "buy-generator",
+            "label": "Borrow money for a small generator",
+            "detail": "Solves it properly. You take on a debt.",
+            "effects": {
+              "unitCost": "-8",
+              "cash": -180000,
+              "rent": 16000
+            },
+            "predictAnswer": "down",
+            "outcome": "The fridge stays cold. You now owe money and have a weekly repayment whether or not the power goes out.",
+            "lesson": "Borrowing to fix a problem turns an occasional loss into a fixed cost. Sometimes worth it, and it must be paid every week regardless."
+          },
+          {
+            "id": "carry-on",
+            "label": "Absorb the loss and carry on as before",
+            "detail": "It was bad luck. It may not happen again.",
+            "effects": {
+              "cash": -5000
+            },
+            "predictAnswer": "same",
+            "outcome": "You rebuild your stock and continue. Nothing has changed about what happens next time.",
+            "lesson": "Treating a repeatable problem as bad luck means agreeing to pay for it again."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t11",
+      "concept": "hiring",
+      "conceptLabel": "Hiring",
+      "scene": "kitchen",
+      "situation": "You are working from four in the morning until seven at night. Your niece has offered to help. She is reliable but knows nothing about the work, and she would need paying.",
+      "info": [
+        {
+          "id": "count-hours",
+          "label": "Add up your own hours honestly",
+          "costHours": 1,
+          "costCash": 0,
+          "reveals": "You are working around seventy hours a week. You have not had a full day off in four months."
+        }
+      ],
+      "decision": {
+        "prompt": "Do you take her on?",
+        "predictQuestion": "What happens to your weekly profit?",
+        "predictChoices": [
+          {
+            "id": "up_lot",
+            "label": "Up a lot"
+          },
+          {
+            "id": "up_bit",
+            "label": "Up a little"
+          },
+          {
+            "id": "same",
+            "label": "About the same"
+          },
+          {
+            "id": "down",
+            "label": "Goes down"
+          }
+        ],
+        "options": [
+          {
+            "id": "hire-niece",
+            "label": "Take her on and train her properly",
+            "detail": "Wages every week, and your time spent teaching before she is useful.",
+            "effects": {
+              "staff": 1,
+              "capacity": 25,
+              "ownerHoursUsed": -10
+            },
+            "predictAnswer": "down",
+            "outcome": "For the first weeks she is slower than you and you are paying her while teaching her. Your profit drops. You also sleep for the first time in months.",
+            "lesson": "Hiring almost always costs you money before it makes you any. The question is whether you can survive the gap, not whether the gap exists."
+          },
+          {
+            "id": "hire-casual",
+            "label": "Use her only on the busiest mornings, paid by the day",
+            "detail": "Cheaper. She never really learns the work.",
+            "effects": {
+              "rent": 18000,
+              "capacity": 10,
+              "ownerHoursUsed": -3
+            },
+            "predictAnswer": "down",
+            "outcome": "You get help when you most need it and pay less. She stays a pair of hands rather than becoming someone who can run things without you.",
+            "lesson": "Casual help solves today's rush. It does not build anyone who can take work off you permanently."
+          },
+          {
+            "id": "no-hire",
+            "label": "Carry on alone",
+            "detail": "Nobody does it as well as you do.",
+            "effects": {
+              "ownerHoursUsed": 4
+            },
+            "predictAnswer": "same",
+            "outcome": "You keep every shilling of the profit and every hour of the work. The business cannot grow past what your own two hands can make.",
+            "lesson": "A business that depends entirely on you has a ceiling, and the ceiling is you."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t12",
+      "concept": "delegation",
+      "conceptLabel": "Delegation",
+      "scene": "stall-busy",
+      "situation": "Your helper is competent now. But you still do the buying, the frying, the pricing and the money. She waits for you to tell her what to do next, and she often waits a long time.",
+      "info": [
+        {
+          "id": "watch-her",
+          "label": "Watch how much time she spends waiting",
+          "costHours": 2,
+          "costCash": 0,
+          "reveals": "She spends nearly two hours a day waiting for you to be free. You are paying her to stand still."
+        }
+      ],
+      "decision": {
+        "prompt": "What do you change?",
+        "predictQuestion": "What happens to your weekly profit?",
+        "predictChoices": [
+          {
+            "id": "up_lot",
+            "label": "Up a lot"
+          },
+          {
+            "id": "up_bit",
+            "label": "Up a little"
+          },
+          {
+            "id": "same",
+            "label": "About the same"
+          },
+          {
+            "id": "down",
+            "label": "Goes down"
+          }
+        ],
+        "options": [
+          {
+            "id": "hand-over-buying",
+            "label": "Hand her the morning buying, with a written list and a fixed budget",
+            "detail": "She will make mistakes at first. You will not be there to correct them.",
+            "effects": {
+              "capacity": 28,
+              "demand": 28,
+              "ownerHoursUsed": -12,
+              "reputation": 4
+            },
+            "predictAnswer": "up_bit",
+            "outcome": "She buys the wrong flour once. After that she is better at it than you, because she is doing it every single day.",
+            "lesson": "Handing over a task means handing over the decisions inside it. If you keep the decisions, you have not actually delegated anything."
+          },
+          {
+            "id": "detailed-instructions",
+            "label": "Give her more detailed instructions each morning",
+            "detail": "Keep control, reduce the waiting.",
+            "effects": {
+              "ownerHoursUsed": 2,
+              "capacity": 3
+            },
+            "predictAnswer": "same",
+            "outcome": "She waits slightly less. You now spend part of every morning writing instructions instead of working.",
+            "lesson": "Giving instructions is not delegation. You are still the person the whole business waits for."
+          },
+          {
+            "id": "keep-control",
+            "label": "Keep doing the important parts yourself",
+            "detail": "Mistakes are expensive.",
+            "effects": {
+              "ownerHoursUsed": 3
+            },
+            "predictAnswer": "same",
+            "outcome": "Nothing goes wrong. Nothing gets better either. She keeps waiting.",
+            "lesson": "The cost of never delegating is invisible. It is everything the business did not do while waiting for you."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t13",
+      "concept": "formalisation",
+      "conceptLabel": "Becoming official",
+      "scene": "office",
+      "unverified": true,
+      "situation": "A hotel wants to buy from you regularly. It would be your largest customer. Their buyer explains that they can only buy from registered businesses that can issue a proper receipt. You have never registered anything.",
+      "info": [
+        {
+          "id": "ask-around",
+          "label": "Ask other traders what registering involved",
+          "costHours": 6,
+          "costCash": 0,
+          "reveals": "Answers vary a lot. Everyone agrees it took longer than they expected and cost more than the official amount, once travel and repeat visits were counted."
+        }
+      ],
+      "decision": {
+        "prompt": "What do you do?",
+        "predictQuestion": "What happens to your weekly profit?",
+        "predictChoices": [
+          {
+            "id": "up_lot",
+            "label": "Up a lot"
+          },
+          {
+            "id": "up_bit",
+            "label": "Up a little"
+          },
+          {
+            "id": "same",
+            "label": "About the same"
+          },
+          {
+            "id": "down",
+            "label": "Goes down"
+          }
+        ],
+        "options": [
+          {
+            "id": "register",
+            "label": "Start the registration process",
+            "detail": "Money and many days of your time, before any benefit arrives.",
+            "effects": {
+              "formality": 1,
+              "cash": -95000,
+              "ownerHoursUsed": 10,
+              "licenceFees": 6000
+            },
+            "predictAnswer": "down",
+            "outcome": "It takes weeks of queuing and several trips. You pay fees, and you lose mornings you would have been selling. The hotel contract has not started yet.",
+            "lesson": "Formalising costs real money and a lot of time before it earns anything. Most people are surprised by the time, not the money."
+          },
+          {
+            "id": "informal-deal",
+            "label": "Ask the hotel to pay you informally",
+            "detail": "No paperwork, no cost.",
+            "effects": {
+              "reputation": -4
+            },
+            "predictAnswer": "same",
+            "outcome": "The buyer says he cannot. His own accounts have to show where the money went. He is apologetic and firm.",
+            "lesson": "Your customer's rules are often set by someone above them. Staying informal does not just limit you — it locks you out of certain customers entirely."
+          },
+          {
+            "id": "stay-informal",
+            "label": "Let the hotel go and stay as you are",
+            "detail": "Your current customers do not ask for receipts.",
+            "effects": {},
+            "predictAnswer": "same",
+            "outcome": "Nothing changes this week. The hotel finds another supplier, and so does the next one who asks the same question.",
+            "lesson": "Staying informal has no cost today. Its cost is the ceiling it puts on which customers you can ever serve."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t14",
+      "concept": "quality-assurance",
+      "conceptLabel": "Quality you can prove",
+      "scene": "inspection",
+      "unverified": true,
+      "situation": "The hotel's buyer wants to visit your kitchen before signing anything. He will look at how you store food, how you handle it, and whether you can show what you did yesterday.",
+      "info": [
+        {
+          "id": "walk-through",
+          "label": "Walk through your own kitchen as if you were him",
+          "costHours": 2,
+          "costCash": 0,
+          "reveals": "The dough is covered. The floor is clean. But there is no way to show what you did yesterday, or where the flour came from."
+        }
+      ],
+      "decision": {
+        "prompt": "How do you prepare?",
+        "predictQuestion": "What happens to your weekly profit?",
+        "predictChoices": [
+          {
+            "id": "up_lot",
+            "label": "Up a lot"
+          },
+          {
+            "id": "up_bit",
+            "label": "Up a little"
+          },
+          {
+            "id": "same",
+            "label": "About the same"
+          },
+          {
+            "id": "down",
+            "label": "Goes down"
+          }
+        ],
+        "options": [
+          {
+            "id": "prepare-properly",
+            "label": "Clean up and start writing down what you make and where it came from",
+            "detail": "Sealed containers and a written record, every day from now on.",
+            "effects": {
+              "hygiene": 25,
+              "keepsRecords": true,
+              "ownerHoursUsed": 5,
+              "cash": -25000,
+              "rent": 6000
+            },
+            "predictAnswer": "down",
+            "outcome": "The visit goes well. He is more impressed by the written records than by the clean floor, because the records show it was clean yesterday too.",
+            "lesson": "Quality that you cannot show is quality your customer cannot buy. Being clean and proving you are clean are two different things."
+          },
+          {
+            "id": "clean-only",
+            "label": "Give everything a deep clean the day before",
+            "detail": "Make a good impression.",
+            "effects": {
+              "hygiene": 12,
+              "ownerHoursUsed": 3,
+              "cash": -8000
+            },
+            "predictAnswer": "same",
+            "outcome": "The kitchen looks excellent. He asks what you did last Tuesday and you cannot tell him. He says he will think about it.",
+            "lesson": "A one-day clean shows what you can do once. A buyer is trying to find out what you do every day."
+          },
+          {
+            "id": "no-prep",
+            "label": "Let him come as things are",
+            "detail": "You have nothing to hide.",
+            "effects": {
+              "reputation": -6
+            },
+            "predictAnswer": "same",
+            "outcome": "He is polite. He notices the oil container without a lid, and he does not sign.",
+            "lesson": "A buyer inspecting you is managing their own risk. What is normal to you may be unacceptable to them."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t15",
+      "concept": "concentration-risk",
+      "conceptLabel": "Depending on one customer",
+      "scene": "office",
+      "situation": "The hotel now takes more than half of everything you make. It is your best customer by far, and paying you on time. Your other customers have slowly drifted since you started prioritising the hotel order.",
+      "info": [
+        {
+          "id": "check-share",
+          "label": "Work out how much of your business the hotel is",
+          "costHours": 1,
+          "costCash": 0,
+          "reveals": "They are about sixty percent of your sales. If they left tomorrow you could not cover your rent and wages."
+        }
+      ],
+      "decision": {
+        "prompt": "What do you do?",
+        "predictQuestion": "What happens to your weekly profit?",
+        "predictChoices": [
+          {
+            "id": "up_lot",
+            "label": "Up a lot"
+          },
+          {
+            "id": "up_bit",
+            "label": "Up a little"
+          },
+          {
+            "id": "same",
+            "label": "About the same"
+          },
+          {
+            "id": "down",
+            "label": "Goes down"
+          }
+        ],
+        "options": [
+          {
+            "id": "find-second-buyer",
+            "label": "Spend time finding a second buyer of similar size",
+            "detail": "Time away from the work you already have.",
+            "effects": {
+              "ownerHoursUsed": 8,
+              "demand": 25,
+              "capacity": 25,
+              "cash": -10000
+            },
+            "predictAnswer": "up_bit",
+            "outcome": "It takes weeks and several refusals. You find a second hotel that takes a smaller order. Neither one can now sink you on their own.",
+            "lesson": "The time to find your second big customer is while your first one is happy, not after they leave."
+          },
+          {
+            "id": "serve-hotel-more",
+            "label": "Give the hotel even more of your attention",
+            "detail": "They are your best customer. Keep them very happy.",
+            "effects": {
+              "demand": 20,
+              "capacity": 20,
+              "reputation": -5,
+              "ownerHoursUsed": 5
+            },
+            "predictAnswer": "up_bit",
+            "outcome": "They are delighted. You are now almost entirely dependent on one buyer, who knows it.",
+            "lesson": "A customer who accounts for most of your sales does not just buy from you. They set your prices, because you cannot afford to say no."
+          },
+          {
+            "id": "do-nothing-risk",
+            "label": "Leave it. Nothing is wrong right now",
+            "detail": "They are paying on time.",
+            "effects": {},
+            "predictAnswer": "same",
+            "outcome": "Nothing happens this week. Your exposure is exactly the same as it was.",
+            "lesson": "Concentration risk causes no problems at all, right up until the moment it causes every problem at once."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t16",
+      "concept": "reinvestment",
+      "conceptLabel": "What to do with profit",
+      "scene": "stall-busy",
+      "situation": "For the first time you have real money left over at the end of the month, after everything is paid. Your family knows it. There are things at home that need doing.",
+      "info": [
+        {
+          "id": "list-options",
+          "label": "Write down what the money could do",
+          "costHours": 1,
+          "costCash": 0,
+          "reveals": "The roof at home needs repair. A second fryer would let you take the order you turned down last week. Some of it should probably just sit in the box for emergencies."
+        }
+      ],
+      "decision": {
+        "prompt": "What do you do with it?",
+        "predictQuestion": "What happens to your weekly profit?",
+        "predictChoices": [
+          {
+            "id": "up_lot",
+            "label": "Up a lot"
+          },
+          {
+            "id": "up_bit",
+            "label": "Up a little"
+          },
+          {
+            "id": "same",
+            "label": "About the same"
+          },
+          {
+            "id": "down",
+            "label": "Goes down"
+          }
+        ],
+        "options": [
+          {
+            "id": "reinvest",
+            "label": "Put most of it back into the business",
+            "detail": "A second fryer and more stock. Nothing for home this month.",
+            "effects": {
+              "capacity": 150,
+              "demand": 150,
+              "cash": -140000
+            },
+            "predictAnswer": "up_lot",
+            "outcome": "You can take the order you turned down. The business grows again. The roof at home still leaks and your family notices.",
+            "lesson": "Reinvesting is what makes a business grow past the owner's own income. It also has a real cost at home, and pretending otherwise helps nobody."
+          },
+          {
+            "id": "split",
+            "label": "Split it — some home, some business, some kept back",
+            "detail": "Nobody gets everything they wanted.",
+            "effects": {
+              "capacity": 20,
+              "demand": 15,
+              "cash": -60000
+            },
+            "predictAnswer": "up_bit",
+            "outcome": "The roof gets patched. The business grows a little. You still have something in the box if a fridge fails.",
+            "lesson": "Splitting between the business, the household and a reserve is slower than any single choice, and it is the one that survives a bad month."
+          },
+          {
+            "id": "take-home",
+            "label": "Take it all home",
+            "detail": "This is why you work.",
+            "effects": {
+              "cash": -160000
+            },
+            "predictAnswer": "same",
+            "outcome": "The roof is fixed and your family eats well this month. The business is exactly the same size it was, and will be next year too.",
+            "lesson": "A business where all the profit goes home supports a household. That is a real achievement, and it is a different thing from a business that grows."
+          }
+        ]
+      }
+    }
+  ]
+}

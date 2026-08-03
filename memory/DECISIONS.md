@@ -92,6 +92,36 @@ truth. Building region-generic content first — rejected because vague content 
 makes these tools unconvincing to the people using them.
 **Revisit if:** A pilot partner is secured in another country first.
 
+## D-006 — Vanilla ES modules, no build step, no dependencies
+**Date:** 2026-08-02 · **Decided by:** Project owner + Claude · **ADR:** [ADR-0006](../docs/adr/0006-no-build-vanilla-js.md)
+**Decision:** Build the application as plain ES modules served as written, with no
+bundler, transpiler or runtime dependencies. Scenarios are JSON.
+**Why:** The whole app comes to ~33KB gzipped including content — less than a framework's
+runtime alone, on a connection the learner pays for. The source being the artefact also
+suits a project picked up intermittently by people who are not full-time developers.
+**Considered and rejected:** React or Svelte on Vite — the conventional choice, better
+once the UI is complex, rejected on payload and contributor friction. Vanilla plus a
+bundler for minification — tempting and the most likely first change if size tightens,
+rejected for now because the build step is the part that hurts intermittent
+contributors. Scenarios as JS modules — rejected because it makes content executable,
+puts it out of reach of non-programmers, and would let an author hand-write outcomes.
+**Revisit if:** Manual DOM construction starts producing bugs rather than just verbosity,
+or the payload budget requires minification — take the bundler before the framework.
+
+## D-007 — Proof-of-concept scope
+**Date:** 2026-08-02 · **Decided by:** Project owner + Claude · **ADR:** —
+**Decision:** One scenario (16 turns, a Tanzanian food stall), English only, no service
+worker, placeholder money figures shown behind an in-app banner.
+**Why:** The owner asked for something to play and give feedback on. Breadth would have
+delayed that without answering the question the prototype exists to answer — whether
+this holds anyone's attention (Q-011).
+**Considered and rejected:** Two scenarios up front, which would have enabled
+far-transfer testing immediately — deferred because one playable scenario answers the
+engagement question sooner, and transfer testing is worthless if nobody finishes the
+first one. Real Tanzanian figures — deliberately not invented; the banner says so.
+**Revisit if:** Playtesting shows 16 turns is the wrong length (Q-013), or a second
+scenario is needed to answer a question the first cannot.
+
 ---
 
 ## Pending — proposed, not decided

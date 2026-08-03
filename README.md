@@ -8,10 +8,24 @@ than instruction, and it **observes** what a learner actually does — producing
 behavioural record intended as a cheap first stage of an execution test for grant
 programmes and training providers.
 
-> **Status: design stage.** There is no application code yet. The repository currently
-> holds the operating guide, the project's memory system, and first-draft design
-> documentation. See [`memory/PROJECT_STATE.md`](./memory/PROJECT_STATE.md) for where
-> things actually stand.
+> **Status: playable proof of concept.** One scenario, 16 turns, phone-first, about
+> 33KB. Rough, and meant to be played and argued with. See
+> [`memory/PROJECT_STATE.md`](./memory/PROJECT_STATE.md) for where things actually stand.
+
+## Try it
+
+```bash
+cd app && python3 -m http.server 8000
+```
+
+Open `http://localhost:8000` — on a phone, use your computer's LAN address with both
+devices on the same network. It needs a web server; opening the file directly will not
+work. More in [`app/README.md`](./app/README.md).
+
+Each turn: a situation, information you can buy with time or money, a decision — and then
+**you predict what will happen before you find out.** That prediction step is the whole
+design. It is the moment of engagement and the measurement at the same time, because you
+cannot reliably predict a system you do not understand.
 
 ---
 

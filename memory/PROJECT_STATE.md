@@ -1,7 +1,7 @@
 # Project state
 
 **Snapshot as of:** 2026-08-02
-**Last session:** [`sessions/2026-08-02-002-pedagogy-and-timing-ideation.md`](./sessions/2026-08-02-002-pedagogy-and-timing-ideation.md)
+**Last session:** [`sessions/2026-08-02-003-playable-proof-of-concept.md`](./sessions/2026-08-02-003-playable-proof-of-concept.md)
 
 > This file is a **snapshot, not a history**. Overwrite it at the end of every session
 > so it always describes the present. History belongs in `sessions/` and
@@ -11,94 +11,94 @@
 
 ## Where we are
 
-**Stage: documentation and design.** No application code yet, deliberately.
+**There is a playable proof of concept.** `app/` runs in a browser, phone-first, 16 turns
+end to end, with graphics, prediction-based assessment and a results profile.
 
-Two sessions so far. Session 001 bootstrapped the repository — operating guide, memory
-system, governance, first-draft design docs — grounded in the project owner's background
-note on transformational entrepreneurship
-([`docs/context/transformational-entrepreneurship.md`](../docs/context/transformational-entrepreneurship.md)),
-which is the intellectual foundation of the whole project.
+Three sessions so far: repository bootstrap (001), an ideation discussion on pedagogy and
+programme placement (002), and this build (003).
 
-Session 002 was an **ideation discussion** on pedagogy, engagement, assessment and where
-the simulator sits relative to a grant programme. It produced a substantial body of
-proposals and **no decisions**. The scaffold and both session records were merged to
-`main`.
+The project rests on the owner's background note
+([`docs/context/transformational-entrepreneurship.md`](../docs/context/transformational-entrepreneurship.md)) —
+read it before anything else.
 
 ## What exists
 
 | Area | State |
 |---|---|
-| Operating guide (`AGENTS.md`, `CLAUDE.md`) | Written. Carries the thesis and the memory protocol. |
-| Memory system | Established and in use — state, decisions, 11 open questions, glossary, 2 session entries. |
-| Governance (contributing, conduct, security, licences) | Written. MIT code + CC BY-SA 4.0 content. |
-| Design docs (`docs/`) | **First draft, unreviewed, and now partly out of date** — they do not reflect session 002, deliberately, because none of it is ratified. |
-| Regional context (`docs/context/`) | Owner's background note in place. Country operating detail is a **deliberate stub**. |
-| ADRs | Five. 0001–0004 `Accepted`; **0005 `Proposed`** and awaiting a ruling. |
-| Application code | **None.** Not started. |
-| Curriculum content | **None.** Only the capability map, itself provisional. |
-| Partners, pilot sites, funding | Not yet recorded in repo. See Q-002. |
+| **`app/` — the simulator** | **Playable.** 16 turns, one scenario, English, light/dark, ~33KB gzipped. |
+| Operating guide (`AGENTS.md`, `CLAUDE.md`) | Written. Carries the thesis and memory protocol. |
+| Memory system | In use — this file, decisions, 14 open questions, glossary, 3 session entries. |
+| Governance, licences | Written. MIT code + CC BY-SA 4.0 content. |
+| Design docs (`docs/`) | First draft. **Now partly behind the code** — see below. |
+| Regional context (`docs/context/`) | Owner's note in place. Country detail still a **deliberate stub**. |
+| ADRs | Six. 0001–0004 and 0006 `Accepted`; **0005 `Proposed`**, partly confirmed. |
+| Tests | `test-engine.mjs` (47 assertions), `validate-scenario.mjs` (48/48), `check-links.sh` (178 links). |
+| Curriculum content | One scenario. No second scenario, so no transfer testing. |
+| Partners, pilot sites, funding | Still not recorded. See Q-002. |
+
+## How to run it
+
+```bash
+cd app && python3 -m http.server 8000
+```
+
+Then open `http://localhost:8000`. It needs a server — `file://` will not work, because
+the browser refuses to fetch the scenario JSON. See [`../app/README.md`](../app/README.md).
 
 ## Decisions locked in
 
-1. **Mobile-first, offline-capable PWA** (ADR-0002).
-2. **MIT** for code, **CC BY-SA 4.0** for content (ADR-0003).
-3. The simulator is a **selection instrument as well as a teaching tool**, and explicitly
-   *not* a business-plan generator (ADR-0004). This is the defining decision.
-4. Geographic sequence: **Tanzania first**, then wider East Africa (D-005).
-5. Documentation before code (D-001).
+1. The simulator is a **selection instrument, not a business-plan generator** (ADR-0004).
+   The defining decision.
+2. **Mobile-first, offline-capable PWA** (ADR-0002).
+3. **MIT** code, **CC BY-SA 4.0** content (ADR-0003).
+4. **Tanzania first** (D-005).
+5. **Vanilla ES modules, no build step, no dependencies** (ADR-0006).
+6. Proof-of-concept scope: one scenario, English, placeholder figures (D-007).
+7. **Stage-zero placement confirmed** by the owner in session 003 — the simulator sits
+   before a competition and exists to widen the funnel.
 
-## Proposed but NOT decided
+## Implemented from session 002's proposals
 
-From session 002. Recorded so the reasoning survives; **not to be built against.**
+- **Predict-then-reveal** — the learner commits to an expected outcome before seeing it.
+  Serves engagement and measurement at once.
+- **Three-layer record** — observations, derived indicators with evidence, hedged
+  profile. No score, no rank, no percentile, enforced by tests.
+- **Consequence over instruction** — the P&L is computed by the engine, never authored.
 
-- **Stage-zero placement** (ADR-0005, `Proposed`) — the simulator gates entry to a ~$500
-  discovery experiment; **completion**, not performance, is the gate; the behavioural
-  record informs the *next* stage transition. Awaiting Q-009.
-- **Predict-then-reveal** — learner states an expected outcome before committing. Serves
-  engagement and measurement simultaneously; calibration is hard to fake. The strongest
-  single idea from session 002, and largely independent of the placement question.
-- **Assessment design** — far-transfer testing across unfamiliar business contexts,
-  pre/post on a novel scenario for a per-learner delta, and a delayed retest at ~4 weeks.
-- **"Compelling rather than fun"** — reject Tycoon-style optimisation loops as teaching a
-  false model of business; rely on recognition, consequence, character and prediction.
-- **Teaching approach for the named skills** — withhold the P&L until records become
-  necessary; concentration risk via a dominant buyer; founder time as an explicit scarce
-  resource.
+Still unimplemented: far-transfer testing, pre/post, delayed retest.
 
 ## What is not decided
 
-Full list in [`OPEN_QUESTIONS.md`](./OPEN_QUESTIONS.md). Blocking, in priority order:
+Blocking, in priority order — full list in [`OPEN_QUESTIONS.md`](./OPEN_QUESTIONS.md):
 
-- **Q-009** — Confirm or reject the stage-zero placement. Everything from session 002 is
-  downstream, and it determines whether three design docs need rewriting.
-- **Q-001** — Primary learner segment: existing firms with traction, or pre-revenue
-  founders? Determines the entire curriculum shape.
-- **Q-002** — Which programme does this feed, and does any available partner run a
-  *staged* portfolio? Escalated by session 002 — the proposed design needs a stage 1 to
-  gate into.
-- **Q-004** — Playthrough length. Partly answered by implication (multi-session), not
-  closed.
+- **Q-012** — **Performance gate or completion gate?** The owner described passing people
+  who "get all the questions right"; ADR-0005 argued for completion, with performance
+  informing only the next stage. This has real fairness consequences and needs a
+  deliberate call.
+- **Q-001** — Primary learner segment.
+- **Q-002** — Which programme this feeds, and whether any partner runs a staged portfolio.
+- **Q-004** — Playthrough length. Partly answered; Q-013 asks whether 16 turns is right.
 
 ## Immediate next steps
 
-1. **Owner rules on Q-009.** Highest leverage single action available.
-2. Owner review of `docs/vision.md`, `docs/theory-of-change.md` and `docs/assessment.md`
-   — these encode the strongest interpretive claims and remain unreviewed from session
-   001.
-3. Resolve **Q-001**; pursue **Q-002**, now on the critical path.
-4. Replace the stub in `docs/context/` with verified Tanzania operating detail. Needs
-   local ground truth.
-5. Specify one end-to-end scenario — honey is the candidate (Q-005) — deep enough to test
-   whether the session-002 mechanics survive contact with real content.
+1. **The owner plays it.** That is what it was built for. Q-011 (does this hold anyone's
+   attention) cannot be settled by argument.
+2. **Answer Q-012.** It determines what happens at the end of a run.
+3. Verified Tanzanian figures to replace the placeholders, so the in-app banner can come
+   down.
+4. A second scenario in a different business — the precondition for transfer testing.
+5. Service worker, so ADR-0002's offline requirement is actually met.
 
 ## Notes for whoever picks this up next
 
-- Read `AGENTS.md` §2 before proposing features. A business-plan builder, pitch scoring
-  and personality assessment are all ruled out by the thesis and will look like obvious
-  wins.
-- **Session 002 is a conversation, not a design.** Its proposals are unratified. The
-  `docs/` tree deliberately does not reflect them yet.
-- The owner operates real firms in Tanzania — Upendo Honey / Third Man Ltd, Tanganyika
-  Blue, Dark Earth Carbon — and these are the available sources of ground truth.
-- Anything in `docs/context/` beyond the owner's own note should be treated as unverified
-  until someone with local knowledge signs it off.
+- Read `AGENTS.md` §2 first. A business-plan builder, pitch scoring and personality
+  assessment are all ruled out by the thesis and will look like obvious wins.
+- **Run `node scripts/validate-scenario.mjs` after any content edit.** It caught 17 real
+  problems on its first run, including options that would have marked learners wrong for
+  being right.
+- **`docs/` has not been rewritten to match the code.** `game-design.md`,
+  `assessment.md` and `curriculum.md` describe the design as of session 001; the app
+  implements session 002's refinements. Reconciling them is worth doing once Q-012 is
+  settled, not before.
+- The owner runs Upendo Honey / Third Man Ltd, Tanganyika Blue and Dark Earth Carbon in
+  Tanzania — the available sources of ground truth.

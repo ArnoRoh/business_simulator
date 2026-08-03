@@ -76,10 +76,49 @@ than the current one?
 moves to `Accepted` and `docs/game-design.md`, `docs/assessment.md` and
 `docs/curriculum.md` all need revision to match. If rejected, the during-programme-only
 alternative is most likely correct, and the project scopes down to a teaching tool.
-**Current assumption:** None. **The proposal is Claude's, not the owner's** — do not
-proceed as though it were settled.
+**PARTLY ANSWERED 2026-08-02 (session 003).** The owner described the funnel
+unprompted: the simulator sits before a business-plan competition, its job is "getting
+lots and lots of people into the funnel", and prizes sit at the end. **Placement is
+confirmed.** What remains open is the *gate type* — see Q-012, where the owner's
+description and ADR-0005 diverge.
+**Current assumption:** Stage-zero placement accepted. Gate type unresolved.
+
+### Q-012 — Performance gate or completion gate?  [BLOCKING]
+**Raised:** 2026-08-02 (session 003) · **Owner:** Project owner
+**Question:** The owner described passing people on when they "get all of the questions
+right". [ADR-0005](../docs/adr/0005-simulator-as-stage-zero-gate.md) proposed the
+opposite — that **completion** is the gate and performance only informs the *next* stage.
+Which is it?
+**Why it matters:** This is not a detail. A performance gate places real consequence on
+an instrument with no validated signal ([Q-003](#q-003--can-simulated-behaviour-predict-real-firm-outcomes-at-all--open)),
+and risks selecting for digital fluency rather than business capability — which would
+filter out the Joseph persona, the experienced operator the project's own thesis says is
+most undervalued. `docs/assessment.md` currently forbids automatic cut-offs outright, so
+a performance gate would require that document to change deliberately rather than by
+drift.
+**Current assumption:** None. Flagged rather than resolved because it is the owner's
+call and the trade-off should be made with the fairness cost visible.
 
 ## Open
+
+### Q-013 — Is 16 turns the right length?  [open]
+**Raised:** 2026-08-02 (session 003) · **Owner:** Project owner / playtesting
+**Question:** The proof of concept runs 16 turns across 12 concepts, roughly 20–30
+minutes. Too long to hold attention, too short to generate signal, or about right?
+**Why it matters:** Feeds [Q-004](#q-004--how-long-is-a-full-playthrough--blocking) and
+determines how much curriculum can exist per scenario.
+**Current assumption:** A guess. Only playtesting answers it.
+
+### Q-014 — Do the prediction bands match how learners think?  [open]
+**Raised:** 2026-08-02 (session 003) · **Owner:** Project owner / playtesting
+**Question:** Predictions are graded into four bands — up a lot, up a little, about the
+same, goes down — with thresholds fixed in the validator. Does "up a little" mean the
+same thing to a learner as it does to the model?
+**Why it matters:** If a learner reasons correctly and lands in the neighbouring band,
+they are marked wrong, and prediction accuracy is the signal the whole assessment rests
+on. Under a performance gate (Q-012) this would directly affect who progresses.
+**Current assumption:** Bands are stable across playthrough paths (verified, 48/48), but
+whether they are *intuitive* is untested.
 
 ### Q-010 — How do we handle assessment/selection interference?  [open]
 **Raised:** 2026-08-02 (session 002) · **Owner:** Project owner
