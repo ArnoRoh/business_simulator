@@ -1,7 +1,7 @@
 # Project state
 
 **Snapshot as of:** 2026-08-02
-**Last session:** [`sessions/2026-08-02-003-playable-proof-of-concept.md`](./sessions/2026-08-02-003-playable-proof-of-concept.md)
+**Last session:** [`sessions/2026-08-02-004-standalone-build.md`](./sessions/2026-08-02-004-standalone-build.md)
 
 > This file is a **snapshot, not a history**. Overwrite it at the end of every session
 > so it always describes the present. History belongs in `sessions/` and
@@ -14,8 +14,8 @@
 **There is a playable proof of concept.** `app/` runs in a browser, phone-first, 16 turns
 end to end, with graphics, prediction-based assessment and a results profile.
 
-Three sessions so far: repository bootstrap (001), an ideation discussion on pedagogy and
-programme placement (002), and this build (003).
+Four sessions so far: repository bootstrap (001), an ideation discussion on pedagogy and
+programme placement (002), the build (003), and a shareable single-file version (004).
 
 The project rests on the owner's background note
 ([`docs/context/transformational-entrepreneurship.md`](../docs/context/transformational-entrepreneurship.md)) —
@@ -38,12 +38,22 @@ read it before anything else.
 
 ## How to run it
 
+**Hosted (no checkout needed):**
+https://claude.ai/code/artifact/e5559f61-a553-4780-9d6f-992d158c61b5
+
+Private to the owner unless shared from the page's share menu. Generated from `app/` by
+`scripts/build-single-file.mjs` — **rebuild and republish the same path after any change
+to `app/`, or the link goes stale.**
+
+**Locally:**
+
 ```bash
 cd app && python3 -m http.server 8000
 ```
 
-Then open `http://localhost:8000`. It needs a server — `file://` will not work, because
-the browser refuses to fetch the scenario JSON. See [`../app/README.md`](../app/README.md).
+Then open `http://localhost:8000`. It needs a server — `file://` will not work for
+`index.html`, because the browser refuses to fetch the scenario JSON. (`standalone.html`
+does work from `file://`.) See [`../app/README.md`](../app/README.md).
 
 ## Decisions locked in
 

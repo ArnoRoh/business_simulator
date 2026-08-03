@@ -18,6 +18,25 @@ Then open **http://localhost:8000** — and on a phone, use your computer's LAN 
 phone matters more than testing in a desktop browser with a narrow window; the design
 target is a low-end Android device.
 
+## Single-file version
+
+`standalone.html` is a **generated build artifact** — one self-contained page with the
+CSS, JavaScript and scenario content inlined. It needs no server and no checkout, so it
+can be opened from disk or hosted anywhere.
+
+```bash
+node scripts/build-single-file.mjs
+```
+
+**Do not edit `standalone.html` directly.** Edit the real files under `app/` and rebuild,
+or your changes will be overwritten. It is committed for convenience, which means it can
+drift — rebuild it after any change to `app/`.
+
+The build wraps each ES module in its own scope rather than concatenating them, because
+`scene.js` and `ui.js` both declare a private `clear` helper that would otherwise
+collide. It also injects a `viewport` meta tag, since a host page that supplies its own
+`<head>` would otherwise leave the layout at desktop width on a phone.
+
 ## What it does
 
 One scenario: a small cooked-food business. Each turn follows the loop from
