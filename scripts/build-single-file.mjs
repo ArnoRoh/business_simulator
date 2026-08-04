@@ -16,20 +16,25 @@ const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
 
 // Module order matters: dependencies first.
 const MODULES = [
-  ['format', 'app/js/format.js', ''],
+  ['i18n', 'app/js/i18n.js', ''],
+  ['format', 'app/js/format.js', `
+    const { t, getLanguage } = NS_i18n;
+  `],
   ['engine', 'app/js/engine.js', ''],
   ['record', 'app/js/record.js', ''],
   ['storage', 'app/js/storage.js', ''],
   ['scene', 'app/js/scene.js', ''],
   ['ui', 'app/js/ui.js', `
-    const { money, moneyShort, count, proportion } = NS_format;
-    const { weeklyPnl, ownerLoad } = NS_engine;
+    const { money, moneyShort, moneySigned, count, proportion } = NS_format;
+    const { weeklyPnl, ownerLoad, project, bandFor, BAND_SAME, BAND_LOT } = NS_engine;
+    const { t, tCount, localised } = NS_i18n;
     const { drawScene, drawChart, animateNumber, pulse } = NS_scene;
   `],
   ['main', 'app/js/main.js', `
     const record = NS_record, store = NS_storage, ui = NS_ui;
-    const { createState, applyEffects, weeklyPnl, advanceWeek } = NS_engine;
-    const { setLocale } = NS_format;
+    const { createState, applyEffects, weeklyPnl, advanceWeeks, scheduleLater } = NS_engine;
+    const { setCurrency } = NS_format;
+    const { loadStrings, setLanguage, getLanguage, LANGUAGES, t, localised } = NS_i18n;
   `],
 ];
 
@@ -56,20 +61,21 @@ ${body}
 }
 
 const scenario = read('app/content/scenario-mama-asha.json');
+const uiStrings = read('app/content/ui.json');
 const css = read('app/css/styles.css');
 
 let js = MODULES.map(([name, path, injected]) => wrapModule(name, read(path), injected)).join('\n');
 
-// Replace the network fetch with the embedded scenario, and make startup work whether
+// Replace the network fetches with the embedded content, and make startup work whether
 // or not DOMContentLoaded has already fired (it usually has, in an embedded page).
 // Must consume the catch block too — matching only as far as the end of `try`
 // leaves the original `catch` dangling and the script fails to parse.
 const before = js;
 js = js.replace(
-  /let res;\s*try \{[\s\S]*?\} catch \(err\) \{[\s\S]*?\n  \}/,
-  '  scenario = EMBEDDED_SCENARIO;',
+  /let strings;\s*let loaded;\s*try \{[\s\S]*?\} catch \(err\) \{[\s\S]*?\n  \}/,
+  '  const strings = EMBEDDED_UI;\n  const loaded = EMBEDDED_SCENARIO;',
 );
-if (js === before) throw new Error('scenario-fetch block not found — did main.js change?');
+if (js === before) throw new Error('content-fetch block not found — did main.js change?');
 js = js.replace(
   "document.addEventListener('DOMContentLoaded', init);",
   `if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
@@ -108,6 +114,7 @@ ${bodyInner}
 (function () {
   'use strict';
   const EMBEDDED_SCENARIO = ${scenario.trim()};
+  const EMBEDDED_UI = ${uiStrings.trim()};
 ${js}
 })();
 </script>

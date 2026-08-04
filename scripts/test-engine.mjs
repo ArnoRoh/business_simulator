@@ -4,7 +4,8 @@
 // a proof of concept would be premature. Run: node scripts/test-engine.mjs
 
 import {
-  createState, applyEffects, weeklyPnl, advanceWeek, ownerLoad, healthCheck,
+  createState, applyEffects, weeklyPnl, advanceWeek, advanceWeeks, ownerLoad, healthCheck,
+  scheduleLater, project, baseOwnerHours, bandFor, BAND_SAME, BAND_LOT,
 } from '../app/js/engine.js';
 import * as record from '../app/js/record.js';
 
@@ -85,7 +86,17 @@ console.log('\nengine: a week passing');
   eq('week advances', next.week, 2);
   eq('profit is banked to cash', next.cash, 50000 + pnl.profit);
   check('poor hygiene erodes reputation', next.reputation < 50, `reputation ${next.reputation}`);
-  check('hygiene decays without attention', next.hygiene < 30, `hygiene ${next.hygiene}`);
+
+  // Slippage stops at the standard an owner holds without effort. Below that it takes
+  // active neglect, which is what overload models — otherwise hygiene walks to zero on
+  // any long run and every late turn happens in a business that is already dead.
+  const kept = createState({ hygiene: 70, capacity: 180 });
+  check('hygiene slips when it is above the floor', advanceWeek(kept).state.hygiene < 70,
+    `hygiene ${advanceWeek(kept).state.hygiene}`);
+
+  let low = createState({ hygiene: 42, capacity: 180 });
+  for (let i = 0; i < 10; i += 1) low = advanceWeek(low).state;
+  check('but it settles rather than reaching zero', low.hygiene >= 40, `hygiene ${low.hygiene}`);
 }
 
 console.log('\nengine: reputation pulls demand with a lag');
@@ -107,6 +118,88 @@ console.log('\nengine: owner time and health');
   check('flags negative cash', problems.includes('cash-negative'));
   check('flags hygiene risk', problems.includes('hygiene-risk'));
   check('flags owner overload', problems.includes('owner-overloaded'));
+}
+
+console.log('\nengine: prediction bands');
+{
+  eq('a big drop is "down"', bandFor(-20000), 'down');
+  eq('just below the same-band edge is "down"', bandFor(-BAND_SAME - 1), 'down');
+  eq('no change is "same"', bandFor(0), 'same');
+  eq('the same-band edge is still "same"', bandFor(BAND_SAME), 'same');
+  eq('just above it is "up a little"', bandFor(BAND_SAME + 1), 'up_bit');
+  eq('the up-a-lot edge is still "up a little"', bandFor(BAND_LOT), 'up_bit');
+  eq('past it is "up a lot"', bandFor(BAND_LOT + 1), 'up_lot');
+}
+
+console.log('\nengine: owner hours are a weekly load, not a lifetime total');
+{
+  const small = createState({ capacity: 180, staff: 0 });
+  const big = createState({ capacity: 420, staff: 0 });
+  const staffed = createState({ capacity: 420, staff: 2 });
+
+  check('growing output costs the owner more hours', baseOwnerHours(big) > baseOwnerHours(small),
+    `${baseOwnerHours(small)} vs ${baseOwnerHours(big)}`);
+  check('growing without delegating overloads the owner', ownerLoad(big).overloaded === true,
+    `${baseOwnerHours(big)}h of ${big.ownerHours}`);
+  check('staff relieve the owner', baseOwnerHours(staffed) < baseOwnerHours(big),
+    `${baseOwnerHours(staffed)} vs ${baseOwnerHours(big)}`);
+  check('two staff are not quite enough at this output', ownerLoad(staffed).overloaded === true,
+    `${baseOwnerHours(staffed)}h of ${staffed.ownerHours}`);
+  check('enough delegation resolves it',
+    ownerLoad(createState({ capacity: 420, staff: 3 })).overloaded === false,
+    `${baseOwnerHours(createState({ capacity: 420, staff: 3 }))}h`);
+
+  // The regression this guards: hours used to accumulate for the whole playthrough, so
+  // checking your facts — the behaviour informationSeeking() exists to reward — would
+  // have slowly destroyed the learner once overload started to bite.
+  const researched = { ...small, ownerHoursUsed: small.ownerHoursUsed + 30 };
+  const afterWeek = advanceWeek(researched).state;
+  eq('research hours do not carry into next week', afterWeek.ownerHoursUsed, baseOwnerHours(afterWeek));
+  check('so a researcher is not permanently overloaded', ownerLoad(afterWeek).overloaded === false);
+}
+
+console.log('\nengine: overload has a delayed cost');
+{
+  const overloaded = createState({ capacity: 420, staff: 0, hygiene: 70, reputation: 60 });
+  const delegated = applyEffects(overloaded, { staff: 2 });
+
+  const a = advanceWeeks(overloaded, 4).state;
+  const b = advanceWeeks(delegated, 4).state;
+
+  check('running past your hours erodes hygiene', a.hygiene < b.hygiene, `${a.hygiene} vs ${b.hygiene}`);
+  check('and eventually reputation', a.reputation < b.reputation, `${a.reputation} vs ${b.reputation}`);
+  check('which finally reaches demand', a.demand < b.demand, `${a.demand} vs ${b.demand}`);
+}
+
+console.log('\nengine: consequences arrive later, and say what caused them');
+{
+  let s = createState({ hygiene: 70 });
+  s = scheduleLater(s, [{
+    inWeeks: 3,
+    effects: { hygiene: -25 },
+    cause: 'the cheap oil you bought',
+  }]);
+
+  eq('nothing fires immediately', advanceWeek(s).fired.length, 0);
+
+  const run = advanceWeeks(s, 4);
+  eq('it fires once, in its week', run.fired.length, 1);
+  eq('and it carries its cause', run.fired[0].cause, 'the cheap oil you bought');
+  check('the effect actually lands', run.state.hygiene < 45, `hygiene ${run.state.hygiene}`);
+  eq('and it does not fire twice', advanceWeeks(run.state, 4).fired.length, 0);
+}
+
+console.log('\nengine: projecting ahead does not disturb the real run');
+{
+  let s = createState({ hygiene: 70 });
+  s = scheduleLater(s, [{ inWeeks: 2, effects: { hygiene: -30 }, cause: 'x' }]);
+  const before = s.pending.length;
+
+  const proj = project(s, 12);
+  eq('the scheduled consequence is still queued', s.pending.length, before);
+  eq('the real state is untouched', s.hygiene, 70);
+  eq('the projection reports where it started', proj.cashNow, s.cash);
+  check('and covers the weeks asked for', proj.weekly.length === 12, `${proj.weekly.length}`);
 }
 
 console.log('\nrecord: observations and indicators');

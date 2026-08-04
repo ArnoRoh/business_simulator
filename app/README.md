@@ -1,7 +1,7 @@
-# The app — proof of concept
+# The app
 
-A playable first pass. **Not a finished product**, and several things in it are
-deliberately provisional.
+Playable in English and Kiswahili, 20 turns. **Not a finished product**, and several things
+in it are deliberately provisional.
 
 ## Run it
 
@@ -21,8 +21,8 @@ target is a low-end Android device.
 ## Single-file version
 
 `standalone.html` is a **generated build artifact** — one self-contained page with the
-CSS, JavaScript and scenario content inlined. It needs no server and no checkout, so it
-can be opened from disk or hosted anywhere.
+CSS, JavaScript, scenario content and interface strings inlined. It needs no server and no
+checkout, so it can be opened from disk or hosted anywhere.
 
 ```bash
 node scripts/build-single-file.mjs
@@ -44,7 +44,7 @@ One scenario: a small cooked-food business. Each turn follows the loop from
 
 ```
 situation → (optional information, which costs time or money) → decision
-          → PREDICTION → consequence
+          → WORK IT OUT → PREDICTION → consequence, before and after
 ```
 
 The prediction step is the point. Before finding out what happened, the learner commits
@@ -52,7 +52,18 @@ to what they expect. That single mechanic does two jobs at once: it is the momen
 engagement, and it is the measurement — you cannot become well-calibrated about a system
 without understanding it, which makes it much harder to fake than a quiz.
 
-At the end, a profile reports what was observed.
+"Work it out" shows the arithmetic of the learner's current position first, because
+predicting a change to a number nobody showed you is guesswork, not reasoning. Each
+prediction band is labelled with the money it covers, so the learner and the engine mean the
+same thing by "up a little".
+
+Some decisions **set a consequence in motion for later**. When it lands, the card names the
+choice that caused it — an effect you cannot trace back to a decision of your own reads as
+bad luck, and bad luck teaches nothing.
+
+At the end, a profile reports what was observed. **Finishing is the gate**
+([ADR-0005](../docs/adr/0005-simulator-as-stage-zero-gate.md)): no threshold is applied to
+prediction accuracy and nobody is excluded for playing badly.
 
 ## Architecture
 
@@ -62,13 +73,15 @@ own data ([ADR-0002](../docs/adr/0002-mobile-first-offline-pwa.md)).
 
 | File | Role |
 |---|---|
-| `js/engine.js` | Simulation. Computes the weekly P&L from state. |
+| `js/engine.js` | Simulation. Computes the weekly P&L from state; drift, delayed consequences, prediction bands. |
+| `js/i18n.js` | Language, string lookup and plurals. |
 | `js/record.js` | The behavioural record — observations, indicators, profile. |
 | `js/ui.js` | Rendering. One decision per screen. |
 | `js/scene.js` | SVG graphics that reflect game state. |
 | `js/storage.js` | Local-only persistence. |
 | `js/main.js` | Turn state machine. |
-| `content/*.json` | Scenarios, authored as **data, not code**. |
+| `content/scenario-*.json` | Scenarios, authored as **data, not code**, with both languages inline. |
+| `content/ui.json` | Interface strings, key-major so the languages sit side by side. |
 
 **The weekly P&L is computed, never authored.** Content supplies decisions and their
 effects on state; the economics fall out of that. If an author could hand-write outcomes,
@@ -81,13 +94,25 @@ with local business knowledge and no programming skill to write and review conte
 ## Tests
 
 ```bash
-node scripts/test-engine.mjs
+node scripts/test-engine.mjs        # economics, drift, consequences, owner time
+node scripts/validate-scenario.mjs  # every option's declared prediction, on every path
+node scripts/validate-i18n.mjs      # no missing strings in either language
+bash  scripts/check-links.sh
 ```
 
-Covers the economics and — importantly — asserts that the generated profile contains no
-score, rank or percentile field, and that its statements stay observational. Those
-guardrails come from [`../docs/assessment.md`](../docs/assessment.md) and are the easiest
-thing to erode by accident.
+`test-engine.mjs` covers the economics and — importantly — asserts that the generated
+profile contains no score, rank or percentile field, and that its statements stay
+observational. Those guardrails come from [`../docs/assessment.md`](../docs/assessment.md)
+and are the easiest thing to erode by accident.
+
+`validate-scenario.mjs` checks that each option's declared `predictAnswer` matches what the
+engine actually computes, on every path through the scenario. If they disagree the learner
+is marked wrong for being right. **It checks band stability, not viability** — it will not
+notice a business that has been driven to a dead state, which has happened once.
+
+`validate-i18n.mjs` exists because `t()` returns the key itself when a string is missing, so
+a gap ships as a literal `pnl.sales` on screen without throwing — which is invisible in a
+language you do not read.
 
 ## Known gaps
 
@@ -95,8 +120,12 @@ thing to erode by accident.
   costs, fees and prices are deliberately absent — see
   [`../docs/context/`](../docs/context/) for why inventing them would be worse than
   leaving them out.
-- **English only.** The string handling is localisation-ready in structure, but there is
-  no translation layer yet, and no Swahili.
+- **The Kiswahili is a first draft.** It has not been checked by a first-language speaker,
+  and `docs/localization.md` is explicit that register is a judgement call for someone who
+  is. The app says so on screen in Kiswahili mode. See
+  [Q-015](../memory/OPEN_QUESTIONS.md).
+- **Nobody has seen this version on a real phone.** It is verified headlessly for behaviour
+  and text, which does not catch layout.
 - **No service worker**, so it is not yet installable or offline-capable. The manifest is
   in place; the caching layer is not.
 - **One scenario.** Far-transfer testing — the same concept in an unfamiliar business —
@@ -108,8 +137,8 @@ thing to erode by accident.
 ## Open questions this does not resolve
 
 Playing it should inform [Q-001](../memory/OPEN_QUESTIONS.md) (who is this for),
-[Q-004](../memory/OPEN_QUESTIONS.md) (how long should it be),
-[Q-009](../memory/OPEN_QUESTIONS.md) (the stage-zero placement) and
+[Q-004](../memory/OPEN_QUESTIONS.md) and [Q-013](../memory/OPEN_QUESTIONS.md) (how long
+should it be), [Q-014](../memory/OPEN_QUESTIONS.md) (are the prediction bands intuitive) and
 [Q-011](../memory/OPEN_QUESTIONS.md) (does this actually hold anyone's attention).
 
 That last one is the real purpose of the prototype. The argument for "compelling rather
