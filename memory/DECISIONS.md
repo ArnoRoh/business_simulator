@@ -122,6 +122,56 @@ first one. Real Tanzanian figures — deliberately not invented; the banner says
 **Revisit if:** Playtesting shows 16 turns is the wrong length (Q-013), or a second
 scenario is needed to answer a question the first cannot.
 
+## D-008 — Completion, not performance, is the gate
+**Date:** 2026-08-04 · **Decided by:** Project owner · **ADR:** [ADR-0005](../docs/adr/0005-simulator-as-stage-zero-gate.md) (now `Accepted`)
+**Decision:** Finishing a playthrough is what carries a learner into the funnel. Prediction
+accuracy is recorded and travels with them, but no threshold is applied and nobody is
+excluded for playing badly. Closes [Q-012](./OPEN_QUESTIONS.md) and the remainder of Q-009.
+**Why:** The owner had earlier described passing on people who "get all of the questions
+right". Asked directly, with the fairness cost made explicit, they chose completion. A
+performance gate would place real consequence on an instrument with no validated predictive
+signal (Q-003), and would most likely filter on digital fluency — excluding the experienced
+operator the project's own thesis says is most undervalued.
+**Considered and rejected:** A performance gate, which is simpler to explain to a partner
+and is what most programmes would ask for — rejected on fairness and validity. A neutral
+end screen deferring the question again — rejected because the ending had to say something,
+and leaving it vague would have meant deciding by drift.
+**Revisit if:** Q-003 resolves positively and the record earns predictive standing, or a
+partner cannot run a funnel wide enough to admit everyone who finishes.
+
+## D-009 — Bilingual content lives inline, key-major
+**Date:** 2026-08-04 · **Decided by:** Claude, with the owner's instruction to add Kiswahili · **ADR:** —
+**Decision:** Every localisable string carries its languages together — `{ "en": …, "sw": … }`
+in scenario content, and `"key": { "en": …, "sw": … }` in `app/content/ui.json`. One file per
+concern, not one file per language. `scripts/validate-i18n.mjs` enforces parity.
+**Why:** Parallel per-language files drift silently, and the drift is invisible to whoever
+does not read both languages — which is everyone on this project for Swahili. Key-major also
+puts the two languages adjacent for a reviewer, which is exactly what the owner's Tanzanian
+teams need in order to check register.
+**Considered and rejected:** Separate `scenario.sw.json` / `ui.sw.json` — the conventional
+layout and easier to hand to a translation service, rejected because nothing would catch a
+missed string. Gettext-style tooling — rejected under ADR-0006, it needs a build step.
+**Revisit if:** A third or fourth language lands and the inline objects get unwieldy, or a
+translation vendor requires standard interchange files.
+
+## D-010 — Demand is mean-reverting; hygiene has a floor
+**Date:** 2026-08-04 · **Decided by:** Claude · **ADR:** —
+**Decision:** Weekly drift moves demand a fraction of the way towards a level implied by
+reputation, instead of adding `(reputation − 50) × 0.6` every week. Authored demand changes
+move that baseline, which is floored at 25% of the scenario's opening demand. Hygiene slips
+only down to 40; below that takes active neglect.
+**Why:** The old rule compounded without limit. Over a 20-turn run a middling reputation
+drove demand to zero and it could never recover — every remaining turn then happened in a
+dead business, where every option produces the same nil result and the learner is choosing
+between three identical outcomes. It was invisible at 16 turns and with less drift, and no
+existing check would have caught it, because `validate-scenario.mjs` tests band *stability*,
+not whether the business is still alive.
+**Considered and rejected:** Softening the content's demand penalties alone — treats the
+symptom and leaves the trap for the next author. A bankruptcy or game-over state — rejected
+because `docs/game-design.md` makes failure a chapter boundary, not an ending.
+**Revisit if:** Playtesting shows the floor makes neglect feel consequence-free, or a
+scenario needs a business that genuinely can fail outright.
+
 ---
 
 ## Pending — proposed, not decided
@@ -129,12 +179,10 @@ scenario is needed to answer a question the first cannot.
 Entries below are **not decisions.** They are recorded here so the index is complete and
 so nobody has to hunt for them. Do not act on them as settled.
 
-- **[ADR-0005](../docs/adr/0005-simulator-as-stage-zero-gate.md) — Simulator as a
-  stage-zero completion gate.** *Status: Proposed.* Proposed by Claude in
-  [session 002](./sessions/2026-08-02-002-pedagogy-and-timing-ideation.md); awaiting the
-  project owner's ruling via [Q-009](./OPEN_QUESTIONS.md). Would settle the
-  prerequisite-vs-during question by placing the simulator as the gate into a ~$500
-  discovery experiment, with completion rather than performance as the gate. Several
-  further proposals from that session — predict-then-reveal, far-transfer testing,
-  pre/post plus delayed retest — are recorded in the session entry and are likewise
-  unratified.
+*(ADR-0005 was ratified on 2026-08-04 — see D-008 above. Nothing is currently pending.)*
+
+Of the further proposals from
+[session 002](./sessions/2026-08-02-002-pedagogy-and-timing-ideation.md),
+**predict-then-reveal** is implemented and now shows the learner the money ranges each band
+covers. **Far-transfer testing** and **pre/post plus delayed retest** remain unimplemented
+and unratified; both need a second scenario.

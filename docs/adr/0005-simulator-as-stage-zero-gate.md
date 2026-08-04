@@ -1,12 +1,19 @@
 # ADR-0005 — Simulator as a stage-zero completion gate
 
-**Status:** **Proposed** — not agreed. See [Q-009](../../memory/OPEN_QUESTIONS.md).
-**Date:** 2026-08-02
-**Deciders:** Pending — proposed by Claude, awaiting the project owner's ruling
-**Related:** [ADR-0004](./0004-simulator-as-selection-instrument.md), [Q-002](../../memory/OPEN_QUESTIONS.md), [Q-003](../../memory/OPEN_QUESTIONS.md), [Q-004](../../memory/OPEN_QUESTIONS.md), [session 002](../../memory/sessions/2026-08-02-002-pedagogy-and-timing-ideation.md)
+**Status:** **Accepted** — 2026-08-04.
+**Date:** 2026-08-02 · **Accepted:** 2026-08-04
+**Deciders:** Project owner
+**Related:** [ADR-0004](./0004-simulator-as-selection-instrument.md), [Q-002](../../memory/OPEN_QUESTIONS.md), [Q-003](../../memory/OPEN_QUESTIONS.md), [Q-004](../../memory/OPEN_QUESTIONS.md), [session 002](../../memory/sessions/2026-08-02-002-pedagogy-and-timing-ideation.md), [session 005](../../memory/sessions/2026-08-04-005-depth-numbers-and-swahili.md)
 
-> **This ADR records a proposal, not a decision.** Do not implement against it or revise
-> `docs/` around it until the status changes to `Accepted`.
+> **Accepted in full on 2026-08-04**, including the part that was in doubt. In
+> [session 003](../../memory/sessions/2026-08-02-003-playable-proof-of-concept.md) the
+> owner described passing on people who "get all of the questions right", which is a
+> *performance* gate and the opposite of item 1 below. That divergence was raised as
+> [Q-012](../../memory/OPEN_QUESTIONS.md) rather than resolved quietly. Asked directly in
+> session 005, with the fairness cost stated, the owner chose the **completion gate**.
+> Q-012 is closed and the app implements it: the end-of-run screen says plainly that
+> finishing is what carries you forward, and no threshold is applied to prediction
+> accuracy.
 
 ## Context
 

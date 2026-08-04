@@ -15,31 +15,37 @@
   <div class="app">
     <header class="topbar">
       <h1 id="title">Business Simulator</h1>
-      <button id="reset" class="btn btn-ghost btn-small" type="button">Start again</button>
+      <div class="topbar-actions">
+        <div id="lang" class="lang-toggle" role="group"></div>
+        <button id="reset" class="btn btn-ghost btn-small" type="button">Start again</button>
+      </div>
     </header>
 
     <p id="banner" class="banner-unverified" hidden></p>
+    <p id="lang-banner" class="banner-unverified banner-draft" hidden></p>
 
     <div id="progress" class="progress"></div>
 
     <div id="scene" class="scene" aria-hidden="true"></div>
 
-    <div id="stats" class="stat-row"></div>
+    <div id="stats" class="stats"></div>
 
     <button id="pnl-toggle" class="btn btn-ghost btn-small pnl-toggle"
             type="button" aria-expanded="true" aria-controls="pnl-wrap">Hide the numbers</button>
     <div id="pnl-wrap">
       <div id="pnl" class="pnl"></div>
+      <div id="trajectory"></div>
     </div>
 
     <main>
+      <div id="consequence"></div>
       <div id="situation"></div>
       <div id="info"></div>
       <div id="decision"></div>
     </main>
 
     <footer class="foot">
-      <p>Your progress stays on this phone. Nothing is sent anywhere.</p>
+      <p id="foot-privacy">Your progress stays on this phone. Nothing is sent anywhere.</p>
     </footer>
   </div>
 

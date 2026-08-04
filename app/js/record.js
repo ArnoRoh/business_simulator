@@ -186,6 +186,14 @@ export function allIndicators(record) {
 /**
  * Statements are written so that deleting "in the simulation" would make them false.
  * That is the test from docs/assessment.md for whether we are overclaiming.
+ *
+ * Each statement carries BOTH a canonical English `text` and a `key`/`params` pair.
+ * The interface renders the key in the learner's language; the downloaded artefact
+ * keeps the English, because the record is read by a programme that may not share the
+ * learner's language and because a translated record should not be the only copy of
+ * what was observed. The two must say the same thing — scripts/validate-i18n.mjs
+ * checks the keys exist in both languages, not that the meanings match, so edit them
+ * together.
  */
 export function buildProfile(record) {
   const cal = calibration(record);
@@ -196,9 +204,14 @@ export function buildProfile(record) {
   const statements = [];
 
   if (cal.total > 0) {
+    const trendKey = cal.trend ? `profile.detail.${cal.trend}` : null;
     statements.push({
       indicator: cal.label,
+      indicatorKey: 'indicator.calibration',
+      key: 'profile.stmt.calibration',
+      params: { correct: cal.correct, total: cal.total },
       text: `Correctly anticipated the effect of their own decision in ${cal.correct} of ${cal.total} predictions.`,
+      detailKey: trendKey,
       detail: cal.trend === 'improved'
         ? 'Accuracy was higher in the second half of the playthrough than the first.'
         : cal.trend === 'declined'
@@ -212,7 +225,11 @@ export function buildProfile(record) {
   if (info.total > 0) {
     statements.push({
       indicator: info.label,
+      indicatorKey: 'indicator.information',
+      key: 'profile.stmt.information',
+      params: { withInfo: info.withInfo, total: info.total },
       text: `Sought information before deciding in ${info.withInfo} of ${info.total} decisions.`,
+      detailKey: null,
       detail: null,
     });
   }
@@ -220,14 +237,22 @@ export function buildProfile(record) {
   if (rec.total > 0) {
     statements.push({
       indicator: rec.label,
+      indicatorKey: 'indicator.recovery',
+      countKey: 'profile.stmt.recovery',
+      count: rec.total,
       text: `Faced ${rec.total} decision${rec.total === 1 ? '' : 's'} that reduced weekly profit, and continued afterwards.`,
+      detailKey: 'profile.detail.recovery',
       detail: 'What they chose next is listed in the evidence below.',
     });
   }
 
   statements.push({
     indicator: cov.label,
+    indicatorKey: 'indicator.coverage',
+    countKey: 'profile.stmt.coverage',
+    count: cov.total,
     text: `Made decisions across ${cov.total} business concept${cov.total === 1 ? '' : 's'}.`,
+    detailKey: null,
     detail: null,
   });
 
@@ -240,6 +265,9 @@ export function buildProfile(record) {
 
     // Carried INSIDE the artefact, not as a footnote. This will be read out of
     // context, so the caveat has to travel with it. docs/assessment.md, item 3.
+    limitationKeys: [
+      'profile.limit.1', 'profile.limit.2', 'profile.limit.3', 'profile.limit.4',
+    ],
     limitations: [
       'This describes what happened inside a simulation. It is not a measure of how this person runs a real business.',
       'It has not been validated against real business outcomes. No such study exists yet.',

@@ -65,49 +65,51 @@ engagement rather than a single tutorial. That follows only if
 affirmatively, so this stays open.
 **Current assumption:** Multi-session, pending Q-009.
 
-### Q-009 — Confirm or reject the stage-zero placement  [BLOCKING]
-**Raised:** 2026-08-02 (session 002) · **Owner:** Project owner
-**Question:** Does the owner accept the proposal in
-[ADR-0005](../docs/adr/0005-simulator-as-stage-zero-gate.md) — that the simulator gates
-entry to a ~$500 discovery experiment, that **completion** rather than performance is
-the gate, and that the behavioural record informs the *next* stage transition rather
-than the current one?
-**Why it matters:** Everything from session 002 sits downstream. If accepted, ADR-0005
-moves to `Accepted` and `docs/game-design.md`, `docs/assessment.md` and
-`docs/curriculum.md` all need revision to match. If rejected, the during-programme-only
-alternative is most likely correct, and the project scopes down to a teaching tool.
-**PARTLY ANSWERED 2026-08-02 (session 003).** The owner described the funnel
-unprompted: the simulator sits before a business-plan competition, its job is "getting
-lots and lots of people into the funnel", and prizes sit at the end. **Placement is
-confirmed.** What remains open is the *gate type* — see Q-012, where the owner's
-description and ADR-0005 diverge.
-**Current assumption:** Stage-zero placement accepted. Gate type unresolved.
+### Q-015 — Is the Kiswahili register right?  [needs local review]
+**Raised:** 2026-08-04 (session 005) · **Owner:** Project owner / a first-language speaker
+with business exposure
+**Question:** The app now ships a complete Kiswahili translation — ~4,000 words of scenario
+content plus 105 interface strings — drafted by Claude. `docs/localization.md` says
+plainly that register "is a judgement call for a native speaker with business exposure —
+not a translator working from a word list, and definitely not machine translation." This is
+closer to the last of those than the first.
+**Why it matters:** Correctness is not the risk; naturalness is. Target learners mix English
+loanwords into business talk, and fully-translated vocabulary can read as stilted or
+foreign, while over-borrowing excludes people. A tool that sounds wrong to the people it is
+for loses their trust immediately and does not get it back.
+**Specific calls that need checking:** "Kiigizo cha Biashara" for the app name; "faida" /
+"mtaji" / "gharama" used untranslated as-is; "kodi ya pango" for rent, to avoid "kodi"
+being read as tax; whether "sambusa", "gesti" and "bodaboda" are the forms the audience
+actually uses.
+**Current assumption:** Shipped as a **visibly labelled draft** — a banner appears in
+Kiswahili mode saying it has not yet been checked by a first-language speaker. That is the
+honest position under `AGENTS.md` §6, not a substitute for the review.
 
-### Q-012 — Performance gate or completion gate?  [BLOCKING]
-**Raised:** 2026-08-02 (session 003) · **Owner:** Project owner
-**Question:** The owner described passing people on when they "get all of the questions
-right". [ADR-0005](../docs/adr/0005-simulator-as-stage-zero-gate.md) proposed the
-opposite — that **completion** is the gate and performance only informs the *next* stage.
-Which is it?
-**Why it matters:** This is not a detail. A performance gate places real consequence on
-an instrument with no validated signal ([Q-003](#q-003--can-simulated-behaviour-predict-real-firm-outcomes-at-all--open)),
-and risks selecting for digital fluency rather than business capability — which would
-filter out the Joseph persona, the experienced operator the project's own thesis says is
-most undervalued. `docs/assessment.md` currently forbids automatic cut-offs outright, so
-a performance gate would require that document to change deliberately rather than by
-drift.
-**Current assumption:** None. Flagged rather than resolved because it is the owner's
-call and the trade-off should be made with the fairness cost visible.
+### Q-016 — How should money be written in Kiswahili?  [needs local review]
+**Raised:** 2026-08-04 (session 005) · **Owner:** Project owner
+**Question:** Amounts currently render as `TZS 1,500` in both languages. Tanzanian usage
+also includes `TSh 1,500` and the very common `1,500/=`. Which does the target learner read
+most easily, and does it differ between the two languages?
+**Why it matters:** Small, but money notation is exactly the kind of detail that signals
+whether a tool was made locally or elsewhere — and `AGENTS.md` §6 forbids inventing this
+sort of specific rather than asking.
+**Current assumption:** The ISO code `TZS` in both languages, because it is unambiguous and
+not invented. `app/js/format.js` has a single place to change it.
 
 ## Open
 
-### Q-013 — Is 16 turns the right length?  [open]
+### Q-013 — Is 20 turns the right length?  [open]
 **Raised:** 2026-08-02 (session 003) · **Owner:** Project owner / playtesting
-**Question:** The proof of concept runs 16 turns across 12 concepts, roughly 20–30
-minutes. Too long to hold attention, too short to generate signal, or about right?
+**Question:** The proof of concept ran 16 turns in roughly 20–30 minutes and the owner
+found it too quick to teach much. Session 005 took it to 20 turns and, more importantly,
+made each turn longer — a work-it-out step before predicting, a fuller reveal, an
+explanation after a wrong prediction. Is *that* the right length?
 **Why it matters:** Feeds [Q-004](#q-004--how-long-is-a-full-playthrough--blocking) and
 determines how much curriculum can exist per scenario.
-**Current assumption:** A guess. Only playtesting answers it.
+**PARTLY ANSWERED 2026-08-04 (session 005).** 16 turns was too short — that much is
+settled, from the owner playing it. The owner chose depth-per-turn over more turns. Whether
+the result is now right, or has overshot, is untested.
+**Current assumption:** ~30–40 minutes. Still a guess; only playtesting answers it.
 
 ### Q-014 — Do the prediction bands match how learners think?  [open]
 **Raised:** 2026-08-02 (session 003) · **Owner:** Project owner / playtesting
@@ -202,4 +204,31 @@ opt-in before anything is shared with a programme. See `SECURITY.md`.
 
 ## Resolved
 
-*(none yet — move entries here with the answer and the date it was settled)*
+### Q-009 — Confirm or reject the stage-zero placement  [RESOLVED 2026-08-04]
+**Raised:** 2026-08-02 (session 002) · **Answered by:** Project owner
+**Question was:** Does the owner accept [ADR-0005](../docs/adr/0005-simulator-as-stage-zero-gate.md) —
+that the simulator gates entry to a ~$500 discovery experiment, that **completion** rather
+than performance is the gate, and that the record informs the *next* stage transition?
+**Answer: accepted in full.** Placement was confirmed in session 003, when the owner
+described the funnel unprompted — the simulator sits before a business-plan competition,
+its job is "getting lots and lots of people into the funnel", prizes at the end. The gate
+type was the part left open, and it was settled in session 005; see Q-012 below. ADR-0005
+is now `Accepted`.
+**Still downstream:** `docs/game-design.md`, `docs/assessment.md` and `docs/curriculum.md`
+were written before this and have not been revised to match.
+
+### Q-012 — Performance gate or completion gate?  [RESOLVED 2026-08-04]
+**Raised:** 2026-08-02 (session 003) · **Answered by:** Project owner
+**Question was:** The owner described passing people on when they "get all of the questions
+right"; ADR-0005 proposed that completion is the gate and performance only informs the next
+stage. Which is it?
+**Answer: the completion gate.** Asked directly in session 005, with the fairness cost
+stated alongside the option — that a performance gate places real consequence on an
+instrument with no validated signal ([Q-003](#q-003--can-simulated-behaviour-predict-real-firm-outcomes-at-all--open))
+and would most likely filter on digital fluency rather than business capability, excluding
+the Joseph persona the thesis says is most undervalued — the owner chose completion.
+**Consequences:** `docs/assessment.md` keeps its prohibition on automatic cut-offs, and no
+longer needs a deliberate change. The end-of-run screen states plainly that finishing is
+what carries the learner forward, and no threshold is applied to prediction accuracy. The
+tally is still shown and still travels with the record, because it informs the next stage.
+Recorded as [D-008](./DECISIONS.md).

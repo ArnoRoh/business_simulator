@@ -8,21 +8,16 @@
 // Run: node scripts/validate-scenario.mjs
 
 import { readFileSync } from 'node:fs';
-import { createState, applyEffects, weeklyPnl, advanceWeek } from '../app/js/engine.js';
+import {
+  createState, applyEffects, weeklyPnl, advanceWeeks, scheduleLater, bandFor,
+} from '../app/js/engine.js';
 
 const path = process.argv[2] || 'app/content/scenario-mama-asha.json';
 const scenario = JSON.parse(readFileSync(path, 'utf8'));
 
-// Bands that map a profit delta to a prediction choice.
-const BAND_SAME = 1500;
-const BAND_LOT = 12000;
-
-function bandFor(delta) {
-  if (delta < -BAND_SAME) return 'down';
-  if (delta <= BAND_SAME) return 'same';
-  if (delta <= BAND_LOT) return 'up_bit';
-  return 'up_lot';
-}
+// `bandFor` is imported, not redefined. It used to live here, which meant the boundary
+// the learner is graded against existed in the test tooling and nowhere else — the app
+// could not show it even if it wanted to (Q-014).
 
 let problems = 0;
 let checks = 0;
@@ -52,7 +47,9 @@ for (const pathChoice of paths) {
     }
 
     const chosen = turn.decision.options[Math.min(pathChoice, turn.decision.options.length - 1)];
-    state = advanceWeek(applyEffects(state, chosen.effects || {})).state;
+    let afterChoice = applyEffects(state, chosen.effects || {});
+    afterChoice = scheduleLater(afterChoice, chosen.later || [], chosen.label);
+    state = advanceWeeks(afterChoice, turn.advanceWeeks || 1).state;
   }
 }
 

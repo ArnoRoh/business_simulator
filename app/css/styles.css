@@ -264,7 +264,6 @@ ul { margin: 0; padding-left: 1.1em; }
   margin-top: 2px;
   overflow-wrap: anywhere;
 }
-.stat-warn { border-color: var(--danger); }
 .negative { color: var(--danger); }
 
 /* ---------- P&L ---------- */
@@ -351,7 +350,7 @@ ul { margin: 0; padding-left: 1.1em; }
   font-size: 0.93rem;
   cursor: pointer;
 }
-.info-item:active { transform: scale(0.99); }
+.info-item:active { transform: scale(0.98); }
 .info-label { display: block; font-weight: 600; }
 .info-cost {
   display: inline-block;
@@ -392,7 +391,13 @@ ul { margin: 0; padding-left: 1.1em; }
   transition: border-color 140ms ease, background 140ms ease;
 }
 .option:hover { border-color: var(--accent); }
-.option:active { transform: scale(0.995); }
+.option:active { transform: scale(0.98); }
+/* Buttons carry the whole interaction, so a press has to feel like one on a cheap
+   touchscreen where there is no cursor and no hover. */
+.option, .info-item, .predict-choice, .btn, .lang-btn {
+  transition: transform 90ms ease, border-color 140ms ease, background 140ms ease, opacity 140ms ease;
+}
+.option:disabled:not(.selected) { opacity: 0.45; }
 .option.selected {
   border-color: var(--accent);
   background: var(--surface-alt);
@@ -432,6 +437,7 @@ ul { margin: 0; padding-left: 1.1em; }
   transition: border-color 140ms ease;
 }
 .predict-choice:hover:not(:disabled) { border-color: var(--accent); }
+.predict-choice:active:not(:disabled) { transform: scale(0.97); }
 .predict-choice.selected {
   border-color: var(--accent);
   background: var(--accent);
@@ -577,7 +583,7 @@ ul { margin: 0; padding-left: 1.1em; }
   cursor: pointer;
   transition: filter 140ms ease;
 }
-.btn:active { transform: scale(0.99); }
+.btn:active { transform: scale(0.97); }
 .btn:disabled { opacity: 0.45; cursor: default; }
 
 .btn-primary {
@@ -600,6 +606,293 @@ ul { margin: 0; padding-left: 1.1em; }
   font-size: 0.82rem;
   font-weight: 600;
 }
+
+/* ---------- language toggle ---------- */
+.topbar-actions { display: flex; align-items: center; gap: 8px; }
+
+.lang-toggle {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.lang-btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 7px 11px;
+  min-height: 34px;
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease;
+}
+.lang-btn.selected { background: var(--accent); color: var(--accent-ink); }
+.lang-btn:not(.selected):hover { color: var(--text); }
+
+.banner-draft { border-left-color: var(--accent-2); }
+
+/* ---------- owner time ---------- */
+.time-bar {
+  margin: 8px 0 12px;
+  padding: 9px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.time-bar.over { border-color: var(--danger); background: var(--danger-bg); }
+.time-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.time-label { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; }
+.time-value { font-size: 0.84rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.time-bar.over .time-value { color: var(--danger); }
+.time-track {
+  height: 8px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.time-fill {
+  height: 100%;
+  width: 0;
+  background: var(--accent-2);
+  border-radius: 99px;
+  transition: width 500ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.time-bar.over .time-fill { background: var(--danger); }
+
+/* ---------- the ledger ----------
+   Magnitude has to be visible, not just readable — docs/localization.md, "Numbers". */
+.ledger {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+}
+.ledger-group-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  font-weight: 700;
+  margin: 8px 0 4px;
+}
+.ledger-group-title:first-child { margin-top: 0; }
+
+.ledger-row {
+  display: grid;
+  grid-template-columns: 1fr 64px auto;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 0.9rem;
+}
+.ledger-label { color: var(--text-muted); }
+.ledger-bar {
+  height: 7px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.ledger-fill {
+  height: 100%;
+  width: 0;
+  border-radius: 99px;
+  transition: width 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ledger-fill.in { background: var(--accent-2); }
+.ledger-fill.out { background: var(--accent); }
+.ledger-value { font-variant-numeric: tabular-nums; white-space: nowrap; font-weight: 600; }
+
+.ledger-row.total {
+  border-top: 2px solid var(--border);
+  margin-top: 8px;
+  padding-top: 9px;
+  font-size: 1rem;
+}
+.ledger-row.total .ledger-label { color: var(--text); font-weight: 700; }
+.ledger-row.total .ledger-value { font-weight: 800; }
+
+.pnl-note.warn { color: var(--danger); }
+
+/* ---------- trajectory ---------- */
+.trajectory {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: var(--surface-alt);
+  border-radius: var(--radius);
+}
+.trajectory-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.trajectory-cash { font-size: 0.92rem; line-height: 1.45; }
+.trajectory-note { font-size: 0.83rem; margin-top: 3px; font-weight: 600; }
+.trajectory-note.falling { color: var(--danger); }
+.trajectory-note.rising { color: var(--accent-2); }
+.trajectory-note.flat { color: var(--text-muted); }
+.trajectory-chart { margin-top: 8px; }
+.trajectory-chart svg { display: block; width: 100%; height: auto; }
+
+/* ---------- what a choice touches ---------- */
+.option-touches { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-top: 9px; }
+.option-touches-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-right: 1px;
+}
+.chip {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 99px;
+  background: var(--surface-alt);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+.chip-cash { border-color: var(--accent); color: var(--accent); }
+.chip-time { border-color: var(--focus); color: var(--focus); }
+.chip-quality, .chip-reputation { border-color: var(--accent-2); color: var(--accent-2); }
+
+/* ---------- work it out ---------- */
+.workout { border-color: var(--accent-2); border-width: 2px; }
+.workout-intro { font-size: 0.88rem; color: var(--text-muted); margin: 0 0 10px; }
+.workout-lines { display: flex; flex-direction: column; }
+.workout-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px dashed var(--border);
+  font-size: 0.92rem;
+}
+.workout-label { color: var(--text-muted); }
+.workout-value { font-variant-numeric: tabular-nums; white-space: nowrap; font-weight: 600; }
+.workout-row.total {
+  border-bottom: 0;
+  border-top: 2px solid var(--border);
+  margin-top: 4px;
+  padding-top: 10px;
+}
+.workout-row.total .workout-label { color: var(--text); font-weight: 700; }
+.workout-row.total .workout-value { font-weight: 800; font-size: 1.15rem; }
+.workout-ready { font-size: 0.9rem; font-weight: 600; margin: 12px 0; }
+
+/* ---------- prediction bands ---------- */
+.predict-choice-label { display: block; font-weight: 650; }
+.predict-choice-band {
+  display: block;
+  margin-top: 3px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.predict-choice.selected .predict-choice-band { color: inherit; opacity: 0.85; }
+
+/* ---------- before and after ---------- */
+.compare {
+  margin: 12px 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+}
+.compare-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 10px;
+  align-items: baseline;
+  padding: 5px 0;
+  font-size: 0.87rem;
+}
+.compare-row.head {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  font-weight: 700;
+  border-bottom: 1px solid var(--border);
+}
+.compare-label { color: var(--text-muted); }
+.compare-value {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  text-align: right;
+  min-width: 82px;
+}
+/* The line that moved is the whole point of showing both columns. */
+.compare-row.changed { background: var(--surface-alt); border-radius: 6px; }
+.compare-row.changed .compare-label { color: var(--text); font-weight: 650; }
+.compare-row.changed .compare-value:last-child { font-weight: 800; }
+.compare-row.total {
+  border-top: 2px solid var(--border);
+  margin-top: 6px;
+  padding-top: 8px;
+  font-size: 0.96rem;
+}
+.compare-row.total .compare-label { color: var(--text); font-weight: 700; }
+.compare-row.total .compare-value { font-weight: 800; }
+
+.reveal-said { font-size: 0.9rem; margin: 4px 0 10px; }
+
+.second-look {
+  margin: 10px 0;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--focus);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+.second-look-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.second-look p { margin: 0; font-size: 0.92rem; line-height: 1.5; }
+
+/* ---------- time passing ---------- */
+.weeks-passed {
+  margin-bottom: 10px;
+  padding: 7px 12px;
+  background: var(--surface-alt);
+  border-radius: 99px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+/* ---------- a consequence arriving from an earlier week ---------- */
+.consequence {
+  border-left: 4px solid var(--focus);
+  background: var(--surface-alt);
+}
+.consequence .card-title { color: var(--focus); }
+.consequence-text { margin: 0; font-size: 0.95rem; line-height: 1.5; }
+
+/* ---------- finished ---------- */
+.finished { border-color: var(--accent-2); border-width: 2px; }
+.finished .card-title { color: var(--accent-2); font-size: 1.1rem; }
+.finished-body { margin: 0; font-size: 0.95rem; line-height: 1.55; }
 
 /* ---------- animation ---------- */
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -717,4 +1010,3 @@ ul { margin: 0; padding-left: 1.1em; }
 
 /* The overload warning is a fifth tile on a four-column grid — give it room
    so the word does not break mid-way. */
-.stat-warn { grid-column: span 2; }
