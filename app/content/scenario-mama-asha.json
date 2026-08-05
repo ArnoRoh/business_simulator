@@ -28,6 +28,189 @@
     "wagePerStaff": 30000,
     "spoilRate": 0.5
   },
+  "goal": {
+    "title": {
+      "en": "Three things to keep in view",
+      "sw": "Mambo matatu ya kuyaangalia"
+    },
+    "description": {
+      "en": "This goal gives your run a direction. It is not a pass mark. You can finish without every condition; the record reports what was true at the end.",
+      "sw": "Lengo hili linakupa mwelekeo katika safari yako. Si alama ya kufaulu. Unaweza kumaliza bila kutimiza kila sharti; kumbukumbu itaonyesha hali ya mwisho."
+    },
+    "conditions": [
+      {
+        "id": "registered",
+        "label": {
+          "en": "Registered: formality is at least 1.",
+          "sw": "Umesajiliwa: formality ni angalau 1."
+        },
+        "field": "formality",
+        "min": 1
+      },
+      {
+        "id": "hotel-capacity",
+        "label": {
+          "en": "Can make enough for the hotel order: capacity is at least 230.",
+          "sw": "Unaweza kutengeneza ya kutosha kwa oda ya hoteli: capacity ni angalau 230."
+        },
+        "field": "capacity",
+        "min": 230
+      },
+      {
+        "id": "cash-reserve",
+        "label": {
+          "en": "Cash reserve: keep at least 50,000 in cash.",
+          "sw": "Akiba ya pesa: baki na angalau 50,000 taslimu."
+        },
+        "field": "cash",
+        "min": 50000
+      }
+    ]
+  },
+  "recovery": {
+    "id": "recovery",
+    "concept": "recovery",
+    "conceptLabel": {
+      "en": "When cash runs out",
+      "sw": "Pesa ikiisha"
+    },
+    "scene": "stall-empty",
+    "situation": {
+      "en": "Your cash has gone below zero. The business is still open, but the next payment is due before enough money comes in. This is a hard chapter, not the end of the business.",
+      "sw": "Pesa yako imeshuka chini ya sifuri. Biashara bado iko wazi, lakini malipo yanayofuata yanatakiwa kabla pesa ya kutosha haijaingia. Hii ni sura ngumu, si mwisho wa biashara."
+    },
+    "info": [
+      {
+        "id": "map-cash-gap",
+        "label": {
+          "en": "List what must be paid this week",
+          "sw": "Andika kinachopaswa kulipwa wiki hii"
+        },
+        "costHours": 1,
+        "costCash": 0,
+        "reveals": {
+          "en": "You can see the gap now. A loan buys time but adds a cost. Cutting back hurts output. Selling equipment brings cash but leaves less to make.",
+          "sw": "Sasa unaona pengo. Mkopo unanunua muda lakini unaongeza gharama. Kupunguza kunapunguza uzalishaji. Kuuza vifaa kunaleta pesa lakini kunaacha uwezo mdogo wa kutengeneza."
+        }
+      }
+    ],
+    "decision": {
+      "prompt": {
+        "en": "Which way out do you choose?",
+        "sw": "Unachagua njia gani ya kutoka?"
+      },
+      "predictQuestion": {
+        "en": "What happens to your weekly profit?",
+        "sw": "Faida yako ya wiki itakuwaje?"
+      },
+      "predictChoices": [
+        {
+          "id": "up_lot",
+          "label": {
+            "en": "Up a lot",
+            "sw": "Inapanda sana"
+          }
+        },
+        {
+          "id": "up_bit",
+          "label": {
+            "en": "Up a little",
+            "sw": "Inapanda kidogo"
+          }
+        },
+        {
+          "id": "same",
+          "label": {
+            "en": "About the same",
+            "sw": "Inabaki vilevile"
+          }
+        },
+        {
+          "id": "down",
+          "label": {
+            "en": "Goes down",
+            "sw": "Inashuka"
+          }
+        }
+      ],
+      "options": [
+        {
+          "id": "borrow",
+          "label": {
+            "en": "Borrow enough to cover the gap",
+            "sw": "Kopa kiasi cha kuziba pengo"
+          },
+          "detail": {
+            "en": "You pay for the time with a weekly cost.",
+            "sw": "Unalipia muda huo kwa gharama ya kila wiki."
+          },
+          "effects": {
+            "cash": 120000,
+            "rent": 12000
+          },
+          "predictAnswer": "down",
+          "outcome": {
+            "en": "The cash gap is covered today. The weekly repayment makes the business tighter from now on.",
+            "sw": "Pengo la pesa limezibwa leo. Marejesho ya wiki yanaifanya biashara iwe na nafasi ndogo kuanzia sasa."
+          },
+          "lesson": {
+            "en": "Borrowing can keep a business open, but the cost must fit the profit that remains each week.",
+            "sw": "Kukopa kunaweza kuweka biashara wazi, lakini gharama lazima ilingane na faida inayobaki kila wiki."
+          }
+        },
+        {
+          "id": "cut-back",
+          "label": {
+            "en": "Cut output and reduce the weekly burden",
+            "sw": "Punguza uzalishaji na gharama ya wiki"
+          },
+          "detail": {
+            "en": "Make less for now. Keep more cash in the business.",
+            "sw": "Tengeneza kidogo kwa sasa. Baki na pesa zaidi kwenye biashara."
+          },
+          "effects": {
+            "capacity": "-60",
+            "demand": "-35",
+            "rent": "-10000"
+          },
+          "predictAnswer": "up_bit",
+          "outcome": {
+            "en": "You make less, but the lower weekly burden gives the cash a chance to recover. You can build output again later.",
+            "sw": "Unatengeneza kidogo, lakini gharama ndogo ya wiki inapa pesa nafasi ya kurudi. Unaweza kuongeza uzalishaji tena baadaye."
+          },
+          "lesson": {
+            "en": "Cutting back is not giving up. It buys time by matching the size of the business to the cash it has.",
+            "sw": "Kupunguza si kukata tamaa. Kunanunua muda kwa kulinganisha ukubwa wa biashara na pesa iliyo nayo."
+          }
+        },
+        {
+          "id": "sell-equipment",
+          "label": {
+            "en": "Sell one piece of equipment",
+            "sw": "Uza kifaa kimoja"
+          },
+          "detail": {
+            "en": "Cash now, less capacity later.",
+            "sw": "Pesa sasa, uwezo mdogo baadaye."
+          },
+          "effects": {
+            "cash": 80000,
+            "capacity": "-80",
+            "demand": "-20"
+          },
+          "predictAnswer": "same",
+          "outcome": {
+            "en": "You bring cash in today by selling equipment. The stall can make less, but it stays open while you repair the cash position.",
+            "sw": "Unapata pesa leo kwa kuuza kifaa. Kibanda kinaweza kutengeneza kidogo, lakini kinaendelea wazi huku ukirekebisha hali ya pesa."
+          },
+          "lesson": {
+            "en": "Selling an asset can prevent a cash failure. It solves today's gap by giving up part of tomorrow's capacity.",
+            "sw": "Kuuza mali kunaweza kuzuia kushindwa kwa pesa. Kunatatua pengo la leo kwa kuacha sehemu ya uwezo wa kesho."
+          }
+        }
+      ]
+    }
+  },
   "turns": [
     {
       "id": "t01",
@@ -70,112 +253,62 @@
         }
       ],
       "decision": {
+        "type": "number",
         "prompt": {
-          "en": "What do you do?",
-          "sw": "Utafanya nini?"
+          "en": "Set the price for one mandazi.",
+          "sw": "Panga bei ya andazi moja."
         },
-        "predictQuestion": {
-          "en": "Before you find out — what happens to your weekly profit?",
-          "sw": "Kabla hujajua — faida yako ya wiki itakuwaje?"
+        "predict": "number",
+        "input": {
+          "field": "price",
+          "min": 575,
+          "max": 650,
+          "step": 25,
+          "start": "current",
+          "valueAs": "money",
+          "hint": {
+            "en": "You pay {cost} to make each one.",
+            "sw": "Unalipa {cost} kutengeneza kila moja."
+          },
+          "responses": [
+            {
+              "field": "demand",
+              "perStep": 25,
+              "change": -9
+            }
+          ]
         },
-        "predictChoices": [
+        "bands": [
           {
-            "id": "up_lot",
-            "label": {
-              "en": "Up a lot",
-              "sw": "Inapanda sana"
-            }
-          },
-          {
-            "id": "up_bit",
-            "label": {
-              "en": "Up a little",
-              "sw": "Inapanda kidogo"
-            }
-          },
-          {
-            "id": "same",
-            "label": {
-              "en": "About the same",
-              "sw": "Inabaki vilevile"
-            }
-          },
-          {
-            "id": "down",
-            "label": {
-              "en": "Goes down",
-              "sw": "Inashuka"
-            }
-          }
-        ],
-        "options": [
-          {
-            "id": "make-more",
-            "label": {
-              "en": "Buy more flour and make 20 more each week",
-              "sw": "Nunua unga zaidi utengeneze 20 zaidi kila wiki"
-            },
-            "detail": {
-              "en": "Costs you cash up front to fill the gap you can see.",
-              "sw": "Inakugharimu pesa mapema ili kuziba pengo unaloliona."
-            },
-            "effects": {
-              "capacity": 20,
-              "cash": -15000
-            },
-            "predictAnswer": "up_bit",
             "outcome": {
-              "en": "You now make enough for everyone who comes. Nobody is turned away. You sell twenty more each week, and each one leaves you 200.",
-              "sw": "Sasa unatengeneza ya kutosha kwa kila anayekuja. Hakuna anayerudishwa. Unauza ishirini zaidi kila wiki, na kila moja linakuachia 200."
+              "en": "At this price, your margin is small. You sell more, but each mandazi leaves less.",
+              "sw": "Kwa bei hii, margin yako ni ndogo. Unauza zaidi, lakini kila andazi linakuachia kidogo."
             },
             "lesson": {
-              "en": "You were losing sales you had already earned. Filling that gap was the cheapest growth available to you.",
-              "sw": "Ulikuwa unapoteza mauzo uliyokwisha yapata. Kuziba pengo hilo ilikuwa njia rahisi zaidi ya kukua uliyokuwa nayo."
-            }
+              "en": "Price is not only about customers. See what remains after the cost of one mandazi.",
+              "sw": "Bei si kuhusu wateja tu. Angalia kinachobaki baada ya gharama ya andazi moja."
+            },
+            "upTo": 600
           },
           {
-            "id": "raise-price",
-            "label": {
-              "en": "Raise the price to 650",
-              "sw": "Panda bei hadi 650"
-            },
-            "detail": {
-              "en": "You will lose some customers. You are not sure how many.",
-              "sw": "Utapoteza baadhi ya wateja. Hujui ni wangapi."
-            },
-            "effects": {
-              "price": 650,
-              "demand": -30
-            },
-            "predictAnswer": "up_lot",
             "outcome": {
-              "en": "Thirty customers stop coming. But the ones who stay now leave you 350 each instead of 200. You sell fewer and earn much more.",
-              "sw": "Wateja thelathini wanaacha kuja. Lakini wanaobaki sasa wanakuachia 350 kila mmoja badala ya 200. Unauza kidogo lakini unapata zaidi sana."
+              "en": "You keep more on each mandazi and still have customers. Margin and volume are in the same decision.",
+              "sw": "Unabaki na zaidi kwa kila andazi na bado una wateja. Margin na wingi viko katika uamuzi mmoja."
             },
             "lesson": {
-              "en": "Losing customers is not the same as losing money. What matters is what you keep from each sale, not how many people you serve.",
-              "sw": "Kupoteza wateja si sawa na kupoteza pesa. Kinachohesabika ni kile unachobaki nacho kwa kila mauzo, si idadi ya watu unaowahudumia."
-            }
+              "en": "A good price balances what one sale leaves and how many sales remain.",
+              "sw": "Bei nzuri inalinganisha kinachobaki kwa mauzo moja na idadi ya mauzo yanayobaki."
+            },
+            "upTo": 625
           },
           {
-            "id": "do-nothing",
-            "label": {
-              "en": "Change nothing for now",
-              "sw": "Usibadilishe kitu kwa sasa"
-            },
-            "detail": {
-              "en": "The business works. Do not risk it.",
-              "sw": "Biashara inaenda. Usihatarishe."
-            },
-            "effects": {},
-            "predictAnswer": "same",
             "outcome": {
-              "en": "The week runs as it always does. You sell out by midday and twenty people walk away again.",
-              "sw": "Wiki inaenda kama kawaida. Unauza vyote hadi adhuhuri na watu ishirini wanaondoka tena."
+              "en": "The higher price leaves more on each sale, but fewer people buy. The extra kept per mandazi is close to the sales you lose.",
+              "sw": "Bei ya juu inakuachia zaidi kwa kila mauzo, lakini watu wachache wananunua. Kile cha ziada kwa andazi kinakaribia mauzo unayopoteza."
             },
             "lesson": {
-              "en": "Doing nothing is also a decision. It costs you the sales you keep turning away.",
-              "sw": "Kutofanya kitu nako ni uamuzi. Kunakugharimu mauzo unayoendelea kuyarudisha."
+              "en": "A higher margin can stop helping when volume falls. Move in small steps and look at both numbers.",
+              "sw": "Margin kubwa inaweza kuacha kusaidia wingi unaposhuka. Songa kwa hatua ndogo na angalia namba zote mbili."
             }
           }
         ]
@@ -209,115 +342,62 @@
         }
       ],
       "decision": {
+        "type": "number",
         "prompt": {
-          "en": "How do you respond?",
-          "sw": "Unaitikaje?"
+          "en": "Set your price while the competitor charges 400.",
+          "sw": "Panga bei yako wakati mshindani anauza kwa 400."
         },
-        "predictQuestion": {
-          "en": "What happens to your weekly profit?",
-          "sw": "Faida yako ya wiki itakuwaje?"
+        "predict": "number",
+        "input": {
+          "field": "price",
+          "min": 575,
+          "max": 650,
+          "step": 25,
+          "start": "current",
+          "valueAs": "money",
+          "hint": {
+            "en": "Her mandazi are smaller. Yours are bigger and better known.",
+            "sw": "Mandazi yake ni madogo. Yako ni makubwa na yanajulikana zaidi."
+          },
+          "responses": [
+            {
+              "field": "demand",
+              "perStep": 25,
+              "change": -8
+            }
+          ]
         },
-        "predictChoices": [
+        "bands": [
           {
-            "id": "up_lot",
-            "label": {
-              "en": "Up a lot",
-              "sw": "Inapanda sana"
-            }
-          },
-          {
-            "id": "up_bit",
-            "label": {
-              "en": "Up a little",
-              "sw": "Inapanda kidogo"
-            }
-          },
-          {
-            "id": "same",
-            "label": {
-              "en": "About the same",
-              "sw": "Inabaki vilevile"
-            }
-          },
-          {
-            "id": "down",
-            "label": {
-              "en": "Goes down",
-              "sw": "Inashuka"
-            }
-          }
-        ],
-        "options": [
-          {
-            "id": "match-price",
-            "label": {
-              "en": "Cut your price to match hers",
-              "sw": "Punguza bei yako ilingane na yake"
-            },
-            "detail": {
-              "en": "Do not let her take your customers.",
-              "sw": "Usimwache akuchukulie wateja."
-            },
-            "effects": {
-              "price": 400,
-              "demand": 25
-            },
-            "predictAnswer": "down",
             "outcome": {
-              "en": "You get some customers back. But you now keep only 100 from each mandazi instead of what you had. You are working the same hours for much less.",
-              "sw": "Unapata baadhi ya wateja tena. Lakini sasa unabaki na 100 tu kwa kila andazi badala ya ulichokuwa nacho. Unafanya kazi masaa yaleyale kwa kidogo sana."
+              "en": "Your price is close to hers. More people may try you, but each sale leaves less after your higher cost.",
+              "sw": "Bei yako iko karibu na yake. Watu zaidi wanaweza kukujaribu, lakini kila mauzo yanakuachia kidogo baada ya gharama yako kubwa."
             },
             "lesson": {
-              "en": "Cutting price to fight a cheaper seller is the fastest way to lose money. You gave away your margin to win sales you were mostly already making.",
-              "sw": "Kupunguza bei ili kupambana na muuzaji wa bei rahisi ni njia ya haraka zaidi ya kupoteza pesa. Umetoa faida yako ili kushinda mauzo ambayo kwa kiasi kikubwa ulikuwa tayari unayapata."
-            }
+              "en": "Matching a cheaper seller can win volume and still weaken the business. Count what remains.",
+              "sw": "Kulingana na muuzaji wa bei rahisi kunaweza kuleta wingi na bado kudhoofisha biashara. Hesabu kinachobaki."
+            },
+            "upTo": 600
           },
           {
-            "id": "hold-quality",
-            "label": {
-              "en": "Keep your price and make yours clearly better",
-              "sw": "Shikilia bei yako na fanya yako yawe bora wazi"
-            },
-            "detail": {
-              "en": "A little more sugar and a slightly bigger size.",
-              "sw": "Sukari kidogo zaidi na ukubwa kidogo zaidi."
-            },
-            "effects": {
-              "unitCost": 305,
-              "reputation": 12
-            },
-            "predictAnswer": "same",
             "outcome": {
-              "en": "Your costs rise only slightly, so this week looks much like the last. Over the following weeks word spreads that yours are worth the extra.",
-              "sw": "Gharama zako zinapanda kidogo tu, kwa hiyo wiki hii inafanana na iliyopita. Katika wiki zinazofuata habari zinaenea kwamba yako yanastahili gharama ya ziada."
+              "en": "You charge more than the cheaper stall, but not so much that every customer leaves. Margin and volume must balance.",
+              "sw": "Unauza zaidi ya kibanda cha bei rahisi, lakini si sana kiasi cha kila mteja kuondoka. Margin na wingi lazima vilingane."
             },
             "lesson": {
-              "en": "Competing on quality barely shows up this week. It works through reputation, which moves slowly — which is exactly why people give up on it too early.",
-              "sw": "Kushindana kwa ubora hakuonekani sana wiki hii. Kunafanya kazi kupitia sifa, ambayo inasogea polepole — na ndiyo sababu watu wanakata tamaa mapema mno."
-            }
+              "en": "A cheaper competitor does not set your price for you. Test what customers will pay for better mandazi.",
+              "sw": "Mshindani wa bei rahisi hapangi bei yako. Jaribu kuona wateja watalipa nini kwa mandazi bora."
+            },
+            "upTo": 625
           },
           {
-            "id": "ignore",
-            "label": {
-              "en": "Ignore her and carry on",
-              "sw": "Mpuuze na uendelee"
-            },
-            "detail": {
-              "en": "She may not last.",
-              "sw": "Huenda asidumu."
-            },
-            "effects": {
-              "demand": -40,
-              "reputation": -10
-            },
-            "predictAnswer": "down",
             "outcome": {
-              "en": "She lasts. You lose a slice of your customers to her and do nothing about it.",
-              "sw": "Anadumu. Unapoteza sehemu ya wateja wako kwake na hufanyi lolote."
+              "en": "You ask customers to pay much more than the nearby stall. The higher margin is now fighting the lost volume.",
+              "sw": "Unaomba wateja walipe zaidi sana kuliko kibanda cha karibu. Margin kubwa sasa inapambana na wingi uliopotea."
             },
             "lesson": {
-              "en": "Ignoring a competitor is a choice to let them decide how much of the market you keep.",
-              "sw": "Kupuuza mshindani ni uamuzi wa kumwachia yeye aamue ni sehemu gani ya soko utabaki nayo."
+              "en": "Quality gives you room above the competitor, not permission to ignore demand. Raise the price in steps.",
+              "sw": "Ubora unakupa nafasi juu ya mshindani, si ruhusa ya kupuuza mahitaji. Panda bei kwa hatua."
             }
           }
         ]
@@ -1553,6 +1633,29 @@
           }
         }
       ],
+      "diagnose": {
+        "prompt": {
+          "en": "Which line caused this loss?",
+          "sw": "Ni kipengele gani kilisababisha hasara hii?"
+        },
+        "answer": "pnl.spoilage",
+        "options": [
+          "pnl.sales",
+          "pnl.costOfSales",
+          "pnl.rent",
+          "pnl.wages",
+          "pnl.fees",
+          "pnl.spoilage"
+        ],
+        "right": {
+          "en": "The wasted stock is the spoilage line. It is food you made but could not sell.",
+          "sw": "Bidhaa zilizopotea ziko kwenye kipengele cha spoilage. Ni chakula ulichotengeneza lakini hukuuza."
+        },
+        "wrong": {
+          "en": "Look at the money-out lines. The loss came from stock that spoiled, not from rent or wages.",
+          "sw": "Angalia vipengele vya pesa iliyotoka. Hasara ilitoka kwenye bidhaa zilizoharibika, si kodi ya pango au mishahara."
+        }
+      },
       "decision": {
         "prompt": {
           "en": "What now?",
@@ -1698,124 +1801,72 @@
         }
       ],
       "decision": {
+        "type": "number",
         "prompt": {
-          "en": "What do you do about your own time?",
-          "sw": "Unafanya nini kuhusu muda wako mwenyewe?"
+          "en": "How many hours each week will you protect for work on the business?",
+          "sw": "Kila wiki utatenga masaa mangapi kuifanyia biashara mipango?"
         },
-        "predictQuestion": {
-          "en": "What happens to your weekly profit?",
-          "sw": "Faida yako ya wiki itakuwaje?"
+        "predict": "number",
+        "input": {
+          "field": "ownerHoursUsed",
+          "min": 5,
+          "max": 15,
+          "step": 5,
+          "start": 0,
+          "valueAs": "count",
+          "hint": {
+            "en": "These hours are for planning, not for selling.",
+            "sw": "Masaa haya ni ya kupanga, si ya kuuza."
+          },
+          "responses": [
+            {
+              "field": "capacity",
+              "perStep": 5,
+              "change": 40
+            },
+            {
+              "field": "demand",
+              "perStep": 5,
+              "change": 25
+            },
+            {
+              "field": "unitCost",
+              "perStep": 5,
+              "change": 15
+            }
+          ]
         },
-        "predictChoices": [
+        "bands": [
           {
-            "id": "up_lot",
-            "label": {
-              "en": "Up a lot",
-              "sw": "Inapanda sana"
-            }
-          },
-          {
-            "id": "up_bit",
-            "label": {
-              "en": "Up a little",
-              "sw": "Inapanda kidogo"
-            }
-          },
-          {
-            "id": "same",
-            "label": {
-              "en": "About the same",
-              "sw": "Inabaki vilevile"
-            }
-          },
-          {
-            "id": "down",
-            "label": {
-              "en": "Goes down",
-              "sw": "Inashuka"
-            }
-          }
-        ],
-        "options": [
-          {
-            "id": "plan-time",
-            "label": {
-              "en": "Block out two hours every week to work on the business, not in it",
-              "sw": "Tenga masaa mawili kila wiki kuifanyia biashara mipango, si kuifanyia kazi"
-            },
-            "detail": {
-              "en": "Two hours you are not selling.",
-              "sw": "Masaa mawili ambayo hauuzi."
-            },
-            "effects": {
-              "ownerHoursFixed": 2
-            },
-            "later": [
-              {
-                "inWeeks": 4,
-                "effects": {
-                  "demand": 45,
-                  "reputation": 5
-                },
-                "cause": {
-                  "en": "the two hours a week you set aside to plan",
-                  "sw": "masaa mawili kwa wiki uliyoyatenga kupanga"
-                }
-              }
-            ],
-            "predictAnswer": "same",
             "outcome": {
-              "en": "This week looks exactly like last week. You spend the two hours working out which customers actually pay you best.",
-              "sw": "Wiki hii inaonekana sawasawa na iliyopita. Unatumia masaa mawili kubaini ni wateja gani hasa wanaokulipa vizuri zaidi."
+              "en": "You keep nearly all your selling time, but little time goes to the decisions only you can make.",
+              "sw": "Unaweka karibu muda wote wa kuuza, lakini muda mchache unaenda kwenye maamuzi ambayo wewe pekee unaweza kufanya."
             },
             "lesson": {
-              "en": "Time spent on the business never shows up in the week you spend it. That is exactly why it is the first thing dropped.",
-              "sw": "Muda unaotumika kuifanyia biashara mipango hauonekani kamwe katika wiki unayoutumia. Ndiyo sababu hasa ndicho kitu cha kwanza kuachwa."
-            }
+              "en": "Working in the business can fill the week and leave no space to work on it.",
+              "sw": "Kuifanyia biashara kazi kunaweza kujaza wiki na kusiache nafasi ya kuifanyia mipango."
+            },
+            "upTo": 5
           },
           {
-            "id": "buy-time",
-            "label": {
-              "en": "Pay your helper to open on her own three mornings a week",
-              "sw": "Mlipe msaidizi wako afungue mwenyewe asubuhi tatu kwa wiki"
-            },
-            "detail": {
-              "en": "It costs money every week. You get mornings back.",
-              "sw": "Inagharimu pesa kila wiki. Unarudishiwa asubuhi."
-            },
-            "effects": {
-              "rent": 9000,
-              "ownerHoursFixed": "-10"
-            },
-            "predictAnswer": "down",
             "outcome": {
-              "en": "Your profit drops by what you are paying her. You sleep, and for the first time in months you are not the only person who can open the stall.",
-              "sw": "Faida yako inashuka kwa kiasi unachomlipa. Unalala, na kwa mara ya kwanza baada ya miezi si wewe pekee unayeweza kufungua kibanda."
+              "en": "You protect some time to look at customers, prices and the next step. You organize more output, but each unit costs more as you step away from frying.",
+              "sw": "Unatenga muda wa kuangalia wateja, bei na hatua inayofuata. Unapanga uzalishaji zaidi, lakini kila kimoja kinagharimu zaidi unapoacha kukaanga."
             },
             "lesson": {
-              "en": "Buying back your own time costs money immediately and pays back slowly. It is still the only way a business stops depending on one person.",
-              "sw": "Kununua muda wako mwenyewe kunagharimu pesa mara moja na kunalipa polepole. Bado ndiyo njia pekee ya biashara kuacha kutegemea mtu mmoja."
-            }
+              "en": "Time on the business is useful when it changes what the business does. The middle amount leaves room for both.",
+              "sw": "Muda wa kuifanyia biashara mipango unasaidia unapobadilisha kile biashara inachofanya. Kiasi cha kati kinaacha nafasi ya yote mawili."
+            },
+            "upTo": 15
           },
           {
-            "id": "work-harder",
-            "label": {
-              "en": "Carry on. Rest when the business is bigger",
-              "sw": "Endelea. Pumzika biashara ikiwa kubwa"
-            },
-            "detail": {
-              "en": "There is too much to do to stop now.",
-              "sw": "Kuna mengi mno ya kufanya kusimama sasa."
-            },
-            "effects": {},
-            "predictAnswer": "same",
             "outcome": {
-              "en": "The week runs as every week runs. You are tired in the same way you were tired last month.",
-              "sw": "Wiki inaenda kama kila wiki inavyoenda. Umechoka kwa namna ileile ulivyochoka mwezi uliopita."
+              "en": "You spend many hours planning. Demand and capacity rise, but the cost of each unit rises too as you step away from production.",
+              "sw": "Unatumia masaa mengi kupanga. Mahitaji na uwezo wa uzalishaji vinaongezeka, lakini gharama ya kila kimoja pia inapanda unapoacha uzalishaji."
             },
             "lesson": {
-              "en": "A business that only works while you are inside it every hour is not a business yet. It is a job you also own.",
-              "sw": "Biashara inayofanya kazi tu ukiwa ndani yake kila saa bado si biashara. Ni kazi ambayo pia unaimiliki."
+              "en": "Time set aside has an opportunity cost. Protect enough to steer, but not so much that selling stops.",
+              "sw": "Muda uliotengwa una gharama ya kuacha kitu kingine. Tenga wa kutosha kuongoza, lakini si mwingi kiasi cha kuuza kusimama."
             }
           }
         ]
@@ -1849,116 +1900,67 @@
         }
       ],
       "decision": {
+        "type": "number",
         "prompt": {
-          "en": "Do you take her on?",
-          "sw": "Je, unamchukua?"
+          "en": "How many people will you take on this week?",
+          "sw": "Wiki hii utachukua watu wangapi wa kukusaidia?"
         },
-        "predictQuestion": {
-          "en": "What happens to your weekly profit?",
-          "sw": "Faida yako ya wiki itakuwaje?"
+        "predict": "number",
+        "input": {
+          "field": "staff",
+          "min": 0,
+          "max": 3,
+          "step": 1,
+          "start": "current",
+          "valueAs": "count",
+          "hint": {
+            "en": "Each person adds a weekly wage. Their extra output must pay for it.",
+            "sw": "Kila mtu anaongeza mshahara wa wiki. Kazi yake ya ziada lazima ilipie."
+          },
+          "responses": [
+            {
+              "field": "capacity",
+              "perStep": 1,
+              "change": 180
+            },
+            {
+              "field": "demand",
+              "perStep": 1,
+              "change": 160
+            }
+          ]
         },
-        "predictChoices": [
+        "bands": [
           {
-            "id": "up_lot",
-            "label": {
-              "en": "Up a lot",
-              "sw": "Inapanda sana"
-            }
-          },
-          {
-            "id": "up_bit",
-            "label": {
-              "en": "Up a little",
-              "sw": "Inapanda kidogo"
-            }
-          },
-          {
-            "id": "same",
-            "label": {
-              "en": "About the same",
-              "sw": "Inabaki vilevile"
-            }
-          },
-          {
-            "id": "down",
-            "label": {
-              "en": "Goes down",
-              "sw": "Inashuka"
-            }
-          }
-        ],
-        "options": [
-          {
-            "id": "hire-niece",
-            "label": {
-              "en": "Take her on and train her properly",
-              "sw": "Mchukue na umfundishe vizuri"
-            },
-            "detail": {
-              "en": "Wages every week, and your time spent teaching before she is useful.",
-              "sw": "Mishahara kila wiki, na muda wako wa kufundisha kabla hajakuwa na manufaa."
-            },
-            "effects": {
-              "staff": 1,
-              "capacity": 25,
-              "ownerHoursUsed": -10
-            },
-            "predictAnswer": "down",
             "outcome": {
-              "en": "For the first weeks she is slower than you and you are paying her while teaching her. Your profit drops. You also sleep for the first time in months.",
-              "sw": "Kwa wiki za mwanzo ni wa polepole kuliko wewe na unamlipa huku ukimfundisha. Faida yako inashuka. Pia unalala kwa mara ya kwanza baada ya miezi."
+              "en": "You keep the whole margin and keep doing the work yourself. There is no new capacity for waiting customers.",
+              "sw": "Unabaki na margin yote na unaendelea kufanya kazi mwenyewe. Hakuna uwezo mpya kwa wateja wanaosubiri."
             },
             "lesson": {
-              "en": "Hiring almost always costs you money before it makes you any. The question is whether you can survive the gap, not whether the gap exists.",
-              "sw": "Kuajiri karibu kila mara kunakugharimu pesa kabla ya kukuletea yoyote. Swali ni kama unaweza kuvumilia pengo hilo, si kama pengo lipo."
-            }
+              "en": "Not hiring protects this week's cash, but leaves the business tied to your own two hands.",
+              "sw": "Kutoajiri kunalinda pesa ya wiki hii, lakini kunaacha biashara ifungwe na mikono yako miwili."
+            },
+            "upTo": 0
           },
           {
-            "id": "hire-casual",
-            "label": {
-              "en": "Use her only on the busiest mornings, paid by the day",
-              "sw": "Mtumie tu asubuhi zenye shughuli nyingi, ulipe kwa siku"
-            },
-            "detail": {
-              "en": "Cheaper. She never really learns the work.",
-              "sw": "Rahisi zaidi. Hajifunzi kazi kikamilifu."
-            },
-            "effects": {
-              "rent": 18000,
-              "capacity": 10,
-              "ownerHoursUsed": -3
-            },
-            "predictAnswer": "down",
             "outcome": {
-              "en": "You get help when you most need it and pay less. She stays a pair of hands rather than becoming someone who can run things without you.",
-              "sw": "Unapata msaada unapouhitaji zaidi na unalipa kidogo. Anabaki mikono ya kusaidia badala ya kuwa mtu anayeweza kuendesha mambo bila wewe."
+              "en": "One person gives the stall room to serve more customers. The wage is real, so extra sales must cover it.",
+              "sw": "Mtu mmoja anaipa biashara nafasi ya kuhudumia wateja zaidi. Mshahara ni gharama halisi, kwa hiyo mauzo ya ziada lazima yaulipie."
             },
             "lesson": {
-              "en": "Casual help solves today's rush. It does not build anyone who can take work off you permanently.",
-              "sw": "Msaada wa kawaida unatatua shughuli ya leo. Haujengi mtu anayeweza kukuondolea kazi kwa kudumu."
-            }
+              "en": "A first hire can remove a bottleneck. Hire for work that produces more than the wage.",
+              "sw": "Mwajiriwa wa kwanza anaweza kuondoa kikwazo. Ajiri kwa kazi inayozalisha zaidi ya mshahara."
+            },
+            "upTo": 1
           },
           {
-            "id": "no-hire",
-            "label": {
-              "en": "Carry on alone",
-              "sw": "Endelea peke yako"
-            },
-            "detail": {
-              "en": "Nobody does it as well as you do.",
-              "sw": "Hakuna anayefanya vizuri kama wewe."
-            },
-            "effects": {
-              "ownerHoursUsed": 4
-            },
-            "predictAnswer": "same",
             "outcome": {
-              "en": "You keep every shilling of the profit and every hour of the work. The business cannot grow past what your own two hands can make.",
-              "sw": "Unabaki na kila shilingi ya faida na kila saa ya kazi. Biashara haiwezi kukua kupita kile mikono yako miwili inaweza kutengeneza."
+              "en": "More people add output, but the next wage arrives even when customers do not. Later hires bring less room than the first.",
+              "sw": "Watu zaidi wanaongeza uzalishaji, lakini mshahara unaofuata unakuja hata bila wateja. Waajiriwa wa baadaye wanaongeza nafasi kidogo kuliko wa kwanza."
             },
             "lesson": {
-              "en": "A business that depends entirely on you has a ceiling, and the ceiling is you.",
-              "sw": "Biashara inayotegemea wewe kabisa ina kikomo, na kikomo ni wewe."
+              "en": "Hiring has a point where another person costs more than the sales they add. Build one useful role at a time.",
+              "sw": "Kuajiri kuna sehemu ambapo mtu mwingine anagharimu zaidi ya mauzo anayoongeza. Jenga nafasi moja yenye kazi ya maana kwa wakati."
             }
           }
         ]
@@ -2743,114 +2745,62 @@
         }
       ],
       "decision": {
+        "type": "number",
         "prompt": {
-          "en": "How do you answer him?",
-          "sw": "Unamjibuje?"
+          "en": "Set the price you will offer the hotel.",
+          "sw": "Panga bei utakayompa hoteli."
         },
-        "predictQuestion": {
-          "en": "What happens to your weekly profit?",
-          "sw": "Faida yako ya wiki itakuwaje?"
+        "predict": "number",
+        "input": {
+          "field": "price",
+          "min": 400,
+          "max": 750,
+          "step": 25,
+          "start": "current",
+          "valueAs": "money",
+          "hint": {
+            "en": "The hotel wants a discount. A lower price should buy you a larger order.",
+            "sw": "Hoteli inataka punguzo. Bei ya chini inapaswa kukuletea oda kubwa zaidi."
+          },
+          "responses": [
+            {
+              "field": "demand",
+              "perStep": 25,
+              "change": -13
+            }
+          ]
         },
-        "predictChoices": [
+        "bands": [
           {
-            "id": "up_lot",
-            "label": {
-              "en": "Up a lot",
-              "sw": "Inapanda sana"
-            }
-          },
-          {
-            "id": "up_bit",
-            "label": {
-              "en": "Up a little",
-              "sw": "Inapanda kidogo"
-            }
-          },
-          {
-            "id": "same",
-            "label": {
-              "en": "About the same",
-              "sw": "Inabaki vilevile"
-            }
-          },
-          {
-            "id": "down",
-            "label": {
-              "en": "Goes down",
-              "sw": "Inashuka"
-            }
-          }
-        ],
-        "options": [
-          {
-            "id": "give-both",
-            "label": {
-              "en": "Agree to the discount and the extra days",
-              "sw": "Kubali punguzo na siku za ziada"
-            },
-            "detail": {
-              "en": "Keep the customer happy at any cost.",
-              "sw": "Mfanye mteja awe na furaha kwa gharama yoyote."
-            },
-            "effects": {
-              "price": "-30",
-              "rent": 7000,
-              "ownerHoursFixed": 6
-            },
-            "predictAnswer": "down",
             "outcome": {
-              "en": "He is pleased. You now sell each one for less, and you pay the rider for two more mornings a week to deliver it.",
-              "sw": "Ana furaha. Sasa unauza kila kimoja kwa pungufu, na unamlipa dereva asubuhi mbili zaidi kwa wiki kupeleka."
+              "en": "The hotel gets a large discount. More units may move, but each one leaves less after cost and delivery work.",
+              "sw": "Hoteli inapata punguzo kubwa. Bidhaa nyingi zinaweza kuondoka, lakini kila moja linakuachia kidogo baada ya gharama na kazi ya kupeleka."
             },
             "lesson": {
-              "en": "Agreeing to everything at once means you never find out which part he actually needed.",
-              "sw": "Kukubali kila kitu kwa mara moja kunamaanisha hujui kamwe ni sehemu gani aliyoihitaji hasa."
-            }
+              "en": "A discount is useful only when the extra order pays for what you give up on each unit.",
+              "sw": "Punguzo linafaa tu wakati oda ya ziada inalipia unachoacha kwa kila kimoja."
+            },
+            "upTo": 450
           },
           {
-            "id": "trade-it",
-            "label": {
-              "en": "Offer the discount only if they guarantee a bigger standing order",
-              "sw": "Toa punguzo tu kama watahakikisha oda kubwa ya kudumu"
-            },
-            "detail": {
-              "en": "Less on each one, more of them, agreed in advance.",
-              "sw": "Kidogo kwa kila kimoja, vingi zaidi, vimekubaliwa mapema."
-            },
-            "effects": {
-              "price": "-5",
-              "demand": 30,
-              "capacity": 30
-            },
-            "predictAnswer": "up_bit",
             "outcome": {
-              "en": "He agrees to a larger fixed order. You earn less on each mandazi and more in total, and you now know what next week looks like.",
-              "sw": "Anakubali oda kubwa ya kudumu. Unapata kidogo kwa kila andazi na zaidi kwa jumla, na sasa unajua wiki ijayo itakuwaje."
+              "en": "You offer a middle price. The hotel has a reason to order more, while you keep enough from each unit.",
+              "sw": "Unatoa bei ya kati. Hoteli ina sababu ya kuagiza zaidi, huku ukibaki na kiasi cha kutosha kwa kila kimoja."
             },
             "lesson": {
-              "en": "A discount given for nothing is a price cut. A discount given for volume or certainty is a trade. Only one of them is negotiating.",
-              "sw": "Punguzo linalotolewa bure ni kushusha bei. Punguzo linalotolewa kwa wingi au uhakika ni biashara. Moja tu kati ya haya ni kujadiliana."
-            }
+              "en": "Negotiate the whole order, not only the price. Volume can pay for a smaller margin when the numbers are visible.",
+              "sw": "Jadili oda yote, si bei tu. Wingi unaweza kulipia margin ndogo wakati namba zinaonekana."
+            },
+            "upTo": 600
           },
           {
-            "id": "hold-price",
-            "label": {
-              "en": "Hold your price and explain why",
-              "sw": "Shikilia bei yako na ueleze sababu"
-            },
-            "detail": {
-              "en": "Your mandazi arrive on time and taste the same every day.",
-              "sw": "Mandazi yako yanafika kwa wakati na yana ladha ileile kila siku."
-            },
-            "effects": {},
-            "predictAnswer": "same",
             "outcome": {
-              "en": "He does not get his discount and he does not leave. He was always going to ask, and asking cost him nothing.",
-              "sw": "Hapati punguzo lake na haondoki. Alikuwa lazima aombe, na kuomba hakumgharimu kitu."
+              "en": "You protect the price on each unit, but the hotel wants fewer at that price. Margin is close to the volume you lose.",
+              "sw": "Unalinda bei kwa kila kimoja, lakini hoteli inataka vichache kwa bei hiyo. Margin iko karibu na wingi unaopoteza."
             },
             "lesson": {
-              "en": "A buyer asking for a discount is doing their job. It is not the same as a buyer who is leaving.",
-              "sw": "Mnunuzi anayeomba punguzo anafanya kazi yake. Si sawa na mnunuzi anayeondoka."
+              "en": "Ask what volume or certainty comes with a discount before you give one.",
+              "sw": "Uliza ni wingi au uhakika gani unaokuja na punguzo kabla hujatoa."
             }
           }
         ]
@@ -2884,116 +2834,79 @@
         }
       ],
       "decision": {
+        "type": "allocate",
         "prompt": {
-          "en": "What do you do with it?",
-          "sw": "Unafanya nini nayo?"
+          "en": "How will you split this profit?",
+          "sw": "Utagawanya vipi faida hii?"
         },
-        "predictQuestion": {
-          "en": "What happens to your weekly profit?",
-          "sw": "Faida yako ya wiki itakuwaje?"
-        },
-        "predictChoices": [
-          {
-            "id": "up_lot",
-            "label": {
-              "en": "Up a lot",
-              "sw": "Inapanda sana"
-            }
-          },
-          {
-            "id": "up_bit",
-            "label": {
-              "en": "Up a little",
-              "sw": "Inapanda kidogo"
-            }
-          },
-          {
-            "id": "same",
-            "label": {
-              "en": "About the same",
-              "sw": "Inabaki vilevile"
-            }
-          },
-          {
-            "id": "down",
-            "label": {
-              "en": "Goes down",
-              "sw": "Inashuka"
-            }
+        "predict": "number",
+        "allocate": {
+          "amountFrom": "cash",
+          "fraction": 0.6,
+          "step": 10000,
+          "buckets": [
+            {
+              "id": "business",
+              "label": {
+                "en": "Business",
+                "sw": "Biashara"
+              },
+          "perStep": {
+            "capacity": 8,
+            "demand": 5,
+            "rent": 1200
           }
-        ],
-        "options": [
+            },
+            {
+              "id": "home",
+              "label": {
+                "en": "Home",
+                "sw": "Nyumbani"
+              },
+              "perStep": {}
+            },
+            {
+              "id": "reserve",
+              "label": {
+                "en": "Keep as reserve",
+                "sw": "Weka kama akiba"
+              },
+              "perStep": {},
+              "keepsCash": true
+            }
+          ]
+        },
+        "bands": [
           {
-            "id": "reinvest",
-            "label": {
-              "en": "Put most of it back into the business",
-              "sw": "Rudisha sehemu kubwa kwenye biashara"
-            },
-            "detail": {
-              "en": "A second fryer and more stock. Nothing for home this month.",
-              "sw": "Mashine ya pili ya kukaanga na bidhaa zaidi. Hakuna kwa nyumbani mwezi huu."
-            },
-            "effects": {
-              "capacity": 150,
-              "demand": 150,
-              "cash": -140000
-            },
-            "predictAnswer": "up_lot",
             "outcome": {
-              "en": "You can take the order you turned down. The business grows again. The roof at home still leaks and your family notices.",
-              "sw": "Unaweza kuchukua oda uliyoikataa. Biashara inakua tena. Paa la nyumbani bado linavuja na familia yako inaona."
+              "en": "You protect most of the money for home and emergencies. The business gets only a small push, so growth is slower.",
+              "sw": "Unalinda pesa nyingi kwa nyumbani na dharura. Biashara inapata msukumo mdogo, kwa hiyo ukuaji ni wa polepole."
             },
             "lesson": {
-              "en": "Reinvesting is what makes a business grow past the owner's own income. It also has a real cost at home, and pretending otherwise helps nobody.",
-              "sw": "Kurudisha faida kwenye biashara ndiko kunakofanya biashara ikue kupita kipato cha mmiliki. Pia kuna gharama halisi nyumbani, na kujifanya sivyo hakumsaidii yeyote."
-            }
+              "en": "A reserve can keep one bad week from becoming a crisis. It also means slower business growth.",
+              "sw": "Akiba inaweza kuzuia wiki moja mbaya kuwa tatizo kubwa. Pia inamaanisha biashara ikue polepole."
+            },
+            "upTo": 0.3
           },
           {
-            "id": "split",
-            "label": {
-              "en": "Split it — some home, some business, some kept back",
-              "sw": "Igawe — kidogo nyumbani, kidogo biashara, kidogo ubakize"
-            },
-            "detail": {
-              "en": "Nobody gets everything they wanted.",
-              "sw": "Hakuna anayepata kila alichotaka."
-            },
-            "effects": {
-              "capacity": 20,
-              "demand": 15,
-              "cash": -60000
-            },
-            "predictAnswer": "up_bit",
             "outcome": {
-              "en": "The roof gets patched. The business grows a little. You still have something in the box if a fridge fails.",
-              "sw": "Paa linazibwa. Biashara inakua kidogo. Bado una kitu sandukuni friji ikiharibika."
+              "en": "You divide the money between business, home and a reserve. No part gets everything, but the business grows without using every coin.",
+              "sw": "Unagawa pesa kati ya biashara, nyumbani na akiba. Sehemu hakuna inayopata kila kitu, lakini biashara inakua bila kutumia kila senti."
             },
             "lesson": {
-              "en": "Splitting between the business, the household and a reserve is slower than any single choice, and it is the one that survives a bad month.",
-              "sw": "Kugawa kati ya biashara, kaya na akiba ni polepole kuliko chaguo lolote moja, na ndiyo linalovumilia mwezi mbaya."
-            }
+              "en": "Profit has more than one job. A split can keep the household, business and next bad week in view. New capacity also brings a weekly cost.",
+              "sw": "Faida ina kazi zaidi ya moja. Mgawanyo unaweza kuangalia kaya, biashara na wiki mbaya inayofuata. Uwezo mpya pia huleta gharama ya wiki."
+            },
+            "upTo": 0.7
           },
           {
-            "id": "take-home",
-            "label": {
-              "en": "Take it all home",
-              "sw": "Chukua yote nyumbani"
-            },
-            "detail": {
-              "en": "This is why you work.",
-              "sw": "Hii ndiyo sababu unafanya kazi."
-            },
-            "effects": {
-              "cash": -160000
-            },
-            "predictAnswer": "same",
             "outcome": {
-              "en": "The roof is fixed and your family eats well this month. The business is exactly the same size it was, and will be next year too.",
-              "sw": "Paa limetengenezwa na familia yako inakula vizuri mwezi huu. Biashara ina ukubwa uleule iliokuwa nao, na itakuwa hivyo mwakani pia."
+              "en": "You put most of the money into the business. More customers can be served, but little is left for home or a surprise cost.",
+              "sw": "Unaweka pesa nyingi kwenye biashara. Wateja zaidi wanaweza kuhudumiwa, lakini kidogo kinabaki nyumbani au kwa gharama ya ghafla."
             },
             "lesson": {
-              "en": "A business where all the profit goes home supports a household. That is a real achievement, and it is a different thing from a business that grows.",
-              "sw": "Biashara ambayo faida yote inaenda nyumbani inasaidia kaya. Hilo ni mafanikio halisi, na ni kitu tofauti na biashara inayokua."
+              "en": "Reinvestment can build capacity, but new capacity brings a weekly cost and a business without a reserve is exposed. Growth and safety are both real needs.",
+              "sw": "Kurudisha faida kunaweza kujenga uwezo, lakini uwezo mpya huleta gharama ya wiki na biashara bila akiba iko wazi kwa hatari. Ukuaji na usalama vyote ni mahitaji halisi."
             }
           }
         ]

@@ -14,6 +14,8 @@
 //     mechanical filtering that makes business-plan scores harmful, and hides which
 //     behaviours produced it.
 
+import { gradePrediction } from './engine.js';
+
 const SCHEMA_VERSION = 1;
 
 export function createRecord(scenarioId) {
@@ -38,8 +40,22 @@ export function observeInfoSought(record, turnId, infoId, label) {
   return observe(record, { kind: 'info-sought', turnId, infoId, label });
 }
 
-export function observePrediction(record, turnId, predicted, actual, correct, metric) {
-  return observe(record, { kind: 'prediction', turnId, predicted, actual, correct, metric });
+export function observePrediction(record, turnId, predicted, actual, correct, metric, numeric, numericGrade) {
+  const entry = { kind: 'prediction', turnId, predicted, actual, correct, metric };
+
+  // Choice predictions remain exactly as before. Numeric predictions additionally
+  // carry the calibration detail, either supplied by the caller or derived with the
+  // engine's single grading rule.
+  if (typeof predicted === 'number' && typeof actual === 'number') {
+    const supplied = numeric && typeof numeric === 'object' ? numeric : {};
+    const suppliedError = typeof numeric === 'number' ? numeric : supplied.error;
+    const suppliedGrade = typeof numericGrade === 'string' ? numericGrade : supplied.grade;
+    const graded = gradePrediction(predicted, actual);
+    entry.error = typeof suppliedError === 'number' ? suppliedError : graded.error;
+    entry.grade = typeof suppliedGrade === 'string' ? suppliedGrade : graded.grade;
+  }
+
+  return observe(record, entry);
 }
 
 export function observeDecision(record, turnId, concept, optionId, optionLabel, infoSoughtCount, pnlBefore, pnlAfter) {
@@ -59,6 +75,14 @@ export function observeConstraint(record, turnId, text) {
   return observe(record, { kind: 'constraint-named', turnId, text });
 }
 
+export function observeDiagnosis(record, turnId, picked, answer, correct) {
+  return observe(record, { kind: 'diagnosis', turnId, picked, answer, correct });
+}
+
+export function observeInput(record, turnId, field, value) {
+  return observe(record, { kind: 'input', turnId, field, value });
+}
+
 // ---------------------------------------------------------------------------
 // Layer 2 — indicators. Each returns { id, label, summary, evidence: [] }.
 // An indicator that cannot point at its evidence is an opinion and does not ship.
@@ -70,6 +94,10 @@ function predictions(record) {
 
 function decisions(record) {
   return record.observations.filter((o) => o.kind === 'decision');
+}
+
+function diagnoses(record) {
+  return record.observations.filter((o) => o.kind === 'diagnosis');
 }
 
 /**
@@ -170,12 +198,31 @@ export function conceptCoverage(record) {
   };
 }
 
+/** Which ledger line did the learner identify as the source of a loss? */
+export function diagnosis(record) {
+  const entries = diagnoses(record);
+  const correct = entries.filter((entry) => entry.correct);
+  return {
+    id: 'diagnosis',
+    label: 'Identifying the source of a loss',
+    total: entries.length,
+    correct: correct.length,
+    evidence: entries.map((entry) => ({
+      turnId: entry.turnId,
+      picked: entry.picked,
+      answer: entry.answer,
+      correct: entry.correct,
+    })),
+  };
+}
+
 export function allIndicators(record) {
   return [
     calibration(record),
     informationSeeking(record),
     recovery(record),
     conceptCoverage(record),
+    diagnosis(record),
   ];
 }
 
@@ -200,6 +247,7 @@ export function buildProfile(record) {
   const info = informationSeeking(record);
   const rec = recovery(record);
   const cov = conceptCoverage(record);
+  const diag = diagnosis(record);
 
   const statements = [];
 
@@ -255,6 +303,31 @@ export function buildProfile(record) {
     detailKey: null,
     detail: null,
   });
+
+  if (diag.total > 0) {
+    statements.push({
+      indicator: diag.label,
+      indicatorKey: 'indicator.diagnosis',
+      key: 'profile.stmt.diagnosis',
+      params: { correct: diag.correct, total: diag.total },
+      text: `Identified the ledger line that caused the loss correctly in ${diag.correct} of ${diag.total} diagnosis steps.`,
+      detailKey: null,
+      detail: null,
+    });
+  }
+
+  if (record.goalProgress) {
+    const goal = record.goalProgress;
+    statements.push({
+      indicator: 'Goal progress',
+      indicatorKey: 'indicator.goal',
+      key: 'profile.stmt.goal',
+      params: { met: goal.metCount, total: goal.total },
+      text: `Met ${goal.metCount} of ${goal.total} goal conditions in the simulation.`,
+      detailKey: null,
+      detail: null,
+    });
+  }
 
   return {
     scenarioId: record.scenarioId,

@@ -16,27 +16,43 @@ const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
 
 // Module order matters: dependencies first.
 const MODULES = [
-  ['i18n', 'app/js/i18n.js', ''],
-  ['format', 'app/js/format.js', `
-    const { t, getLanguage } = NS_i18n;
-  `],
-  ['engine', 'app/js/engine.js', ''],
-  ['record', 'app/js/record.js', ''],
-  ['storage', 'app/js/storage.js', ''],
-  ['scene', 'app/js/scene.js', ''],
-  ['ui', 'app/js/ui.js', `
-    const { money, moneyShort, moneySigned, count, proportion } = NS_format;
-    const { weeklyPnl, ownerLoad, project, bandFor, BAND_SAME, BAND_LOT } = NS_engine;
-    const { t, tCount, localised } = NS_i18n;
-    const { drawScene, drawChart, animateNumber, pulse } = NS_scene;
-  `],
-  ['main', 'app/js/main.js', `
-    const record = NS_record, store = NS_storage, ui = NS_ui;
-    const { createState, applyEffects, weeklyPnl, advanceWeeks, scheduleLater } = NS_engine;
-    const { setCurrency } = NS_format;
-    const { loadStrings, setLanguage, getLanguage, LANGUAGES, t, localised } = NS_i18n;
-  `],
+  ['i18n', 'app/js/i18n.js'],
+  ['format', 'app/js/format.js'],
+  ['engine', 'app/js/engine.js'],
+  ['record', 'app/js/record.js'],
+  ['storage', 'app/js/storage.js'],
+  ['scene', 'app/js/scene.js'],
+  ['ui', 'app/js/ui.js'],
+  ['main', 'app/js/main.js'],
 ];
+
+/**
+ * Rebuild each module's imports as destructures from the wrapping IIFEs.
+ *
+ * This used to be a hand-maintained list, which meant adding one import to a module
+ * broke the single-file build silently — the page loads and then dies on a name that
+ * exists in `app/` but was never injected here. Deriving it from the real import
+ * statements keeps the two in step by construction.
+ *
+ * Handles the two forms the codebase actually uses:
+ *   import { a, b as c } from './engine.js'   ->  const { a, b: c } = NS_engine;
+ *   import * as ui from './ui.js'             ->  const ui = NS_ui;
+ */
+function injectionsFor(src) {
+  const lines = [];
+
+  for (const m of src.matchAll(/^import\s+\{([^}]+)\}\s+from\s+'\.\/([A-Za-z0-9_]+)\.js';/gm)) {
+    const names = m[1].split(',').map((s) => s.trim()).filter(Boolean)
+      .map((s) => s.replace(/\s+as\s+/, ': '));
+    lines.push(`const { ${names.join(', ')} } = NS_${m[2]};`);
+  }
+
+  for (const m of src.matchAll(/^import\s+\*\s+as\s+([A-Za-z0-9_$]+)\s+from\s+'\.\/([A-Za-z0-9_]+)\.js';/gm)) {
+    lines.push(`const ${m[1]} = NS_${m[2]};`);
+  }
+
+  return lines.join('\n');
+}
 
 /** Collect the names a module exports, so the IIFE can return them. */
 function exportedNames(src) {
@@ -64,7 +80,10 @@ const scenario = read('app/content/scenario-mama-asha.json');
 const uiStrings = read('app/content/ui.json');
 const css = read('app/css/styles.css');
 
-let js = MODULES.map(([name, path, injected]) => wrapModule(name, read(path), injected)).join('\n');
+let js = MODULES.map(([name, path]) => {
+  const src = read(path);
+  return wrapModule(name, src, injectionsFor(src));
+}).join('\n');
 
 // Replace the network fetches with the embedded content, and make startup work whether
 // or not DOMContentLoaded has already fired (it usually has, in an embedded page).
