@@ -10,6 +10,7 @@
 import { readFileSync } from 'node:fs';
 import {
   createState, applyEffects, weeklyPnl, advanceWeeks, scheduleLater, bandFor,
+  resolveNumberInput, resolveAllocation, allocationTotal, bandForValue,
 } from '../app/js/engine.js';
 
 const path = process.argv[2] || 'app/content/scenario-mama-asha.json';
@@ -21,16 +22,124 @@ const scenario = JSON.parse(readFileSync(path, 'utf8'));
 
 let problems = 0;
 let checks = 0;
+let choiceProblems = 0;
+let numericChecks = 0;
+let numericProblems = 0;
 
 // Walk several paths, because state — and therefore the delta — depends on earlier
 // choices. An option whose band flips between paths is unfair to the learner.
 const paths = [0, 1, 2];
 const results = new Map();
+const numericResults = [];
+
+function numberValues(input) {
+  const min = Number(input.min);
+  const max = Number(input.max);
+  const step = Number(input.step);
+  if (!Number.isFinite(min) || !Number.isFinite(max) || !Number.isFinite(step) || step <= 0 || max < min) return [];
+
+  const values = [];
+  for (let value = min; value <= max + step * 1e-9; value += step) {
+    values.push(Math.min(max, value));
+    if (values.length > 10000) break;
+  }
+  if (values.length && values[values.length - 1] !== max) values.push(max);
+  return [...new Set(values)];
+}
+
+function pathNumberValue(values, pathIndex) {
+  if (values.length === 0) return undefined;
+  if (pathIndex === 0) return values[0];
+  if (pathIndex === 1) return values[Math.floor((values.length - 1) / 2)];
+  return values[values.length - 1];
+}
+
+function validateNumberTurn(state, turn, pathIndex) {
+  const decision = turn.decision;
+  const values = numberValues(decision.input || {});
+  const outcomes = values.map((value) => {
+    const after = applyEffects(state, resolveNumberInput(state, decision.input, value));
+    return { value, state: after, profit: weeklyPnl(after).profit, band: bandForValue(decision.bands, value) };
+  });
+
+  const finite = outcomes.every((outcome) => Number.isFinite(outcome.profit));
+  const mapped = outcomes.every((outcome) => outcome.band !== null);
+  let monotonic = true;
+  for (const response of decision.input?.responses || []) {
+    const change = Number(response.change);
+    const fieldValues = outcomes.map((outcome) => Number(outcome.state[response.field]));
+    if (!Number.isFinite(change) || fieldValues.some((value) => !Number.isFinite(value))) continue;
+    for (let i = 1; i < fieldValues.length; i += 1) {
+      const difference = fieldValues[i] - fieldValues[i - 1];
+      if ((change > 0 && difference < 0) || (change < 0 && difference > 0)) monotonic = false;
+    }
+  }
+
+  numericResults.push({ turn: turn.id, type: 'number', path: pathIndex, finite, mapped, monotonic, values: values.length });
+  const chosen = pathNumberValue(values, pathIndex);
+  let next = state;
+  if (chosen !== undefined) next = applyEffects(state, resolveNumberInput(state, decision.input, chosen));
+  return { next, ok: finite && mapped && monotonic };
+}
+
+function allocationSplits(allocate, total) {
+  const first = allocate.buckets?.[0]?.id;
+  const second = allocate.buckets?.[1]?.id || allocate.buckets?.[0]?.id;
+  if (!first || !second) return [];
+  const step = Number(allocate.step);
+  if (!Number.isFinite(step) || step <= 0 || total < 0) return [];
+  const amounts = [];
+  for (let amount = 0; amount <= total + step * 1e-9; amount += step) {
+    const firstAmount = Math.min(total, amount);
+    amounts.push({
+      split: { [first]: firstAmount, [second]: total - firstAmount },
+      fraction: total > 0 ? firstAmount / total : 0,
+    });
+    if (amounts.length > 10000) break;
+  }
+  return amounts;
+}
+
+function validateAllocationTurn(state, turn, pathIndex) {
+  const allocate = turn.decision.allocate || {};
+  const total = allocationTotal(state, allocate);
+  const splits = allocationSplits(allocate, total);
+  const outcomes = splits.map(({ split, fraction }) => {
+    const after = applyEffects(state, resolveAllocation(state, allocate, split));
+    return { split, fraction, profit: weeklyPnl(after).profit, band: bandForValue(turn.decision.bands, fraction) };
+  });
+  const finite = outcomes.every((outcome) => Number.isFinite(outcome.profit));
+  const mapped = outcomes.every((outcome) => outcome.band !== null);
+  numericResults.push({ turn: turn.id, type: 'allocate', path: pathIndex, finite, mapped, monotonic: true, values: splits.length });
+
+  let next = state;
+  if (splits.length) {
+    const chosen = splits[pathIndex === 0 ? 0 : pathIndex === 1 ? Math.floor((splits.length - 1) / 2) : splits.length - 1];
+    next = applyEffects(state, resolveAllocation(state, allocate, chosen.split));
+  }
+  return { next, ok: finite && mapped };
+}
 
 for (const pathChoice of paths) {
   let state = createState(scenario.startState || {});
 
   for (const turn of scenario.turns) {
+    const type = turn.decision.type || 'choice';
+
+    if (type === 'number') {
+      const validation = validateNumberTurn(state, turn, pathChoice);
+      if (!validation.ok) { numericProblems += 1; problems += 1; }
+      state = advanceWeeks(validation.next, turn.advanceWeeks || 1).state;
+      continue;
+    }
+
+    if (type === 'allocate') {
+      const validation = validateAllocationTurn(state, turn, pathChoice);
+      if (!validation.ok) { numericProblems += 1; problems += 1; }
+      state = advanceWeeks(validation.next, turn.advanceWeeks || 1).state;
+      continue;
+    }
+
     const before = weeklyPnl(state).profit;
 
     for (const opt of turn.decision.options) {
@@ -64,7 +173,7 @@ for (const r of results.values()) {
   const match = unique.includes(r.declared);
   const ok = stable && match;
 
-  if (!ok) problems += 1;
+  if (!ok) { problems += 1; choiceProblems += 1; }
 
   const flag = ok ? '  ' : (!match ? '!!' : '~ ');
   const deltas = r.deltas.map((d) => Math.round(d)).join(', ');
@@ -80,6 +189,20 @@ const ids = new Set();
 for (const turn of scenario.turns) {
   if (ids.has(turn.id)) { console.log(`  FAIL duplicate turn id ${turn.id}`); problems += 1; }
   ids.add(turn.id);
+
+  const type = turn.decision?.type || 'choice';
+  if (type === 'number' || type === 'allocate') {
+    if (!turn.decision.bands || !Array.isArray(turn.decision.bands) || turn.decision.bands.length === 0) {
+      console.log(`  FAIL ${turn.id} needs bands for ${type} input`); problems += 1;
+    }
+    if (type === 'number' && (!turn.decision.input || !Array.isArray(turn.decision.input.responses))) {
+      console.log(`  FAIL ${turn.id} needs numeric input and responses`); problems += 1;
+    }
+    if (type === 'allocate' && (!turn.decision.allocate || !Array.isArray(turn.decision.allocate.buckets))) {
+      console.log(`  FAIL ${turn.id} needs allocation buckets`); problems += 1;
+    }
+    continue;
+  }
 
   if (!turn.decision || !Array.isArray(turn.decision.options) || turn.decision.options.length < 2) {
     console.log(`  FAIL ${turn.id} needs at least 2 options`); problems += 1;
@@ -98,6 +221,14 @@ for (const turn of scenario.turns) {
 }
 console.log(`  ${ids.size} unique turn ids`);
 
+for (const result of numericResults) {
+  numericChecks += 1;
+  const ok = result.finite && result.mapped && result.monotonic;
+  if (!ok) {
+    console.log(`  FAIL ${result.turn} ${result.type} path ${result.path}: finite=${result.finite}, bands=${result.mapped}, monotonic=${result.monotonic}`);
+  }
+}
+
 // Is any turn a walkover? Every option landing in the same band teaches nothing.
 console.log('\ndiscrimination:');
 for (const turn of scenario.turns) {
@@ -107,5 +238,7 @@ for (const turn of scenario.turns) {
   }
 }
 
-console.log(`\n${checks - problems}/${checks} option predictions verified, ${problems} problem(s)\n`);
+console.log(`\n${checks - choiceProblems}/${checks} option predictions verified, ${problems} problem(s)`);
+if (numericChecks) console.log(`${numericChecks - numericProblems}/${numericChecks} numeric turn paths verified`);
+console.log('');
 process.exit(problems === 0 ? 0 : 1);

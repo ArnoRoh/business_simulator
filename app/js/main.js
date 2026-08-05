@@ -8,7 +8,11 @@
 // which is what makes the answer worth recording. "Work it out" sits in front of the
 // prediction so that expectation is formed from numbers they have actually seen.
 
-import { createState, applyEffects, weeklyPnl, advanceWeeks, scheduleLater } from './engine.js';
+import {
+  createState, applyEffects, weeklyPnl, advanceWeeks, scheduleLater,
+  resolveNumberInput, resolveAllocation, bandForValue, gradePrediction,
+  evaluateGoal, needsRecovery,
+} from './engine.js';
 import * as record from './record.js';
 import * as store from './storage.js';
 import * as ui from './ui.js';
@@ -42,6 +46,7 @@ function cacheDom() {
   dom.lang = q('lang');
   dom.pnlToggle = q('pnl-toggle');
   dom.pnlWrap = q('pnl-wrap');
+  dom.goal = q('goal');
   dom.footPrivacy = q('foot-privacy');
 }
 
@@ -55,8 +60,16 @@ function newSession() {
     sought: [],
     chosenOptionId: null,
     predictedId: null,
+
+    // v3: what the learner supplied, rather than which option they recognised.
+    inputValue: null,
+    split: null,
+    diagnosed: null,
+    predictedValue: null,
+
     fired: [],
     weeksPassed: 0,
+    recoveriesUsed: 0,
     record: record.createRecord(scenario.id),
   };
 }
@@ -71,12 +84,98 @@ function currentTurn() {
 
 function chosenOption() {
   const turn = currentTurn();
+  if (!turn.decision.options) return null;
   return turn.decision.options.find((o) => o.id === session.chosenOptionId);
 }
 
-/** The state the learner's choice would produce, before any time passes. */
+function decisionType(turn) {
+  return (turn && turn.decision && turn.decision.type) || 'choice';
+}
+
+/**
+ * What the learner decided, as an effects object — whichever way they decided it.
+ *
+ * This is the seam v3 turns on. A `choice` turn hands back a pre-authored effects
+ * block; `number` and `allocate` turns compute one from the value the learner actually
+ * supplied, through the declarative response curves in content. Everything downstream
+ * — the reveal, the P&L, the record — is identical either way, which is what lets the
+ * three decision types share one turn loop.
+ */
+function chosenEffects() {
+  const turn = currentTurn();
+  const type = decisionType(turn);
+
+  if (type === 'number') {
+    return resolveNumberInput(session.state, turn.decision.input, session.inputValue);
+  }
+  if (type === 'allocate') {
+    return resolveAllocation(session.state, turn.decision.allocate, session.split || {});
+  }
+  const opt = chosenOption();
+  return (opt && opt.effects) || {};
+}
+
+/** The state the learner's decision would produce, before any time passes. */
 function afterChoiceState() {
-  return applyEffects(session.state, chosenOption().effects || {});
+  return applyEffects(session.state, chosenEffects());
+}
+
+/**
+ * The outcome and lesson text for what they decided.
+ *
+ * A `choice` carries its own. A free decision selects from `bands` on the value chosen
+ * — on the value, not on the profit change, so the narrative can talk about the decision
+ * the learner made rather than only its result.
+ */
+function narrativeFor() {
+  const turn = currentTurn();
+  const type = decisionType(turn);
+
+  if (type === 'number') {
+    const band = bandForValue(turn.decision.bands, session.inputValue);
+    return { outcome: band && band.outcome, lesson: band && band.lesson };
+  }
+  if (type === 'allocate') {
+    const buckets = turn.decision.allocate.buckets || [];
+    const total = Object.values(session.split || {}).reduce((a, b) => a + b, 0);
+    const first = (session.split || {})[buckets[0] && buckets[0].id] || 0;
+    const band = bandForValue(turn.decision.bands, total > 0 ? first / total : 0);
+    return { outcome: band && band.outcome, lesson: band && band.lesson };
+  }
+  const opt = chosenOption();
+  return { outcome: opt && opt.outcome, lesson: opt && opt.lesson };
+}
+
+/** A short label for the record — what they chose, in words. */
+function decisionLabel() {
+  const turn = currentTurn();
+  const type = decisionType(turn);
+  if (type === 'number') return `${turn.decision.input.field}=${session.inputValue}`;
+  if (type === 'allocate') {
+    return Object.entries(session.split || {}).map(([k, v]) => `${k}=${v}`).join(' ');
+  }
+  const opt = chosenOption();
+  return localised(opt && opt.label);
+}
+
+/** Band or numeric — the prediction, packaged for the reveal. */
+function predictionResult() {
+  const turn = currentTurn();
+  const numeric = turn.decision.predict === 'number';
+
+  if (numeric) {
+    const actual = weeklyPnl(afterChoiceState()).profit;
+    const graded = gradePrediction(session.predictedValue, actual);
+    return { kind: 'number', ...graded };
+  }
+  const opt = chosenOption();
+  const actualId = opt && opt.predictAnswer;
+  return {
+    kind: 'band',
+    predictedId: session.predictedId,
+    actualId,
+    correct: session.predictedId === actualId,
+  };
 }
 
 function scrollToDecision() {
@@ -105,24 +204,48 @@ function renderAll(prevState) {
   ui.renderTrajectory(dom.trajectory, session.state);
   ui.renderConsequences(dom.consequence, session.fired, session.weeksPassed);
 
+  // The goal is what makes twenty decisions one campaign rather than twenty quizzes.
+  // It steers; it never scores — completion is the gate (ADR-0005, D-008).
+  if (scenario.goal) {
+    ui.renderGoal(dom.goal, evaluateGoal(session.state, scenario.goal), scenario.goal);
+  }
+
   const sought = new Set(session.sought);
   ui.renderInfo(dom.info, turn, session.state, onSeekInfo, sought);
 
+  const type = decisionType(turn);
+
   if (session.phase === 'situation') {
-    ui.renderOptions(dom.decision, turn, onChooseOption);
+    // A diagnose step, where content asks for one, runs before the decision: read the
+    // ledger and say which line is the problem, then act on it.
+    if (turn.diagnose && session.diagnosed === null) {
+      ui.renderDiagnose(dom.decision, turn, session.state, onDiagnose);
+    } else if (type === 'number') {
+      ui.renderNumberDecision(dom.decision, turn, session.state, onCommitNumber);
+    } else if (type === 'allocate') {
+      ui.renderAllocateDecision(dom.decision, turn, session.state, onCommitAllocation);
+    } else {
+      ui.renderOptions(dom.decision, turn, onChooseOption);
+    }
   } else if (session.phase === 'workout') {
     ui.renderWorkout(dom.decision, turn, chosenOption(), session.state, onWorkoutDone);
     scrollToDecision();
   } else if (session.phase === 'predict') {
-    ui.renderPredict(dom.decision, turn, chosenOption(), onPredict);
+    if (turn.decision.predict === 'number') {
+      ui.renderPredictNumber(dom.decision, turn, session.state, onPredictNumber);
+    } else {
+      ui.renderPredict(dom.decision, turn, chosenOption(), onPredict);
+    }
     scrollToDecision();
   } else if (session.phase === 'reveal') {
-    const opt = chosenOption();
-    ui.renderReveal(
-      dom.decision, turn, opt, session.predictedId,
-      session.predictedId === opt.predictAnswer,
-      session.state, afterChoiceState(), onNext,
-    );
+    ui.renderReveal(dom.decision, {
+      turn,
+      narrative: narrativeFor(),
+      prediction: predictionResult(),
+      beforeState: session.state,
+      afterState: afterChoiceState(),
+      onNext,
+    });
     scrollToDecision();
   }
 }
@@ -143,8 +266,38 @@ function onSeekInfo(item) {
   renderAll();
 }
 
+function onDiagnose(pickedKey) {
+  const turn = currentTurn();
+  const correct = pickedKey === turn.diagnose.answer;
+  session.diagnosed = pickedKey;
+  record.observeDiagnosis(session.record, turn.id, pickedKey, turn.diagnose.answer, correct);
+  persist();
+  renderAll();
+}
+
 function onChooseOption(option) {
   session.chosenOptionId = option.id;
+  session.phase = 'workout';
+  persist();
+  renderAll();
+}
+
+/** A free numeric decision — the value itself is the evidence, so it is recorded. */
+function onCommitNumber(value) {
+  const turn = currentTurn();
+  session.inputValue = value;
+  record.observeInput(session.record, turn.id, turn.decision.input.field, value);
+  session.phase = 'workout';
+  persist();
+  renderAll();
+}
+
+function onCommitAllocation(split) {
+  const turn = currentTurn();
+  session.split = split;
+  for (const [bucket, amount] of Object.entries(split)) {
+    record.observeInput(session.record, turn.id, `allocate.${bucket}`, amount);
+  }
   session.phase = 'workout';
   persist();
   renderAll();
@@ -169,6 +322,22 @@ function onPredict(choice) {
   renderAll();
 }
 
+function onPredictNumber(value) {
+  const turn = currentTurn();
+  session.predictedValue = value;
+
+  const actual = weeklyPnl(afterChoiceState()).profit;
+  const graded = gradePrediction(value, actual);
+  record.observePrediction(
+    session.record, turn.id, value, actual, graded.correct, 'profit',
+    { predicted: value, actual, error: graded.error, grade: graded.grade },
+  );
+
+  session.phase = 'reveal';
+  persist();
+  renderAll();
+}
+
 function onNext() {
   const turn = currentTurn();
   const opt = chosenOption();
@@ -176,16 +345,17 @@ function onNext() {
 
   const before = weeklyPnl(session.state).profit;
   const after = weeklyPnl(afterChoiceState()).profit;
+  const label = decisionLabel();
 
   record.observeDecision(
-    session.record, turn.id, turn.concept, opt.id, localised(opt.label),
+    session.record, turn.id, turn.concept, (opt && opt.id) || decisionType(turn), label,
     session.sought.length, before, after,
   );
 
-  // Apply the choice, queue anything it sets in motion for later, then let time pass so
-  // consequences arrive on a lag.
-  let next = applyEffects(session.state, opt.effects || {});
-  next = scheduleLater(next, opt.later || [], localised(opt.label));
+  // Apply the decision, queue anything it sets in motion for later, then let time pass
+  // so consequences arrive on a lag.
+  let next = applyEffects(session.state, chosenEffects());
+  next = scheduleLater(next, (opt && opt.later) || [], label);
 
   const advanced = advanceWeeks(next, turn.advanceWeeks || 1);
 
@@ -198,6 +368,19 @@ function onNext() {
   session.sought = [];
   session.chosenOptionId = null;
   session.predictedId = null;
+  session.inputValue = null;
+  session.split = null;
+  session.diagnosed = null;
+  session.predictedValue = null;
+
+  // Running out of money is a chapter boundary, not an ending (docs/game-design.md).
+  // The learner gets a turn about trading their way out, which is the situation the
+  // scenario most needs to teach and the one a fail screen would skip.
+  if (scenario.recovery && needsRecovery(session.state) && session.recoveriesUsed < 2) {
+    session.recoveriesUsed += 1;
+    scenario.turns.splice(session.turnIndex, 0, JSON.parse(JSON.stringify(scenario.recovery)));
+    scenario.turns[session.turnIndex].id = `recovery-${session.recoveriesUsed}`;
+  }
 
   persist();
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -217,6 +400,13 @@ function renderEnd() {
   // rather than leaving an empty bordered card on the results screen.
   dom.pnlWrap.setAttribute('hidden', '');
   dom.pnlToggle.hidden = true;
+
+  // Goal progress travels with the record as an OBSERVATION — what the business looked
+  // like at the end, not a mark out of four. Missing a condition is not failing.
+  if (scenario.goal) {
+    session.record.goalProgress = evaluateGoal(session.state, scenario.goal);
+    ui.renderGoal(dom.goal, session.record.goalProgress, scenario.goal);
+  }
 
   const profile = record.buildProfile(session.record);
   const tally = record.predictionTally(session.record);

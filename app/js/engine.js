@@ -372,3 +372,145 @@ export function healthCheck(state) {
   if (ownerLoad(state).overloaded) problems.push('owner-overloaded');
   return problems;
 }
+
+/**
+ * Resolve a number decision into the effects consumed by applyEffects.
+ *
+ * The response curve is deliberately small and declarative: content supplies a
+ * per-step distance and a change, and the engine performs the arithmetic here.
+ * There is no expression language for scenario content to execute.
+ */
+export function resolveNumberInput(state, input, value) {
+  const effects = {};
+  const responseDeltas = {};
+  const startValue = input.start === 'current'
+    ? Number(state[input.field]) || 0
+    : Number(input.start);
+
+  effects[input.field] = value;
+
+  for (const response of input.responses || []) {
+    const perStep = Number(response.perStep);
+    const change = Number(response.change);
+    if (!response.field || !Number.isFinite(perStep) || perStep === 0 || !Number.isFinite(change)) continue;
+
+    const delta = Math.round(((Number(value) - startValue) / perStep) * change);
+    responseDeltas[response.field] = (responseDeltas[response.field] || 0) + (Object.is(delta, -0) ? 0 : delta);
+  }
+
+  for (const [field, delta] of Object.entries(responseDeltas)) {
+    // Numeric state fields in current scenarios are additive. Preserve the
+    // applyEffects escape hatch for an absolute field so this API remains
+    // additive even if a future curve targets one.
+    effects[field] = ADDITIVE.has(field) ? delta : `${delta >= 0 ? '+' : ''}${delta}`;
+  }
+
+  return effects;
+}
+
+/** Total available to allocate, rounded to the authored step. */
+export function allocationTotal(state, allocate) {
+  const step = Number(allocate.step);
+  if (!Number.isFinite(step) || step <= 0) return 0;
+
+  const amount = Number(state[allocate.amountFrom]);
+  const fraction = Number(allocate.fraction);
+  if (!Number.isFinite(amount) || !Number.isFinite(fraction)) return 0;
+
+  return Math.max(0, Math.round((amount * fraction) / step) * step);
+}
+
+/**
+ * Resolve an allocation into additive effects. `split` contains amounts, not
+ * units; units are derived from the same authored step as allocationTotal().
+ */
+export function resolveAllocation(state, allocate, split) {
+  const step = Number(allocate.step);
+  if (!Number.isFinite(step) || step <= 0) return {};
+
+  const effects = {};
+  const deltas = {};
+  let keptCash = 0;
+
+  for (const bucket of allocate.buckets || []) {
+    const amount = Number(split?.[bucket.id]);
+    if (!Number.isFinite(amount)) continue;
+    if (bucket.keepsCash) keptCash += amount;
+
+    const units = amount / step;
+    for (const [field, perStep] of Object.entries(bucket.perStep || {})) {
+      const delta = Number(perStep) * units;
+      if (!Number.isFinite(delta)) continue;
+      deltas[field] = (deltas[field] || 0) + delta;
+    }
+  }
+
+  const total = allocationTotal(state, allocate);
+  deltas.cash = (deltas.cash || 0) - (total - keptCash);
+
+  for (const [field, delta] of Object.entries(deltas)) {
+    const whole = Object.is(delta, -0) ? 0 : delta;
+    effects[field] = ADDITIVE.has(field) ? whole : `${whole >= 0 ? '+' : ''}${whole}`;
+  }
+  return effects;
+}
+
+/** Return the first matching band, or the unbounded final band. */
+export function bandForValue(bands, value) {
+  if (!Array.isArray(bands)) return null;
+  let fallback = null;
+  for (const band of bands) {
+    if (!band || typeof band !== 'object') continue;
+    if (!Object.prototype.hasOwnProperty.call(band, 'upTo')) {
+      fallback = band;
+      continue;
+    }
+    if (Number(value) <= Number(band.upTo)) return band;
+  }
+  return fallback;
+}
+
+/** Grade a numeric weekly-profit prediction against the actual result. */
+export function gradePrediction(predicted, actual) {
+  const error = Math.abs(predicted - actual) / Math.max(2000, Math.abs(actual));
+  if (error <= 0.10) return { grade: 'close', correct: true, error, predicted, actual };
+  if (error <= 0.25) return { grade: 'near', correct: false, error, predicted, actual };
+  return { grade: 'off', correct: false, error, predicted, actual };
+}
+
+/** How many weeks of current fixed costs current cash covers. */
+export function weeksOfCostsCovered(state) {
+  const costs = (Number(state.rent) || 0)
+    + ((Number(state.staff) || 0) * (Number(state.wagePerStaff) || 0))
+    + (Number(state.licenceFees) || 0);
+  if (costs <= 0) return 0;
+  return Math.max(0, Number(state.cash) || 0) / costs;
+}
+
+/** Evaluate declarative goal conditions against the current state. */
+export function evaluateGoal(state, goal) {
+  const conditions = (goal && Array.isArray(goal.conditions)) ? goal.conditions : [];
+  const progress = conditions.map((condition) => {
+    let current = 0;
+    if (condition.metric === 'weeksOfCostsCovered') current = weeksOfCostsCovered(state);
+    else if (condition.field) current = Number(state[condition.field]) || 0;
+
+    const target = Number(condition.min);
+    return {
+      id: condition.id,
+      met: Number.isFinite(target) && current >= target,
+      current,
+      target: condition.min,
+    };
+  });
+  return {
+    conditions: progress,
+    metCount: progress.filter((condition) => condition.met).length,
+    total: progress.length,
+  };
+}
+
+/** True when the business needs the recovery chapter. */
+export function needsRecovery(state) {
+  return state.cash < 0;
+}

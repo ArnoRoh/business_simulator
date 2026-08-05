@@ -423,6 +423,183 @@ ul { margin: 0; padding-left: 1.1em; }
   line-height: 1.45;
 }
 
+/* ---------- free-input decisions ---------- */
+.number-decision,
+.allocation-decision,
+.diagnose { border-width: 2px; border-color: var(--accent); }
+.number-decision .predict-question,
+.allocation-decision .predict-question,
+.diagnose .predict-question { margin-top: 4px; }
+.number-hint {
+  margin: 0 0 12px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+.stepper {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  margin: 8px 0 12px;
+}
+.stepper-controls {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(48px, 1fr));
+  gap: 6px;
+  min-width: 0;
+}
+.stepper-button {
+  min-width: var(--tap);
+  min-height: var(--tap);
+  padding: 7px 5px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+  color: var(--text);
+  font: inherit;
+  font-size: 1.15rem;
+  font-weight: 750;
+  line-height: 1;
+  cursor: pointer;
+}
+.stepper-button:hover { border-color: var(--accent); }
+.stepper-button:active { transform: scale(0.95); }
+.stepper-value-wrap {
+  min-width: 0;
+  padding: 8px 12px;
+  border: 2px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: center;
+}
+.stepper-label {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.stepper-value {
+  overflow-wrap: anywhere;
+  color: var(--text);
+  font-size: clamp(1.45rem, 7vw, 2rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  line-height: 1.2;
+}
+.number-feedback {
+  margin: 4px 0 12px;
+  padding: 9px 12px;
+  border-left: 4px solid var(--accent-2);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--surface-alt);
+}
+.number-feedback-line {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+.number-feedback-line + .number-feedback-line { margin-top: 5px; }
+.number-feedback-line.keep { font-weight: 750; }
+
+/* ---------- allocation ---------- */
+.allocation-amount,
+.allocation-remaining,
+.allocation-cash {
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+.allocation-remaining {
+  padding: 8px 10px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-weight: 650;
+}
+.allocation-buckets { display: flex; flex-direction: column; gap: 10px; margin: 10px 0; }
+.allocation-bucket {
+  min-width: 0;
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+}
+.allocation-bucket-label {
+  margin-bottom: 7px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.allocation-stepper { margin: 0; }
+.allocation-stepper .stepper-value-wrap { background: var(--surface); }
+.allocation-cash { color: var(--text-muted); }
+
+/* ---------- diagnosis ---------- */
+.diagnose-options { display: flex; flex-direction: column; gap: 8px; }
+.diagnose-option {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: var(--tap);
+  padding: 10px 12px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.diagnose-option:hover { border-color: var(--accent); }
+.diagnose-option:active { transform: scale(0.98); }
+.diagnose-option.selected { border-color: var(--accent); background: var(--surface); }
+.diagnose-label { overflow-wrap: anywhere; font-weight: 650; }
+.diagnose-value { white-space: nowrap; font-variant-numeric: tabular-nums; font-weight: 700; }
+
+/* ---------- goal context ---------- */
+.goal-panel {
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--focus);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--surface-alt);
+}
+.goal-title {
+  margin-bottom: 3px;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+.goal-description { margin: 0 0 8px; color: var(--text-muted); font-size: 0.84rem; line-height: 1.45; }
+.goal-conditions { display: flex; flex-direction: column; gap: 8px; }
+.goal-condition {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 8px;
+  align-items: baseline;
+  padding-top: 7px;
+  border-top: 1px solid var(--border);
+}
+.goal-status { display: flex; align-items: center; gap: 4px; grid-column: 1 / -1; }
+.goal-status-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+.goal-condition[data-met="true"] .goal-status { color: var(--accent-2); }
+.goal-condition[data-met="false"] .goal-status { color: var(--text-muted); }
+.goal-status-word { font-size: 0.75rem; font-weight: 750; text-transform: uppercase; letter-spacing: 0.04em; }
+.goal-condition-label { min-width: 0; font-size: 0.88rem; font-weight: 650; overflow-wrap: anywhere; }
+.goal-condition-value { min-width: 0; color: var(--text-muted); font-size: 0.82rem; text-align: right; overflow-wrap: anywhere; }
+
 /* ---------- prediction step ---------- */
 .predict { border-color: var(--accent); border-width: 2px; }
 .predict-question {
@@ -467,6 +644,7 @@ ul { margin: 0; padding-left: 1.1em; }
   box-shadow: 0 1px 3px var(--shadow);
 }
 .reveal.correct { border-color: var(--accent-2); background: var(--ok-bg); }
+.reveal.near { border-color: var(--accent); background: var(--surface-alt); }
 .reveal.wrong { border-color: var(--danger); background: var(--danger-bg); }
 
 .reveal-verdict {
@@ -489,6 +667,7 @@ ul { margin: 0; padding-left: 1.1em; }
   border: 2px solid currentColor;
 }
 .reveal.correct .reveal-mark { color: var(--accent-2); }
+.reveal.near .reveal-mark { color: var(--accent); }
 .reveal.wrong .reveal-mark { color: var(--danger); }
 .reveal-text { font-weight: 700; font-size: 1.02rem; }
 
@@ -1043,6 +1222,8 @@ ul { margin: 0; padding-left: 1.1em; }
 
     <div id="stats" class="stats"></div>
 
+    <div id="goal"></div>
+
     <button id="pnl-toggle" class="btn btn-ghost btn-small pnl-toggle"
             type="button" aria-expanded="true" aria-controls="pnl-wrap">Hide the numbers</button>
     <div id="pnl-wrap">
@@ -1095,6 +1276,189 @@ ul { margin: 0; padding-left: 1.1em; }
     "wagePerStaff": 30000,
     "spoilRate": 0.5
   },
+  "goal": {
+    "title": {
+      "en": "Three things to keep in view",
+      "sw": "Mambo matatu ya kuyaangalia"
+    },
+    "description": {
+      "en": "This goal gives your run a direction. It is not a pass mark. You can finish without every condition; the record reports what was true at the end.",
+      "sw": "Lengo hili linakupa mwelekeo katika safari yako. Si alama ya kufaulu. Unaweza kumaliza bila kutimiza kila sharti; kumbukumbu itaonyesha hali ya mwisho."
+    },
+    "conditions": [
+      {
+        "id": "registered",
+        "label": {
+          "en": "Registered: formality is at least 1.",
+          "sw": "Umesajiliwa: formality ni angalau 1."
+        },
+        "field": "formality",
+        "min": 1
+      },
+      {
+        "id": "hotel-capacity",
+        "label": {
+          "en": "Can make enough for the hotel order: capacity is at least 230.",
+          "sw": "Unaweza kutengeneza ya kutosha kwa oda ya hoteli: capacity ni angalau 230."
+        },
+        "field": "capacity",
+        "min": 230
+      },
+      {
+        "id": "cash-reserve",
+        "label": {
+          "en": "Cash reserve: keep at least 50,000 in cash.",
+          "sw": "Akiba ya pesa: baki na angalau 50,000 taslimu."
+        },
+        "field": "cash",
+        "min": 50000
+      }
+    ]
+  },
+  "recovery": {
+    "id": "recovery",
+    "concept": "recovery",
+    "conceptLabel": {
+      "en": "When cash runs out",
+      "sw": "Pesa ikiisha"
+    },
+    "scene": "stall-empty",
+    "situation": {
+      "en": "Your cash has gone below zero. The business is still open, but the next payment is due before enough money comes in. This is a hard chapter, not the end of the business.",
+      "sw": "Pesa yako imeshuka chini ya sifuri. Biashara bado iko wazi, lakini malipo yanayofuata yanatakiwa kabla pesa ya kutosha haijaingia. Hii ni sura ngumu, si mwisho wa biashara."
+    },
+    "info": [
+      {
+        "id": "map-cash-gap",
+        "label": {
+          "en": "List what must be paid this week",
+          "sw": "Andika kinachopaswa kulipwa wiki hii"
+        },
+        "costHours": 1,
+        "costCash": 0,
+        "reveals": {
+          "en": "You can see the gap now. A loan buys time but adds a cost. Cutting back hurts output. Selling equipment brings cash but leaves less to make.",
+          "sw": "Sasa unaona pengo. Mkopo unanunua muda lakini unaongeza gharama. Kupunguza kunapunguza uzalishaji. Kuuza vifaa kunaleta pesa lakini kunaacha uwezo mdogo wa kutengeneza."
+        }
+      }
+    ],
+    "decision": {
+      "prompt": {
+        "en": "Which way out do you choose?",
+        "sw": "Unachagua njia gani ya kutoka?"
+      },
+      "predictQuestion": {
+        "en": "What happens to your weekly profit?",
+        "sw": "Faida yako ya wiki itakuwaje?"
+      },
+      "predictChoices": [
+        {
+          "id": "up_lot",
+          "label": {
+            "en": "Up a lot",
+            "sw": "Inapanda sana"
+          }
+        },
+        {
+          "id": "up_bit",
+          "label": {
+            "en": "Up a little",
+            "sw": "Inapanda kidogo"
+          }
+        },
+        {
+          "id": "same",
+          "label": {
+            "en": "About the same",
+            "sw": "Inabaki vilevile"
+          }
+        },
+        {
+          "id": "down",
+          "label": {
+            "en": "Goes down",
+            "sw": "Inashuka"
+          }
+        }
+      ],
+      "options": [
+        {
+          "id": "borrow",
+          "label": {
+            "en": "Borrow enough to cover the gap",
+            "sw": "Kopa kiasi cha kuziba pengo"
+          },
+          "detail": {
+            "en": "You pay for the time with a weekly cost.",
+            "sw": "Unalipia muda huo kwa gharama ya kila wiki."
+          },
+          "effects": {
+            "cash": 120000,
+            "rent": 12000
+          },
+          "predictAnswer": "down",
+          "outcome": {
+            "en": "The cash gap is covered today. The weekly repayment makes the business tighter from now on.",
+            "sw": "Pengo la pesa limezibwa leo. Marejesho ya wiki yanaifanya biashara iwe na nafasi ndogo kuanzia sasa."
+          },
+          "lesson": {
+            "en": "Borrowing can keep a business open, but the cost must fit the profit that remains each week.",
+            "sw": "Kukopa kunaweza kuweka biashara wazi, lakini gharama lazima ilingane na faida inayobaki kila wiki."
+          }
+        },
+        {
+          "id": "cut-back",
+          "label": {
+            "en": "Cut output and reduce the weekly burden",
+            "sw": "Punguza uzalishaji na gharama ya wiki"
+          },
+          "detail": {
+            "en": "Make less for now. Keep more cash in the business.",
+            "sw": "Tengeneza kidogo kwa sasa. Baki na pesa zaidi kwenye biashara."
+          },
+          "effects": {
+            "capacity": "-60",
+            "demand": "-35",
+            "rent": "-10000"
+          },
+          "predictAnswer": "up_bit",
+          "outcome": {
+            "en": "You make less, but the lower weekly burden gives the cash a chance to recover. You can build output again later.",
+            "sw": "Unatengeneza kidogo, lakini gharama ndogo ya wiki inapa pesa nafasi ya kurudi. Unaweza kuongeza uzalishaji tena baadaye."
+          },
+          "lesson": {
+            "en": "Cutting back is not giving up. It buys time by matching the size of the business to the cash it has.",
+            "sw": "Kupunguza si kukata tamaa. Kunanunua muda kwa kulinganisha ukubwa wa biashara na pesa iliyo nayo."
+          }
+        },
+        {
+          "id": "sell-equipment",
+          "label": {
+            "en": "Sell one piece of equipment",
+            "sw": "Uza kifaa kimoja"
+          },
+          "detail": {
+            "en": "Cash now, less capacity later.",
+            "sw": "Pesa sasa, uwezo mdogo baadaye."
+          },
+          "effects": {
+            "cash": 80000,
+            "capacity": "-80",
+            "demand": "-20"
+          },
+          "predictAnswer": "same",
+          "outcome": {
+            "en": "You bring cash in today by selling equipment. The stall can make less, but it stays open while you repair the cash position.",
+            "sw": "Unapata pesa leo kwa kuuza kifaa. Kibanda kinaweza kutengeneza kidogo, lakini kinaendelea wazi huku ukirekebisha hali ya pesa."
+          },
+          "lesson": {
+            "en": "Selling an asset can prevent a cash failure. It solves today's gap by giving up part of tomorrow's capacity.",
+            "sw": "Kuuza mali kunaweza kuzuia kushindwa kwa pesa. Kunatatua pengo la leo kwa kuacha sehemu ya uwezo wa kesho."
+          }
+        }
+      ]
+    }
+  },
   "turns": [
     {
       "id": "t01",
@@ -1137,112 +1501,62 @@ ul { margin: 0; padding-left: 1.1em; }
         }
       ],
       "decision": {
+        "type": "number",
         "prompt": {
-          "en": "What do you do?",
-          "sw": "Utafanya nini?"
+          "en": "Set the price for one mandazi.",
+          "sw": "Panga bei ya andazi moja."
         },
-        "predictQuestion": {
-          "en": "Before you find out — what happens to your weekly profit?",
-          "sw": "Kabla hujajua — faida yako ya wiki itakuwaje?"
+        "predict": "number",
+        "input": {
+          "field": "price",
+          "min": 400,
+          "max": 700,
+          "step": 25,
+          "start": "current",
+          "valueAs": "money",
+          "hint": {
+            "en": "You pay {cost} to make each one.",
+            "sw": "Unalipa {cost} kutengeneza kila moja."
+          },
+          "responses": [
+            {
+              "field": "demand",
+              "perStep": 25,
+              "change": -9
+            }
+          ]
         },
-        "predictChoices": [
+        "bands": [
           {
-            "id": "up_lot",
-            "label": {
-              "en": "Up a lot",
-              "sw": "Inapanda sana"
-            }
-          },
-          {
-            "id": "up_bit",
-            "label": {
-              "en": "Up a little",
-              "sw": "Inapanda kidogo"
-            }
-          },
-          {
-            "id": "same",
-            "label": {
-              "en": "About the same",
-              "sw": "Inabaki vilevile"
-            }
-          },
-          {
-            "id": "down",
-            "label": {
-              "en": "Goes down",
-              "sw": "Inashuka"
-            }
-          }
-        ],
-        "options": [
-          {
-            "id": "make-more",
-            "label": {
-              "en": "Buy more flour and make 20 more each week",
-              "sw": "Nunua unga zaidi utengeneze 20 zaidi kila wiki"
-            },
-            "detail": {
-              "en": "Costs you cash up front to fill the gap you can see.",
-              "sw": "Inakugharimu pesa mapema ili kuziba pengo unaloliona."
-            },
-            "effects": {
-              "capacity": 20,
-              "cash": -15000
-            },
-            "predictAnswer": "up_bit",
             "outcome": {
-              "en": "You now make enough for everyone who comes. Nobody is turned away. You sell twenty more each week, and each one leaves you 200.",
-              "sw": "Sasa unatengeneza ya kutosha kwa kila anayekuja. Hakuna anayerudishwa. Unauza ishirini zaidi kila wiki, na kila moja linakuachia 200."
+              "en": "At this price, your margin is small. You sell more, but each mandazi leaves less.",
+              "sw": "Kwa bei hii, margin yako ni ndogo. Unauza zaidi, lakini kila andazi linakuachia kidogo."
             },
             "lesson": {
-              "en": "You were losing sales you had already earned. Filling that gap was the cheapest growth available to you.",
-              "sw": "Ulikuwa unapoteza mauzo uliyokwisha yapata. Kuziba pengo hilo ilikuwa njia rahisi zaidi ya kukua uliyokuwa nayo."
-            }
+              "en": "Price is not only about customers. See what remains after the cost of one mandazi.",
+              "sw": "Bei si kuhusu wateja tu. Angalia kinachobaki baada ya gharama ya andazi moja."
+            },
+            "upTo": 500
           },
           {
-            "id": "raise-price",
-            "label": {
-              "en": "Raise the price to 650",
-              "sw": "Panda bei hadi 650"
-            },
-            "detail": {
-              "en": "You will lose some customers. You are not sure how many.",
-              "sw": "Utapoteza baadhi ya wateja. Hujui ni wangapi."
-            },
-            "effects": {
-              "price": 650,
-              "demand": -30
-            },
-            "predictAnswer": "up_lot",
             "outcome": {
-              "en": "Thirty customers stop coming. But the ones who stay now leave you 350 each instead of 200. You sell fewer and earn much more.",
-              "sw": "Wateja thelathini wanaacha kuja. Lakini wanaobaki sasa wanakuachia 350 kila mmoja badala ya 200. Unauza kidogo lakini unapata zaidi sana."
+              "en": "You keep more on each mandazi and still have customers. Margin and volume are in the same decision.",
+              "sw": "Unabaki na zaidi kwa kila andazi na bado una wateja. Margin na wingi viko katika uamuzi mmoja."
             },
             "lesson": {
-              "en": "Losing customers is not the same as losing money. What matters is what you keep from each sale, not how many people you serve.",
-              "sw": "Kupoteza wateja si sawa na kupoteza pesa. Kinachohesabika ni kile unachobaki nacho kwa kila mauzo, si idadi ya watu unaowahudumia."
-            }
+              "en": "A good price balances what one sale leaves and how many sales remain.",
+              "sw": "Bei nzuri inalinganisha kinachobaki kwa mauzo moja na idadi ya mauzo yanayobaki."
+            },
+            "upTo": 650
           },
           {
-            "id": "do-nothing",
-            "label": {
-              "en": "Change nothing for now",
-              "sw": "Usibadilishe kitu kwa sasa"
-            },
-            "detail": {
-              "en": "The business works. Do not risk it.",
-              "sw": "Biashara inaenda. Usihatarishe."
-            },
-            "effects": {},
-            "predictAnswer": "same",
             "outcome": {
-              "en": "The week runs as it always does. You sell out by midday and twenty people walk away again.",
-              "sw": "Wiki inaenda kama kawaida. Unauza vyote hadi adhuhuri na watu ishirini wanaondoka tena."
+              "en": "The higher price leaves more on each sale, but fewer people buy. The extra kept per mandazi is close to the sales you lose.",
+              "sw": "Bei ya juu inakuachia zaidi kwa kila mauzo, lakini watu wachache wananunua. Kile cha ziada kwa andazi kinakaribia mauzo unayopoteza."
             },
             "lesson": {
-              "en": "Doing nothing is also a decision. It costs you the sales you keep turning away.",
-              "sw": "Kutofanya kitu nako ni uamuzi. Kunakugharimu mauzo unayoendelea kuyarudisha."
+              "en": "A higher margin can stop helping when volume falls. Move in small steps and look at both numbers.",
+              "sw": "Margin kubwa inaweza kuacha kusaidia wingi unaposhuka. Songa kwa hatua ndogo na angalia namba zote mbili."
             }
           }
         ]
@@ -1276,115 +1590,62 @@ ul { margin: 0; padding-left: 1.1em; }
         }
       ],
       "decision": {
+        "type": "number",
         "prompt": {
-          "en": "How do you respond?",
-          "sw": "Unaitikaje?"
+          "en": "Set your price while the competitor charges 400.",
+          "sw": "Panga bei yako wakati mshindani anauza kwa 400."
         },
-        "predictQuestion": {
-          "en": "What happens to your weekly profit?",
-          "sw": "Faida yako ya wiki itakuwaje?"
+        "predict": "number",
+        "input": {
+          "field": "price",
+          "min": 350,
+          "max": 700,
+          "step": 25,
+          "start": "current",
+          "valueAs": "money",
+          "hint": {
+            "en": "Her mandazi are smaller. Yours are bigger and better known.",
+            "sw": "Mandazi yake ni madogo. Yako ni makubwa na yanajulikana zaidi."
+          },
+          "responses": [
+            {
+              "field": "demand",
+              "perStep": 25,
+              "change": -7
+            }
+          ]
         },
-        "predictChoices": [
+        "bands": [
           {
-            "id": "up_lot",
-            "label": {
-              "en": "Up a lot",
-              "sw": "Inapanda sana"
-            }
-          },
-          {
-            "id": "up_bit",
-            "label": {
-              "en": "Up a little",
-              "sw": "Inapanda kidogo"
-            }
-          },
-          {
-            "id": "same",
-            "label": {
-              "en": "About the same",
-              "sw": "Inabaki vilevile"
-            }
-          },
-          {
-            "id": "down",
-            "label": {
-              "en": "Goes down",
-              "sw": "Inashuka"
-            }
-          }
-        ],
-        "options": [
-          {
-            "id": "match-price",
-            "label": {
-              "en": "Cut your price to match hers",
-              "sw": "Punguza bei yako ilingane na yake"
-            },
-            "detail": {
-              "en": "Do not let her take your customers.",
-              "sw": "Usimwache akuchukulie wateja."
-            },
-            "effects": {
-              "price": 400,
-              "demand": 25
-            },
-            "predictAnswer": "down",
             "outcome": {
-              "en": "You get some customers back. But you now keep only 100 from each mandazi instead of what you had. You are working the same hours for much less.",
-              "sw": "Unapata baadhi ya wateja tena. Lakini sasa unabaki na 100 tu kwa kila andazi badala ya ulichokuwa nacho. Unafanya kazi masaa yaleyale kwa kidogo sana."
+              "en": "Your price is close to hers. More people may try you, but each sale leaves less after your higher cost.",
+              "sw": "Bei yako iko karibu na yake. Watu zaidi wanaweza kukujaribu, lakini kila mauzo yanakuachia kidogo baada ya gharama yako kubwa."
             },
             "lesson": {
-              "en": "Cutting price to fight a cheaper seller is the fastest way to lose money. You gave away your margin to win sales you were mostly already making.",
-              "sw": "Kupunguza bei ili kupambana na muuzaji wa bei rahisi ni njia ya haraka zaidi ya kupoteza pesa. Umetoa faida yako ili kushinda mauzo ambayo kwa kiasi kikubwa ulikuwa tayari unayapata."
-            }
+              "en": "Matching a cheaper seller can win volume and still weaken the business. Count what remains.",
+              "sw": "Kulingana na muuzaji wa bei rahisi kunaweza kuleta wingi na bado kudhoofisha biashara. Hesabu kinachobaki."
+            },
+            "upTo": 425
           },
           {
-            "id": "hold-quality",
-            "label": {
-              "en": "Keep your price and make yours clearly better",
-              "sw": "Shikilia bei yako na fanya yako yawe bora wazi"
-            },
-            "detail": {
-              "en": "A little more sugar and a slightly bigger size.",
-              "sw": "Sukari kidogo zaidi na ukubwa kidogo zaidi."
-            },
-            "effects": {
-              "unitCost": 305,
-              "reputation": 12
-            },
-            "predictAnswer": "same",
             "outcome": {
-              "en": "Your costs rise only slightly, so this week looks much like the last. Over the following weeks word spreads that yours are worth the extra.",
-              "sw": "Gharama zako zinapanda kidogo tu, kwa hiyo wiki hii inafanana na iliyopita. Katika wiki zinazofuata habari zinaenea kwamba yako yanastahili gharama ya ziada."
+              "en": "You charge more than the cheaper stall, but not so much that every customer leaves. Margin and volume must balance.",
+              "sw": "Unauza zaidi ya kibanda cha bei rahisi, lakini si sana kiasi cha kila mteja kuondoka. Margin na wingi lazima vilingane."
             },
             "lesson": {
-              "en": "Competing on quality barely shows up this week. It works through reputation, which moves slowly — which is exactly why people give up on it too early.",
-              "sw": "Kushindana kwa ubora hakuonekani sana wiki hii. Kunafanya kazi kupitia sifa, ambayo inasogea polepole — na ndiyo sababu watu wanakata tamaa mapema mno."
-            }
+              "en": "A cheaper competitor does not set your price for you. Test what customers will pay for better mandazi.",
+              "sw": "Mshindani wa bei rahisi hapangi bei yako. Jaribu kuona wateja watalipa nini kwa mandazi bora."
+            },
+            "upTo": 550
           },
           {
-            "id": "ignore",
-            "label": {
-              "en": "Ignore her and carry on",
-              "sw": "Mpuuze na uendelee"
-            },
-            "detail": {
-              "en": "She may not last.",
-              "sw": "Huenda asidumu."
-            },
-            "effects": {
-              "demand": -40,
-              "reputation": -10
-            },
-            "predictAnswer": "down",
             "outcome": {
-              "en": "She lasts. You lose a slice of your customers to her and do nothing about it.",
-              "sw": "Anadumu. Unapoteza sehemu ya wateja wako kwake na hufanyi lolote."
+              "en": "You ask customers to pay much more than the nearby stall. The higher margin is now fighting the lost volume.",
+              "sw": "Unaomba wateja walipe zaidi sana kuliko kibanda cha karibu. Margin kubwa sasa inapambana na wingi uliopotea."
             },
             "lesson": {
-              "en": "Ignoring a competitor is a choice to let them decide how much of the market you keep.",
-              "sw": "Kupuuza mshindani ni uamuzi wa kumwachia yeye aamue ni sehemu gani ya soko utabaki nayo."
+              "en": "Quality gives you room above the competitor, not permission to ignore demand. Raise the price in steps.",
+              "sw": "Ubora unakupa nafasi juu ya mshindani, si ruhusa ya kupuuza mahitaji. Panda bei kwa hatua."
             }
           }
         ]
@@ -2620,6 +2881,29 @@ ul { margin: 0; padding-left: 1.1em; }
           }
         }
       ],
+      "diagnose": {
+        "prompt": {
+          "en": "Which line caused this loss?",
+          "sw": "Ni kipengele gani kilisababisha hasara hii?"
+        },
+        "answer": "pnl.spoilage",
+        "options": [
+          "pnl.sales",
+          "pnl.costOfSales",
+          "pnl.rent",
+          "pnl.wages",
+          "pnl.fees",
+          "pnl.spoilage"
+        ],
+        "right": {
+          "en": "The wasted stock is the spoilage line. It is food you made but could not sell.",
+          "sw": "Bidhaa zilizopotea ziko kwenye kipengele cha spoilage. Ni chakula ulichotengeneza lakini hukuuza."
+        },
+        "wrong": {
+          "en": "Look at the money-out lines. The loss came from stock that spoiled, not from rent or wages.",
+          "sw": "Angalia vipengele vya pesa iliyotoka. Hasara ilitoka kwenye bidhaa zilizoharibika, si kodi ya pango au mishahara."
+        }
+      },
       "decision": {
         "prompt": {
           "en": "What now?",
@@ -2765,124 +3049,67 @@ ul { margin: 0; padding-left: 1.1em; }
         }
       ],
       "decision": {
+        "type": "number",
         "prompt": {
-          "en": "What do you do about your own time?",
-          "sw": "Unafanya nini kuhusu muda wako mwenyewe?"
+          "en": "How many hours each week will you protect for work on the business?",
+          "sw": "Kila wiki utatenga masaa mangapi kuifanyia biashara mipango?"
         },
-        "predictQuestion": {
-          "en": "What happens to your weekly profit?",
-          "sw": "Faida yako ya wiki itakuwaje?"
+        "predict": "number",
+        "input": {
+          "field": "ownerHoursUsed",
+          "min": 0,
+          "max": 20,
+          "step": 5,
+          "start": 0,
+          "valueAs": "count",
+          "hint": {
+            "en": "These hours are for planning, not for selling.",
+            "sw": "Masaa haya ni ya kupanga, si ya kuuza."
+          },
+          "responses": [
+            {
+              "field": "capacity",
+              "perStep": 5,
+              "change": -12
+            },
+            {
+              "field": "demand",
+              "perStep": 5,
+              "change": 25
+            }
+          ]
         },
-        "predictChoices": [
+        "bands": [
           {
-            "id": "up_lot",
-            "label": {
-              "en": "Up a lot",
-              "sw": "Inapanda sana"
-            }
-          },
-          {
-            "id": "up_bit",
-            "label": {
-              "en": "Up a little",
-              "sw": "Inapanda kidogo"
-            }
-          },
-          {
-            "id": "same",
-            "label": {
-              "en": "About the same",
-              "sw": "Inabaki vilevile"
-            }
-          },
-          {
-            "id": "down",
-            "label": {
-              "en": "Goes down",
-              "sw": "Inashuka"
-            }
-          }
-        ],
-        "options": [
-          {
-            "id": "plan-time",
-            "label": {
-              "en": "Block out two hours every week to work on the business, not in it",
-              "sw": "Tenga masaa mawili kila wiki kuifanyia biashara mipango, si kuifanyia kazi"
-            },
-            "detail": {
-              "en": "Two hours you are not selling.",
-              "sw": "Masaa mawili ambayo hauuzi."
-            },
-            "effects": {
-              "ownerHoursFixed": 2
-            },
-            "later": [
-              {
-                "inWeeks": 4,
-                "effects": {
-                  "demand": 45,
-                  "reputation": 5
-                },
-                "cause": {
-                  "en": "the two hours a week you set aside to plan",
-                  "sw": "masaa mawili kwa wiki uliyoyatenga kupanga"
-                }
-              }
-            ],
-            "predictAnswer": "same",
             "outcome": {
-              "en": "This week looks exactly like last week. You spend the two hours working out which customers actually pay you best.",
-              "sw": "Wiki hii inaonekana sawasawa na iliyopita. Unatumia masaa mawili kubaini ni wateja gani hasa wanaokulipa vizuri zaidi."
+              "en": "You keep nearly all your selling time, but little time goes to the decisions only you can make.",
+              "sw": "Unaweka karibu muda wote wa kuuza, lakini muda mchache unaenda kwenye maamuzi ambayo wewe pekee unaweza kufanya."
             },
             "lesson": {
-              "en": "Time spent on the business never shows up in the week you spend it. That is exactly why it is the first thing dropped.",
-              "sw": "Muda unaotumika kuifanyia biashara mipango hauonekani kamwe katika wiki unayoutumia. Ndiyo sababu hasa ndicho kitu cha kwanza kuachwa."
-            }
+              "en": "Working in the business can fill the week and leave no space to work on it.",
+              "sw": "Kuifanyia biashara kazi kunaweza kujaza wiki na kusiache nafasi ya kuifanyia mipango."
+            },
+            "upTo": 5
           },
           {
-            "id": "buy-time",
-            "label": {
-              "en": "Pay your helper to open on her own three mornings a week",
-              "sw": "Mlipe msaidizi wako afungue mwenyewe asubuhi tatu kwa wiki"
-            },
-            "detail": {
-              "en": "It costs money every week. You get mornings back.",
-              "sw": "Inagharimu pesa kila wiki. Unarudishiwa asubuhi."
-            },
-            "effects": {
-              "rent": 9000,
-              "ownerHoursFixed": "-10"
-            },
-            "predictAnswer": "down",
             "outcome": {
-              "en": "Your profit drops by what you are paying her. You sleep, and for the first time in months you are not the only person who can open the stall.",
-              "sw": "Faida yako inashuka kwa kiasi unachomlipa. Unalala, na kwa mara ya kwanza baada ya miezi si wewe pekee unayeweza kufungua kibanda."
+              "en": "You protect some time to look at customers, prices and the next step. You give up some selling capacity too.",
+              "sw": "Unatenga muda wa kuangalia wateja, bei na hatua inayofuata. Unaacha uwezo wa kuuza kiasi pia."
             },
             "lesson": {
-              "en": "Buying back your own time costs money immediately and pays back slowly. It is still the only way a business stops depending on one person.",
-              "sw": "Kununua muda wako mwenyewe kunagharimu pesa mara moja na kunalipa polepole. Bado ndiyo njia pekee ya biashara kuacha kutegemea mtu mmoja."
-            }
+              "en": "Time on the business is useful when it changes what the business does. The middle amount leaves room for both.",
+              "sw": "Muda wa kuifanyia biashara mipango unasaidia unapobadilisha kile biashara inachofanya. Kiasi cha kati kinaacha nafasi ya yote mawili."
+            },
+            "upTo": 15
           },
           {
-            "id": "work-harder",
-            "label": {
-              "en": "Carry on. Rest when the business is bigger",
-              "sw": "Endelea. Pumzika biashara ikiwa kubwa"
-            },
-            "detail": {
-              "en": "There is too much to do to stop now.",
-              "sw": "Kuna mengi mno ya kufanya kusimama sasa."
-            },
-            "effects": {},
-            "predictAnswer": "same",
             "outcome": {
-              "en": "The week runs as every week runs. You are tired in the same way you were tired last month.",
-              "sw": "Wiki inaenda kama kila wiki inavyoenda. Umechoka kwa namna ileile ulivyochoka mwezi uliopita."
+              "en": "You spend many hours planning and fewer hours producing. Interest may rise, but the stall cannot sell what your hands no longer make.",
+              "sw": "Unatumia masaa mengi kupanga na masaa machache kutengeneza. Maslahi yanaweza kuongezeka, lakini kibanda hakiwezi kuuza usichotengeneza."
             },
             "lesson": {
-              "en": "A business that only works while you are inside it every hour is not a business yet. It is a job you also own.",
-              "sw": "Biashara inayofanya kazi tu ukiwa ndani yake kila saa bado si biashara. Ni kazi ambayo pia unaimiliki."
+              "en": "Time set aside has an opportunity cost. Protect enough to steer, but not so much that selling stops.",
+              "sw": "Muda uliotengwa una gharama ya kuacha kitu kingine. Tenga wa kutosha kuongoza, lakini si mwingi kiasi cha kuuza kusimama."
             }
           }
         ]
@@ -2916,116 +3143,67 @@ ul { margin: 0; padding-left: 1.1em; }
         }
       ],
       "decision": {
+        "type": "number",
         "prompt": {
-          "en": "Do you take her on?",
-          "sw": "Je, unamchukua?"
+          "en": "How many people will you take on this week?",
+          "sw": "Wiki hii utachukua watu wangapi wa kukusaidia?"
         },
-        "predictQuestion": {
-          "en": "What happens to your weekly profit?",
-          "sw": "Faida yako ya wiki itakuwaje?"
+        "predict": "number",
+        "input": {
+          "field": "staff",
+          "min": 0,
+          "max": 3,
+          "step": 1,
+          "start": "current",
+          "valueAs": "count",
+          "hint": {
+            "en": "Each person adds a weekly wage. Their extra output must pay for it.",
+            "sw": "Kila mtu anaongeza mshahara wa wiki. Kazi yake ya ziada lazima ilipie."
+          },
+          "responses": [
+            {
+              "field": "capacity",
+              "perStep": 1,
+              "change": 180
+            },
+            {
+              "field": "demand",
+              "perStep": 1,
+              "change": 140
+            }
+          ]
         },
-        "predictChoices": [
+        "bands": [
           {
-            "id": "up_lot",
-            "label": {
-              "en": "Up a lot",
-              "sw": "Inapanda sana"
-            }
-          },
-          {
-            "id": "up_bit",
-            "label": {
-              "en": "Up a little",
-              "sw": "Inapanda kidogo"
-            }
-          },
-          {
-            "id": "same",
-            "label": {
-              "en": "About the same",
-              "sw": "Inabaki vilevile"
-            }
-          },
-          {
-            "id": "down",
-            "label": {
-              "en": "Goes down",
-              "sw": "Inashuka"
-            }
-          }
-        ],
-        "options": [
-          {
-            "id": "hire-niece",
-            "label": {
-              "en": "Take her on and train her properly",
-              "sw": "Mchukue na umfundishe vizuri"
-            },
-            "detail": {
-              "en": "Wages every week, and your time spent teaching before she is useful.",
-              "sw": "Mishahara kila wiki, na muda wako wa kufundisha kabla hajakuwa na manufaa."
-            },
-            "effects": {
-              "staff": 1,
-              "capacity": 25,
-              "ownerHoursUsed": -10
-            },
-            "predictAnswer": "down",
             "outcome": {
-              "en": "For the first weeks she is slower than you and you are paying her while teaching her. Your profit drops. You also sleep for the first time in months.",
-              "sw": "Kwa wiki za mwanzo ni wa polepole kuliko wewe na unamlipa huku ukimfundisha. Faida yako inashuka. Pia unalala kwa mara ya kwanza baada ya miezi."
+              "en": "You keep the whole margin and keep doing the work yourself. There is no new capacity for waiting customers.",
+              "sw": "Unabaki na margin yote na unaendelea kufanya kazi mwenyewe. Hakuna uwezo mpya kwa wateja wanaosubiri."
             },
             "lesson": {
-              "en": "Hiring almost always costs you money before it makes you any. The question is whether you can survive the gap, not whether the gap exists.",
-              "sw": "Kuajiri karibu kila mara kunakugharimu pesa kabla ya kukuletea yoyote. Swali ni kama unaweza kuvumilia pengo hilo, si kama pengo lipo."
-            }
+              "en": "Not hiring protects this week's cash, but leaves the business tied to your own two hands.",
+              "sw": "Kutoajiri kunalinda pesa ya wiki hii, lakini kunaacha biashara ifungwe na mikono yako miwili."
+            },
+            "upTo": 0
           },
           {
-            "id": "hire-casual",
-            "label": {
-              "en": "Use her only on the busiest mornings, paid by the day",
-              "sw": "Mtumie tu asubuhi zenye shughuli nyingi, ulipe kwa siku"
-            },
-            "detail": {
-              "en": "Cheaper. She never really learns the work.",
-              "sw": "Rahisi zaidi. Hajifunzi kazi kikamilifu."
-            },
-            "effects": {
-              "rent": 18000,
-              "capacity": 10,
-              "ownerHoursUsed": -3
-            },
-            "predictAnswer": "down",
             "outcome": {
-              "en": "You get help when you most need it and pay less. She stays a pair of hands rather than becoming someone who can run things without you.",
-              "sw": "Unapata msaada unapouhitaji zaidi na unalipa kidogo. Anabaki mikono ya kusaidia badala ya kuwa mtu anayeweza kuendesha mambo bila wewe."
+              "en": "One person gives the stall room to serve more customers. The wage is real, so extra sales must cover it.",
+              "sw": "Mtu mmoja anaipa biashara nafasi ya kuhudumia wateja zaidi. Mshahara ni gharama halisi, kwa hiyo mauzo ya ziada lazima yaulipie."
             },
             "lesson": {
-              "en": "Casual help solves today's rush. It does not build anyone who can take work off you permanently.",
-              "sw": "Msaada wa kawaida unatatua shughuli ya leo. Haujengi mtu anayeweza kukuondolea kazi kwa kudumu."
-            }
+              "en": "A first hire can remove a bottleneck. Hire for work that produces more than the wage.",
+              "sw": "Mwajiriwa wa kwanza anaweza kuondoa kikwazo. Ajiri kwa kazi inayozalisha zaidi ya mshahara."
+            },
+            "upTo": 1
           },
           {
-            "id": "no-hire",
-            "label": {
-              "en": "Carry on alone",
-              "sw": "Endelea peke yako"
-            },
-            "detail": {
-              "en": "Nobody does it as well as you do.",
-              "sw": "Hakuna anayefanya vizuri kama wewe."
-            },
-            "effects": {
-              "ownerHoursUsed": 4
-            },
-            "predictAnswer": "same",
             "outcome": {
-              "en": "You keep every shilling of the profit and every hour of the work. The business cannot grow past what your own two hands can make.",
-              "sw": "Unabaki na kila shilingi ya faida na kila saa ya kazi. Biashara haiwezi kukua kupita kile mikono yako miwili inaweza kutengeneza."
+              "en": "More people add output, but the next wage arrives even when customers do not. Later hires bring less room than the first.",
+              "sw": "Watu zaidi wanaongeza uzalishaji, lakini mshahara unaofuata unakuja hata bila wateja. Waajiriwa wa baadaye wanaongeza nafasi kidogo kuliko wa kwanza."
             },
             "lesson": {
-              "en": "A business that depends entirely on you has a ceiling, and the ceiling is you.",
-              "sw": "Biashara inayotegemea wewe kabisa ina kikomo, na kikomo ni wewe."
+              "en": "Hiring has a point where another person costs more than the sales they add. Build one useful role at a time.",
+              "sw": "Kuajiri kuna sehemu ambapo mtu mwingine anagharimu zaidi ya mauzo anayoongeza. Jenga nafasi moja yenye kazi ya maana kwa wakati."
             }
           }
         ]
@@ -3810,114 +3988,62 @@ ul { margin: 0; padding-left: 1.1em; }
         }
       ],
       "decision": {
+        "type": "number",
         "prompt": {
-          "en": "How do you answer him?",
-          "sw": "Unamjibuje?"
+          "en": "Set the price you will offer the hotel.",
+          "sw": "Panga bei utakayompa hoteli."
         },
-        "predictQuestion": {
-          "en": "What happens to your weekly profit?",
-          "sw": "Faida yako ya wiki itakuwaje?"
+        "predict": "number",
+        "input": {
+          "field": "price",
+          "min": 400,
+          "max": 700,
+          "step": 25,
+          "start": "current",
+          "valueAs": "money",
+          "hint": {
+            "en": "The hotel wants a discount. A lower price should buy you a larger order.",
+            "sw": "Hoteli inataka punguzo. Bei ya chini inapaswa kukuletea oda kubwa zaidi."
+          },
+          "responses": [
+            {
+              "field": "demand",
+              "perStep": 25,
+              "change": -6
+            }
+          ]
         },
-        "predictChoices": [
+        "bands": [
           {
-            "id": "up_lot",
-            "label": {
-              "en": "Up a lot",
-              "sw": "Inapanda sana"
-            }
-          },
-          {
-            "id": "up_bit",
-            "label": {
-              "en": "Up a little",
-              "sw": "Inapanda kidogo"
-            }
-          },
-          {
-            "id": "same",
-            "label": {
-              "en": "About the same",
-              "sw": "Inabaki vilevile"
-            }
-          },
-          {
-            "id": "down",
-            "label": {
-              "en": "Goes down",
-              "sw": "Inashuka"
-            }
-          }
-        ],
-        "options": [
-          {
-            "id": "give-both",
-            "label": {
-              "en": "Agree to the discount and the extra days",
-              "sw": "Kubali punguzo na siku za ziada"
-            },
-            "detail": {
-              "en": "Keep the customer happy at any cost.",
-              "sw": "Mfanye mteja awe na furaha kwa gharama yoyote."
-            },
-            "effects": {
-              "price": "-30",
-              "rent": 7000,
-              "ownerHoursFixed": 6
-            },
-            "predictAnswer": "down",
             "outcome": {
-              "en": "He is pleased. You now sell each one for less, and you pay the rider for two more mornings a week to deliver it.",
-              "sw": "Ana furaha. Sasa unauza kila kimoja kwa pungufu, na unamlipa dereva asubuhi mbili zaidi kwa wiki kupeleka."
+              "en": "The hotel gets a large discount. More units may move, but each one leaves less after cost and delivery work.",
+              "sw": "Hoteli inapata punguzo kubwa. Bidhaa nyingi zinaweza kuondoka, lakini kila moja linakuachia kidogo baada ya gharama na kazi ya kupeleka."
             },
             "lesson": {
-              "en": "Agreeing to everything at once means you never find out which part he actually needed.",
-              "sw": "Kukubali kila kitu kwa mara moja kunamaanisha hujui kamwe ni sehemu gani aliyoihitaji hasa."
-            }
+              "en": "A discount is useful only when the extra order pays for what you give up on each unit.",
+              "sw": "Punguzo linafaa tu wakati oda ya ziada inalipia unachoacha kwa kila kimoja."
+            },
+            "upTo": 450
           },
           {
-            "id": "trade-it",
-            "label": {
-              "en": "Offer the discount only if they guarantee a bigger standing order",
-              "sw": "Toa punguzo tu kama watahakikisha oda kubwa ya kudumu"
-            },
-            "detail": {
-              "en": "Less on each one, more of them, agreed in advance.",
-              "sw": "Kidogo kwa kila kimoja, vingi zaidi, vimekubaliwa mapema."
-            },
-            "effects": {
-              "price": "-5",
-              "demand": 30,
-              "capacity": 30
-            },
-            "predictAnswer": "up_bit",
             "outcome": {
-              "en": "He agrees to a larger fixed order. You earn less on each mandazi and more in total, and you now know what next week looks like.",
-              "sw": "Anakubali oda kubwa ya kudumu. Unapata kidogo kwa kila andazi na zaidi kwa jumla, na sasa unajua wiki ijayo itakuwaje."
+              "en": "You offer a middle price. The hotel has a reason to order more, while you keep enough from each unit.",
+              "sw": "Unatoa bei ya kati. Hoteli ina sababu ya kuagiza zaidi, huku ukibaki na kiasi cha kutosha kwa kila kimoja."
             },
             "lesson": {
-              "en": "A discount given for nothing is a price cut. A discount given for volume or certainty is a trade. Only one of them is negotiating.",
-              "sw": "Punguzo linalotolewa bure ni kushusha bei. Punguzo linalotolewa kwa wingi au uhakika ni biashara. Moja tu kati ya haya ni kujadiliana."
-            }
+              "en": "Negotiate the whole order, not only the price. Volume can pay for a smaller margin when the numbers are visible.",
+              "sw": "Jadili oda yote, si bei tu. Wingi unaweza kulipia margin ndogo wakati namba zinaonekana."
+            },
+            "upTo": 600
           },
           {
-            "id": "hold-price",
-            "label": {
-              "en": "Hold your price and explain why",
-              "sw": "Shikilia bei yako na ueleze sababu"
-            },
-            "detail": {
-              "en": "Your mandazi arrive on time and taste the same every day.",
-              "sw": "Mandazi yako yanafika kwa wakati na yana ladha ileile kila siku."
-            },
-            "effects": {},
-            "predictAnswer": "same",
             "outcome": {
-              "en": "He does not get his discount and he does not leave. He was always going to ask, and asking cost him nothing.",
-              "sw": "Hapati punguzo lake na haondoki. Alikuwa lazima aombe, na kuomba hakumgharimu kitu."
+              "en": "You protect the price on each unit, but the hotel wants fewer at that price. Margin is close to the volume you lose.",
+              "sw": "Unalinda bei kwa kila kimoja, lakini hoteli inataka vichache kwa bei hiyo. Margin iko karibu na wingi unaopoteza."
             },
             "lesson": {
-              "en": "A buyer asking for a discount is doing their job. It is not the same as a buyer who is leaving.",
-              "sw": "Mnunuzi anayeomba punguzo anafanya kazi yake. Si sawa na mnunuzi anayeondoka."
+              "en": "Ask what volume or certainty comes with a discount before you give one.",
+              "sw": "Uliza ni wingi au uhakika gani unaokuja na punguzo kabla hujatoa."
             }
           }
         ]
@@ -3951,116 +4077,78 @@ ul { margin: 0; padding-left: 1.1em; }
         }
       ],
       "decision": {
+        "type": "allocate",
         "prompt": {
-          "en": "What do you do with it?",
-          "sw": "Unafanya nini nayo?"
+          "en": "How will you split this profit?",
+          "sw": "Utagawanya vipi faida hii?"
         },
-        "predictQuestion": {
-          "en": "What happens to your weekly profit?",
-          "sw": "Faida yako ya wiki itakuwaje?"
+        "predict": "number",
+        "allocate": {
+          "amountFrom": "cash",
+          "fraction": 0.6,
+          "step": 10000,
+          "buckets": [
+            {
+              "id": "business",
+              "label": {
+                "en": "Business",
+                "sw": "Biashara"
+              },
+              "perStep": {
+                "capacity": 8,
+                "demand": 5
+              }
+            },
+            {
+              "id": "home",
+              "label": {
+                "en": "Home",
+                "sw": "Nyumbani"
+              },
+              "perStep": {}
+            },
+            {
+              "id": "reserve",
+              "label": {
+                "en": "Keep as reserve",
+                "sw": "Weka kama akiba"
+              },
+              "perStep": {},
+              "keepsCash": true
+            }
+          ]
         },
-        "predictChoices": [
+        "bands": [
           {
-            "id": "up_lot",
-            "label": {
-              "en": "Up a lot",
-              "sw": "Inapanda sana"
-            }
-          },
-          {
-            "id": "up_bit",
-            "label": {
-              "en": "Up a little",
-              "sw": "Inapanda kidogo"
-            }
-          },
-          {
-            "id": "same",
-            "label": {
-              "en": "About the same",
-              "sw": "Inabaki vilevile"
-            }
-          },
-          {
-            "id": "down",
-            "label": {
-              "en": "Goes down",
-              "sw": "Inashuka"
-            }
-          }
-        ],
-        "options": [
-          {
-            "id": "reinvest",
-            "label": {
-              "en": "Put most of it back into the business",
-              "sw": "Rudisha sehemu kubwa kwenye biashara"
-            },
-            "detail": {
-              "en": "A second fryer and more stock. Nothing for home this month.",
-              "sw": "Mashine ya pili ya kukaanga na bidhaa zaidi. Hakuna kwa nyumbani mwezi huu."
-            },
-            "effects": {
-              "capacity": 150,
-              "demand": 150,
-              "cash": -140000
-            },
-            "predictAnswer": "up_lot",
             "outcome": {
-              "en": "You can take the order you turned down. The business grows again. The roof at home still leaks and your family notices.",
-              "sw": "Unaweza kuchukua oda uliyoikataa. Biashara inakua tena. Paa la nyumbani bado linavuja na familia yako inaona."
+              "en": "You protect most of the money for home and emergencies. The business gets only a small push, so growth is slower.",
+              "sw": "Unalinda pesa nyingi kwa nyumbani na dharura. Biashara inapata msukumo mdogo, kwa hiyo ukuaji ni wa polepole."
             },
             "lesson": {
-              "en": "Reinvesting is what makes a business grow past the owner's own income. It also has a real cost at home, and pretending otherwise helps nobody.",
-              "sw": "Kurudisha faida kwenye biashara ndiko kunakofanya biashara ikue kupita kipato cha mmiliki. Pia kuna gharama halisi nyumbani, na kujifanya sivyo hakumsaidii yeyote."
-            }
+              "en": "A reserve can keep one bad week from becoming a crisis. It also means slower business growth.",
+              "sw": "Akiba inaweza kuzuia wiki moja mbaya kuwa tatizo kubwa. Pia inamaanisha biashara ikue polepole."
+            },
+            "upTo": 0.3
           },
           {
-            "id": "split",
-            "label": {
-              "en": "Split it — some home, some business, some kept back",
-              "sw": "Igawe — kidogo nyumbani, kidogo biashara, kidogo ubakize"
-            },
-            "detail": {
-              "en": "Nobody gets everything they wanted.",
-              "sw": "Hakuna anayepata kila alichotaka."
-            },
-            "effects": {
-              "capacity": 20,
-              "demand": 15,
-              "cash": -60000
-            },
-            "predictAnswer": "up_bit",
             "outcome": {
-              "en": "The roof gets patched. The business grows a little. You still have something in the box if a fridge fails.",
-              "sw": "Paa linazibwa. Biashara inakua kidogo. Bado una kitu sandukuni friji ikiharibika."
+              "en": "You divide the money between business, home and a reserve. No part gets everything, but the business grows without using every coin.",
+              "sw": "Unagawa pesa kati ya biashara, nyumbani na akiba. Sehemu hakuna inayopata kila kitu, lakini biashara inakua bila kutumia kila senti."
             },
             "lesson": {
-              "en": "Splitting between the business, the household and a reserve is slower than any single choice, and it is the one that survives a bad month.",
-              "sw": "Kugawa kati ya biashara, kaya na akiba ni polepole kuliko chaguo lolote moja, na ndiyo linalovumilia mwezi mbaya."
-            }
+              "en": "Profit has more than one job. A split can keep the household, business and next bad week in view.",
+              "sw": "Faida ina kazi zaidi ya moja. Mgawanyo unaweza kuangalia kaya, biashara na wiki mbaya inayofuata."
+            },
+            "upTo": 0.7
           },
           {
-            "id": "take-home",
-            "label": {
-              "en": "Take it all home",
-              "sw": "Chukua yote nyumbani"
-            },
-            "detail": {
-              "en": "This is why you work.",
-              "sw": "Hii ndiyo sababu unafanya kazi."
-            },
-            "effects": {
-              "cash": -160000
-            },
-            "predictAnswer": "same",
             "outcome": {
-              "en": "The roof is fixed and your family eats well this month. The business is exactly the same size it was, and will be next year too.",
-              "sw": "Paa limetengenezwa na familia yako inakula vizuri mwezi huu. Biashara ina ukubwa uleule iliokuwa nao, na itakuwa hivyo mwakani pia."
+              "en": "You put most of the money into the business. More customers can be served, but little is left for home or a surprise cost.",
+              "sw": "Unaweka pesa nyingi kwenye biashara. Wateja zaidi wanaweza kuhudumiwa, lakini kidogo kinabaki nyumbani au kwa gharama ya ghafla."
             },
             "lesson": {
-              "en": "A business where all the profit goes home supports a household. That is a real achievement, and it is a different thing from a business that grows.",
-              "sw": "Biashara ambayo faida yote inaenda nyumbani inasaidia kaya. Hilo ni mafanikio halisi, na ni kitu tofauti na biashara inayokua."
+              "en": "Reinvestment can build capacity, but a business without a reserve is exposed. Growth and safety are both real needs.",
+              "sw": "Kurudisha faida kunaweza kujenga uwezo, lakini biashara bila akiba iko wazi kwa hatari. Ukuaji na usalama vyote ni mahitaji halisi."
             }
           }
         ]
@@ -4195,7 +4283,76 @@ ul { margin: 0; padding-left: 1.1em; }
   "profile.limit.1": { "en": "This describes what happened inside a simulation. It is not a measure of how this person runs a real business.", "sw": "Haya yanaeleza yaliyotokea ndani ya kiigizo. Si kipimo cha jinsi mtu huyu anavyoendesha biashara halisi." },
   "profile.limit.2": { "en": "It has not been validated against real business outcomes. No such study exists yet.", "sw": "Hayajathibitishwa dhidi ya matokeo halisi ya biashara. Hakuna utafiti wa aina hiyo bado." },
   "profile.limit.3": { "en": "It should not be used as an automatic cut-off, or to rank one person against another.", "sw": "Hayapaswi kutumika kama kigezo cha kukata mtu moja kwa moja, wala kupanga mtu mmoja dhidi ya mwingine." },
-  "profile.limit.4": { "en": "Figures in the simulation are illustrative placeholders, not researched local data.", "sw": "Namba zilizomo katika kiigizo ni za mfano tu, si takwimu za hapa zilizofanyiwa utafiti." }
+  "profile.limit.4": { "en": "Figures in the simulation are illustrative placeholders, not researched local data.", "sw": "Namba zilizomo katika kiigizo ni za mfano tu, si takwimu za hapa zilizofanyiwa utafiti." },
+
+  "num.title":                 { "en": "Set the number",                 "sw": "Weka namba" },
+  "num.prompt":                { "en": "Choose the number you will use.",  "sw": "Chagua namba utakayotumia." },
+  "num.selected":              { "en": "Your choice",                     "sw": "Uchaguzi wako" },
+  "num.decrease":              { "en": "−",                                "sw": "−" },
+  "num.increase":              { "en": "+",                                "sw": "+" },
+  "num.coarseDecrease":        { "en": "−−",                               "sw": "−−" },
+  "num.coarseIncrease":        { "en": "++",                               "sw": "++" },
+  "num.decreaseLabel":         { "en": "Decrease by one step",             "sw": "Punguza kwa hatua moja" },
+  "num.increaseLabel":         { "en": "Increase by one step",             "sw": "Ongeza kwa hatua moja" },
+  "num.coarseDecreaseLabel":   { "en": "Decrease by five steps",            "sw": "Punguza kwa hatua tano" },
+  "num.coarseIncreaseLabel":   { "en": "Increase by five steps",            "sw": "Ongeza kwa hatua tano" },
+  "num.commit":                { "en": "Use this number",                   "sw": "Tumia namba hii" },
+  "num.commitLabel":           { "en": "Use this number and continue",      "sw": "Tumia namba hii na uendelee" },
+  "num.keepPerUnit":           { "en": "You keep {kept} on each one.",       "sw": "Unabaki na {kept} kwa kila kimoja." },
+  "num.customersLost":         { "en": "At this price, you expect to lose {n} customers.", "sw": "Kwa bei hii, unatarajia kupoteza wateja {n}." },
+  "num.customersGained":       { "en": "At this price, you expect {n} more customers.", "sw": "Kwa bei hii, unatarajia wateja {n} zaidi." },
+  "num.response":              { "en": "{field} changes by {change}; it will be {value}.", "sw": "{field} inabadilika kwa {change}; itakuwa {value}." },
+  "num.noChange":              { "en": "No linked number changes at this value.", "sw": "Hakuna namba inayohusiana inayobadilika kwa namba hii." },
+  "num.field.demand":          { "en": "Customers",                         "sw": "Wateja" },
+  "num.field.capacity":        { "en": "Capacity",                          "sw": "Uwezo wa uzalishaji" },
+  "num.field.staff":           { "en": "Staff",                             "sw": "Wafanyakazi" },
+  "num.field.cash":            { "en": "Cash",                              "sw": "Pesa" },
+  "num.field.reputation":      { "en": "Reputation",                        "sw": "Sifa" },
+  "num.field.hygiene":         { "en": "Hygiene",                           "sw": "Usafi" },
+  "num.field.ownerHours":      { "en": "Your hours",                        "sw": "Saa zako" },
+  "num.field.other":           { "en": "The linked number",                 "sw": "Namba inayohusiana" },
+  "num.predictTitle":          { "en": "Predict the weekly profit",          "sw": "Tabiri faida ya wiki" },
+  "num.predictPrompt":         { "en": "What do you think the weekly profit will be?", "sw": "Unafikiri faida ya wiki itakuwa kiasi gani?" },
+  "num.predictCurrent":        { "en": "Right now it is {amount}.",          "sw": "Kwa sasa ni {amount}." },
+  "num.predicted":             { "en": "Your estimate",                      "sw": "Makadirio yako" },
+  "num.predictCommit":         { "en": "Use this prediction",                "sw": "Tumia utabiri huu" },
+  "num.predictCommitLabel":    { "en": "Use this prediction and continue",   "sw": "Tumia utabiri huu na uendelee" },
+  "num.numberSummary":         { "en": "You said {predicted}. It was {actual}.", "sw": "Ulisema {predicted}. Ilikuwa {actual}." },
+  "num.bandSummary":           { "en": "You said {predicted}. It was {actual}.", "sw": "Ulisema {predicted}. Ilikuwa {actual}." },
+  "num.grade.close":            { "en": "Close — you called it right.",       "sw": "Karibu kabisa — ulitabiri sawa." },
+  "num.grade.near":             { "en": "Near — you were nearly right.",      "sw": "Karibu — ulikuwa karibu kutabiri sawa." },
+  "num.grade.off":              { "en": "Off — this was a miss.",             "sw": "Mbali — utabiri haukuwa sahihi." },
+
+  "alloc.title":               { "en": "Split the amount",                  "sw": "Gawanya kiasi" },
+  "alloc.prompt":              { "en": "Where will this money go?",          "sw": "Pesa hii itaenda wapi?" },
+  "alloc.amount":              { "en": "Amount to split: {amount}",          "sw": "Kiasi cha kugawanya: {amount}" },
+  "alloc.remaining":           { "en": "Still to allocate: {amount}",        "sw": "Bado cha kugawa: {amount}" },
+  "alloc.allAllocated":        { "en": "All of the amount is allocated.",    "sw": "Kiasi chote kimegawanywa." },
+  "alloc.cashAfter":           { "en": "Cash after this choice: {amount}.",  "sw": "Pesa baada ya uchaguzi huu: {amount}." },
+  "alloc.decrease":             { "en": "−",                                 "sw": "−" },
+  "alloc.increase":             { "en": "+",                                 "sw": "+" },
+  "alloc.coarseDecrease":       { "en": "−−",                                "sw": "−−" },
+  "alloc.coarseIncrease":       { "en": "++",                                "sw": "++" },
+  "alloc.decreaseLabel":        { "en": "Move one step out of this bucket",  "sw": "Toa hatua moja kwenye kikapu hiki" },
+  "alloc.increaseLabel":        { "en": "Move one step into this bucket",   "sw": "Ongeza hatua moja kwenye kikapu hiki" },
+  "alloc.coarseDecreaseLabel":  { "en": "Move five steps out of this bucket", "sw": "Toa hatua tano kwenye kikapu hiki" },
+  "alloc.coarseIncreaseLabel":  { "en": "Move five steps into this bucket",  "sw": "Ongeza hatua tano kwenye kikapu hiki" },
+  "alloc.commit":               { "en": "Use this split",                    "sw": "Tumia mgawanyo huu" },
+  "alloc.commitLabel":          { "en": "Use this split and continue",       "sw": "Tumia mgawanyo huu na uendelee" },
+
+  "diag.title":                { "en": "Find the problem",                   "sw": "Tafuta tatizo" },
+  "diag.prompt":               { "en": "Which line caused the loss?",         "sw": "Ni kipengele gani kilisababisha hasara?" },
+  "diag.choose":               { "en": "Choose {line}",                       "sw": "Chagua {line}" },
+
+  "goal.title":                { "en": "Where you are heading",              "sw": "Unapoelekea" },
+  "goal.condition":            { "en": "Campaign condition",                  "sw": "Sharti la kampeni" },
+  "goal.met":                  { "en": "Met",                                 "sw": "Limetimia" },
+  "goal.notYet":               { "en": "Not yet",                             "sw": "Bado" },
+  "goal.conditionValue":       { "en": "Now {current}; need {target}.",       "sw": "Sasa {current}; inahitajika {target}." },
+
+  "recovery.title":            { "en": "Cash below zero",                 "sw": "Pesa iko chini ya sifuri" },
+  "recovery.body":             { "en": "This is a recovery chapter. Choose a way to keep the business open.", "sw": "Hii ni sura ya kurekebisha hali. Chagua njia ya kuweka biashara wazi." },
+  "recovery.continue":         { "en": "The run continues.",              "sw": "Safari inaendelea." }
 };
 
 /* ---- i18n ---- */
@@ -4319,9 +4476,7 @@ function knownKeys() {
 
 /* ---- format ---- */
 const NS_format = (function () {
-
-    const { t, getLanguage } = NS_i18n;
-  
+const { t, getLanguage } = NS_i18n;
 // Number and currency formatting.
 //
 // Amounts are stored locale-neutral (plain integers) and formatted only at render
@@ -4781,12 +4936,154 @@ function healthCheck(state) {
   return problems;
 }
 
-  return { bandFor, createState, weeklyPnl, applyEffects, scheduleLater, advanceWeek, advanceWeeks, project, baseOwnerHours, ownerLoad, healthCheck, DEFAULT_STATE, BAND_SAME, BAND_LOT };
+/**
+ * Resolve a number decision into the effects consumed by applyEffects.
+ *
+ * The response curve is deliberately small and declarative: content supplies a
+ * per-step distance and a change, and the engine performs the arithmetic here.
+ * There is no expression language for scenario content to execute.
+ */
+function resolveNumberInput(state, input, value) {
+  const effects = {};
+  const responseDeltas = {};
+  const startValue = input.start === 'current'
+    ? Number(state[input.field]) || 0
+    : Number(input.start);
+
+  effects[input.field] = value;
+
+  for (const response of input.responses || []) {
+    const perStep = Number(response.perStep);
+    const change = Number(response.change);
+    if (!response.field || !Number.isFinite(perStep) || perStep === 0 || !Number.isFinite(change)) continue;
+
+    const delta = Math.round(((Number(value) - startValue) / perStep) * change);
+    responseDeltas[response.field] = (responseDeltas[response.field] || 0) + (Object.is(delta, -0) ? 0 : delta);
+  }
+
+  for (const [field, delta] of Object.entries(responseDeltas)) {
+    // Numeric state fields in current scenarios are additive. Preserve the
+    // applyEffects escape hatch for an absolute field so this API remains
+    // additive even if a future curve targets one.
+    effects[field] = ADDITIVE.has(field) ? delta : `${delta >= 0 ? '+' : ''}${delta}`;
+  }
+
+  return effects;
+}
+
+/** Total available to allocate, rounded to the authored step. */
+function allocationTotal(state, allocate) {
+  const step = Number(allocate.step);
+  if (!Number.isFinite(step) || step <= 0) return 0;
+
+  const amount = Number(state[allocate.amountFrom]);
+  const fraction = Number(allocate.fraction);
+  if (!Number.isFinite(amount) || !Number.isFinite(fraction)) return 0;
+
+  return Math.max(0, Math.round((amount * fraction) / step) * step);
+}
+
+/**
+ * Resolve an allocation into additive effects. `split` contains amounts, not
+ * units; units are derived from the same authored step as allocationTotal().
+ */
+function resolveAllocation(state, allocate, split) {
+  const step = Number(allocate.step);
+  if (!Number.isFinite(step) || step <= 0) return {};
+
+  const effects = {};
+  const deltas = {};
+  let keptCash = 0;
+
+  for (const bucket of allocate.buckets || []) {
+    const amount = Number(split?.[bucket.id]);
+    if (!Number.isFinite(amount)) continue;
+    if (bucket.keepsCash) keptCash += amount;
+
+    const units = amount / step;
+    for (const [field, perStep] of Object.entries(bucket.perStep || {})) {
+      const delta = Number(perStep) * units;
+      if (!Number.isFinite(delta)) continue;
+      deltas[field] = (deltas[field] || 0) + delta;
+    }
+  }
+
+  const total = allocationTotal(state, allocate);
+  deltas.cash = (deltas.cash || 0) - (total - keptCash);
+
+  for (const [field, delta] of Object.entries(deltas)) {
+    const whole = Object.is(delta, -0) ? 0 : delta;
+    effects[field] = ADDITIVE.has(field) ? whole : `${whole >= 0 ? '+' : ''}${whole}`;
+  }
+  return effects;
+}
+
+/** Return the first matching band, or the unbounded final band. */
+function bandForValue(bands, value) {
+  if (!Array.isArray(bands)) return null;
+  let fallback = null;
+  for (const band of bands) {
+    if (!band || typeof band !== 'object') continue;
+    if (!Object.prototype.hasOwnProperty.call(band, 'upTo')) {
+      fallback = band;
+      continue;
+    }
+    if (Number(value) <= Number(band.upTo)) return band;
+  }
+  return fallback;
+}
+
+/** Grade a numeric weekly-profit prediction against the actual result. */
+function gradePrediction(predicted, actual) {
+  const error = Math.abs(predicted - actual) / Math.max(2000, Math.abs(actual));
+  if (error <= 0.10) return { grade: 'close', correct: true, error, predicted, actual };
+  if (error <= 0.25) return { grade: 'near', correct: false, error, predicted, actual };
+  return { grade: 'off', correct: false, error, predicted, actual };
+}
+
+/** How many weeks of current fixed costs current cash covers. */
+function weeksOfCostsCovered(state) {
+  const costs = (Number(state.rent) || 0)
+    + ((Number(state.staff) || 0) * (Number(state.wagePerStaff) || 0))
+    + (Number(state.licenceFees) || 0);
+  if (costs <= 0) return 0;
+  return Math.max(0, Number(state.cash) || 0) / costs;
+}
+
+/** Evaluate declarative goal conditions against the current state. */
+function evaluateGoal(state, goal) {
+  const conditions = (goal && Array.isArray(goal.conditions)) ? goal.conditions : [];
+  const progress = conditions.map((condition) => {
+    let current = 0;
+    if (condition.metric === 'weeksOfCostsCovered') current = weeksOfCostsCovered(state);
+    else if (condition.field) current = Number(state[condition.field]) || 0;
+
+    const target = Number(condition.min);
+    return {
+      id: condition.id,
+      met: Number.isFinite(target) && current >= target,
+      current,
+      target: condition.min,
+    };
+  });
+  return {
+    conditions: progress,
+    metCount: progress.filter((condition) => condition.met).length,
+    total: progress.length,
+  };
+}
+
+/** True when the business needs the recovery chapter. */
+function needsRecovery(state) {
+  return state.cash < 0;
+}
+
+  return { bandFor, createState, weeklyPnl, applyEffects, scheduleLater, advanceWeek, advanceWeeks, project, baseOwnerHours, ownerLoad, healthCheck, resolveNumberInput, allocationTotal, resolveAllocation, bandForValue, gradePrediction, weeksOfCostsCovered, evaluateGoal, needsRecovery, DEFAULT_STATE, BAND_SAME, BAND_LOT };
 })();
 
 /* ---- record ---- */
 const NS_record = (function () {
-
+const { gradePrediction } = NS_engine;
 // The behavioural record.
 //
 // Governed by docs/assessment.md. Three layers, and the separation is deliberate:
@@ -4802,6 +5099,7 @@ const NS_record = (function () {
 //   * No composite score. No rank. No percentile. A single number invites the
 //     mechanical filtering that makes business-plan scores harmful, and hides which
 //     behaviours produced it.
+
 
 const SCHEMA_VERSION = 1;
 
@@ -4827,8 +5125,22 @@ function observeInfoSought(record, turnId, infoId, label) {
   return observe(record, { kind: 'info-sought', turnId, infoId, label });
 }
 
-function observePrediction(record, turnId, predicted, actual, correct, metric) {
-  return observe(record, { kind: 'prediction', turnId, predicted, actual, correct, metric });
+function observePrediction(record, turnId, predicted, actual, correct, metric, numeric, numericGrade) {
+  const entry = { kind: 'prediction', turnId, predicted, actual, correct, metric };
+
+  // Choice predictions remain exactly as before. Numeric predictions additionally
+  // carry the calibration detail, either supplied by the caller or derived with the
+  // engine's single grading rule.
+  if (typeof predicted === 'number' && typeof actual === 'number') {
+    const supplied = numeric && typeof numeric === 'object' ? numeric : {};
+    const suppliedError = typeof numeric === 'number' ? numeric : supplied.error;
+    const suppliedGrade = typeof numericGrade === 'string' ? numericGrade : supplied.grade;
+    const graded = gradePrediction(predicted, actual);
+    entry.error = typeof suppliedError === 'number' ? suppliedError : graded.error;
+    entry.grade = typeof suppliedGrade === 'string' ? suppliedGrade : graded.grade;
+  }
+
+  return observe(record, entry);
 }
 
 function observeDecision(record, turnId, concept, optionId, optionLabel, infoSoughtCount, pnlBefore, pnlAfter) {
@@ -4848,6 +5160,14 @@ function observeConstraint(record, turnId, text) {
   return observe(record, { kind: 'constraint-named', turnId, text });
 }
 
+function observeDiagnosis(record, turnId, picked, answer, correct) {
+  return observe(record, { kind: 'diagnosis', turnId, picked, answer, correct });
+}
+
+function observeInput(record, turnId, field, value) {
+  return observe(record, { kind: 'input', turnId, field, value });
+}
+
 // ---------------------------------------------------------------------------
 // Layer 2 — indicators. Each returns { id, label, summary, evidence: [] }.
 // An indicator that cannot point at its evidence is an opinion and does not ship.
@@ -4859,6 +5179,10 @@ function predictions(record) {
 
 function decisions(record) {
   return record.observations.filter((o) => o.kind === 'decision');
+}
+
+function diagnoses(record) {
+  return record.observations.filter((o) => o.kind === 'diagnosis');
 }
 
 /**
@@ -4959,12 +5283,31 @@ function conceptCoverage(record) {
   };
 }
 
+/** Which ledger line did the learner identify as the source of a loss? */
+function diagnosis(record) {
+  const entries = diagnoses(record);
+  const correct = entries.filter((entry) => entry.correct);
+  return {
+    id: 'diagnosis',
+    label: 'Identifying the source of a loss',
+    total: entries.length,
+    correct: correct.length,
+    evidence: entries.map((entry) => ({
+      turnId: entry.turnId,
+      picked: entry.picked,
+      answer: entry.answer,
+      correct: entry.correct,
+    })),
+  };
+}
+
 function allIndicators(record) {
   return [
     calibration(record),
     informationSeeking(record),
     recovery(record),
     conceptCoverage(record),
+    diagnosis(record),
   ];
 }
 
@@ -4989,6 +5332,7 @@ function buildProfile(record) {
   const info = informationSeeking(record);
   const rec = recovery(record);
   const cov = conceptCoverage(record);
+  const diag = diagnosis(record);
 
   const statements = [];
 
@@ -5045,6 +5389,31 @@ function buildProfile(record) {
     detail: null,
   });
 
+  if (diag.total > 0) {
+    statements.push({
+      indicator: diag.label,
+      indicatorKey: 'indicator.diagnosis',
+      key: 'profile.stmt.diagnosis',
+      params: { correct: diag.correct, total: diag.total },
+      text: `Identified the ledger line that caused the loss correctly in ${diag.correct} of ${diag.total} diagnosis steps.`,
+      detailKey: null,
+      detail: null,
+    });
+  }
+
+  if (record.goalProgress) {
+    const goal = record.goalProgress;
+    statements.push({
+      indicator: 'Goal progress',
+      indicatorKey: 'indicator.goal',
+      key: 'profile.stmt.goal',
+      params: { met: goal.metCount, total: goal.total },
+      text: `Met ${goal.metCount} of ${goal.total} goal conditions in the simulation.`,
+      detailKey: null,
+      detail: null,
+    });
+  }
+
   return {
     scenarioId: record.scenarioId,
     startedAt: record.startedAt,
@@ -5079,7 +5448,7 @@ function predictionTally(record) {
   return { correct: cal.correct, total: cal.total, trend: cal.trend };
 }
 
-  return { createRecord, observe, observeInfoSought, observePrediction, observeDecision, observeConstraint, calibration, informationSeeking, recovery, conceptCoverage, allIndicators, buildProfile, predictionTally };
+  return { createRecord, observe, observeInfoSought, observePrediction, observeDecision, observeConstraint, observeDiagnosis, observeInput, calibration, informationSeeking, recovery, conceptCoverage, diagnosis, allIndicators, buildProfile, predictionTally };
 })();
 
 /* ---- storage ---- */
@@ -5735,12 +6104,10 @@ function pulse(el) {
 
 /* ---- ui ---- */
 const NS_ui = (function () {
-
-    const { money, moneyShort, moneySigned, count, proportion } = NS_format;
-    const { weeklyPnl, ownerLoad, project, bandFor, BAND_SAME, BAND_LOT } = NS_engine;
-    const { t, tCount, localised } = NS_i18n;
-    const { drawScene, drawChart, animateNumber, pulse } = NS_scene;
-  
+const { money, moneyShort, moneySigned, count, proportion } = NS_format;
+const { weeklyPnl, ownerLoad, project, BAND_SAME, BAND_LOT, resolveNumberInput, resolveAllocation, allocationTotal } = NS_engine;
+const { t, tCount, localised } = NS_i18n;
+const { drawScene, drawChart, animateNumber, pulse } = NS_scene;
 // Rendering. One decision per screen (docs/game-design.md, "Interface constraints").
 //
 // All text goes in via textContent, never innerHTML — scenario content is data and
@@ -5768,6 +6135,120 @@ function growBar(bar, fraction) {
   requestAnimationFrame(() => {
     bar.style.width = `${Math.max(0, Math.min(100, fraction * 100))}%`;
   });
+}
+
+function localisedTemplate(value, params = {}) {
+  return localised(value).replace(/\{(\w+)\}/g, (whole, name) => (
+    Object.prototype.hasOwnProperty.call(params, name) ? String(params[name]) : whole
+  ));
+}
+
+function clampNumber(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function decisionValue(value, valueAs) {
+  return valueAs === 'money' ? money(value) : count(value);
+}
+
+function fieldValue(value, field) {
+  return ['cash', 'price', 'unitCost', 'rent', 'licenceFees', 'wagePerStaff'].includes(field)
+    ? money(value)
+    : count(value);
+}
+
+function numberDelta(raw) {
+  const value = Number(raw);
+  return Number.isFinite(value) ? value : 0;
+}
+
+function stepButton(step, textKey, labelKey) {
+  const button = el('button', 'stepper-button', t(textKey));
+  button.type = 'button';
+  button.dataset.step = step > 0 ? `+${step}` : String(step);
+  button.setAttribute('aria-label', t(labelKey));
+  return button;
+}
+
+function updateStepperValue(root, valueNode, previous, value, format) {
+  root.dataset.value = String(value);
+  // The value readout is a test and accessibility surface, so it must become the
+  // current formatted value synchronously. pulse supplies movement feedback without
+  // making a learner wait for an animation to know what they selected.
+  valueNode.textContent = format(value);
+  pulse(valueNode);
+}
+
+function feedbackFieldKey(field) {
+  return {
+    demand: 'num.field.demand',
+    capacity: 'num.field.capacity',
+    staff: 'num.field.staff',
+    cash: 'num.field.cash',
+    reputation: 'num.field.reputation',
+    hygiene: 'num.field.hygiene',
+    ownerHours: 'num.field.ownerHours',
+  }[field] || 'num.field.other';
+}
+
+function appendNumberFeedback(card, state, input, value) {
+  const feedback = el('div', 'number-feedback');
+  let hasFeedback = false;
+  const effects = resolveNumberInput(state, input, value);
+
+  if (input.field === 'price') {
+    feedback.appendChild(el('p', 'number-feedback-line keep', t('num.keepPerUnit', {
+      kept: money(value - Number(state.unitCost || 0)),
+    })));
+    hasFeedback = true;
+  }
+
+  for (const response of input.responses || []) {
+    const delta = numberDelta(effects[response.field]);
+    if (delta === 0) continue;
+    const current = Number(state[response.field]) || 0;
+    const label = t(feedbackFieldKey(response.field));
+    const line = response.field === 'demand' && delta < 0
+      ? t('num.customersLost', { n: count(Math.abs(delta)) })
+      : response.field === 'demand' && delta > 0
+        ? t('num.customersGained', { n: count(delta) })
+        : t('num.response', {
+          field: label,
+          change: fieldValue(delta, response.field),
+          value: fieldValue(current + delta, response.field),
+        });
+    feedback.appendChild(el('p', 'number-feedback-line', line));
+    hasFeedback = true;
+  }
+
+  if (!hasFeedback) feedback.appendChild(el('p', 'number-feedback-line', t('num.noChange')));
+  card.appendChild(feedback);
+}
+
+function renderStepper(root, valueNode, value, min, max, step, format, onChange) {
+  const applyStep = (amount) => {
+    const previous = value;
+    const next = clampNumber(previous + amount, min, max);
+    if (next === previous) return;
+    value = next;
+    updateStepperValue(root, valueNode, previous, value, format);
+    onChange(value, previous);
+  };
+
+  for (const amount of [-5 * step, -step, step, 5 * step]) {
+    const coarse = Math.abs(amount) === 5 * step;
+    const button = stepButton(
+      amount / step,
+      amount < 0 ? (coarse ? 'num.coarseDecrease' : 'num.decrease')
+        : (coarse ? 'num.coarseIncrease' : 'num.increase'),
+      amount < 0 ? (coarse ? 'num.coarseDecreaseLabel' : 'num.decreaseLabel')
+        : (coarse ? 'num.coarseIncreaseLabel' : 'num.increaseLabel'),
+    );
+    button.addEventListener('click', () => applyStep(amount));
+    root.querySelector('.stepper-controls').appendChild(button);
+  }
+
+  return () => value;
 }
 
 // --- top bar -------------------------------------------------------------
@@ -6009,6 +6490,298 @@ function touchedDimensions(effects = {}) {
   return [...found];
 }
 
+/**
+ * A direct numeric decision. The caller receives the raw value and the resolved
+ * effects, so the learner's actual input can be recorded without reproducing it.
+ */
+function renderNumberDecision(container, turn, state, onCommit) {
+  clear(container);
+  const decision = turn.decision;
+  const input = decision.input;
+  const min = Number(input.min);
+  const max = Number(input.max);
+  const step = Math.max(1, Number(input.step) || 1);
+  const rawStart = input.start === 'current' ? state[input.field] : input.start;
+  // Inputs are authored on a step grid. If a saved state is between steps, keep it
+  // until the learner touches the control; the next press still moves exactly one step.
+  let value = clampNumber(Number(rawStart) || min, min, max);
+  const format = (number) => decisionValue(number, input.valueAs);
+
+  const card = el('div', 'card number-decision fade-in');
+  card.dataset.control = 'number';
+  card.dataset.value = String(value);
+  card.appendChild(el('div', 'card-title', t('num.title')));
+  card.appendChild(el('p', 'predict-question', localised(decision.prompt) || t('num.prompt')));
+  if (input.hint) {
+    card.appendChild(el('p', 'number-hint', localisedTemplate(input.hint, {
+      cost: money(state.unitCost),
+      current: format(rawStart),
+    })));
+  }
+
+  const stepper = el('div', 'stepper');
+  const controls = el('div', 'stepper-controls');
+  stepper.appendChild(controls);
+  const valueWrap = el('div', 'stepper-value-wrap');
+  valueWrap.appendChild(el('div', 'stepper-label', t('num.selected')));
+  const valueNode = el('div', 'stepper-value', format(value));
+  valueNode.dataset.role = 'value';
+  valueNode.setAttribute('aria-live', 'polite');
+  valueNode.setAttribute('aria-atomic', 'true');
+  valueWrap.appendChild(valueNode);
+  stepper.appendChild(valueWrap);
+  card.appendChild(stepper);
+
+  appendNumberFeedback(card, state, input, value);
+
+  const refreshFeedback = (nextValue) => {
+    const oldFeedback = card.querySelector('.number-feedback');
+    if (oldFeedback) oldFeedback.remove();
+    appendNumberFeedback(card, state, input, nextValue);
+  };
+  renderStepper(card, valueNode, value, min, max, step, format, (nextValue) => {
+    value = nextValue;
+    refreshFeedback(value);
+  });
+
+  const commit = el('button', 'btn btn-primary', t('num.commit'));
+  commit.type = 'button';
+  commit.dataset.role = 'commit';
+  commit.setAttribute('aria-label', t('num.commitLabel'));
+  commit.addEventListener('click', () => onCommit(value, resolveNumberInput(state, input, value)));
+  card.appendChild(commit);
+  container.appendChild(card);
+}
+
+/**
+ * A fixed amount split across named buckets. The first bucket starts with the full
+ * amount: this is the simplest reversible default for a split decision and keeps the
+ * commit valid before the learner moves anything.
+ */
+function renderAllocateDecision(container, turn, state, onCommit) {
+  clear(container);
+  const decision = turn.decision;
+  const allocate = decision.allocate;
+  const total = allocationTotal(state, allocate);
+  const step = Math.max(1, Number(allocate.step) || 1);
+  const buckets = Array.isArray(allocate.buckets) ? allocate.buckets : [];
+  const split = Object.fromEntries(buckets.map((bucket, index) => [
+    bucket.id, index === 0 ? total : 0,
+  ]));
+
+  const card = el('div', 'card allocation-decision fade-in');
+  card.dataset.control = 'allocate';
+  card.appendChild(el('div', 'card-title', t('alloc.title')));
+  card.appendChild(el('p', 'predict-question', localised(decision.prompt) || t('alloc.prompt')));
+  const amountLine = el('p', 'allocation-amount', t('alloc.amount', { amount: money(total) }));
+  card.appendChild(amountLine);
+
+  const remainingNode = el('div', 'allocation-remaining');
+  remainingNode.dataset.role = 'remaining';
+  card.appendChild(remainingNode);
+
+  const rows = el('div', 'allocation-buckets');
+  const valueNodes = new Map();
+  const updateSummary = () => {
+    const used = Object.values(split).reduce((sum, amount) => sum + amount, 0);
+    const remaining = total - used;
+    remainingNode.textContent = t(remaining === 0 ? 'alloc.allAllocated' : 'alloc.remaining', {
+      amount: money(Math.max(0, remaining)),
+    });
+    const effects = resolveAllocation(state, allocate, split);
+    const cashChange = numberDelta(effects.cash);
+    const cashNode = card.querySelector('.allocation-cash');
+    if (cashNode) cashNode.textContent = t('alloc.cashAfter', {
+      amount: money((Number(state.cash) || 0) + cashChange),
+    });
+    const commit = card.querySelector('[data-role="commit"]');
+    if (commit) commit.disabled = remaining !== 0;
+  };
+
+  for (const bucket of buckets) {
+    const row = el('div', 'allocation-bucket');
+    row.dataset.bucket = bucket.id;
+    const label = el('div', 'allocation-bucket-label', localised(bucket.label));
+    row.appendChild(label);
+
+    const controls = el('div', 'stepper allocation-stepper');
+    const controlsInner = el('div', 'stepper-controls');
+    controls.appendChild(controlsInner);
+    const valueWrap = el('div', 'stepper-value-wrap');
+    const valueNode = el('div', 'stepper-value', money(split[bucket.id]));
+    valueNode.dataset.role = 'value';
+    valueNode.setAttribute('aria-live', 'polite');
+    valueNode.setAttribute('aria-atomic', 'true');
+    valueWrap.appendChild(valueNode);
+    controls.appendChild(valueWrap);
+    row.appendChild(controls);
+    rows.appendChild(row);
+    valueNodes.set(bucket.id, valueNode);
+
+    const change = (amount) => {
+      const previous = split[bucket.id];
+      const next = clampNumber(previous + amount, 0, previous + amount > total ? previous : total);
+      const usedOther = Object.entries(split)
+        .filter(([id]) => id !== bucket.id)
+        .reduce((sum, [, valueForBucket]) => sum + valueForBucket, 0);
+      const bounded = clampNumber(next, 0, Math.max(0, total - usedOther));
+      if (bounded === previous) return;
+      split[bucket.id] = bounded;
+      updateStepperValue(controls, valueNode, previous, bounded, money);
+      updateSummary();
+    };
+
+    for (const amount of [-5 * step, -step, step, 5 * step]) {
+      const coarse = Math.abs(amount) === 5 * step;
+      const button = stepButton(
+        amount / step,
+        amount < 0 ? (coarse ? 'alloc.coarseDecrease' : 'alloc.decrease')
+          : (coarse ? 'alloc.coarseIncrease' : 'alloc.increase'),
+        amount < 0 ? (coarse ? 'alloc.coarseDecreaseLabel' : 'alloc.decreaseLabel')
+          : (coarse ? 'alloc.coarseIncreaseLabel' : 'alloc.increaseLabel'),
+      );
+      button.addEventListener('click', () => change(amount));
+      controlsInner.appendChild(button);
+    }
+  }
+  card.appendChild(rows);
+
+  const cashNode = el('p', 'allocation-cash');
+  card.appendChild(cashNode);
+  const commit = el('button', 'btn btn-primary', t('alloc.commit'));
+  commit.type = 'button';
+  commit.dataset.role = 'commit';
+  commit.setAttribute('aria-label', t('alloc.commitLabel'));
+  commit.addEventListener('click', () => onCommit({ ...split }, resolveAllocation(state, allocate, split)));
+  card.appendChild(commit);
+  updateSummary();
+  container.appendChild(card);
+}
+
+/** Choose the ledger line the learner thinks caused the loss. */
+function renderDiagnose(container, turn, state, onAnswer) {
+  clear(container);
+  const diagnose = turn.diagnose;
+  const pnl = weeklyPnl(state);
+  const rows = new Map(ledgerRows(pnl).map((row) => [row.key, row]));
+  const card = el('div', 'card diagnose fade-in');
+  card.dataset.control = 'diagnose';
+  card.appendChild(el('div', 'card-title', t('diag.title')));
+  card.appendChild(el('p', 'predict-question', localised(diagnose.prompt) || t('diag.prompt')));
+
+  const list = el('div', 'diagnose-options');
+  for (const key of diagnose.options || []) {
+    const row = rows.get(key);
+    const button = el('button', 'diagnose-option');
+    button.type = 'button';
+    button.dataset.line = key;
+    button.setAttribute('aria-label', t('diag.choose', { line: t(key) }));
+    button.appendChild(el('span', 'diagnose-label', t(key)));
+    button.appendChild(el('span', `diagnose-value${row && row.value < 0 ? ' negative' : ''}`,
+      money(row ? row.value : 0)));
+    button.addEventListener('click', () => {
+      [...list.children].forEach((item) => { item.disabled = true; });
+      button.classList.add('selected');
+      onAnswer(key, key === diagnose.answer);
+    });
+    list.appendChild(button);
+  }
+  card.appendChild(list);
+  container.appendChild(card);
+}
+
+/** A numeric weekly-profit prediction, centred on the current P&L. */
+function renderPredictNumber(container, turn, state, onPredict) {
+  clear(container);
+  const current = weeklyPnl(state).profit;
+  const step = Math.max(1, Number(turn.decision.predictStep) || 1000);
+  // Numeric prediction content does not need another schema field: a ten-step window
+  // around the visible current profit gives room to reason on a phone.
+  const min = current - (step * 10);
+  const max = current + (step * 10);
+  let value = current;
+  const card = el('div', 'card number-prediction predict slide-up');
+  card.dataset.control = 'predict-number';
+  card.dataset.value = String(value);
+  card.appendChild(el('div', 'card-title', t('num.predictTitle')));
+  card.appendChild(el('p', 'predict-question', localised(turn.decision.predictQuestion) || t('num.predictPrompt')));
+  card.appendChild(el('p', 'number-hint', t('num.predictCurrent', { amount: money(current) })));
+
+  const stepper = el('div', 'stepper');
+  const controls = el('div', 'stepper-controls');
+  stepper.appendChild(controls);
+  const valueWrap = el('div', 'stepper-value-wrap');
+  valueWrap.appendChild(el('div', 'stepper-label', t('num.predicted')));
+  const valueNode = el('div', 'stepper-value', money(value));
+  valueNode.dataset.role = 'value';
+  valueNode.setAttribute('aria-live', 'polite');
+  valueNode.setAttribute('aria-atomic', 'true');
+  valueWrap.appendChild(valueNode);
+  stepper.appendChild(valueWrap);
+  card.appendChild(stepper);
+
+  for (const amount of [-5 * step, -step, step, 5 * step]) {
+    const coarse = Math.abs(amount) === 5 * step;
+    const button = stepButton(
+      amount / step,
+      amount < 0 ? (coarse ? 'num.coarseDecrease' : 'num.decrease')
+        : (coarse ? 'num.coarseIncrease' : 'num.increase'),
+      amount < 0 ? (coarse ? 'num.coarseDecreaseLabel' : 'num.decreaseLabel')
+        : (coarse ? 'num.coarseIncreaseLabel' : 'num.increaseLabel'),
+    );
+    button.addEventListener('click', () => {
+      const previous = value;
+      value = clampNumber(value + amount, min, max);
+      if (value === previous) return;
+      updateStepperValue(card, valueNode, previous, value, money);
+    });
+    controls.appendChild(button);
+  }
+
+  const commit = el('button', 'btn btn-primary', t('num.predictCommit'));
+  commit.type = 'button';
+  commit.dataset.role = 'commit';
+  commit.setAttribute('aria-label', t('num.predictCommitLabel'));
+  commit.addEventListener('click', () => onPredict(value));
+  card.appendChild(commit);
+  container.appendChild(card);
+}
+
+/**
+ * A goal is a set of conditions to reach, not a performance score. Each row carries
+ * words and a symbol so state is not conveyed by colour alone.
+ */
+function renderGoal(container, progress, goal) {
+  clear(container);
+  if (!goal || !progress) return;
+  const card = el('section', 'goal-panel');
+  card.dataset.control = 'goal';
+  card.appendChild(el('div', 'goal-title', localised(goal.label || goal.title) || t('goal.title')));
+  if (goal.description) card.appendChild(el('p', 'goal-description', localised(goal.description)));
+
+  const definitions = new Map((goal.conditions || []).map((condition) => [condition.id, condition]));
+  const list = el('div', 'goal-conditions');
+  for (const condition of progress.conditions || []) {
+    const definition = definitions.get(condition.id) || {};
+    const row = el('div', 'goal-condition');
+    row.dataset.condition = condition.id;
+    row.dataset.met = String(Boolean(condition.met));
+
+    const status = el('div', 'goal-status');
+    status.appendChild(el('span', 'goal-status-mark', condition.met ? '✓' : '○'));
+    status.appendChild(el('span', 'goal-status-word', t(condition.met ? 'goal.met' : 'goal.notYet')));
+    row.appendChild(status);
+    row.appendChild(el('div', 'goal-condition-label', localised(definition.label) || t('goal.condition')));
+    row.appendChild(el('div', 'goal-condition-value', t('goal.conditionValue', {
+      current: fieldValue(condition.current, definition.field),
+      target: fieldValue(condition.target, definition.field),
+    })));
+    list.appendChild(row);
+  }
+  card.appendChild(list);
+  container.appendChild(card);
+}
+
 function renderOptions(container, turn, onChoose) {
   clear(container);
   const card = el('div', 'card fade-in');
@@ -6215,15 +6988,42 @@ function biggestMover(beforeState, afterState) {
   return best;
 }
 
-function renderReveal(container, turn, option, predictedId, correct, beforeState, afterState, onNext) {
+function predictionSummaryText(prediction) {
+  if (!prediction) return '';
+  if (prediction.kind === 'number') {
+    return t('num.numberSummary', {
+      predicted: money(prediction.predicted),
+      actual: money(prediction.actual),
+    });
+  }
+  return t('num.bandSummary', {
+    predicted: t(`predict.${prediction.predictedId}`),
+    actual: t(`predict.${prediction.actualId}`),
+  });
+}
+
+function renderReveal(container, {
+  turn,
+  narrative,
+  prediction,
+  beforeState,
+  afterState,
+  onNext,
+}) {
   clear(container);
-  const card = el('div', `reveal ${correct ? 'correct' : 'wrong'} slide-up`);
+  const numeric = prediction && prediction.kind === 'number';
+  const correct = numeric ? prediction.grade === 'close' : Boolean(prediction && prediction.correct);
+  const near = numeric && prediction.grade === 'near';
+  const card = el('div', `reveal ${correct ? 'correct' : near ? 'near' : 'wrong'} slide-up`);
 
   const verdict = el('div', 'reveal-verdict');
   // Never colour alone — docs/localization.md.
-  verdict.appendChild(el('span', 'reveal-mark', correct ? '✓' : '✗'));
-  verdict.appendChild(el('span', 'reveal-text',
-    t(correct ? 'reveal.right' : 'reveal.wrong')));
+  verdict.appendChild(el('span', 'reveal-mark', numeric
+    ? (correct ? '✓' : near ? '≈' : '✗')
+    : (correct ? '✓' : '✗')));
+  verdict.appendChild(el('span', 'reveal-text', numeric
+    ? t(`num.grade.${prediction.grade}`)
+    : t(correct ? 'reveal.right' : 'reveal.wrong')));
   card.appendChild(verdict);
 
   const { wrap, afterCell, before, after } = comparisonLedger(beforeState, afterState);
@@ -6236,13 +7036,12 @@ function renderReveal(container, turn, option, predictedId, correct, beforeState
   deltaRow.appendChild(deltaVal);
   card.appendChild(deltaRow);
 
-  // What they said versus what the engine did, in the same words as the buttons.
-  if (!correct) {
-    card.appendChild(el('p', 'reveal-said', t('reveal.youSaid', {
-      predicted: t(`predict.${predictedId}`),
-      actual: t(`predict.${bandFor(delta)}`),
-    })));
+  // Numeric predictions always need the concrete figures. Band predictions retain
+  // the previous compact summary only when the call missed.
+  if (numeric || !correct) card.appendChild(el('p', 'reveal-said', predictionSummaryText(prediction)));
 
+  const miss = numeric ? prediction.grade === 'off' : !correct;
+  if (miss) {
     const mover = biggestMover(beforeState, afterState);
     const look = el('div', 'second-look');
     look.appendChild(el('div', 'second-look-title', t('secondLook.title')));
@@ -6252,8 +7051,8 @@ function renderReveal(container, turn, option, predictedId, correct, beforeState
     card.appendChild(look);
   }
 
-  card.appendChild(el('p', 'outcome', localised(option.outcome)));
-  if (option.lesson) card.appendChild(el('p', 'lesson', localised(option.lesson)));
+  if (narrative && narrative.outcome) card.appendChild(el('p', 'outcome', localised(narrative.outcome)));
+  if (narrative && narrative.lesson) card.appendChild(el('p', 'lesson', localised(narrative.lesson)));
 
   const next = el('button', 'btn btn-primary', t('btn.continue'));
   next.type = 'button';
@@ -6363,17 +7162,17 @@ function renderProfile(container, profile, tally, state, history) {
   container.appendChild(limits);
 }
 
-  return { el, clear, renderStats, renderPnl, renderTrajectory, renderSituation, renderInfo, renderOptions, renderWorkout, renderPredict, renderReveal, renderConsequences, renderScene, renderProgress, renderProfile };
+  return { el, clear, renderStats, renderPnl, renderTrajectory, renderSituation, renderInfo, renderNumberDecision, renderAllocateDecision, renderDiagnose, renderPredictNumber, renderGoal, renderOptions, renderWorkout, renderPredict, predictionSummaryText, renderReveal, renderConsequences, renderScene, renderProgress, renderProfile };
 })();
 
 /* ---- main ---- */
 const NS_main = (function () {
-
-    const record = NS_record, store = NS_storage, ui = NS_ui;
-    const { createState, applyEffects, weeklyPnl, advanceWeeks, scheduleLater } = NS_engine;
-    const { setCurrency } = NS_format;
-    const { loadStrings, setLanguage, getLanguage, LANGUAGES, t, localised } = NS_i18n;
-  
+const { createState, applyEffects, weeklyPnl, advanceWeeks, scheduleLater, resolveNumberInput, resolveAllocation, bandForValue, gradePrediction, evaluateGoal, needsRecovery } = NS_engine;
+const { setCurrency } = NS_format;
+const { loadStrings, setLanguage, getLanguage, LANGUAGES, t, localised } = NS_i18n;
+const record = NS_record;
+const store = NS_storage;
+const ui = NS_ui;
 // Application bootstrap and turn state machine.
 //
 // Flow per turn:
@@ -6417,6 +7216,7 @@ function cacheDom() {
   dom.lang = q('lang');
   dom.pnlToggle = q('pnl-toggle');
   dom.pnlWrap = q('pnl-wrap');
+  dom.goal = q('goal');
   dom.footPrivacy = q('foot-privacy');
 }
 
@@ -6430,8 +7230,16 @@ function newSession() {
     sought: [],
     chosenOptionId: null,
     predictedId: null,
+
+    // v3: what the learner supplied, rather than which option they recognised.
+    inputValue: null,
+    split: null,
+    diagnosed: null,
+    predictedValue: null,
+
     fired: [],
     weeksPassed: 0,
+    recoveriesUsed: 0,
     record: record.createRecord(scenario.id),
   };
 }
@@ -6446,12 +7254,98 @@ function currentTurn() {
 
 function chosenOption() {
   const turn = currentTurn();
+  if (!turn.decision.options) return null;
   return turn.decision.options.find((o) => o.id === session.chosenOptionId);
 }
 
-/** The state the learner's choice would produce, before any time passes. */
+function decisionType(turn) {
+  return (turn && turn.decision && turn.decision.type) || 'choice';
+}
+
+/**
+ * What the learner decided, as an effects object — whichever way they decided it.
+ *
+ * This is the seam v3 turns on. A `choice` turn hands back a pre-authored effects
+ * block; `number` and `allocate` turns compute one from the value the learner actually
+ * supplied, through the declarative response curves in content. Everything downstream
+ * — the reveal, the P&L, the record — is identical either way, which is what lets the
+ * three decision types share one turn loop.
+ */
+function chosenEffects() {
+  const turn = currentTurn();
+  const type = decisionType(turn);
+
+  if (type === 'number') {
+    return resolveNumberInput(session.state, turn.decision.input, session.inputValue);
+  }
+  if (type === 'allocate') {
+    return resolveAllocation(session.state, turn.decision.allocate, session.split || {});
+  }
+  const opt = chosenOption();
+  return (opt && opt.effects) || {};
+}
+
+/** The state the learner's decision would produce, before any time passes. */
 function afterChoiceState() {
-  return applyEffects(session.state, chosenOption().effects || {});
+  return applyEffects(session.state, chosenEffects());
+}
+
+/**
+ * The outcome and lesson text for what they decided.
+ *
+ * A `choice` carries its own. A free decision selects from `bands` on the value chosen
+ * — on the value, not on the profit change, so the narrative can talk about the decision
+ * the learner made rather than only its result.
+ */
+function narrativeFor() {
+  const turn = currentTurn();
+  const type = decisionType(turn);
+
+  if (type === 'number') {
+    const band = bandForValue(turn.decision.bands, session.inputValue);
+    return { outcome: band && band.outcome, lesson: band && band.lesson };
+  }
+  if (type === 'allocate') {
+    const buckets = turn.decision.allocate.buckets || [];
+    const total = Object.values(session.split || {}).reduce((a, b) => a + b, 0);
+    const first = (session.split || {})[buckets[0] && buckets[0].id] || 0;
+    const band = bandForValue(turn.decision.bands, total > 0 ? first / total : 0);
+    return { outcome: band && band.outcome, lesson: band && band.lesson };
+  }
+  const opt = chosenOption();
+  return { outcome: opt && opt.outcome, lesson: opt && opt.lesson };
+}
+
+/** A short label for the record — what they chose, in words. */
+function decisionLabel() {
+  const turn = currentTurn();
+  const type = decisionType(turn);
+  if (type === 'number') return `${turn.decision.input.field}=${session.inputValue}`;
+  if (type === 'allocate') {
+    return Object.entries(session.split || {}).map(([k, v]) => `${k}=${v}`).join(' ');
+  }
+  const opt = chosenOption();
+  return localised(opt && opt.label);
+}
+
+/** Band or numeric — the prediction, packaged for the reveal. */
+function predictionResult() {
+  const turn = currentTurn();
+  const numeric = turn.decision.predict === 'number';
+
+  if (numeric) {
+    const actual = weeklyPnl(afterChoiceState()).profit;
+    const graded = gradePrediction(session.predictedValue, actual);
+    return { kind: 'number', ...graded };
+  }
+  const opt = chosenOption();
+  const actualId = opt && opt.predictAnswer;
+  return {
+    kind: 'band',
+    predictedId: session.predictedId,
+    actualId,
+    correct: session.predictedId === actualId,
+  };
 }
 
 function scrollToDecision() {
@@ -6480,24 +7374,48 @@ function renderAll(prevState) {
   ui.renderTrajectory(dom.trajectory, session.state);
   ui.renderConsequences(dom.consequence, session.fired, session.weeksPassed);
 
+  // The goal is what makes twenty decisions one campaign rather than twenty quizzes.
+  // It steers; it never scores — completion is the gate (ADR-0005, D-008).
+  if (scenario.goal) {
+    ui.renderGoal(dom.goal, evaluateGoal(session.state, scenario.goal), scenario.goal);
+  }
+
   const sought = new Set(session.sought);
   ui.renderInfo(dom.info, turn, session.state, onSeekInfo, sought);
 
+  const type = decisionType(turn);
+
   if (session.phase === 'situation') {
-    ui.renderOptions(dom.decision, turn, onChooseOption);
+    // A diagnose step, where content asks for one, runs before the decision: read the
+    // ledger and say which line is the problem, then act on it.
+    if (turn.diagnose && session.diagnosed === null) {
+      ui.renderDiagnose(dom.decision, turn, session.state, onDiagnose);
+    } else if (type === 'number') {
+      ui.renderNumberDecision(dom.decision, turn, session.state, onCommitNumber);
+    } else if (type === 'allocate') {
+      ui.renderAllocateDecision(dom.decision, turn, session.state, onCommitAllocation);
+    } else {
+      ui.renderOptions(dom.decision, turn, onChooseOption);
+    }
   } else if (session.phase === 'workout') {
     ui.renderWorkout(dom.decision, turn, chosenOption(), session.state, onWorkoutDone);
     scrollToDecision();
   } else if (session.phase === 'predict') {
-    ui.renderPredict(dom.decision, turn, chosenOption(), onPredict);
+    if (turn.decision.predict === 'number') {
+      ui.renderPredictNumber(dom.decision, turn, session.state, onPredictNumber);
+    } else {
+      ui.renderPredict(dom.decision, turn, chosenOption(), onPredict);
+    }
     scrollToDecision();
   } else if (session.phase === 'reveal') {
-    const opt = chosenOption();
-    ui.renderReveal(
-      dom.decision, turn, opt, session.predictedId,
-      session.predictedId === opt.predictAnswer,
-      session.state, afterChoiceState(), onNext,
-    );
+    ui.renderReveal(dom.decision, {
+      turn,
+      narrative: narrativeFor(),
+      prediction: predictionResult(),
+      beforeState: session.state,
+      afterState: afterChoiceState(),
+      onNext,
+    });
     scrollToDecision();
   }
 }
@@ -6518,8 +7436,38 @@ function onSeekInfo(item) {
   renderAll();
 }
 
+function onDiagnose(pickedKey) {
+  const turn = currentTurn();
+  const correct = pickedKey === turn.diagnose.answer;
+  session.diagnosed = pickedKey;
+  record.observeDiagnosis(session.record, turn.id, pickedKey, turn.diagnose.answer, correct);
+  persist();
+  renderAll();
+}
+
 function onChooseOption(option) {
   session.chosenOptionId = option.id;
+  session.phase = 'workout';
+  persist();
+  renderAll();
+}
+
+/** A free numeric decision — the value itself is the evidence, so it is recorded. */
+function onCommitNumber(value) {
+  const turn = currentTurn();
+  session.inputValue = value;
+  record.observeInput(session.record, turn.id, turn.decision.input.field, value);
+  session.phase = 'workout';
+  persist();
+  renderAll();
+}
+
+function onCommitAllocation(split) {
+  const turn = currentTurn();
+  session.split = split;
+  for (const [bucket, amount] of Object.entries(split)) {
+    record.observeInput(session.record, turn.id, `allocate.${bucket}`, amount);
+  }
   session.phase = 'workout';
   persist();
   renderAll();
@@ -6544,6 +7492,22 @@ function onPredict(choice) {
   renderAll();
 }
 
+function onPredictNumber(value) {
+  const turn = currentTurn();
+  session.predictedValue = value;
+
+  const actual = weeklyPnl(afterChoiceState()).profit;
+  const graded = gradePrediction(value, actual);
+  record.observePrediction(
+    session.record, turn.id, value, actual, graded.correct, 'profit',
+    { predicted: value, actual, error: graded.error, grade: graded.grade },
+  );
+
+  session.phase = 'reveal';
+  persist();
+  renderAll();
+}
+
 function onNext() {
   const turn = currentTurn();
   const opt = chosenOption();
@@ -6551,16 +7515,17 @@ function onNext() {
 
   const before = weeklyPnl(session.state).profit;
   const after = weeklyPnl(afterChoiceState()).profit;
+  const label = decisionLabel();
 
   record.observeDecision(
-    session.record, turn.id, turn.concept, opt.id, localised(opt.label),
+    session.record, turn.id, turn.concept, (opt && opt.id) || decisionType(turn), label,
     session.sought.length, before, after,
   );
 
-  // Apply the choice, queue anything it sets in motion for later, then let time pass so
-  // consequences arrive on a lag.
-  let next = applyEffects(session.state, opt.effects || {});
-  next = scheduleLater(next, opt.later || [], localised(opt.label));
+  // Apply the decision, queue anything it sets in motion for later, then let time pass
+  // so consequences arrive on a lag.
+  let next = applyEffects(session.state, chosenEffects());
+  next = scheduleLater(next, (opt && opt.later) || [], label);
 
   const advanced = advanceWeeks(next, turn.advanceWeeks || 1);
 
@@ -6573,6 +7538,19 @@ function onNext() {
   session.sought = [];
   session.chosenOptionId = null;
   session.predictedId = null;
+  session.inputValue = null;
+  session.split = null;
+  session.diagnosed = null;
+  session.predictedValue = null;
+
+  // Running out of money is a chapter boundary, not an ending (docs/game-design.md).
+  // The learner gets a turn about trading their way out, which is the situation the
+  // scenario most needs to teach and the one a fail screen would skip.
+  if (scenario.recovery && needsRecovery(session.state) && session.recoveriesUsed < 2) {
+    session.recoveriesUsed += 1;
+    scenario.turns.splice(session.turnIndex, 0, JSON.parse(JSON.stringify(scenario.recovery)));
+    scenario.turns[session.turnIndex].id = `recovery-${session.recoveriesUsed}`;
+  }
 
   persist();
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -6592,6 +7570,13 @@ function renderEnd() {
   // rather than leaving an empty bordered card on the results screen.
   dom.pnlWrap.setAttribute('hidden', '');
   dom.pnlToggle.hidden = true;
+
+  // Goal progress travels with the record as an OBSERVATION — what the business looked
+  // like at the end, not a mark out of four. Missing a condition is not failing.
+  if (scenario.goal) {
+    session.record.goalProgress = evaluateGoal(session.state, scenario.goal);
+    ui.renderGoal(dom.goal, session.record.goalProgress, scenario.goal);
+  }
 
   const profile = record.buildProfile(session.record);
   const tally = record.predictionTally(session.record);

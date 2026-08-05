@@ -6,6 +6,8 @@
 import {
   createState, applyEffects, weeklyPnl, advanceWeek, advanceWeeks, ownerLoad, healthCheck,
   scheduleLater, project, baseOwnerHours, bandFor, BAND_SAME, BAND_LOT,
+  resolveNumberInput, resolveAllocation, allocationTotal, bandForValue, gradePrediction,
+  weeksOfCostsCovered, evaluateGoal, needsRecovery,
 } from '../app/js/engine.js';
 import * as record from '../app/js/record.js';
 
@@ -131,6 +133,97 @@ console.log('\nengine: prediction bands');
   eq('past it is "up a lot"', bandFor(BAND_LOT + 1), 'up_lot');
 }
 
+console.log('\nengine: number inputs and declarative response curves');
+{
+  const state = createState({ price: 500, demand: 200 });
+  const input = {
+    field: 'price',
+    min: 300,
+    max: 900,
+    step: 25,
+    start: 'current',
+    responses: [{ field: 'demand', perStep: 25, change: -12 }],
+  };
+  const atMin = resolveNumberInput(state, input, input.min);
+  const atMax = resolveNumberInput(state, input, input.max);
+  eq('number input sets the chosen field at min', atMin.price, 300);
+  eq('number input response at min is additive', atMin.demand, 96);
+  eq('number input sets the chosen field at max', atMax.price, 900);
+  eq('number input response at max is additive', atMax.demand, -192);
+  eq('number input does not mutate state', state.price, 500);
+  eq('number input effects apply to state', applyEffects(state, atMax).demand, 8);
+}
+
+console.log('\nengine: allocation inputs');
+{
+  const state = createState({ cash: 150000, capacity: 180, demand: 200 });
+  const allocate = {
+    amountFrom: 'cash',
+    fraction: 0.6,
+    step: 10000,
+    buckets: [
+      { id: 'business', perStep: { capacity: 8, demand: 5 } },
+      { id: 'home', perStep: {} },
+      { id: 'reserve', perStep: {}, keepsCash: true },
+    ],
+  };
+  eq('allocation total is rounded to step', allocationTotal(state, allocate), 90000);
+  eq('zero cash gives zero allocation', allocationTotal(createState({ cash: 0 }), allocate), 0);
+
+  const zero = resolveAllocation(createState({ cash: 0 }), allocate, { business: 0, home: 0, reserve: 0 });
+  eq('zero allocation has zero capacity effect', zero.capacity, 0);
+  eq('zero allocation has zero cash effect', zero.cash, 0);
+
+  const allBusiness = resolveAllocation(state, allocate, { business: 90000, home: 0, reserve: 0 });
+  const afterBusiness = applyEffects(state, allBusiness);
+  eq('allocating everything applies business units', afterBusiness.capacity, 252);
+  eq('allocating everything applies demand units', afterBusiness.demand, 245);
+  eq('cash falls by non-reserve allocation', afterBusiness.cash, 60000);
+
+  const allReserve = applyEffects(state, resolveAllocation(state, allocate, {
+    business: 0, home: 0, reserve: 90000,
+  }));
+  eq('a keepsCash bucket leaves cash available', allReserve.cash, 150000);
+}
+
+console.log('\nengine: value bands and numeric prediction grades');
+{
+  const bands = [
+    { id: 'low', upTo: 0.25 },
+    { id: 'middle', upTo: 0.75 },
+    { id: 'high' },
+  ];
+  eq('value band includes its lower boundary', bandForValue(bands, 0.25).id, 'low');
+  eq('value band selects the next range', bandForValue(bands, 0.26).id, 'middle');
+  eq('value band uses the unbounded fallback', bandForValue(bands, 1).id, 'high');
+  eq('value band returns null without a match', bandForValue([{ upTo: 0.5 }], 1), null);
+
+  eq('prediction exactly at close boundary is close', gradePrediction(11000, 10000).grade, 'close');
+  eq('prediction just beyond close boundary is near', gradePrediction(11001, 10000).grade, 'near');
+  eq('prediction exactly at near boundary is near', gradePrediction(12500, 10000).grade, 'near');
+  eq('prediction just beyond near boundary is off', gradePrediction(12501, 10000).grade, 'off');
+  check('close prediction is marked correct', gradePrediction(11000, 10000).correct === true);
+  check('grade result keeps numeric inputs', gradePrediction(11000, 10000).predicted === 11000);
+}
+
+console.log('\nengine: costs, goals, and recovery');
+{
+  const state = createState({ cash: 180000, rent: 20000, staff: 2, wagePerStaff: 30000, licenceFees: 10000 });
+  eq('weeks of fixed costs covered', weeksOfCostsCovered(state), 2);
+  const empty = evaluateGoal(state, { conditions: [] });
+  eq('empty goal has zero conditions', empty.total, 0);
+  const complete = evaluateGoal(state, {
+    conditions: [
+      { id: 'cash', field: 'cash', min: 180000 },
+      { id: 'runway', metric: 'weeksOfCostsCovered', min: 2 },
+    ],
+  });
+  eq('all goal conditions can be met', complete.metCount, 2);
+  check('goal reports each condition as met', complete.conditions.every((condition) => condition.met));
+  check('negative cash needs recovery', needsRecovery(createState({ cash: -1 })) === true);
+  check('non-negative cash does not need recovery', needsRecovery(createState({ cash: 0 })) === false);
+}
+
 console.log('\nengine: owner hours are a weekly load, not a lifetime total');
 {
   const small = createState({ capacity: 180, staff: 0 });
@@ -229,11 +322,28 @@ console.log('\nrecord: observations and indicators');
   eq('counts distinct concepts', cov.total, 3);
 }
 
+console.log('\nrecord: numeric inputs and diagnosis evidence');
+{
+  const r = record.createRecord('test');
+  record.observePrediction(r, 't01', 11000, 10000, true, 'profit', { error: 0.1, grade: 'close' });
+  record.observeDiagnosis(r, 't11', 'pnl.sales', 'pnl.spoilage', false);
+  record.observeInput(r, 't01', 'price', 300);
+  const json = JSON.stringify(r);
+  check('numeric prediction stores error and grade', json.includes('"error":0.1') && json.includes('"grade":"close"'));
+  check('diagnosis observation is recorded', r.observations.some((o) => o.kind === 'diagnosis'));
+  check('numeric input survives record export', json.includes('"kind":"input"') && json.includes('"value":300'));
+  const diag = record.diagnosis(r);
+  eq('diagnosis counts observations', diag.total, 1);
+  check('diagnosis cites its evidence', diag.evidence[0].turnId === 't11');
+}
+
 console.log('\nrecord: the profile refuses to overclaim');
 {
   const r = record.createRecord('test');
   record.observePrediction(r, 't01', 'up_bit', 'up_bit', true, 'profit');
   record.observeDecision(r, 't01', 'unit-economics', 'a', 'Raise price', 1, 1000, 2000);
+  record.observeDiagnosis(r, 't11', 'pnl.spoilage', 'pnl.spoilage', true);
+  r.goalProgress = { conditions: [], metCount: 2, total: 3 };
   const p = record.buildProfile(r);
 
   check('carries its limitations inside the artefact', p.limitations.length >= 3);
@@ -246,6 +356,8 @@ console.log('\nrecord: the profile refuses to overclaim');
   check('no composite score field', !/"score"/.test(json));
   check('no rank field', !/"rank"/.test(json));
   check('no percentile field', !/"percentile"/.test(json));
+  check('includes observational diagnosis statement', p.statements.some((s) => s.key === 'profile.stmt.diagnosis'));
+  check('includes observational goal statement', p.statements.some((s) => s.key === 'profile.stmt.goal'));
 
   for (const s of p.statements) {
     check(`statement is observational: "${s.text.slice(0, 40)}..."`,
