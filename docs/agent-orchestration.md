@@ -1,7 +1,8 @@
 # Running several agents on this repository at once
 
-> **Status:** written 2026-08-05, from two attempts with opposite outcomes. Update it after
-> the next one. `AGENTS.md` §6 still governs — this is how to apply it when work is split.
+> **Status:** written 2026-08-05, from two attempts with opposite outcomes; revised the same
+> day once the actual constraint was named. `AGENTS.md` §6 still governs — this is how to
+> apply it when work is split.
 
 Parallel agents have been tried twice here. The first attempt produced a total failure that
 looked like a crash; the second produced most of a working feature. The difference was not
@@ -9,22 +10,52 @@ the models. It was how much interface design happened *before* anyone started wr
 
 ---
 
-## 1. When this is worth doing
+## 1. The constraint is tokens, not time
 
-Splitting work costs a contract, an integration pass, and a real chance of a seam nobody
-owns. It pays only when **all** of these hold:
+**Wall-clock time is not scarce on this project. Token budget is.** Every recommendation
+below follows from that, and it inverts the usual reason for splitting work.
 
-- The work divides into slices that touch **disjoint files**. Not "different features" —
-  different files. Two agents in one file is the failure mode, not a risk to manage.
-- Each slice is **large enough** to be worth a cold start. An agent re-derives context you
-  already have; a twenty-minute slice is cheaper done inline.
-- The interfaces between slices can be **written down before work starts**. If you cannot
-  specify them, you do not understand the change well enough to split it — do the design
-  first, then decide.
+The economics are lopsided and worth stating plainly:
 
-Do not split for speed alone. The honest benefit in session 006 was not wall-clock: it was
-that writing the contract forced the interfaces to be designed properly before any code
-existed. That would have been worth doing even single-handed.
+- **Your own context is already paid for.** Continuing inline re-uses a warm cache. It is
+  the cheapest thing you can do.
+- **Every subagent starts cold.** It re-reads the operating guide, the contract, and the
+  files it needs — all fresh tokens, none of them cached, once per agent.
+- **A shared contract is multiplied by agent count.** Session 006's ran to about 250 lines
+  and all three agents read it in full, alongside `AGENTS.md` and their own files.
+- **Rework is where budget actually dies.** An agent that builds the wrong thing and redoes
+  it costs twice, and every ambiguity in the brief is a coin flip on that.
+
+So the default is **sequential and inline**. Parallelism buys elapsed time, and elapsed
+time is the one thing there is plenty of.
+
+### The test that matters
+
+> **Delegate what you have not read. Keep what you have.**
+
+If a file is already in your context, doing the work yourself costs almost nothing extra,
+while an agent pays full price to re-derive what you already know. If a file is *not* in
+your context, someone has to read it — and then it may as well be an agent, in its own
+context window rather than yours.
+
+Good candidates: bulk mechanical work behind a narrow spec (a translation pass, applying one
+pattern across many files), or a self-contained area you would otherwise have to load.
+
+Bad candidates: anything in files you have just been editing, anything needing broad
+knowledge of the codebase, anything where the spec is still moving.
+
+Judged that way, session 006 delegated badly. `engine.js`, `ui.js`, `main.js`, `record.js`
+and the scenario were all already in context; three agents re-read them from scratch. The
+translation was the only slice that clearly earned its cold start. Doing it inline and in
+sequence would very likely have been cheaper **and** avoided both integration bugs, because
+those were a tax on simultaneity — see §4.1.
+
+### Get the benefit without paying for it
+
+The honest gain in session 006 was not throughput. It was that writing a contract forced the
+interfaces to be designed before any code existed. **That benefit does not require spawning
+anyone.** Write the interface design; then implement it yourself. The design is the valuable
+artefact, not the parallelism.
 
 **Do not split at all** when the change is mostly one file, when the design is still moving,
 or when the slices need to see each other's work to know if they are right.
@@ -102,7 +133,16 @@ own slice, and said so.
 **Fix — the integrator writes the stubs.** Land the exported signatures as throwing stubs
 *before* launching anyone. The contract becomes executable: every agent imports real
 functions from minute zero, type-level mistakes surface immediately, and the harness runs.
-This is the single biggest improvement available and it costs about ten minutes.
+
+This is the single biggest improvement available, and under a token budget it pays twice —
+it prevents an agent building against a misread signature and then redoing the work.
+Rework is the largest avoidable cost in delegated work, and ambiguity is what causes it.
+
+**Better still, stage the work.** If elapsed time is not scarce, run the dependent slices in
+sequence: land the engine, *then* brief the interface agent, which can now read the real
+code instead of a description of it. Both of session 006's integration bugs existed only
+because three agents had to work simultaneously. Sequencing removes that entire class of
+failure and costs nothing but time you are not short of.
 
 ### 4.3 Nobody checked that ownership was respected
 
@@ -125,10 +165,19 @@ costs compounding to −900,000, rent going negative, a prediction band straddli
 — were found by simulating full runs after integration. No agent was asked to look, so none
 did.
 
-**Fix — add a fourth role: an adversary.** Once integration is green, launch one agent whose
-only job is to break it, explicitly told that passing checks is not evidence of correctness.
-Given this repository's record — `validate-scenario.mjs` has now missed two whole-business
-failures — this is not optional hygiene, it is where the real defects live.
+**Fix — write a script, not an adversary agent.** The instinct is to add a fourth agent
+whose job is to break the integrated result. Resist it: an agent is among the most expensive
+tools available and this job does not need one. All three bugs were found by a
+thirty-line simulation that ran full playthroughs and printed the state at checkpoints —
+orders of magnitude cheaper than a cold-start agent, deterministic, and re-runnable for free
+afterwards.
+
+Reach for an adversary agent only when the failure is one a script cannot express — a
+judgement call about tone or pedagogy rather than a number going somewhere it should not.
+For anything the engine computes, simulate and look at the output.
+
+This matters because `validate-scenario.mjs` has now missed two whole-business failures. The
+gap is real; the fix is a better script, not a bigger crew.
 
 ### 4.5 Slices differed wildly in how verifiable they were
 
@@ -142,15 +191,21 @@ cannot be self-verified, either the integrator owns it, or the integrator suppli
 harness up front. Pointing agent 2 at an existing harness to copy was the right instinct and
 should be standard.
 
-### 4.6 Uniform model and effort
+### 4.6 Uniform model and effort, and one contract read three times
 
-All three ran on the same model at the same reasoning effort. The engine slice was the
-hardest and the most correctness-critical; the content slice was the most voluminous but the
-least subtle.
+All three agents ran the same model at the same reasoning effort, and all three read the
+same 250-line contract. Both are waste. High reasoning effort on a bulk translation pass
+buys nothing, and each agent paid to read two thirds of a document that did not concern it.
 
-**Fix.** Match model and effort to the slice. Reserve the strongest for engine, schema and
-anything the assessment model depends on. (Where the user names a model, that governs — this
-is about the default.)
+**Fix — match effort to difficulty, and brief per agent.** Reserve high effort for the
+engine, the schema, and anything the assessment model depends on; bulk mechanical work runs
+fine at medium. Give each agent only its own slice of the contract plus the shared
+interfaces it actually calls — not the whole document. Where the user names a model, that
+governs; this is about the default.
+
+**Fewer, larger agents beat many small ones.** Every agent pays a fixed orientation cost —
+reading the guide, finding its bearings — before doing anything useful. Three agents pay it
+three times. If two slices are related, one agent doing both amortises it.
 
 ### 4.7 Polling versus inspecting
 
@@ -204,13 +259,22 @@ around it.
 
 ## 6. Checklist
 
+First, and it is the one most often skipped:
+
+- [ ] **Should this be delegated at all?** Sequential and inline is the default. Delegate
+      what you have not read; keep what you have.
+- [ ] Could a **script** do the verification job you were about to give an agent?
+- [ ] Could **one** agent take two related slices and pay the orientation cost once?
+
 Before launching:
 
 - [ ] Slices touch disjoint files, and the split was chosen for verifiability
 - [ ] Contract written **in the repo**, with exact signatures
 - [ ] Every **changed** signature listed explicitly
 - [ ] Test hooks the verifier needs are specified
-- [ ] Stubs landed so agents import real code from the start
+- [ ] Stubs landed, or dependent slices staged in sequence
+- [ ] Each agent briefed on **its own slice only**, not the whole contract
+- [ ] Reasoning effort matched to difficulty, not set high by reflex
 - [ ] Each prompt names the project rules its slice could violate
 - [ ] "Do not commit / push / checkout" stated
 - [ ] "Do not claim success for anything you did not run" stated
@@ -219,8 +283,11 @@ After they finish:
 
 - [ ] Every touched file maps to exactly one owner
 - [ ] Integration checks green, not just per-slice checks
-- [ ] An adversarial pass over the integrated result
+- [ ] The integrated result attacked — by script where the failure is computable
 - [ ] Anything an agent reported as unfinished is either done or written down
+
+Watch the repository, not the agents. `git status` and a `grep` for the exports an agent
+owes you answer "how far along is this" for free; a status call does not.
 
 ## 7. One last thing, which is not about agents
 

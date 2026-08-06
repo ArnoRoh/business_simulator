@@ -201,11 +201,13 @@ magnitudes — see `docs/context/`.
 **Don't ship placeholder content as real.** Sample scenarios stay visibly labelled as
 samples until reviewed by someone with local ground truth.
 
-**Splitting work across several agents.** Only when the slices touch genuinely disjoint
-files and the interfaces between them can be written down first. Read
-[`docs/agent-orchestration.md`](./docs/agent-orchestration.md) before doing it — this has
-been tried twice, once badly, and the failure mode is a seam nobody owns. Contracts live in
-`memory/contracts/`, not in `/tmp`.
+**Splitting work across several agents.** The default is not to. Elapsed time is not scarce
+on this project; token budget is, and every subagent starts cold and re-reads what the main
+context already holds. Delegate what you have not read; keep what you have. When you do
+split, the slices must touch genuinely disjoint files and the interfaces must be written
+down first — read [`docs/agent-orchestration.md`](./docs/agent-orchestration.md), because
+this has been tried twice, once badly, and the failure mode is a seam nobody owns. Contracts
+live in `memory/contracts/`, not in `/tmp`.
 
 ## 7. Decisions and ADRs
 
