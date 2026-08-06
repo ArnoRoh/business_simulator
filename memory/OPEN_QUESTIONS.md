@@ -119,8 +119,13 @@ same thing to a learner as it does to the model?
 **Why it matters:** If a learner reasons correctly and lands in the neighbouring band,
 they are marked wrong, and prediction accuracy is the signal the whole assessment rests
 on. Under a performance gate (Q-012) this would directly affect who progresses.
-**Current assumption:** Bands are stable across playthrough paths (verified, 48/48), but
-whether they are *intuitive* is untested.
+**PARTLY ANSWERED 2026-08-05 (session 006).** The six free-input turns no longer use bands
+at all — the learner names an actual profit figure, graded close / near / off
+([D-012](./DECISIONS.md)), which removes the boundary problem entirely for those turns. The
+fourteen categorical turns still use bands, so the question stands for them.
+**Current assumption:** Bands are stable across playthrough paths (verified, 42/42) and are
+now labelled on screen with the money they cover, but whether they are *intuitive* is still
+untested.
 
 ### Q-010 — How do we handle assessment/selection interference?  [open]
 **Raised:** 2026-08-02 (session 002) · **Owner:** Project owner
