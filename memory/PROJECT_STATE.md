@@ -54,14 +54,18 @@ Then open `http://localhost:8000`. It needs a server — `file://` will not work
 `index.html`, because the browser refuses to fetch the content JSON. (`standalone.html`
 does work from `file://`.) See [`../app/README.md`](../app/README.md).
 
-**Hosted:** **https://arnoroh.github.io/business_simulator/** — public, served by GitHub
-Pages from the **`main` branch root**, with `index.html` at the root redirecting to `app/`.
-It therefore **tracks `main` automatically**: merge to `main` and the site follows, with no
-republish step.
+**Hosted:** **https://arnoroh.github.io/business_simulator/** — public, deployed by
+`.github/workflows/pages.yml`, which uploads `app/` on every push to `main` that touches it.
+The app is served at the site root and **tracks `main` automatically**; there is no
+republish step and no second copy of the app anywhere.
 
-This replaced a hand-built `gh-pages` branch, which tracked nothing, went stale, and once
-published a build two versions old while reporting success. Still worth **verifying a deploy
-by fetching the live content back** rather than trusting that a push worked.
+Two earlier approaches failed and are recorded in that workflow so they are not retried: a
+hand-built `gh-pages` branch that tracked nothing and silently published a build two
+versions old, and Pages serving the `main` root through the legacy Jekyll builder, which
+failed outright on a repository root carrying docs, memory and licences.
+
+Still worth **verifying a deploy by fetching the live content back** rather than trusting
+that a push worked.
 
 The session 004 claude.ai artifact link is abandoned and stale.
 
