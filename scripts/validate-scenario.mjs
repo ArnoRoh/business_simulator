@@ -204,19 +204,57 @@ for (const turn of scenario.turns) {
     continue;
   }
 
-  if (!turn.decision || !Array.isArray(turn.decision.options) || turn.decision.options.length < 2) {
-    console.log(`  FAIL ${turn.id} needs at least 2 options`); problems += 1;
-  }
-  const choiceIds = new Set((turn.decision.predictChoices || []).map((c) => c.id));
-  for (const opt of turn.decision.options) {
-    if (!choiceIds.has(opt.predictAnswer)) {
-      console.log(`  FAIL ${turn.id}/${opt.id} predictAnswer "${opt.predictAnswer}" is not an offered choice`);
+  const turnType = (turn.decision && turn.decision.type) || 'choice';
+
+  if (turnType === 'choice') {
+    if (!turn.decision || !Array.isArray(turn.decision.options) || turn.decision.options.length < 2) {
+      console.log(`  FAIL ${turn.id} needs at least 2 options`); problems += 1;
+    }
+    const choiceIds = new Set((turn.decision.predictChoices || []).map((c) => c.id));
+    for (const opt of turn.decision.options || []) {
+      if (!choiceIds.has(opt.predictAnswer)) {
+        console.log(`  FAIL ${turn.id}/${opt.id} predictAnswer "${opt.predictAnswer}" is not an offered choice`);
+        problems += 1;
+      }
+      for (const field of ['outcome', 'lesson', 'label']) {
+        if (!opt[field]) { console.log(`  FAIL ${turn.id}/${opt.id} missing ${field}`); problems += 1; }
+      }
+    }
+  } else {
+    // A free decision has no options; what it must have instead is a usable range and
+    // narrative covering every value in it, or the learner can reach a state the
+    // scenario has nothing to say about.
+    const shape = turnType === 'number' ? turn.decision.input : turn.decision.allocate;
+    if (!shape) {
+      console.log(`  FAIL ${turn.id} is type "${turnType}" but has no ${turnType === 'number' ? 'input' : 'allocate'} block`);
       problems += 1;
     }
-    for (const field of ['outcome', 'lesson', 'label']) {
-      if (!opt[field]) { console.log(`  FAIL ${turn.id}/${opt.id} missing ${field}`); problems += 1; }
+    if (!Array.isArray(turn.decision.bands) || turn.decision.bands.length === 0) {
+      console.log(`  FAIL ${turn.id} is type "${turnType}" and needs bands for its outcome text`);
+      problems += 1;
+    }
+    for (const [i, band] of (turn.decision.bands || []).entries()) {
+      for (const field of ['outcome', 'lesson']) {
+        if (!band[field]) { console.log(`  FAIL ${turn.id} band ${i} missing ${field}`); problems += 1; }
+      }
+    }
+    if (turnType === 'number' && shape) {
+      if (!(shape.max > shape.min)) {
+        console.log(`  FAIL ${turn.id} input range is empty (min ${shape.min}, max ${shape.max})`);
+        problems += 1;
+      }
+      if (!(shape.step > 0)) { console.log(`  FAIL ${turn.id} input step must be positive`); problems += 1; }
     }
   }
+
+  // A diagnose step whose answer is not on offer can never be got right.
+  if (turn.diagnose) {
+    if (!turn.diagnose.options || !turn.diagnose.options.includes(turn.diagnose.answer)) {
+      console.log(`  FAIL ${turn.id} diagnose answer "${turn.diagnose.answer}" is not among its options`);
+      problems += 1;
+    }
+  }
+
   if (!turn.situation) { console.log(`  FAIL ${turn.id} missing situation`); problems += 1; }
 }
 console.log(`  ${ids.size} unique turn ids`);
@@ -232,6 +270,9 @@ for (const result of numericResults) {
 // Is any turn a walkover? Every option landing in the same band teaches nothing.
 console.log('\ndiscrimination:');
 for (const turn of scenario.turns) {
+  // Free decisions discriminate by construction — every value gives a different result
+  // — so this check only applies to the option-based turns it was written for.
+  if (!turn.decision.options) continue;
   const bands = turn.decision.options.map((o) => o.predictAnswer);
   if (new Set(bands).size === 1) {
     console.log(`  weak  ${turn.id}: every option declares "${bands[0]}"`);

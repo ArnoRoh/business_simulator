@@ -1289,8 +1289,8 @@ ul { margin: 0; padding-left: 1.1em; }
       {
         "id": "registered",
         "label": {
-          "en": "Registered: formality is at least 1.",
-          "sw": "Umesajiliwa: formality ni angalau 1."
+          "en": "Your business is registered, so a hotel can buy from you.",
+          "sw": "Biashara yako imesajiliwa, ili hoteli iweze kununua kwako."
         },
         "field": "formality",
         "min": 1
@@ -1298,8 +1298,8 @@ ul { margin: 0; padding-left: 1.1em; }
       {
         "id": "hotel-capacity",
         "label": {
-          "en": "Can make enough for the hotel order: capacity is at least 230.",
-          "sw": "Unaweza kutengeneza ya kutosha kwa oda ya hoteli: capacity ni angalau 230."
+          "en": "You can make at least 230 a week, enough for the hotel order.",
+          "sw": "Unaweza kutengeneza angalau 230 kwa wiki, ya kutosha kwa oda ya hoteli."
         },
         "field": "capacity",
         "min": 230
@@ -1307,8 +1307,8 @@ ul { margin: 0; padding-left: 1.1em; }
       {
         "id": "cash-reserve",
         "label": {
-          "en": "Cash reserve: keep at least 50,000 in cash.",
-          "sw": "Akiba ya pesa: baki na angalau 50,000 taslimu."
+          "en": "You have at least 50,000 put by for a bad week.",
+          "sw": "Una angalau 50,000 uliyoweka kando kwa wiki mbaya."
         },
         "field": "cash",
         "min": 50000
@@ -1509,8 +1509,8 @@ ul { margin: 0; padding-left: 1.1em; }
         "predict": "number",
         "input": {
           "field": "price",
-          "min": 400,
-          "max": 700,
+          "min": 575,
+          "max": 650,
           "step": 25,
           "start": "current",
           "valueAs": "money",
@@ -1536,7 +1536,7 @@ ul { margin: 0; padding-left: 1.1em; }
               "en": "Price is not only about customers. See what remains after the cost of one mandazi.",
               "sw": "Bei si kuhusu wateja tu. Angalia kinachobaki baada ya gharama ya andazi moja."
             },
-            "upTo": 500
+            "upTo": 600
           },
           {
             "outcome": {
@@ -1547,7 +1547,7 @@ ul { margin: 0; padding-left: 1.1em; }
               "en": "A good price balances what one sale leaves and how many sales remain.",
               "sw": "Bei nzuri inalinganisha kinachobaki kwa mauzo moja na idadi ya mauzo yanayobaki."
             },
-            "upTo": 650
+            "upTo": 625
           },
           {
             "outcome": {
@@ -1598,8 +1598,8 @@ ul { margin: 0; padding-left: 1.1em; }
         "predict": "number",
         "input": {
           "field": "price",
-          "min": 350,
-          "max": 700,
+          "min": 575,
+          "max": 650,
           "step": 25,
           "start": "current",
           "valueAs": "money",
@@ -1611,7 +1611,7 @@ ul { margin: 0; padding-left: 1.1em; }
             {
               "field": "demand",
               "perStep": 25,
-              "change": -7
+              "change": -8
             }
           ]
         },
@@ -1625,7 +1625,7 @@ ul { margin: 0; padding-left: 1.1em; }
               "en": "Matching a cheaper seller can win volume and still weaken the business. Count what remains.",
               "sw": "Kulingana na muuzaji wa bei rahisi kunaweza kuleta wingi na bado kudhoofisha biashara. Hesabu kinachobaki."
             },
-            "upTo": 425
+            "upTo": 600
           },
           {
             "outcome": {
@@ -1636,7 +1636,7 @@ ul { margin: 0; padding-left: 1.1em; }
               "en": "A cheaper competitor does not set your price for you. Test what customers will pay for better mandazi.",
               "sw": "Mshindani wa bei rahisi hapangi bei yako. Jaribu kuona wateja watalipa nini kwa mandazi bora."
             },
-            "upTo": 550
+            "upTo": 625
           },
           {
             "outcome": {
@@ -2047,7 +2047,7 @@ ul { margin: 0; padding-left: 1.1em; }
               "sw": "Hakuna kodi. Beba kikapu tu uone."
             },
             "effects": {
-              "demand": 4,
+              "demand": 2,
               "ownerHoursUsed": 3
             },
             "predictAnswer": "same",
@@ -3057,8 +3057,8 @@ ul { margin: 0; padding-left: 1.1em; }
         "predict": "number",
         "input": {
           "field": "ownerHoursUsed",
-          "min": 0,
-          "max": 20,
+          "min": 5,
+          "max": 15,
           "step": 5,
           "start": 0,
           "valueAs": "count",
@@ -3070,12 +3070,17 @@ ul { margin: 0; padding-left: 1.1em; }
             {
               "field": "capacity",
               "perStep": 5,
-              "change": -12
+              "change": 40
             },
             {
               "field": "demand",
               "perStep": 5,
               "change": 25
+            },
+            {
+              "field": "unitCost",
+              "perStep": 5,
+              "change": 15
             }
           ]
         },
@@ -3093,8 +3098,8 @@ ul { margin: 0; padding-left: 1.1em; }
           },
           {
             "outcome": {
-              "en": "You protect some time to look at customers, prices and the next step. You give up some selling capacity too.",
-              "sw": "Unatenga muda wa kuangalia wateja, bei na hatua inayofuata. Unaacha uwezo wa kuuza kiasi pia."
+              "en": "You protect some time to look at customers, prices and the next step. You organize more output, but each unit costs more as you step away from frying.",
+              "sw": "Unatenga muda wa kuangalia wateja, bei na hatua inayofuata. Unapanga uzalishaji zaidi, lakini kila kimoja kinagharimu zaidi unapoacha kukaanga."
             },
             "lesson": {
               "en": "Time on the business is useful when it changes what the business does. The middle amount leaves room for both.",
@@ -3104,8 +3109,8 @@ ul { margin: 0; padding-left: 1.1em; }
           },
           {
             "outcome": {
-              "en": "You spend many hours planning and fewer hours producing. Interest may rise, but the stall cannot sell what your hands no longer make.",
-              "sw": "Unatumia masaa mengi kupanga na masaa machache kutengeneza. Maslahi yanaweza kuongezeka, lakini kibanda hakiwezi kuuza usichotengeneza."
+              "en": "You spend many hours planning. Demand and capacity rise, but the cost of each unit rises too as you step away from production.",
+              "sw": "Unatumia masaa mengi kupanga. Mahitaji na uwezo wa uzalishaji vinaongezeka, lakini gharama ya kila kimoja pia inapanda unapoacha uzalishaji."
             },
             "lesson": {
               "en": "Time set aside has an opportunity cost. Protect enough to steer, but not so much that selling stops.",
@@ -3169,7 +3174,7 @@ ul { margin: 0; padding-left: 1.1em; }
             {
               "field": "demand",
               "perStep": 1,
-              "change": 140
+              "change": 160
             }
           ]
         },
@@ -3997,7 +4002,7 @@ ul { margin: 0; padding-left: 1.1em; }
         "input": {
           "field": "price",
           "min": 400,
-          "max": 700,
+          "max": 750,
           "step": 25,
           "start": "current",
           "valueAs": "money",
@@ -4009,7 +4014,7 @@ ul { margin: 0; padding-left: 1.1em; }
             {
               "field": "demand",
               "perStep": 25,
-              "change": -6
+              "change": -13
             }
           ]
         },
@@ -4096,7 +4101,8 @@ ul { margin: 0; padding-left: 1.1em; }
               },
               "perStep": {
                 "capacity": 8,
-                "demand": 5
+                "demand": 5,
+                "rent": 1200
               }
             },
             {
@@ -4136,8 +4142,8 @@ ul { margin: 0; padding-left: 1.1em; }
               "sw": "Unagawa pesa kati ya biashara, nyumbani na akiba. Sehemu hakuna inayopata kila kitu, lakini biashara inakua bila kutumia kila senti."
             },
             "lesson": {
-              "en": "Profit has more than one job. A split can keep the household, business and next bad week in view.",
-              "sw": "Faida ina kazi zaidi ya moja. Mgawanyo unaweza kuangalia kaya, biashara na wiki mbaya inayofuata."
+              "en": "Profit has more than one job. A split can keep the household, business and next bad week in view. New capacity also brings a weekly cost.",
+              "sw": "Faida ina kazi zaidi ya moja. Mgawanyo unaweza kuangalia kaya, biashara na wiki mbaya inayofuata. Uwezo mpya pia huleta gharama ya wiki."
             },
             "upTo": 0.7
           },
@@ -4147,8 +4153,8 @@ ul { margin: 0; padding-left: 1.1em; }
               "sw": "Unaweka pesa nyingi kwenye biashara. Wateja zaidi wanaweza kuhudumiwa, lakini kidogo kinabaki nyumbani au kwa gharama ya ghafla."
             },
             "lesson": {
-              "en": "Reinvestment can build capacity, but a business without a reserve is exposed. Growth and safety are both real needs.",
-              "sw": "Kurudisha faida kunaweza kujenga uwezo, lakini biashara bila akiba iko wazi kwa hatari. Ukuaji na usalama vyote ni mahitaji halisi."
+              "en": "Reinvestment can build capacity, but new capacity brings a weekly cost and a business without a reserve is exposed. Growth and safety are both real needs.",
+              "sw": "Kurudisha faida kunaweza kujenga uwezo, lakini uwezo mpya huleta gharama ya wiki na biashara bila akiba iko wazi kwa hatari. Ukuaji na usalama vyote ni mahitaji halisi."
             }
           }
         ]
@@ -4650,6 +4656,7 @@ function createState(overrides = {}) {
   if (!('ownerHoursUsed' in overrides)) state.ownerHoursUsed = baseOwnerHours(state);
   if (!('baseDemand' in overrides)) state.baseDemand = state.demand;
   if (!('openingDemand' in overrides)) state.openingDemand = state.demand;
+  if (!('openingRent' in overrides)) state.openingRent = state.rent;
 
   return state;
 }
@@ -4740,6 +4747,16 @@ function applyEffects(state, effects = {}) {
   next.capacity = Math.max(0, Math.round(next.capacity));
   next.demand = Math.max(0, Math.round(next.demand));
   next.staff = Math.max(0, Math.round(next.staff));
+
+  // Costs floor at zero. Content reduces these additively — the recovery chapter cuts
+  // rent, for instance — and enough reductions in a row would otherwise take them
+  // negative, at which point the business is being paid to exist and the whole ledger
+  // stops meaning anything.
+  next.rent = Math.max(0, next.rent);
+  next.licenceFees = Math.max(0, next.licenceFees || 0);
+  next.wagePerStaff = Math.max(0, next.wagePerStaff);
+  next.unitCost = Math.max(0, next.unitCost);
+  next.price = Math.max(0, next.price);
 
   // A demand change authored in content is structural — a customer won or lost, not a
   // mood swing — so it moves the baseline the weekly reputation drift pulls towards.
@@ -4845,7 +4862,28 @@ function advanceWeek(state) {
   if (next.hygiene > HYGIENE_FLOOR) next.hygiene -= 1;
   next.hygiene = Math.max(0, Math.min(100, next.hygiene));
 
-  // 6. Reset the owner's week. Hours spent researching THIS week are spent; next week
+  // 6. Insolvency sheds what you can no longer pay for.
+  //
+  // Without this, weekly costs compound forever: a learner who buys everything on
+  // credit keeps paying rent on a fryer that would have been repossessed months ago,
+  // and cash runs to figures that make the ledger read as broken rather than as a
+  // business in trouble. Losing what you cannot fund is both what actually happens and
+  // what bounds the spiral — fixed costs fall as the business shrinks, so the hole stops
+  // deepening. It shrinks towards a stall, never to nothing (docs/game-design.md:
+  // failure is a chapter boundary, not an ending).
+  if (next.cash < 0) {
+    const openingRent = next.openingRent ?? state.rent;
+    if (next.rent > openingRent) next.rent = Math.max(openingRent, Math.round(next.rent * 0.85));
+    if (next.staff > 0 && -next.cash > next.wagePerStaff * 4) next.staff -= 1;
+    if (next.licenceFees > 0) next.licenceFees = Math.round(next.licenceFees * 0.85);
+
+    const capacityFloor = Math.max(60, Math.round((next.openingDemand ?? 180) * 0.5));
+    if (next.capacity > capacityFloor) {
+      next.capacity = Math.max(capacityFloor, Math.round(next.capacity * 0.9));
+    }
+  }
+
+  // 7. Reset the owner's week. Hours spent researching THIS week are spent; next week
   //    starts from whatever running the business now takes. Without this reset, hours
   //    accumulate for the whole playthrough and checking your facts — the behaviour the
   //    information-seeking indicator exists to reward — would slowly destroy you.
@@ -6822,13 +6860,18 @@ function renderOptions(container, turn, onChoose) {
  * a change to a number you were never shown is guesswork, and guesswork is not the
  * signal the assessment is meant to capture.
  */
-function renderWorkout(container, turn, chosenOption, state, onReady) {
+/**
+ * `choiceLabel` is a ready-made string, not an option object. A free numeric or
+ * allocation decision has no option to take a label from, and resolving that here
+ * would mean this function knowing about all three decision types.
+ */
+function renderWorkout(container, turn, choiceLabel, state, onReady) {
   clear(container);
   const pnl = weeklyPnl(state);
 
   const card = el('div', 'card workout slide-up');
   card.appendChild(el('div', 'card-title', t('workout.title')));
-  card.appendChild(el('p', 'situation', t('predict.chose', { label: localised(chosenOption.label) })));
+  card.appendChild(el('p', 'situation', t('predict.chose', { label: choiceLabel })));
   card.appendChild(el('p', 'workout-intro', t('workout.intro')));
 
   const lines = [
@@ -7168,7 +7211,7 @@ function renderProfile(container, profile, tally, state, history) {
 /* ---- main ---- */
 const NS_main = (function () {
 const { createState, applyEffects, weeklyPnl, advanceWeeks, scheduleLater, resolveNumberInput, resolveAllocation, bandForValue, gradePrediction, evaluateGoal, needsRecovery } = NS_engine;
-const { setCurrency } = NS_format;
+const { setCurrency, money, count } = NS_format;
 const { loadStrings, setLanguage, getLanguage, LANGUAGES, t, localised } = NS_i18n;
 const record = NS_record;
 const store = NS_storage;
@@ -7316,14 +7359,28 @@ function narrativeFor() {
   return { outcome: opt && opt.outcome, lesson: opt && opt.lesson };
 }
 
-/** A short label for the record — what they chose, in words. */
+/**
+ * What they decided, written out for the learner and for the record.
+ *
+ * Values are formatted, not raw: "TZS 650" rather than "price=650". This string is the
+ * one the record keeps, and the record is meant to be read by a human at a programme.
+ */
 function decisionLabel() {
   const turn = currentTurn();
   const type = decisionType(turn);
-  if (type === 'number') return `${turn.decision.input.field}=${session.inputValue}`;
-  if (type === 'allocate') {
-    return Object.entries(session.split || {}).map(([k, v]) => `${k}=${v}`).join(' ');
+
+  if (type === 'number') {
+    const input = turn.decision.input;
+    return input.valueAs === 'count' ? count(session.inputValue) : money(session.inputValue);
   }
+
+  if (type === 'allocate') {
+    const buckets = turn.decision.allocate.buckets || [];
+    return buckets
+      .map((b) => `${localised(b.label)} ${money((session.split || {})[b.id] || 0)}`)
+      .join(' · ');
+  }
+
   const opt = chosenOption();
   return localised(opt && opt.label);
 }
@@ -7398,7 +7455,7 @@ function renderAll(prevState) {
       ui.renderOptions(dom.decision, turn, onChooseOption);
     }
   } else if (session.phase === 'workout') {
-    ui.renderWorkout(dom.decision, turn, chosenOption(), session.state, onWorkoutDone);
+    ui.renderWorkout(dom.decision, turn, decisionLabel(), session.state, onWorkoutDone);
     scrollToDecision();
   } else if (session.phase === 'predict') {
     if (turn.decision.predict === 'number') {

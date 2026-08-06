@@ -101,6 +101,53 @@ console.log('\nengine: a week passing');
   check('but it settles rather than reaching zero', low.hygiene >= 40, `hygiene ${low.hygiene}`);
 }
 
+console.log('\nengine: costs cannot go negative');
+{
+  // The recovery chapter cuts rent additively, and enough cuts in a row used to take it
+  // below zero — at which point the business is paid to exist and the ledger is fiction.
+  let s = createState({ rent: 20000, licenceFees: 5000 });
+  for (let i = 0; i < 4; i += 1) s = applyEffects(s, { rent: '-10000', licenceFees: '-3000' });
+  eq('rent floors at zero', s.rent, 0);
+  eq('licence fees floor at zero', s.licenceFees, 0);
+  check('so weekly fixed cost is never negative', weeklyPnl(s).fixedCost >= 0,
+    `fixedCost ${weeklyPnl(s).fixedCost}`);
+
+  const p = applyEffects(createState({ price: 500, unitCost: 300 }), { price: '-900', unitCost: '-900' });
+  check('price and unit cost floor at zero', p.price === 0 && p.unitCost === 0, `${p.price}/${p.unitCost}`);
+}
+
+console.log('\nengine: insolvency sheds what cannot be paid for');
+{
+  // A learner who buys everything on credit used to keep paying rent forever on
+  // equipment that would have been repossessed, and cash ran to figures that made the
+  // ledger read as broken rather than as a business in trouble.
+  // `openingRent` is the overhead the business always had; anything above it was taken
+  // on with the equipment and is what gets lost. Rent that was always yours is your
+  // pitch, not credit, so a business whose rent has never risen sheds nothing.
+  const indebted = createState({
+    cash: -200000, rent: 90000, openingRent: 20000, capacity: 600, staff: 2, licenceFees: 9000,
+  });
+  const after = advanceWeek(indebted).state;
+
+  check('rent falls when you cannot pay it', after.rent < 90000, `rent ${after.rent}`);
+  check('but not below the overhead you always had', after.rent >= 20000, `rent ${after.rent}`);
+  check('capacity shrinks with it', after.capacity < 600, `capacity ${after.capacity}`);
+  check('staff you cannot pay are let go', after.staff < 2, `staff ${after.staff}`);
+
+  // It must settle at a small business, not vanish, and the hole must stop deepening.
+  let s = createState({ cash: -200000, rent: 90000, openingRent: 20000, capacity: 600, staff: 2 });
+  const firstDrop = s.cash - advanceWeek(s).state.cash;
+  for (let i = 0; i < 30; i += 1) s = advanceWeek(s).state;
+  check('costs settle rather than collapsing to nothing', s.rent >= 0 && s.capacity >= 60,
+    `rent ${s.rent}, capacity ${s.capacity}`);
+  const lateDrop = s.cash - advanceWeek(s).state.cash;
+  check('and the hole stops deepening as fast as it did', lateDrop <= firstDrop,
+    `first ${Math.round(firstDrop)}, late ${Math.round(lateDrop)}`);
+
+  const solvent = createState({ cash: 100000, rent: 90000, capacity: 600, staff: 2 });
+  eq('a solvent business sheds nothing', advanceWeek(solvent).state.rent, 90000);
+}
+
 console.log('\nengine: reputation pulls demand with a lag');
 {
   const good = createState({ reputation: 90, hygiene: 80, demand: 200 });

@@ -41,8 +41,8 @@
       {
         "id": "registered",
         "label": {
-          "en": "Registered: formality is at least 1.",
-          "sw": "Umesajiliwa: formality ni angalau 1."
+          "en": "Your business is registered, so a hotel can buy from you.",
+          "sw": "Biashara yako imesajiliwa, ili hoteli iweze kununua kwako."
         },
         "field": "formality",
         "min": 1
@@ -50,8 +50,8 @@
       {
         "id": "hotel-capacity",
         "label": {
-          "en": "Can make enough for the hotel order: capacity is at least 230.",
-          "sw": "Unaweza kutengeneza ya kutosha kwa oda ya hoteli: capacity ni angalau 230."
+          "en": "You can make at least 230 a week, enough for the hotel order.",
+          "sw": "Unaweza kutengeneza angalau 230 kwa wiki, ya kutosha kwa oda ya hoteli."
         },
         "field": "capacity",
         "min": 230
@@ -59,8 +59,8 @@
       {
         "id": "cash-reserve",
         "label": {
-          "en": "Cash reserve: keep at least 50,000 in cash.",
-          "sw": "Akiba ya pesa: baki na angalau 50,000 taslimu."
+          "en": "You have at least 50,000 put by for a bad week.",
+          "sw": "Una angalau 50,000 uliyoweka kando kwa wiki mbaya."
         },
         "field": "cash",
         "min": 50000
@@ -799,7 +799,7 @@
               "sw": "Hakuna kodi. Beba kikapu tu uone."
             },
             "effects": {
-              "demand": 4,
+              "demand": 2,
               "ownerHoursUsed": 3
             },
             "predictAnswer": "same",
@@ -2851,11 +2851,11 @@
                 "en": "Business",
                 "sw": "Biashara"
               },
-          "perStep": {
-            "capacity": 8,
-            "demand": 5,
-            "rent": 1200
-          }
+              "perStep": {
+                "capacity": 8,
+                "demand": 5,
+                "rent": 1200
+              }
             },
             {
               "id": "home",
