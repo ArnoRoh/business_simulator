@@ -201,6 +201,12 @@ magnitudes — see `docs/context/`.
 **Don't ship placeholder content as real.** Sample scenarios stay visibly labelled as
 samples until reviewed by someone with local ground truth.
 
+**Splitting work across several agents.** Only when the slices touch genuinely disjoint
+files and the interfaces between them can be written down first. Read
+[`docs/agent-orchestration.md`](./docs/agent-orchestration.md) before doing it — this has
+been tried twice, once badly, and the failure mode is a seam nobody owns. Contracts live in
+`memory/contracts/`, not in `/tmp`.
+
 ## 7. Decisions and ADRs
 
 Anything expensive to reverse gets an ADR in `docs/adr/`:

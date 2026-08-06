@@ -166,6 +166,19 @@ without being automatic.
 **Live at https://arnoroh.github.io/business_simulator/** — verified by fetching the served
 content back, not by assuming the push worked.
 
+## On orchestration
+
+The lessons from running three agents at once are written up properly in
+[`docs/agent-orchestration.md`](../../docs/agent-orchestration.md), together with what
+session 003 got wrong, and the contract issued here is preserved at
+[`memory/contracts/2026-08-05-v3-free-input-and-campaign.md`](../contracts/2026-08-05-v3-free-input-and-campaign.md).
+
+The short version: agents honour boundaries you write down and silently violate ones you
+assume. Both integration failures here were interfaces I had not specified — a changed
+function signature, and the hooks the test harness needed. Next time, land throwing stubs
+before launching anyone, so every agent imports real code from the start, and add a fourth
+agent whose only job is to attack the integrated result.
+
 ## Notes for the next contributor
 
 - **`validate-scenario.mjs` checks band stability and numeric sanity, not viability.** It
