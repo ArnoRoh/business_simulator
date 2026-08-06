@@ -16,7 +16,7 @@ import {
 import * as record from './record.js';
 import * as store from './storage.js';
 import * as ui from './ui.js';
-import { setCurrency } from './format.js';
+import { setCurrency, money, count } from './format.js';
 import { loadStrings, setLanguage, getLanguage, LANGUAGES, t, localised } from './i18n.js';
 
 const SCENARIO_URL = './content/scenario-mama-asha.json';
@@ -146,14 +146,28 @@ function narrativeFor() {
   return { outcome: opt && opt.outcome, lesson: opt && opt.lesson };
 }
 
-/** A short label for the record — what they chose, in words. */
+/**
+ * What they decided, written out for the learner and for the record.
+ *
+ * Values are formatted, not raw: "TZS 650" rather than "price=650". This string is the
+ * one the record keeps, and the record is meant to be read by a human at a programme.
+ */
 function decisionLabel() {
   const turn = currentTurn();
   const type = decisionType(turn);
-  if (type === 'number') return `${turn.decision.input.field}=${session.inputValue}`;
-  if (type === 'allocate') {
-    return Object.entries(session.split || {}).map(([k, v]) => `${k}=${v}`).join(' ');
+
+  if (type === 'number') {
+    const input = turn.decision.input;
+    return input.valueAs === 'count' ? count(session.inputValue) : money(session.inputValue);
   }
+
+  if (type === 'allocate') {
+    const buckets = turn.decision.allocate.buckets || [];
+    return buckets
+      .map((b) => `${localised(b.label)} ${money((session.split || {})[b.id] || 0)}`)
+      .join(' · ');
+  }
+
   const opt = chosenOption();
   return localised(opt && opt.label);
 }
@@ -228,7 +242,7 @@ function renderAll(prevState) {
       ui.renderOptions(dom.decision, turn, onChooseOption);
     }
   } else if (session.phase === 'workout') {
-    ui.renderWorkout(dom.decision, turn, chosenOption(), session.state, onWorkoutDone);
+    ui.renderWorkout(dom.decision, turn, decisionLabel(), session.state, onWorkoutDone);
     scrollToDecision();
   } else if (session.phase === 'predict') {
     if (turn.decision.predict === 'number') {

@@ -172,6 +172,79 @@ because `docs/game-design.md` makes failure a chapter boundary, not an ending.
 **Revisit if:** Playtesting shows the floor makes neglect feel consequence-free, or a
 scenario needs a business that genuinely can fail outright.
 
+## D-011 — The learner supplies numbers; content declares response curves
+**Date:** 2026-08-05 · **Decided by:** Project owner · **ADR:** —
+**Decision:** Decisions where a number is the real choice — price, hours, staff, discount,
+how to split profit — are made by the learner setting the value, not by picking one of
+three. Content expresses how that value moves the rest of the business through
+**declarative response curves** (`{ field, perStep, change }`), never formulas.
+**Why:** The owner played v2 and said it was "the same game as the original with just some
+additional UI portions". That was accurate: v2 changed the model underneath but not what
+the learner does. Depth comes from what the learner does, not what they are shown. It also
+matters for the selection signal — a free decision is far stronger evidence of execution
+than choosing from a list somebody else wrote (ADR-0004), and the chosen value is now
+recorded. Response curves rather than expressions keep scenarios data, reviewable by
+someone who does not program (ADR-0006).
+**Considered and rejected:** A small expression language in content — more flexible, and it
+would have made content executable, put it out of reach of non-programmers and let an
+author hand-write outcomes. Free text or typed entry — rejected on the device constraint;
+steppers only, no typing. Converting every turn — some decisions are genuinely categorical
+(register or not, which supplier) and forcing them into a number would be false precision.
+**Revisit if:** Playtesting shows steppers are slower or more confusing than choices on a
+real low-end phone, or a scenario needs a relationship that is not usefully linear.
+
+## D-012 — Numeric predictions are graded close / near / off
+**Date:** 2026-08-05 · **Decided by:** Claude · **ADR:** —
+**Decision:** On a free decision the learner predicts an actual weekly profit figure rather
+than a direction band. Error is relative, with a floor so small profits are not judged
+harshly: `|predicted − actual| / max(2000, |actual|)`. Within 10% is *close* and counts as
+correct; within 25% is *near*; beyond that is *off*.
+**Why:** Direction bands were the weakest part of the assessment — four buckets, so a guess
+is right a quarter of the time, and the boundary was invisible to the learner (Q-014). A
+figure is a far more informative claim. Three grades rather than pass/fail because on a
+free-input prediction almost nobody is exact, and treating near misses as failures would
+make the mechanic feel arbitrary and punish precision.
+**Considered and rejected:** Exact match — absurd. A raw percentage error shown to the
+learner — precise, and `docs/localization.md` is clear that percentages read less reliably
+than plain language for this audience. Keeping bands everywhere — simpler, but it wastes
+the richer answer a free decision makes possible.
+**Revisit if:** Playtesting shows learners cannot estimate a figure at all, in which case
+anchor the stepper harder rather than returning to bands.
+
+## D-013 — A goal spans the run, and is reported but never scored
+**Date:** 2026-08-05 · **Decided by:** Project owner · **ADR:** —
+**Decision:** The scenario carries a goal with testable conditions, shown throughout and
+evaluated at the end. It is recorded as an **observation** of what was true when the run
+finished. It is not a pass mark, and completion remains the gate (D-008).
+**Why:** Twenty independent decisions do not add up to a business. A goal is what makes them
+one campaign and gives the learner something to steer by. The risk is obvious — a goal is
+one short step from a performance gate, which Q-012 has just been settled against — so the
+separation is deliberate and stated in the goal's own text.
+**Considered and rejected:** No goal at all, which is what v2 had and is why the run felt
+like a quiz. A goal that gates the ending — reintroduces the performance gate by the back
+door, days after deciding against it.
+**Revisit if:** Facilitators start reading goal progress as a score anyway, which would mean
+the wording is not doing enough work.
+
+## D-014 — Insolvency sheds what cannot be funded
+**Date:** 2026-08-05 · **Decided by:** Claude · **ADR:** —
+**Decision:** When cash is below zero, weekly costs fall — rent above the business's opening
+overhead comes off, staff who cannot be paid go, capacity shrinks — down to a floor that
+leaves a stall-sized business. Costs are also floored at zero so content can never drive
+them negative.
+**Why:** Fixed costs compounded forever. A learner who bought everything on credit kept
+paying rent on equipment that would long since have been repossessed, and cash reached
+about −900,000, which makes the ledger read as broken rather than as a business in trouble.
+Shedding what you cannot fund is both what actually happens and what bounds the spiral,
+because costs fall as the business shrinks. Separately, repeated cut-backs in the recovery
+chapter could take rent negative — the business being *paid* to exist.
+**Considered and rejected:** Raising the recovery cap — measured, and it did not help; the
+hole still reached −600,000, so recovery frequency was never the cause. A bankruptcy or
+game-over state — `docs/game-design.md` makes failure a chapter boundary, and D-008 requires
+that everyone can finish. Tuning the content's costs down — treats the symptom and leaves
+the trap for the next author.
+**Revisit if:** Playtesting shows the shedding makes overspending feel consequence-free.
+
 ---
 
 ## Pending — proposed, not decided

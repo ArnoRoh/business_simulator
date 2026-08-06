@@ -87,6 +87,7 @@ export function createState(overrides = {}) {
   if (!('ownerHoursUsed' in overrides)) state.ownerHoursUsed = baseOwnerHours(state);
   if (!('baseDemand' in overrides)) state.baseDemand = state.demand;
   if (!('openingDemand' in overrides)) state.openingDemand = state.demand;
+  if (!('openingRent' in overrides)) state.openingRent = state.rent;
 
   return state;
 }
@@ -177,6 +178,16 @@ export function applyEffects(state, effects = {}) {
   next.capacity = Math.max(0, Math.round(next.capacity));
   next.demand = Math.max(0, Math.round(next.demand));
   next.staff = Math.max(0, Math.round(next.staff));
+
+  // Costs floor at zero. Content reduces these additively — the recovery chapter cuts
+  // rent, for instance — and enough reductions in a row would otherwise take them
+  // negative, at which point the business is being paid to exist and the whole ledger
+  // stops meaning anything.
+  next.rent = Math.max(0, next.rent);
+  next.licenceFees = Math.max(0, next.licenceFees || 0);
+  next.wagePerStaff = Math.max(0, next.wagePerStaff);
+  next.unitCost = Math.max(0, next.unitCost);
+  next.price = Math.max(0, next.price);
 
   // A demand change authored in content is structural — a customer won or lost, not a
   // mood swing — so it moves the baseline the weekly reputation drift pulls towards.
@@ -282,7 +293,28 @@ export function advanceWeek(state) {
   if (next.hygiene > HYGIENE_FLOOR) next.hygiene -= 1;
   next.hygiene = Math.max(0, Math.min(100, next.hygiene));
 
-  // 6. Reset the owner's week. Hours spent researching THIS week are spent; next week
+  // 6. Insolvency sheds what you can no longer pay for.
+  //
+  // Without this, weekly costs compound forever: a learner who buys everything on
+  // credit keeps paying rent on a fryer that would have been repossessed months ago,
+  // and cash runs to figures that make the ledger read as broken rather than as a
+  // business in trouble. Losing what you cannot fund is both what actually happens and
+  // what bounds the spiral — fixed costs fall as the business shrinks, so the hole stops
+  // deepening. It shrinks towards a stall, never to nothing (docs/game-design.md:
+  // failure is a chapter boundary, not an ending).
+  if (next.cash < 0) {
+    const openingRent = next.openingRent ?? state.rent;
+    if (next.rent > openingRent) next.rent = Math.max(openingRent, Math.round(next.rent * 0.85));
+    if (next.staff > 0 && -next.cash > next.wagePerStaff * 4) next.staff -= 1;
+    if (next.licenceFees > 0) next.licenceFees = Math.round(next.licenceFees * 0.85);
+
+    const capacityFloor = Math.max(60, Math.round((next.openingDemand ?? 180) * 0.5));
+    if (next.capacity > capacityFloor) {
+      next.capacity = Math.max(capacityFloor, Math.round(next.capacity * 0.9));
+    }
+  }
+
+  // 7. Reset the owner's week. Hours spent researching THIS week are spent; next week
   //    starts from whatever running the business now takes. Without this reset, hours
   //    accumulate for the whole playthrough and checking your facts — the behaviour the
   //    information-seeking indicator exists to reward — would slowly destroy you.

@@ -1,7 +1,7 @@
 # Project state
 
-**Snapshot as of:** 2026-08-04
-**Last session:** [`sessions/2026-08-04-005-depth-numbers-and-swahili.md`](./sessions/2026-08-04-005-depth-numbers-and-swahili.md)
+**Snapshot as of:** 2026-08-05
+**Last session:** [`sessions/2026-08-05-006-free-input-and-campaign.md`](./sessions/2026-08-05-006-free-input-and-campaign.md)
 
 > This file is a **snapshot, not a history**. Overwrite it at the end of every session
 > so it always describes the present. History belongs in `sessions/` and
@@ -11,13 +11,17 @@
 
 ## Where we are
 
-**There is a playable simulator in two languages.** `app/` runs in a browser, phone-first,
-20 turns end to end, in English or Kiswahili, with a full before/after ledger, delayed
-consequences that name the decision that caused them, and a results profile.
+**There is a playable simulator in two languages, and the learner now makes the decisions
+rather than picking from a list.** `app/` runs in a browser, phone-first, 20 turns end to
+end, in English or Kiswahili. Six turns take a number the learner sets, one splits profit
+three ways, one asks them to diagnose which ledger line caused a loss, and a goal spans the
+whole run.
 
-Five sessions: repository bootstrap (001), an ideation discussion on pedagogy and placement
-(002), the first build (003), a shareable single-file version (004), and a rework for depth,
-number legibility and Kiswahili (005) after the owner played it.
+Six sessions: repository bootstrap (001), an ideation discussion on pedagogy and placement
+(002), the first build (003), a shareable single-file version (004), a rework for depth and
+Kiswahili (005), and free-input decisions plus a campaign (006) — the last after the owner
+played 005 and said it was "the same game with just some additional UI portions", which it
+was.
 
 The project rests on the owner's background note
 ([`docs/context/transformational-entrepreneurship.md`](../docs/context/transformational-entrepreneurship.md)) —
@@ -27,14 +31,14 @@ read it before anything else.
 
 | Area | State |
 |---|---|
-| **`app/` — the simulator** | **Playable.** 20 turns, one scenario, English + Kiswahili, light/dark, ~62KB gzipped. |
+| **`app/` — the simulator** | **Playable.** 20 turns (6 free-input, 1 allocation, 1 diagnose), goal + recovery chapters, English + Kiswahili. |
 | Operating guide (`AGENTS.md`, `CLAUDE.md`) | Written. Carries the thesis and memory protocol. |
-| Memory system | In use — this file, 10 decisions, 12 open questions (2 resolved), glossary, 5 session entries. |
+| Memory system | In use — this file, 14 decisions, 12 open questions (2 resolved), glossary, 6 session entries. |
 | Governance, licences | Written. MIT code + CC BY-SA 4.0 content. |
 | Design docs (`docs/`) | First draft. **Now well behind the code** — see below. |
 | Regional context (`docs/context/`) | Owner's note in place. Country detail still a **deliberate stub**. |
 | ADRs | Six, **all `Accepted`** — 0005 ratified 2026-08-04. |
-| Tests | 4 checks, all green: engine (74), scenario (60/60), i18n, links (191). |
+| Tests | 4 checks, all green: engine (124), scenario (42/42 choice + 18/18 numeric), i18n, links. |
 | Curriculum content | One scenario. No second scenario, so still no transfer testing. |
 | Partners, pilot sites, funding | Still not recorded. See Q-002. |
 
@@ -50,9 +54,16 @@ Then open `http://localhost:8000`. It needs a server — `file://` will not work
 `index.html`, because the browser refuses to fetch the content JSON. (`standalone.html`
 does work from `file://`.) See [`../app/README.md`](../app/README.md).
 
-**Hosted:** the session 004 artifact link is **stale** — it serves the 16-turn,
-English-only build. `app/standalone.html` has been rebuilt from the current code and needs
-republishing to the same path.
+**Hosted:** **https://arnoroh.github.io/business_simulator/** — public, served by GitHub
+Pages from the **`main` branch root**, with `index.html` at the root redirecting to `app/`.
+It therefore **tracks `main` automatically**: merge to `main` and the site follows, with no
+republish step.
+
+This replaced a hand-built `gh-pages` branch, which tracked nothing, went stale, and once
+published a build two versions old while reporting success. Still worth **verifying a deploy
+by fetching the live content back** rather than trusting that a push worked.
+
+The session 004 claude.ai artifact link is abandoned and stale.
 
 ## Decisions locked in
 
@@ -65,11 +76,22 @@ republishing to the same path.
 6. **Stage-zero placement, with completion as the gate** (ADR-0005, now `Accepted`; D-008).
    Finishing is what carries a learner forward — never how many predictions they got right.
 7. **Bilingual content inline and key-major**, parity enforced by a check (D-009).
-8. **Mean-reverting demand, hygiene floor** (D-010) — the business degrades but cannot be
-   driven to a dead state it can never leave.
+8. **Mean-reverting demand, hygiene floor** (D-010) and **insolvency sheds what cannot be
+   funded** (D-014) — the business degrades, but cannot be driven to a dead state it can
+   never leave, and costs cannot compound without bound.
+9. **The learner supplies numbers where a number is the decision** (D-011), with content
+   declaring response curves rather than formulas.
+10. **Numeric predictions graded close / near / off** (D-012).
+11. **A goal spans the run and is reported, never scored** (D-013).
 
 ## What the app now does that the docs do not describe
 
+- **Free-input decisions** — six turns take a number the learner sets on a stepper, with
+  live feedback ("you keep TZS 350 on each one; you expect to lose 54 customers"). One turn
+  splits profit between business, home and reserve.
+- **Diagnose** — read the ledger and name the line that caused a loss.
+- **Numeric prediction** — name a profit figure, graded close / near / off.
+- **A goal across the run**, plus **recovery chapters** when cash goes below zero.
 - **Predict-then-reveal**, with each band labelled with the money it covers.
 - **Work it out** — the arithmetic of the current position, shown before predicting.
 - **Before/after ledger** on every reveal, with the changed line highlighted, and a note
@@ -105,12 +127,11 @@ Blocking, in priority order — full list in [`OPEN_QUESTIONS.md`](./OPEN_QUESTI
 3. **Look at it on a real phone.** Nobody has. There is no browser in the working
    environment any more, so this version has been verified headlessly for behaviour and
    text but not for layout.
-4. Republish `standalone.html` so the shared link stops serving the old build.
-5. Verified Tanzanian figures to replace the placeholders, so the in-app banner can come
+4. Verified Tanzanian figures to replace the placeholders, so the in-app banner can come
    down.
-6. Reconcile `docs/` with the code — Q-012 being settled was the stated precondition.
-7. A second scenario in a different business — still the precondition for transfer testing.
-8. Service worker, so ADR-0002's offline requirement is actually met.
+5. Reconcile `docs/` with the code — Q-012 being settled was the stated precondition.
+6. A second scenario in a different business — still the precondition for transfer testing.
+7. Service worker, so ADR-0002's offline requirement is actually met.
 
 ## Notes for whoever picks this up next
 
@@ -118,9 +139,14 @@ Blocking, in priority order — full list in [`OPEN_QUESTIONS.md`](./OPEN_QUESTI
   assessment are all ruled out by the thesis and will look like obvious wins.
 - **Run all four checks after any content edit**, and `validate-i18n.mjs` after touching any
   string. Every new UI string needs both languages in `app/content/ui.json`.
-- **`validate-scenario.mjs` checks band stability, not viability.** It passed throughout the
-  session-005 bug where demand ran to zero and stayed there. If you change the drift rules,
-  print the state along each robot path and look at it.
+- **`validate-scenario.mjs` checks band stability and numeric sanity, not viability.** It
+  has now missed two whole-business failures — demand running to zero (session 005) and
+  costs compounding to −900,000 (session 006). If you change the drift or cost rules,
+  simulate full runs and print the state. That is how both were found.
+- **Adding a decision type** touches four places: the engine resolver, the renderer, the
+  phase machine in `main.js`, and the validator.
+- **Verify a deploy by reading back what is served.** Republishing once pushed the old
+  build and reported success.
 - The owner runs Upendo Honey / Third Man Ltd, Tanganyika Blue and Dark Earth Carbon in
   Tanzania — the available sources of ground truth, and the likely route to a Kiswahili
   reviewer.

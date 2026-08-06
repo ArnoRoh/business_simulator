@@ -716,13 +716,18 @@ export function renderOptions(container, turn, onChoose) {
  * a change to a number you were never shown is guesswork, and guesswork is not the
  * signal the assessment is meant to capture.
  */
-export function renderWorkout(container, turn, chosenOption, state, onReady) {
+/**
+ * `choiceLabel` is a ready-made string, not an option object. A free numeric or
+ * allocation decision has no option to take a label from, and resolving that here
+ * would mean this function knowing about all three decision types.
+ */
+export function renderWorkout(container, turn, choiceLabel, state, onReady) {
   clear(container);
   const pnl = weeklyPnl(state);
 
   const card = el('div', 'card workout slide-up');
   card.appendChild(el('div', 'card-title', t('workout.title')));
-  card.appendChild(el('p', 'situation', t('predict.chose', { label: localised(chosenOption.label) })));
+  card.appendChild(el('p', 'situation', t('predict.chose', { label: choiceLabel })));
   card.appendChild(el('p', 'workout-intro', t('workout.intro')));
 
   const lines = [
