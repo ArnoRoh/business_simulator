@@ -54,12 +54,16 @@ Then open `http://localhost:8000`. It needs a server — `file://` will not work
 `index.html`, because the browser refuses to fetch the content JSON. (`standalone.html`
 does work from `file://`.) See [`../app/README.md`](../app/README.md).
 
-**Hosted:** **https://arnoroh.github.io/business_simulator/** — public, served from the
-`gh-pages` branch, which holds a copy of `app/` at the root. It does **not** track the
-working branch, so republish after any change to `app/`, and **verify by fetching the live
-content back** — a silent failure once pushed the old build while reporting success.
+**Hosted:** **https://arnoroh.github.io/business_simulator/** — public, served by GitHub
+Pages from the **`main` branch root**, with `index.html` at the root redirecting to `app/`.
+It therefore **tracks `main` automatically**: merge to `main` and the site follows, with no
+republish step.
 
-The old session 004 claude.ai artifact link is abandoned and stale.
+This replaced a hand-built `gh-pages` branch, which tracked nothing, went stale, and once
+published a build two versions old while reporting success. Still worth **verifying a deploy
+by fetching the live content back** rather than trusting that a push worked.
+
+The session 004 claude.ai artifact link is abandoned and stale.
 
 ## Decisions locked in
 
@@ -125,9 +129,9 @@ Blocking, in priority order — full list in [`OPEN_QUESTIONS.md`](./OPEN_QUESTI
    text but not for layout.
 4. Verified Tanzanian figures to replace the placeholders, so the in-app banner can come
    down.
-6. Reconcile `docs/` with the code — Q-012 being settled was the stated precondition.
-7. A second scenario in a different business — still the precondition for transfer testing.
-8. Service worker, so ADR-0002's offline requirement is actually met.
+5. Reconcile `docs/` with the code — Q-012 being settled was the stated precondition.
+6. A second scenario in a different business — still the precondition for transfer testing.
+7. Service worker, so ADR-0002's offline requirement is actually met.
 
 ## Notes for whoever picks this up next
 
