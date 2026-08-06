@@ -31,10 +31,13 @@ permissions:
   pages: write
   id-token: write
 
-# Never let two deploys race; the later one wins.
+# One deployment at a time. `cancel-in-progress` must stay FALSE: a Pages deployment
+# reports its progress back through this step, so cancelling the run mid-flight cancels
+# the deployment itself. Setting it true produced "Deployment cancelled" on three
+# consecutive runs while every other step passed.
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   deploy:
