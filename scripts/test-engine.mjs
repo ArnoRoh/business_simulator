@@ -7,7 +7,7 @@ import {
   createState, applyEffects, weeklyPnl, advanceWeek, advanceWeeks, ownerLoad, healthCheck,
   scheduleLater, project, baseOwnerHours, bandFor, BAND_SAME, BAND_LOT,
   resolveNumberInput, resolveAllocation, allocationTotal, bandForValue, gradePrediction,
-  weeksOfCostsCovered, evaluateGoal, needsRecovery,
+  weeksOfCostsCovered, evaluateGoal, needsRecovery, predictionWindow, decisionOutcomes,
 } from '../app/js/engine.js';
 import * as record from '../app/js/record.js';
 
@@ -251,6 +251,49 @@ console.log('\nengine: value bands and numeric prediction grades');
   eq('prediction just beyond near boundary is off', gradePrediction(12501, 10000).grade, 'off');
   check('close prediction is marked correct', gradePrediction(11000, 10000).correct === true);
   check('grade result keeps numeric inputs', gradePrediction(11000, 10000).predicted === 11000);
+
+  // The stepper's granularity is part of the grade: a learner cannot answer more
+  // precisely than the control lets them.
+  eq('a coarse step widens close', gradePrediction(12000, 10000, 5000).grade, 'close');
+  eq('granularity does not make everything close', gradePrediction(20000, 10000, 5000).grade, 'off');
+  eq('zero granularity grades as before', gradePrediction(11001, 10000, 0).grade, 'near');
+}
+
+console.log('\nengine: the prediction window holds every outcome it could have');
+{
+  const state = createState();
+  const priceTurn = {
+    decision: {
+      type: 'number',
+      predict: 'number',
+      input: { field: 'price', min: 500, max: 650, step: 25, start: 'current', responses: [{ field: 'demand', perStep: 25, change: -9 }] },
+    },
+  };
+
+  const outcomes = decisionOutcomes(state, priceTurn);
+  const window = predictionWindow(state, priceTurn);
+  check('every price produces a profit', outcomes.length === 7 && outcomes.every(Number.isFinite));
+  check(
+    'the window contains every outcome the decision could produce',
+    outcomes.every((profit) => profit >= window.min && profit <= window.max),
+    `window ${window.min}..${window.max}, outcomes ${outcomes.join(', ')}`,
+  );
+  eq('the window starts at the current profit', window.start, weeklyPnl(state).profit);
+  check('the window is centred on the current profit', (window.min + window.max) / 2 === window.start);
+  check('the step is a round number', [100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000].includes(window.step));
+  check('the window is a handful of steps wide', (window.max - window.min) / window.step <= 40);
+
+  // The failure this exists to prevent: the first turn's true answer used to sit
+  // outside a fixed ten-step window, so a learner who reasoned correctly was graded off.
+  const best = Math.round((Math.max(...outcomes) - window.start) / window.step) * window.step + window.start;
+  eq(
+    'the best reachable answer for the best outcome is close',
+    gradePrediction(best, Math.max(...outcomes), window.step).grade,
+    'close',
+  );
+
+  const choiceTurn = { decision: { predict: 'number', options: [{ effects: { rent: '+10000' } }, { effects: {} }] } };
+  check('a choice turn is covered too', decisionOutcomes(state, choiceTurn).length === 2);
 }
 
 console.log('\nengine: costs, goals, and recovery');

@@ -6,7 +6,7 @@
 
 import { money, moneyShort, moneySigned, count, proportion } from './format.js';
 import {
-  weeklyPnl, ownerLoad, project, BAND_SAME, BAND_LOT,
+  weeklyPnl, ownerLoad, project, BAND_SAME, BAND_LOT, applyEffects, predictionWindow,
   resolveNumberInput, resolveAllocation, allocationTotal,
 } from './engine.js';
 import { t, tCount, localised } from './i18n.js';
@@ -90,13 +90,6 @@ function appendNumberFeedback(card, state, input, value) {
   let hasFeedback = false;
   const effects = resolveNumberInput(state, input, value);
 
-  if (input.field === 'price') {
-    feedback.appendChild(el('p', 'number-feedback-line keep', t('num.keepPerUnit', {
-      kept: money(value - Number(state.unitCost || 0)),
-    })));
-    hasFeedback = true;
-  }
-
   for (const response of input.responses || []) {
     const delta = numberDelta(effects[response.field]);
     if (delta === 0) continue;
@@ -115,17 +108,42 @@ function appendNumberFeedback(card, state, input, value) {
     hasFeedback = true;
   }
 
+  // A price is two numbers multiplied, and the multiplication is the part that is hard
+  // to hold in your head. Show it — but stop at the gross, before rent and wages, so
+  // the profit prediction that follows is still the learner's own arithmetic.
+  if (input.field === 'price') {
+    const after = weeklyPnl(applyEffects(state, effects));
+    feedback.appendChild(el('p', 'number-feedback-line keep', t('num.grossPerWeek', {
+      units: count(after.unitsSold),
+      kept: money(value - Number(state.unitCost || 0)),
+      gross: money(after.revenue - after.variableCost),
+    })));
+    hasFeedback = true;
+  }
+
   if (!hasFeedback) feedback.appendChild(el('p', 'number-feedback-line', t('num.noChange')));
   card.appendChild(feedback);
 }
 
 function renderStepper(root, valueNode, value, min, max, step, format, onChange) {
+  const buttons = [];
+
+  // A button that cannot move the value says so, rather than silently doing nothing.
+  // A learner who presses a live-looking button twice and sees no change concludes the
+  // control is broken, not that they are at the end of the range.
+  const syncButtons = () => {
+    for (const { button, amount } of buttons) {
+      button.disabled = clampNumber(value + amount, min, max) === value;
+    }
+  };
+
   const applyStep = (amount) => {
     const previous = value;
     const next = clampNumber(previous + amount, min, max);
     if (next === previous) return;
     value = next;
     updateStepperValue(root, valueNode, previous, value, format);
+    syncButtons();
     onChange(value, previous);
   };
 
@@ -139,9 +157,11 @@ function renderStepper(root, valueNode, value, min, max, step, format, onChange)
         : (coarse ? 'num.coarseIncreaseLabel' : 'num.increaseLabel'),
     );
     button.addEventListener('click', () => applyStep(amount));
+    buttons.push({ button, amount });
     root.querySelector('.stepper-controls').appendChild(button);
   }
 
+  syncButtons();
   return () => value;
 }
 
@@ -588,11 +608,11 @@ export function renderDiagnose(container, turn, state, onAnswer) {
 export function renderPredictNumber(container, turn, state, onPredict) {
   clear(container);
   const current = weeklyPnl(state).profit;
-  const step = Math.max(1, Number(turn.decision.predictStep) || 1000);
-  // Numeric prediction content does not need another schema field: a ten-step window
-  // around the visible current profit gives room to reason on a phone.
-  const min = current - (step * 10);
-  const max = current + (step * 10);
+  // The window is sized from what this decision could actually produce (engine
+  // predictionWindow), not from a fixed number of steps. A fixed ±10 steps could not
+  // hold the truth on the very first turn, so a learner who reasoned correctly was
+  // still graded "off" — they were being marked against the control, not the business.
+  const { min, max, step } = predictionWindow(state, turn);
   let value = current;
   const card = el('div', 'card number-prediction predict slide-up');
   card.dataset.control = 'predict-number';
@@ -600,6 +620,13 @@ export function renderPredictNumber(container, turn, state, onPredict) {
   card.appendChild(el('div', 'card-title', t('num.predictTitle')));
   card.appendChild(el('p', 'predict-question', localised(turn.decision.predictQuestion) || t('num.predictPrompt')));
   card.appendChild(el('p', 'number-hint', t('num.predictCurrent', { amount: money(current) })));
+  // The two numbers the estimate is built from, kept on screen. They were shown on the
+  // work-it-out card and then taken away, which turned an arithmetic step into a
+  // memory test.
+  card.appendChild(el('p', 'number-hint', t('num.predictFixed', {
+    fixed: money(weeklyPnl(state).fixedCost),
+    kept: money(Number(state.price || 0) - Number(state.unitCost || 0)),
+  })));
 
   const stepper = el('div', 'stepper');
   const controls = el('div', 'stepper-controls');
@@ -614,23 +641,7 @@ export function renderPredictNumber(container, turn, state, onPredict) {
   stepper.appendChild(valueWrap);
   card.appendChild(stepper);
 
-  for (const amount of [-5 * step, -step, step, 5 * step]) {
-    const coarse = Math.abs(amount) === 5 * step;
-    const button = stepButton(
-      amount / step,
-      amount < 0 ? (coarse ? 'num.coarseDecrease' : 'num.decrease')
-        : (coarse ? 'num.coarseIncrease' : 'num.increase'),
-      amount < 0 ? (coarse ? 'num.coarseDecreaseLabel' : 'num.decreaseLabel')
-        : (coarse ? 'num.coarseIncreaseLabel' : 'num.increaseLabel'),
-    );
-    button.addEventListener('click', () => {
-      const previous = value;
-      value = clampNumber(value + amount, min, max);
-      if (value === previous) return;
-      updateStepperValue(card, valueNode, previous, value, money);
-    });
-    controls.appendChild(button);
-  }
+  renderStepper(card, valueNode, value, min, max, step, money, (next) => { value = next; });
 
   const commit = el('button', 'btn btn-primary', t('num.predictCommit'));
   commit.type = 'button';

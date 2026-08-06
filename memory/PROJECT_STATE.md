@@ -1,7 +1,7 @@
 # Project state
 
-**Snapshot as of:** 2026-08-05
-**Last session:** [`sessions/2026-08-05-006-free-input-and-campaign.md`](./sessions/2026-08-05-006-free-input-and-campaign.md)
+**Snapshot as of:** 2026-08-06
+**Last session:** [`sessions/2026-08-06-007-controls-that-can-reach-the-answer.md`](./sessions/2026-08-06-007-controls-that-can-reach-the-answer.md)
 
 > This file is a **snapshot, not a history**. Overwrite it at the end of every session
 > so it always describes the present. History belongs in `sessions/` and
@@ -17,11 +17,12 @@ end, in English or Kiswahili. Six turns take a number the learner sets, one spli
 three ways, one asks them to diagnose which ledger line caused a loss, and a goal spans the
 whole run.
 
-Six sessions: repository bootstrap (001), an ideation discussion on pedagogy and placement
+Seven sessions: repository bootstrap (001), an ideation discussion on pedagogy and placement
 (002), the first build (003), a shareable single-file version (004), a rework for depth and
-Kiswahili (005), and free-input decisions plus a campaign (006) — the last after the owner
+Kiswahili (005), free-input decisions plus a campaign (006) — that one after the owner
 played 005 and said it was "the same game with just some additional UI portions", which it
-was.
+was — and (007) a repair of two controls that could not reach their own answers, again found
+by the owner playing it and not by any check.
 
 The project rests on the owner's background note
 ([`docs/context/transformational-entrepreneurship.md`](../docs/context/transformational-entrepreneurship.md)) —
@@ -33,12 +34,12 @@ read it before anything else.
 |---|---|
 | **`app/` — the simulator** | **Playable.** 20 turns (6 free-input, 1 allocation, 1 diagnose), goal + recovery chapters, English + Kiswahili. |
 | Operating guide (`AGENTS.md`, `CLAUDE.md`) | Written. Carries the thesis and memory protocol. |
-| Memory system | In use — this file, 14 decisions, 12 open questions (2 resolved), glossary, 6 session entries. |
+| Memory system | In use — this file, 15 decisions, 13 open questions (2 resolved), glossary, 7 session entries. |
 | Governance, licences | Written. MIT code + CC BY-SA 4.0 content. |
 | Design docs (`docs/`) | First draft. **Now well behind the code** — see below. |
 | Regional context (`docs/context/`) | Owner's note in place. Country detail still a **deliberate stub**. |
 | ADRs | Six, **all `Accepted`** — 0005 ratified 2026-08-04. |
-| Tests | 4 checks, all green: engine (124), scenario (42/42 choice + 18/18 numeric), i18n, links. |
+| Tests | 4 checks, all green: engine (135), scenario (42/42 choice + 21/21 numeric + reachability), i18n, links. |
 | Curriculum content | One scenario. No second scenario, so still no transfer testing. |
 | Partners, pilot sites, funding | Still not recorded. See Q-002. |
 
@@ -87,14 +88,17 @@ The session 004 claude.ai artifact link is abandoned and stale.
    declaring response curves rather than formulas.
 10. **Numeric predictions graded close / near / off** (D-012).
 11. **A goal spans the run and is reported, never scored** (D-013).
+12. **Every control must be able to reach the answer** (D-015) — a numeric input includes
+    where the learner already is, and a prediction stepper covers every outcome the decision
+    could produce.
 
 ## What the app now does that the docs do not describe
 
 - **Free-input decisions** — six turns take a number the learner sets on a stepper, with
-  live feedback ("you keep TZS 350 on each one; you expect to lose 54 customers"). One turn
+  live feedback ("you keep TZS 200 on each one; about 180 sales a week, so TZS 36,000 before rent and wages"). One turn
   splits profit between business, home and reserve.
 - **Diagnose** — read the ledger and name the line that caused a loss.
-- **Numeric prediction** — name a profit figure, graded close / near / off.
+- **Numeric prediction** — name a profit figure, graded close / near / off, on a stepper sized to hold every outcome the decision could produce (D-015).
 - **A goal across the run**, plus **recovery chapters** when cash goes below zero.
 - **Predict-then-reveal**, with each band labelled with the money it covers.
 - **Work it out** — the arithmetic of the current position, shown before predicting.
@@ -124,18 +128,22 @@ Blocking, in priority order — full list in [`OPEN_QUESTIONS.md`](./OPEN_QUESTI
 
 ## Immediate next steps
 
-1. **The owner plays it again**, in both languages. Q-011 (does this hold anyone's
+1. **The owner plays `t01`, `t02` and any profit estimate again** — those are what session
+   007 repaired, and whether estimating is now merely possible or actually comfortable is
+   not answerable by argument.
+2. **The owner plays the whole thing again**, in both languages. Q-011 (does this hold anyone's
    attention) and Q-013 (is it now the right length) are still unanswered by argument.
-2. **Get the Kiswahili reviewed** by a first-language speaker with business exposure —
+3. **Get the Kiswahili reviewed** by a first-language speaker with business exposure —
    Q-015 lists the specific word choices to check.
-3. **Look at it on a real phone.** Nobody has. There is no browser in the working
-   environment any more, so this version has been verified headlessly for behaviour and
-   text but not for layout.
-4. Verified Tanzanian figures to replace the placeholders, so the in-app banner can come
+4. **Look at it on a real phone.** Nobody has, and the disabled stepper buttons added in
+   007 have not been seen on any screen. There is no browser in the working environment
+   any more, so this version has been verified headlessly for behaviour and text but not
+   for layout.
+5. Verified Tanzanian figures to replace the placeholders, so the in-app banner can come
    down.
-5. Reconcile `docs/` with the code — Q-012 being settled was the stated precondition.
-6. A second scenario in a different business — still the precondition for transfer testing.
-7. Service worker, so ADR-0002's offline requirement is actually met.
+6. Reconcile `docs/` with the code — Q-012 being settled was the stated precondition.
+7. A second scenario in a different business — still the precondition for transfer testing.
+8. Service worker, so ADR-0002's offline requirement is actually met.
 
 ## Notes for whoever picks this up next
 
@@ -149,6 +157,11 @@ Blocking, in priority order — full list in [`OPEN_QUESTIONS.md`](./OPEN_QUESTI
   simulate full runs and print the state. That is how both were found.
 - **Adding a decision type** touches four places: the engine resolver, the renderer, the
   phase machine in `main.js`, and the validator.
+- **A control the learner cannot move, or cannot answer with, is a data-integrity bug,**
+  not a cosmetic one — session 007 shipped a prediction window that made three of six
+  numeric predictions unanswerable, and the record scored those as the learner's misses.
+  `validate-scenario.mjs` now walks for both, but the general lesson is that the checks
+  test the model and say nothing about the controls.
 - **Verify a deploy by reading back what is served.** Republishing once pushed the old
   build and reported success.
 - The owner runs Upendo Honey / Third Man Ltd, Tanganyika Blue and Dark Earth Carbon in

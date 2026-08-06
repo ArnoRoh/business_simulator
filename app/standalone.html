@@ -464,6 +464,15 @@ ul { margin: 0; padding-left: 1.1em; }
 }
 .stepper-button:hover { border-color: var(--accent); }
 .stepper-button:active { transform: scale(0.95); }
+/* At the end of the range. Faded and unpressable beats a live-looking button that
+   does nothing, which reads as a broken control. */
+.stepper-button:disabled {
+  border-color: var(--border);
+  opacity: 0.35;
+  cursor: default;
+}
+.stepper-button:disabled:hover { border-color: var(--border); }
+.stepper-button:disabled:active { transform: none; }
 .stepper-value-wrap {
   min-width: 0;
   padding: 8px 12px;
@@ -1509,14 +1518,14 @@ ul { margin: 0; padding-left: 1.1em; }
         "predict": "number",
         "input": {
           "field": "price",
-          "min": 575,
+          "min": 500,
           "max": 650,
           "step": 25,
           "start": "current",
           "valueAs": "money",
           "hint": {
-            "en": "You pay {cost} to make each one.",
-            "sw": "Unalipa {cost} kutengeneza kila moja."
+            "en": "You pay {cost} to make each one. You sell at {current} today.",
+            "sw": "Unalipa {cost} kutengeneza kila moja. Leo unauza kwa {current}."
           },
           "responses": [
             {
@@ -1527,6 +1536,17 @@ ul { margin: 0; padding-left: 1.1em; }
           ]
         },
         "bands": [
+          {
+            "outcome": {
+              "en": "You leave the price where it is. You already sell out before midday, so this price is not winning you extra sales — every mandazi simply leaves you less.",
+              "sw": "Unaacha bei ilipo. Tayari unauza yote kabla ya adhuhuri, kwa hiyo bei hii haikuletei mauzo ya ziada — kila andazi linakuachia kidogo tu."
+            },
+            "lesson": {
+              "en": "A low price only wins sales if you have something left to sell. Look at what you can make before you look at what you charge.",
+              "sw": "Bei ya chini inaleta mauzo tu kama una kilichobaki cha kuuza. Angalia unachoweza kutengeneza kabla ya kuangalia unachotoza."
+            },
+            "upTo": 500
+          },
           {
             "outcome": {
               "en": "At this price, your margin is small. You sell more, but each mandazi leaves less.",
@@ -1598,14 +1618,14 @@ ul { margin: 0; padding-left: 1.1em; }
         "predict": "number",
         "input": {
           "field": "price",
-          "min": 575,
+          "min": 500,
           "max": 650,
           "step": 25,
           "start": "current",
           "valueAs": "money",
           "hint": {
-            "en": "Her mandazi are smaller. Yours are bigger and better known.",
-            "sw": "Mandazi yake ni madogo. Yako ni makubwa na yanajulikana zaidi."
+            "en": "Her mandazi are smaller. Yours are bigger and better known. You sell at {current} today.",
+            "sw": "Mandazi yake ni madogo. Yako ni makubwa na yanajulikana zaidi. Leo unauza kwa {current}."
           },
           "responses": [
             {
@@ -4304,7 +4324,7 @@ ul { margin: 0; padding-left: 1.1em; }
   "num.coarseIncreaseLabel":   { "en": "Increase by five steps",            "sw": "Ongeza kwa hatua tano" },
   "num.commit":                { "en": "Use this number",                   "sw": "Tumia namba hii" },
   "num.commitLabel":           { "en": "Use this number and continue",      "sw": "Tumia namba hii na uendelee" },
-  "num.keepPerUnit":           { "en": "You keep {kept} on each one.",       "sw": "Unabaki na {kept} kwa kila kimoja." },
+  "num.grossPerWeek":          { "en": "You keep {kept} on each one. About {units} sales a week, so {gross} before rent and wages.", "sw": "Unabaki na {kept} kwa kila kimoja. Takriban mauzo {units} kwa wiki, kwa hiyo {gross} kabla ya kodi na mishahara." },
   "num.customersLost":         { "en": "At this price, you expect to lose {n} customers.", "sw": "Kwa bei hii, unatarajia kupoteza wateja {n}." },
   "num.customersGained":       { "en": "At this price, you expect {n} more customers.", "sw": "Kwa bei hii, unatarajia wateja {n} zaidi." },
   "num.response":              { "en": "{field} changes by {change}; it will be {value}.", "sw": "{field} inabadilika kwa {change}; itakuwa {value}." },
@@ -4320,6 +4340,7 @@ ul { margin: 0; padding-left: 1.1em; }
   "num.predictTitle":          { "en": "Predict the weekly profit",          "sw": "Tabiri faida ya wiki" },
   "num.predictPrompt":         { "en": "What do you think the weekly profit will be?", "sw": "Unafikiri faida ya wiki itakuwa kiasi gani?" },
   "num.predictCurrent":        { "en": "Right now it is {amount}.",          "sw": "Kwa sasa ni {amount}." },
+  "num.predictFixed":          { "en": "You keep {kept} on each sale, and rent, wages and fees take {fixed} a week.", "sw": "Unabaki na {kept} kwa kila mauzo, na kodi, mishahara na ada vinachukua {fixed} kwa wiki." },
   "num.predicted":             { "en": "Your estimate",                      "sw": "Makadirio yako" },
   "num.predictCommit":         { "en": "Use this prediction",                "sw": "Tumia utabiri huu" },
   "num.predictCommitLabel":    { "en": "Use this prediction and continue",   "sw": "Tumia utabiri huu na uendelee" },
@@ -5071,11 +5092,94 @@ function bandForValue(bands, value) {
   return fallback;
 }
 
-/** Grade a numeric weekly-profit prediction against the actual result. */
-function gradePrediction(predicted, actual) {
-  const error = Math.abs(predicted - actual) / Math.max(2000, Math.abs(actual));
-  if (error <= 0.10) return { grade: 'close', correct: true, error, predicted, actual };
-  if (error <= 0.25) return { grade: 'near', correct: false, error, predicted, actual };
+/**
+ * Every weekly profit this turn's decision could produce, whichever way the learner
+ * decided it. Used to size the prediction stepper: a window that cannot contain the
+ * true answer marks a learner wrong for reasoning correctly.
+ *
+ * The range covers the whole decision space, not the option actually taken, so it
+ * says nothing about which outcome is coming.
+ */
+function decisionOutcomes(state, turn) {
+  const decision = (turn && turn.decision) || {};
+  const type = decision.type || 'choice';
+  const profitOf = (effects) => weeklyPnl(applyEffects(state, effects)).profit;
+  const profits = [];
+
+  if (type === 'number' && decision.input) {
+    const { min, max, step } = decision.input;
+    const size = Math.max(1, Number(step) || 1);
+    let value = Number(min);
+    for (; value <= Number(max); value += size) {
+      profits.push(profitOf(resolveNumberInput(state, decision.input, value)));
+    }
+    // An authored range need not be a whole number of steps; the top of it is still a
+    // value the learner can commit, so it has to be in the range predictions must cover.
+    if (value - size !== Number(max)) {
+      profits.push(profitOf(resolveNumberInput(state, decision.input, Number(max))));
+    }
+  } else if (type === 'allocate' && decision.allocate) {
+    // Corners only: an allocation's effects are linear in each bucket, so the extremes
+    // bound everything between them.
+    const buckets = decision.allocate.buckets || [];
+    const total = allocationTotal(state, decision.allocate);
+    for (const bucket of buckets) {
+      profits.push(profitOf(resolveAllocation(state, decision.allocate, { [bucket.id]: total })));
+    }
+  } else {
+    for (const option of decision.options || []) profits.push(profitOf(option.effects || {}));
+  }
+
+  return profits.filter((profit) => Number.isFinite(profit));
+}
+
+const STEP_LADDER = [100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000];
+
+function niceStep(span) {
+  const target = span / 20;
+  return STEP_LADDER.find((candidate) => candidate >= target) || STEP_LADDER[STEP_LADDER.length - 1];
+}
+
+/**
+ * The range and granularity for a numeric profit prediction.
+ *
+ * Anchored on the current profit and widened to hold every outcome the decision could
+ * produce, plus half that spread again as headroom so the truth is never at the edge.
+ * The step is a round number, roughly a twentieth of the window, so reaching any value
+ * is a handful of presses on a phone.
+ */
+function predictionWindow(state, turn) {
+  const current = weeklyPnl(state).profit;
+  const profits = [current, ...decisionOutcomes(state, turn)];
+  const floor = Math.max(1, Number(turn?.decision?.predictStep) || 1000) * 5;
+
+  const spread = Math.max(...profits) - Math.min(...profits);
+  const reach = Math.max(
+    floor,
+    Math.max(...profits) - current + (spread / 2),
+    current - Math.min(...profits) + (spread / 2),
+  );
+  const step = niceStep(reach * 2);
+  const bound = Math.ceil(reach / step) * step;
+
+  return { min: current - bound, max: current + bound, step, start: current };
+}
+
+/**
+ * Grade a numeric weekly-profit prediction against the actual result.
+ *
+ * `granularity` is the stepper's step: a learner who lands on the nearest value the
+ * control can reach must be able to score `close`, or the grade measures the control
+ * rather than the reasoning.
+ */
+function gradePrediction(predicted, actual, granularity = 0) {
+  const scale = Math.max(2000, Math.abs(actual));
+  const error = Math.abs(predicted - actual) / scale;
+  // Half a step is the best any learner can do when the truth falls between two values
+  // the control can reach; a little over half keeps that landing inside `close`.
+  const slack = ((Number(granularity) || 0) * 0.6) / scale;
+  if (error <= 0.10 + slack) return { grade: 'close', correct: true, error, predicted, actual };
+  if (error <= 0.25 + slack) return { grade: 'near', correct: false, error, predicted, actual };
   return { grade: 'off', correct: false, error, predicted, actual };
 }
 
@@ -5116,7 +5220,7 @@ function needsRecovery(state) {
   return state.cash < 0;
 }
 
-  return { bandFor, createState, weeklyPnl, applyEffects, scheduleLater, advanceWeek, advanceWeeks, project, baseOwnerHours, ownerLoad, healthCheck, resolveNumberInput, allocationTotal, resolveAllocation, bandForValue, gradePrediction, weeksOfCostsCovered, evaluateGoal, needsRecovery, DEFAULT_STATE, BAND_SAME, BAND_LOT };
+  return { bandFor, createState, weeklyPnl, applyEffects, scheduleLater, advanceWeek, advanceWeeks, project, baseOwnerHours, ownerLoad, healthCheck, resolveNumberInput, allocationTotal, resolveAllocation, bandForValue, decisionOutcomes, predictionWindow, gradePrediction, weeksOfCostsCovered, evaluateGoal, needsRecovery, DEFAULT_STATE, BAND_SAME, BAND_LOT };
 })();
 
 /* ---- record ---- */
@@ -6143,7 +6247,7 @@ function pulse(el) {
 /* ---- ui ---- */
 const NS_ui = (function () {
 const { money, moneyShort, moneySigned, count, proportion } = NS_format;
-const { weeklyPnl, ownerLoad, project, BAND_SAME, BAND_LOT, resolveNumberInput, resolveAllocation, allocationTotal } = NS_engine;
+const { weeklyPnl, ownerLoad, project, BAND_SAME, BAND_LOT, applyEffects, predictionWindow, resolveNumberInput, resolveAllocation, allocationTotal } = NS_engine;
 const { t, tCount, localised } = NS_i18n;
 const { drawScene, drawChart, animateNumber, pulse } = NS_scene;
 // Rendering. One decision per screen (docs/game-design.md, "Interface constraints").
@@ -6234,13 +6338,6 @@ function appendNumberFeedback(card, state, input, value) {
   let hasFeedback = false;
   const effects = resolveNumberInput(state, input, value);
 
-  if (input.field === 'price') {
-    feedback.appendChild(el('p', 'number-feedback-line keep', t('num.keepPerUnit', {
-      kept: money(value - Number(state.unitCost || 0)),
-    })));
-    hasFeedback = true;
-  }
-
   for (const response of input.responses || []) {
     const delta = numberDelta(effects[response.field]);
     if (delta === 0) continue;
@@ -6259,17 +6356,42 @@ function appendNumberFeedback(card, state, input, value) {
     hasFeedback = true;
   }
 
+  // A price is two numbers multiplied, and the multiplication is the part that is hard
+  // to hold in your head. Show it — but stop at the gross, before rent and wages, so
+  // the profit prediction that follows is still the learner's own arithmetic.
+  if (input.field === 'price') {
+    const after = weeklyPnl(applyEffects(state, effects));
+    feedback.appendChild(el('p', 'number-feedback-line keep', t('num.grossPerWeek', {
+      units: count(after.unitsSold),
+      kept: money(value - Number(state.unitCost || 0)),
+      gross: money(after.revenue - after.variableCost),
+    })));
+    hasFeedback = true;
+  }
+
   if (!hasFeedback) feedback.appendChild(el('p', 'number-feedback-line', t('num.noChange')));
   card.appendChild(feedback);
 }
 
 function renderStepper(root, valueNode, value, min, max, step, format, onChange) {
+  const buttons = [];
+
+  // A button that cannot move the value says so, rather than silently doing nothing.
+  // A learner who presses a live-looking button twice and sees no change concludes the
+  // control is broken, not that they are at the end of the range.
+  const syncButtons = () => {
+    for (const { button, amount } of buttons) {
+      button.disabled = clampNumber(value + amount, min, max) === value;
+    }
+  };
+
   const applyStep = (amount) => {
     const previous = value;
     const next = clampNumber(previous + amount, min, max);
     if (next === previous) return;
     value = next;
     updateStepperValue(root, valueNode, previous, value, format);
+    syncButtons();
     onChange(value, previous);
   };
 
@@ -6283,9 +6405,11 @@ function renderStepper(root, valueNode, value, min, max, step, format, onChange)
         : (coarse ? 'num.coarseIncreaseLabel' : 'num.increaseLabel'),
     );
     button.addEventListener('click', () => applyStep(amount));
+    buttons.push({ button, amount });
     root.querySelector('.stepper-controls').appendChild(button);
   }
 
+  syncButtons();
   return () => value;
 }
 
@@ -6732,11 +6856,11 @@ function renderDiagnose(container, turn, state, onAnswer) {
 function renderPredictNumber(container, turn, state, onPredict) {
   clear(container);
   const current = weeklyPnl(state).profit;
-  const step = Math.max(1, Number(turn.decision.predictStep) || 1000);
-  // Numeric prediction content does not need another schema field: a ten-step window
-  // around the visible current profit gives room to reason on a phone.
-  const min = current - (step * 10);
-  const max = current + (step * 10);
+  // The window is sized from what this decision could actually produce (engine
+  // predictionWindow), not from a fixed number of steps. A fixed ±10 steps could not
+  // hold the truth on the very first turn, so a learner who reasoned correctly was
+  // still graded "off" — they were being marked against the control, not the business.
+  const { min, max, step } = predictionWindow(state, turn);
   let value = current;
   const card = el('div', 'card number-prediction predict slide-up');
   card.dataset.control = 'predict-number';
@@ -6744,6 +6868,13 @@ function renderPredictNumber(container, turn, state, onPredict) {
   card.appendChild(el('div', 'card-title', t('num.predictTitle')));
   card.appendChild(el('p', 'predict-question', localised(turn.decision.predictQuestion) || t('num.predictPrompt')));
   card.appendChild(el('p', 'number-hint', t('num.predictCurrent', { amount: money(current) })));
+  // The two numbers the estimate is built from, kept on screen. They were shown on the
+  // work-it-out card and then taken away, which turned an arithmetic step into a
+  // memory test.
+  card.appendChild(el('p', 'number-hint', t('num.predictFixed', {
+    fixed: money(weeklyPnl(state).fixedCost),
+    kept: money(Number(state.price || 0) - Number(state.unitCost || 0)),
+  })));
 
   const stepper = el('div', 'stepper');
   const controls = el('div', 'stepper-controls');
@@ -6758,23 +6889,7 @@ function renderPredictNumber(container, turn, state, onPredict) {
   stepper.appendChild(valueWrap);
   card.appendChild(stepper);
 
-  for (const amount of [-5 * step, -step, step, 5 * step]) {
-    const coarse = Math.abs(amount) === 5 * step;
-    const button = stepButton(
-      amount / step,
-      amount < 0 ? (coarse ? 'num.coarseDecrease' : 'num.decrease')
-        : (coarse ? 'num.coarseIncrease' : 'num.increase'),
-      amount < 0 ? (coarse ? 'num.coarseDecreaseLabel' : 'num.decreaseLabel')
-        : (coarse ? 'num.coarseIncreaseLabel' : 'num.increaseLabel'),
-    );
-    button.addEventListener('click', () => {
-      const previous = value;
-      value = clampNumber(value + amount, min, max);
-      if (value === previous) return;
-      updateStepperValue(card, valueNode, previous, value, money);
-    });
-    controls.appendChild(button);
-  }
+  renderStepper(card, valueNode, value, min, max, step, money, (next) => { value = next; });
 
   const commit = el('button', 'btn btn-primary', t('num.predictCommit'));
   commit.type = 'button';
@@ -7210,7 +7325,7 @@ function renderProfile(container, profile, tally, state, history) {
 
 /* ---- main ---- */
 const NS_main = (function () {
-const { createState, applyEffects, weeklyPnl, advanceWeeks, scheduleLater, resolveNumberInput, resolveAllocation, bandForValue, gradePrediction, evaluateGoal, needsRecovery } = NS_engine;
+const { createState, applyEffects, weeklyPnl, advanceWeeks, scheduleLater, resolveNumberInput, resolveAllocation, bandForValue, gradePrediction, evaluateGoal, needsRecovery, predictionWindow } = NS_engine;
 const { setCurrency, money, count } = NS_format;
 const { loadStrings, setLanguage, getLanguage, LANGUAGES, t, localised } = NS_i18n;
 const record = NS_record;
@@ -7392,7 +7507,13 @@ function predictionResult() {
 
   if (numeric) {
     const actual = weeklyPnl(afterChoiceState()).profit;
-    const graded = gradePrediction(session.predictedValue, actual);
+    // Graded against the same step the learner was given to answer with, so landing on
+    // the nearest reachable value counts as close.
+    const graded = gradePrediction(
+      session.predictedValue,
+      actual,
+      predictionWindow(session.state, turn).step,
+    );
     return { kind: 'number', ...graded };
   }
   const opt = chosenOption();
@@ -7554,7 +7675,7 @@ function onPredictNumber(value) {
   session.predictedValue = value;
 
   const actual = weeklyPnl(afterChoiceState()).profit;
-  const graded = gradePrediction(value, actual);
+  const graded = gradePrediction(value, actual, predictionWindow(session.state, turn).step);
   record.observePrediction(
     session.record, turn.id, value, actual, graded.correct, 'profit',
     { predicted: value, actual, error: graded.error, grade: graded.grade },

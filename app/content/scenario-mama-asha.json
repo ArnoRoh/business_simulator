@@ -261,14 +261,14 @@
         "predict": "number",
         "input": {
           "field": "price",
-          "min": 575,
+          "min": 500,
           "max": 650,
           "step": 25,
           "start": "current",
           "valueAs": "money",
           "hint": {
-            "en": "You pay {cost} to make each one.",
-            "sw": "Unalipa {cost} kutengeneza kila moja."
+            "en": "You pay {cost} to make each one. You sell at {current} today.",
+            "sw": "Unalipa {cost} kutengeneza kila moja. Leo unauza kwa {current}."
           },
           "responses": [
             {
@@ -279,6 +279,17 @@
           ]
         },
         "bands": [
+          {
+            "outcome": {
+              "en": "You leave the price where it is. You already sell out before midday, so this price is not winning you extra sales — every mandazi simply leaves you less.",
+              "sw": "Unaacha bei ilipo. Tayari unauza yote kabla ya adhuhuri, kwa hiyo bei hii haikuletei mauzo ya ziada — kila andazi linakuachia kidogo tu."
+            },
+            "lesson": {
+              "en": "A low price only wins sales if you have something left to sell. Look at what you can make before you look at what you charge.",
+              "sw": "Bei ya chini inaleta mauzo tu kama una kilichobaki cha kuuza. Angalia unachoweza kutengeneza kabla ya kuangalia unachotoza."
+            },
+            "upTo": 500
+          },
           {
             "outcome": {
               "en": "At this price, your margin is small. You sell more, but each mandazi leaves less.",
@@ -350,14 +361,14 @@
         "predict": "number",
         "input": {
           "field": "price",
-          "min": 575,
+          "min": 500,
           "max": 650,
           "step": 25,
           "start": "current",
           "valueAs": "money",
           "hint": {
-            "en": "Her mandazi are smaller. Yours are bigger and better known.",
-            "sw": "Mandazi yake ni madogo. Yako ni makubwa na yanajulikana zaidi."
+            "en": "Her mandazi are smaller. Yours are bigger and better known. You sell at {current} today.",
+            "sw": "Mandazi yake ni madogo. Yako ni makubwa na yanajulikana zaidi. Leo unauza kwa {current}."
           },
           "responses": [
             {

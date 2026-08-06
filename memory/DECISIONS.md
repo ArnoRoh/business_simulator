@@ -245,6 +245,35 @@ that everyone can finish. Tuning the content's costs down — treats the symptom
 the trap for the next author.
 **Revisit if:** Playtesting shows the shedding makes overspending feel consequence-free.
 
+## D-015 — Every control must be able to reach the answer
+**Date:** 2026-08-06 · **Decided by:** Claude, after owner playtesting · **ADR:** —
+**Decision:** Two rules, both now enforced by `validate-scenario.mjs`:
+1. A numeric input that starts from the current value must **include that value in its
+   range**. The learner has to be able to leave a number where it is.
+2. A numeric prediction's stepper must be able to **reach every profit the turn's decision
+   could produce**. `predictionWindow()` sizes it from the whole decision space — every
+   value of a number input, every option of a choice — so the range says nothing about
+   which outcome is coming. The step is a round number, roughly a twentieth of the window,
+   and `gradePrediction()` takes that step as its tolerance floor: landing on the nearest
+   value the control can reach must be gradeable as *close*.
+**Why:** The owner played the build and reported "I couldn't change the prices on the
+mandazi" and that estimating earnings was too hard. Both were the app's fault, not theirs.
+The price stepper opened at 575 with the price at 500, so it sat pinned at its own minimum
+and the two minus buttons did nothing. And the prediction window was a fixed ±10 steps of
+1,000, while the first turn's true answer was +10,525 away — outside it. A learner who
+reasoned perfectly was graded *off*, and could not have done otherwise, at three of the
+six numeric predictions. This is worse than a cosmetic bug: the record is a behavioural
+instrument, and it was recording the control's limits as the learner's calibration.
+**Considered and rejected:** Widening the price range downward to 400 as well — measured,
+and it makes the always-cheapest path insolvent early enough that four later option bands
+flip from *down* to *same*, because D-014 sheds costs the business cannot fund. The floor
+is therefore the starting price; cutting price below where you start is not offered. Scaling
+the prediction window from the actual outcome — simpler, but the window's width would then
+leak the size of the answer. Loosening the grade thresholds instead — hides an unanswerable
+question behind a kinder mark.
+**Revisit if:** A scenario needs a price cut as a real strategic option, which means
+revisiting how option bands are declared on an insolvent path.
+
 ---
 
 ## Pending — proposed, not decided

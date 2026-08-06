@@ -502,11 +502,94 @@ export function bandForValue(bands, value) {
   return fallback;
 }
 
-/** Grade a numeric weekly-profit prediction against the actual result. */
-export function gradePrediction(predicted, actual) {
-  const error = Math.abs(predicted - actual) / Math.max(2000, Math.abs(actual));
-  if (error <= 0.10) return { grade: 'close', correct: true, error, predicted, actual };
-  if (error <= 0.25) return { grade: 'near', correct: false, error, predicted, actual };
+/**
+ * Every weekly profit this turn's decision could produce, whichever way the learner
+ * decided it. Used to size the prediction stepper: a window that cannot contain the
+ * true answer marks a learner wrong for reasoning correctly.
+ *
+ * The range covers the whole decision space, not the option actually taken, so it
+ * says nothing about which outcome is coming.
+ */
+export function decisionOutcomes(state, turn) {
+  const decision = (turn && turn.decision) || {};
+  const type = decision.type || 'choice';
+  const profitOf = (effects) => weeklyPnl(applyEffects(state, effects)).profit;
+  const profits = [];
+
+  if (type === 'number' && decision.input) {
+    const { min, max, step } = decision.input;
+    const size = Math.max(1, Number(step) || 1);
+    let value = Number(min);
+    for (; value <= Number(max); value += size) {
+      profits.push(profitOf(resolveNumberInput(state, decision.input, value)));
+    }
+    // An authored range need not be a whole number of steps; the top of it is still a
+    // value the learner can commit, so it has to be in the range predictions must cover.
+    if (value - size !== Number(max)) {
+      profits.push(profitOf(resolveNumberInput(state, decision.input, Number(max))));
+    }
+  } else if (type === 'allocate' && decision.allocate) {
+    // Corners only: an allocation's effects are linear in each bucket, so the extremes
+    // bound everything between them.
+    const buckets = decision.allocate.buckets || [];
+    const total = allocationTotal(state, decision.allocate);
+    for (const bucket of buckets) {
+      profits.push(profitOf(resolveAllocation(state, decision.allocate, { [bucket.id]: total })));
+    }
+  } else {
+    for (const option of decision.options || []) profits.push(profitOf(option.effects || {}));
+  }
+
+  return profits.filter((profit) => Number.isFinite(profit));
+}
+
+const STEP_LADDER = [100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000];
+
+function niceStep(span) {
+  const target = span / 20;
+  return STEP_LADDER.find((candidate) => candidate >= target) || STEP_LADDER[STEP_LADDER.length - 1];
+}
+
+/**
+ * The range and granularity for a numeric profit prediction.
+ *
+ * Anchored on the current profit and widened to hold every outcome the decision could
+ * produce, plus half that spread again as headroom so the truth is never at the edge.
+ * The step is a round number, roughly a twentieth of the window, so reaching any value
+ * is a handful of presses on a phone.
+ */
+export function predictionWindow(state, turn) {
+  const current = weeklyPnl(state).profit;
+  const profits = [current, ...decisionOutcomes(state, turn)];
+  const floor = Math.max(1, Number(turn?.decision?.predictStep) || 1000) * 5;
+
+  const spread = Math.max(...profits) - Math.min(...profits);
+  const reach = Math.max(
+    floor,
+    Math.max(...profits) - current + (spread / 2),
+    current - Math.min(...profits) + (spread / 2),
+  );
+  const step = niceStep(reach * 2);
+  const bound = Math.ceil(reach / step) * step;
+
+  return { min: current - bound, max: current + bound, step, start: current };
+}
+
+/**
+ * Grade a numeric weekly-profit prediction against the actual result.
+ *
+ * `granularity` is the stepper's step: a learner who lands on the nearest value the
+ * control can reach must be able to score `close`, or the grade measures the control
+ * rather than the reasoning.
+ */
+export function gradePrediction(predicted, actual, granularity = 0) {
+  const scale = Math.max(2000, Math.abs(actual));
+  const error = Math.abs(predicted - actual) / scale;
+  // Half a step is the best any learner can do when the truth falls between two values
+  // the control can reach; a little over half keeps that landing inside `close`.
+  const slack = ((Number(granularity) || 0) * 0.6) / scale;
+  if (error <= 0.10 + slack) return { grade: 'close', correct: true, error, predicted, actual };
+  if (error <= 0.25 + slack) return { grade: 'near', correct: false, error, predicted, actual };
   return { grade: 'off', correct: false, error, predicted, actual };
 }
 

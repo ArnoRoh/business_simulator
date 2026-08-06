@@ -127,6 +127,20 @@ fourteen categorical turns still use bands, so the question stands for them.
 now labelled on screen with the money they cover, but whether they are *intuitive* is still
 untested.
 
+### Q-017 — Can a learner estimate a weekly profit figure at all?  [open]
+**Raised:** 2026-08-06 (session 007) · **Owner:** Project owner / playtesting
+**Question:** The owner played the v3 build and said "the pricing and estimating earnings
+are hard". Part of that was a defect — the prediction stepper could not reach the true
+answer on three of the six numeric turns, so the complaint was correct and unfixable by
+effort ([D-015](./DECISIONS.md)). Session 007 made every answer reachable, showed the
+price decision's arithmetic through to the weekly gross, and kept margin and fixed costs
+on screen during the estimate. What is not known is whether estimating a figure is now
+*comfortable* or merely *possible*.
+**Why it matters:** [D-012](./DECISIONS.md) already says to anchor the stepper harder
+rather than return to bands if learners cannot estimate at all. Deciding that needs
+someone who is not the author trying it.
+**Current assumption:** The scaffolding is now enough. Untested by anyone.
+
 ### Q-010 — How do we handle assessment/selection interference?  [open]
 **Raised:** 2026-08-02 (session 002) · **Owner:** Project owner
 **Question:** Measuring learning and generating a selection signal interfere. Told they

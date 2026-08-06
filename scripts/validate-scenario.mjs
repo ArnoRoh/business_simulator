@@ -11,6 +11,7 @@ import { readFileSync } from 'node:fs';
 import {
   createState, applyEffects, weeklyPnl, advanceWeeks, scheduleLater, bandFor,
   resolveNumberInput, resolveAllocation, allocationTotal, bandForValue,
+  predictionWindow, decisionOutcomes,
 } from '../app/js/engine.js';
 
 const path = process.argv[2] || 'app/content/scenario-mama-asha.json';
@@ -258,6 +259,56 @@ for (const turn of scenario.turns) {
   if (!turn.situation) { console.log(`  FAIL ${turn.id} missing situation`); problems += 1; }
 }
 console.log(`  ${ids.size} unique turn ids`);
+
+// A range that excludes where the learner already is, or a prediction window that
+// cannot hold the answer, both read on screen as a broken control: buttons that do
+// nothing, or a grade of "off" for reasoning correctly. Both shipped once, and neither
+// was visible to any check here — band stability said nothing about reachability.
+console.log('\nreachability:');
+for (const pathChoice of paths) {
+  let state = createState(scenario.startState || {});
+
+  for (const turn of scenario.turns) {
+    const type = turn.decision.type || 'choice';
+
+    if (type === 'number' && (turn.decision.input || {}).start === 'current') {
+      const input = turn.decision.input;
+      const current = Number(state[input.field]);
+      if (Number.isFinite(current) && (current < Number(input.min) || current > Number(input.max))) {
+        console.log(`  FAIL ${turn.id} path ${pathChoice}: ${input.field} is ${current}, outside the offered range ${input.min}–${input.max}`);
+        problems += 1;
+      }
+    }
+
+    if (turn.decision.predict === 'number') {
+      const window = predictionWindow(state, turn);
+      const unreachable = decisionOutcomes(state, turn)
+        .filter((profit) => profit < window.min || profit > window.max);
+      if (unreachable.length) {
+        console.log(`  FAIL ${turn.id} path ${pathChoice}: ${unreachable.length} outcome(s) outside the prediction window ${Math.round(window.min)}–${Math.round(window.max)}`);
+        problems += 1;
+      }
+    }
+
+    // Advance the same way the main walk does, so the states checked are real ones.
+    if (type === 'number') {
+      const chosen = pathNumberValue(numberValues(turn.decision.input || {}), pathChoice);
+      const next = chosen === undefined
+        ? state
+        : applyEffects(state, resolveNumberInput(state, turn.decision.input, chosen));
+      state = advanceWeeks(next, turn.advanceWeeks || 1).state;
+    } else if (type === 'allocate') {
+      state = advanceWeeks(validateAllocationTurn(state, turn, pathChoice).next, turn.advanceWeeks || 1).state;
+    } else {
+      const chosen = turn.decision.options[Math.min(pathChoice, turn.decision.options.length - 1)];
+      const afterChoice = scheduleLater(
+        applyEffects(state, chosen.effects || {}), chosen.later || [], chosen.label,
+      );
+      state = advanceWeeks(afterChoice, turn.advanceWeeks || 1).state;
+    }
+  }
+}
+console.log(`  ${paths.length} paths walked for reachable ranges and prediction windows`);
 
 for (const result of numericResults) {
   numericChecks += 1;

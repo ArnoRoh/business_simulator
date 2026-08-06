@@ -11,7 +11,7 @@
 import {
   createState, applyEffects, weeklyPnl, advanceWeeks, scheduleLater,
   resolveNumberInput, resolveAllocation, bandForValue, gradePrediction,
-  evaluateGoal, needsRecovery,
+  evaluateGoal, needsRecovery, predictionWindow,
 } from './engine.js';
 import * as record from './record.js';
 import * as store from './storage.js';
@@ -179,7 +179,13 @@ function predictionResult() {
 
   if (numeric) {
     const actual = weeklyPnl(afterChoiceState()).profit;
-    const graded = gradePrediction(session.predictedValue, actual);
+    // Graded against the same step the learner was given to answer with, so landing on
+    // the nearest reachable value counts as close.
+    const graded = gradePrediction(
+      session.predictedValue,
+      actual,
+      predictionWindow(session.state, turn).step,
+    );
     return { kind: 'number', ...graded };
   }
   const opt = chosenOption();
@@ -341,7 +347,7 @@ function onPredictNumber(value) {
   session.predictedValue = value;
 
   const actual = weeklyPnl(afterChoiceState()).profit;
-  const graded = gradePrediction(value, actual);
+  const graded = gradePrediction(value, actual, predictionWindow(session.state, turn).step);
   record.observePrediction(
     session.record, turn.id, value, actual, graded.correct, 'profit',
     { predicted: value, actual, error: graded.error, grade: graded.grade },
