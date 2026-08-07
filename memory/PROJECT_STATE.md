@@ -60,13 +60,25 @@ does work from `file://`.) See [`../app/README.md`](../app/README.md).
 The app is served at the site root and **tracks `main` automatically**; there is no
 republish step and no second copy of the app anywhere.
 
-Two earlier approaches failed and are recorded in that workflow so they are not retried: a
-hand-built `gh-pages` branch that tracked nothing and silently published a build two
-versions old, and Pages serving the `main` root through the legacy Jekyll builder, which
-failed outright on a repository root carrying docs, memory and licences.
+**Verify a deploy by its commit, not its content:**
 
-Still worth **verifying a deploy by fetching the live content back** rather than trusting
-that a push worked.
+```bash
+curl -s https://arnoroh.github.io/business_simulator/build-info.json   # compare to git rev-parse HEAD
+```
+
+That check exists because content alone once failed to catch a broken deploy — the previous
+build carried the same scenario, so fetching the JSON back "passed" while the deployment had
+actually failed.
+
+Three hosting approaches failed before this one, and all three are recorded in the workflow
+so they are not retried:
+
+1. A hand-built `gh-pages` branch. Tracked nothing, needed manual republishing, and once
+   published a build two versions old while reporting success. Branch now deleted.
+2. Pages serving the `main` root through the legacy Jekyll builder — failed outright on a
+   repository root carrying docs, memory and licences.
+3. The workflow with `cancel-in-progress: true` on the pages concurrency group, which
+   cancels the *deployment* rather than a superseded run. It must stay `false`.
 
 The session 004 claude.ai artifact link is abandoned and stale.
 
