@@ -1,12 +1,17 @@
 // Application bootstrap and turn state machine.
 //
 // Flow per turn:
-//   situation -> (optional information) -> decision -> work it out -> prediction -> reveal
+//   situation -> (optional information) -> decision -> [work it out] -> prediction -> reveal
 //
 // The prediction step sits between the decision and its consequence deliberately.
 // The learner commits to an expectation before learning whether they were right,
 // which is what makes the answer worth recording. "Work it out" sits in front of the
-// prediction so that expectation is formed from numbers they have actually seen.
+// prediction so that expectation is formed from numbers they have actually seen — and
+// since D-017 it runs only where content asks for it, plus wherever the prediction is
+// a number. See phaseAfterDecision().
+//
+// Above the turn loop sits the chapter loop (ADR-0007): four chapters, each a
+// self-contained scenario with an authored opening, connected by six carried flags.
 
 import {
   createState, applyEffects, weeklyPnl, advanceWeeks, scheduleLater,
@@ -18,14 +23,23 @@ import * as store from './storage.js';
 import * as ui from './ui.js';
 import { setCurrency, money, count } from './format.js';
 import { loadStrings, setLanguage, getLanguage, LANGUAGES, t, localised } from './i18n.js';
+import { applyCarryIn, collectCarry, situationFor } from './carry.js';
 
-const SCENARIO_URL = './content/scenario-mama-asha.json';
+const CHAPTERS_URL = './content/chapters.json';
 const UI_STRINGS_URL = './content/ui.json';
 const LANGUAGE_KEY = 'business-simulator-language';
 
 const dom = {};
+let chapters = [];
 let scenario = null;
 let session = null;
+
+// The six carried flags plus which chapters have been finished (ADR-0007). Loaded
+// once at startup and written when a chapter ends.
+let carry = { flags: {}, completed: [] };
+
+/** Overrides and opening notes produced by the carried flags for the loaded chapter. */
+let carryIn = { startState: {}, notes: [], carry: {} };
 
 function q(id) { return document.getElementById(id); }
 
@@ -55,7 +69,9 @@ function newSession() {
     scenarioId: scenario.id,
     turnIndex: 0,
     phase: 'situation',
-    state: createState(scenario.startState || {}),
+    // The authored opening, with only the fields a matching carry rule names moved.
+    // Never a state carried wholesale from the previous chapter — see ADR-0007.
+    state: createState(carryIn.startState || {}),
     history: [],
     sought: [],
     chosenOptionId: null,
@@ -90,6 +106,26 @@ function chosenOption() {
 
 function decisionType(turn) {
   return (turn && turn.decision && turn.decision.type) || 'choice';
+}
+
+/**
+ * Where a turn goes once the learner has decided.
+ *
+ * "Work it out" used to run on every turn. It was added because estimating a profit
+ * figure was too hard (Q-017, session 007), and it is kept for exactly that case —
+ * a numeric prediction always gets it, whatever content says. Everywhere else it is
+ * opt-in, which is most of what "keep the interaction more basic" means in practice
+ * (D-017): the common turn is now situation → decision → predict → reveal.
+ */
+function phaseAfterDecision(turn) {
+  if (turn.decision.predict === 'number') return 'workout';
+  return turn.workout ? 'workout' : 'predict';
+}
+
+/** The turn as the learner sees it, once their carried flags have tinted it. */
+function tinted(turn) {
+  const situation = situationFor(turn, carry.flags);
+  return situation === turn.situation ? turn : { ...turn, situation };
 }
 
 /**
@@ -219,7 +255,7 @@ function renderAll(prevState) {
   ui.renderStats(dom.stats, session.state, prevState);
   ui.renderScene(dom.scene, turn.scene, session.state);
   ui.renderProgress(dom.progress, session.turnIndex, scenario.turns.length);
-  ui.renderSituation(dom.situation, turn);
+  ui.renderSituation(dom.situation, tinted(turn), carryIn.notes);
   ui.renderPnl(dom.pnl, session.state);
   ui.renderTrajectory(dom.trajectory, session.state);
   ui.renderConsequences(dom.consequence, session.fired, session.weeksPassed);
@@ -297,7 +333,7 @@ function onDiagnose(pickedKey) {
 
 function onChooseOption(option) {
   session.chosenOptionId = option.id;
-  session.phase = 'workout';
+  session.phase = phaseAfterDecision(currentTurn());
   persist();
   renderAll();
 }
@@ -307,7 +343,7 @@ function onCommitNumber(value) {
   const turn = currentTurn();
   session.inputValue = value;
   record.observeInput(session.record, turn.id, turn.decision.input.field, value);
-  session.phase = 'workout';
+  session.phase = phaseAfterDecision(turn);
   persist();
   renderAll();
 }
@@ -318,7 +354,7 @@ function onCommitAllocation(split) {
   for (const [bucket, amount] of Object.entries(split)) {
     record.observeInput(session.record, turn.id, `allocate.${bucket}`, amount);
   }
-  session.phase = 'workout';
+  session.phase = phaseAfterDecision(turn);
   persist();
   renderAll();
 }
@@ -407,6 +443,64 @@ function onNext() {
   renderAll(prevState);
 }
 
+// --- chapters ------------------------------------------------------------
+
+/**
+ * The chapter select.
+ *
+ * Nothing is locked, ever. Order is a suggestion — completion carries a learner
+ * forward and no chapter gates another (ADR-0005, D-008). A learner with two hours of
+ * contact time in a programme may only ever play one of these, and it should be the
+ * one that matches the business they actually have.
+ */
+function renderChapterSelect() {
+  ui.clear(dom.stats);
+  ui.clear(dom.info);
+  ui.clear(dom.pnl);
+  ui.clear(dom.trajectory);
+  ui.clear(dom.consequence);
+  ui.clear(dom.goal);
+  ui.clear(dom.progress);
+  ui.clear(dom.scene);
+  dom.pnlWrap.setAttribute('hidden', '');
+  dom.pnlToggle.hidden = true;
+
+  ui.renderChapterSelect(dom.situation, dom.decision, chapters, carry, openChapter);
+  window.scrollTo({ top: 0 });
+}
+
+/** Fetch and start one chapter. The only place a scenario file is loaded. */
+async function openChapter(chapterId, forceNew) {
+  const chapter = chapters.find((c) => c.id === chapterId);
+  if (!chapter) { renderChapterSelect(); return; }
+
+  let loaded;
+  try {
+    const res = await fetch(`./content/${chapter.file}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    loaded = await res.json();
+  } catch (err) {
+    // A chapter that has not been authored yet must not take the app down with it.
+    ui.clear(dom.decision);
+    dom.situation.appendChild(ui.el('div', 'card', t('chapter.unavailable')));
+    console.error(err);
+    return;
+  }
+
+  scenario = loaded;
+  carryIn = applyCarryIn(scenario, carry.flags);
+  setCurrency(scenario.currency || 'TZS');
+  renderChrome();
+  await start(forceNew);
+}
+
+/** Bank the six flags and note the chapter finished. Nothing is summed (ADR-0004). */
+function bankCarry() {
+  carry.flags = collectCarry(session.state, carry.flags);
+  if (!carry.completed.includes(scenario.id)) carry.completed.push(scenario.id);
+  store.saveCarry(carry);
+}
+
 function renderEnd() {
   ui.renderStats(dom.stats, session.state);
   ui.renderScene(dom.scene, 'stall-busy', session.state);
@@ -428,13 +522,39 @@ function renderEnd() {
     ui.renderGoal(dom.goal, session.record.goalProgress, scenario.goal);
   }
 
+  // The carried flags are banked here, at the one point a chapter is definitely
+  // finished. They are facts about what was done, recorded alongside the observations
+  // and never rolled into anything.
+  bankCarry();
+  session.record.carriedFlags = { ...carry.flags };
+
   const profile = record.buildProfile(session.record);
   const tally = record.predictionTally(session.record);
   ui.renderProfile(dom.decision, profile, tally, session.state, session.history);
 
   const actions = ui.el('div', 'end-actions');
 
-  const again = ui.el('button', 'btn btn-primary', t('btn.playAgain'));
+  // Whatever comes next in the manifest, offered but not imposed.
+  const index = chapters.findIndex((c) => c.id === scenario.id);
+  const next = index >= 0 ? chapters[index + 1] : null;
+  if (next) {
+    const onward = ui.el('button', 'btn btn-primary',
+      `${t('btn.nextChapter')}: ${localised(next.title)}`);
+    onward.type = 'button';
+    onward.addEventListener('click', () => {
+      store.clear();
+      openChapter(next.id, true);
+      window.scrollTo({ top: 0 });
+    });
+    actions.appendChild(onward);
+  }
+
+  const chooser = ui.el('button', 'btn btn-ghost', t('btn.chooseChapter'));
+  chooser.type = 'button';
+  chooser.addEventListener('click', () => { store.clear(); scenario = null; renderChapterSelect(); });
+  actions.appendChild(chooser);
+
+  const again = ui.el('button', next ? 'btn btn-ghost' : 'btn btn-primary', t('btn.playAgain'));
   again.type = 'button';
   again.addEventListener('click', () => { store.clear(); start(true); });
   actions.appendChild(again);
@@ -449,7 +569,15 @@ function renderEnd() {
 
 /** The learner holds their own record — SECURITY.md. Nothing is transmitted. */
 function downloadRecord(profile) {
-  const blob = new Blob([store.exportJson({ profile, observations: session.record.observations })],
+  // `carriedFlags` travels with the record because it is part of what was observed —
+  // a learner arrived at this chapter having kept books, or not. It is a fact, listed
+  // alongside the observations and never rolled into anything (ADR-0004).
+  const blob = new Blob([store.exportJson({
+    profile,
+    scenarioId: session.record.scenarioId,
+    carriedFlags: session.record.carriedFlags || {},
+    observations: session.record.observations,
+  })],
     { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -467,6 +595,7 @@ function downloadRecord(profile) {
 function renderChrome() {
   document.title = localised(scenario && scenario.title) || t('app.title');
   dom.title.textContent = localised(scenario && scenario.title) || t('app.title');
+  if (!scenario) { dom.banner.hidden = true; }
   dom.reset.textContent = t('btn.startAgain');
   dom.footPrivacy.textContent = t('foot.privacy');
 
@@ -532,16 +661,20 @@ async function init() {
   cacheDom();
 
   let strings;
-  let loaded;
+  let manifest;
   try {
-    const [stringsRes, scenarioRes] = await Promise.all([
+    // Only the string table and the small chapter manifest load at startup. Scenario
+    // files are fetched one at a time, when a chapter is chosen — learners pay per
+    // megabyte (AGENTS.md section 3) and four scenarios is four times the download for
+    // three they may never open.
+    const [stringsRes, chaptersRes] = await Promise.all([
       fetch(UI_STRINGS_URL),
-      fetch(SCENARIO_URL),
+      fetch(CHAPTERS_URL),
     ]);
     if (!stringsRes.ok) throw new Error(`HTTP ${stringsRes.status}`);
-    if (!scenarioRes.ok) throw new Error(`HTTP ${scenarioRes.status}`);
+    if (!chaptersRes.ok) throw new Error(`HTTP ${chaptersRes.status}`);
     strings = await stringsRes.json();
-    loaded = await scenarioRes.json();
+    manifest = await chaptersRes.json();
   } catch (err) {
     // No string table yet, so this one message cannot come from i18n.
     dom.situation.appendChild(ui.el('div', 'card',
@@ -551,18 +684,20 @@ async function init() {
   }
 
   loadStrings(strings);
-  scenario = loaded;
+  chapters = (manifest && manifest.chapters) || [];
+  carry = store.loadCarry();
 
   let preferred = null;
   try { preferred = localStorage.getItem(LANGUAGE_KEY); } catch { /* private mode */ }
   setLanguage(preferred || 'en');
-  setCurrency(scenario.currency || 'TZS');
 
   buildLanguageToggle();
 
+  // "Start again" restarts the chapter in progress; from the select screen it goes
+  // back to the select screen rather than silently reopening the last chapter.
   dom.reset.addEventListener('click', () => {
     store.clear();
-    start(true);
+    if (scenario) start(true); else renderChapterSelect();
     window.scrollTo({ top: 0 });
   });
 
@@ -575,7 +710,12 @@ async function init() {
   });
 
   renderChrome();
-  await start(false);
+
+  // Resume straight into whatever was in progress; otherwise choose a chapter.
+  const saved = store.load();
+  const resuming = saved && chapters.some((c) => c.id === saved.scenarioId);
+  if (resuming) await openChapter(saved.scenarioId, false);
+  else renderChapterSelect();
 }
 
 document.addEventListener('DOMContentLoaded', init);

@@ -1198,3 +1198,76 @@ ul { margin: 0; padding-left: 1.1em; }
 
 /* The overload warning is a fifth tile on a four-column grid — give it room
    so the word does not break mid-way. */
+
+/* ---------- chapters (ADR-0007) ---------- */
+
+.chapter-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* A whole card is the tap target. Small buttons inside dense text are the first thing
+   to fail on the device class this is built for — AGENTS.md section 3. */
+.chapter-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  min-height: var(--tap);
+  padding: 14px 16px;
+  text-align: left;
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.chapter-card:hover { background: var(--surface-alt); }
+.chapter-card:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+/* Finished is marked, never scored. No percentage, no rank (ADR-0004). */
+.chapter-card.done { border-left-color: var(--accent-2); }
+
+.chapter-title { font-size: 1.05rem; font-weight: 700; }
+.chapter-shift { font-size: 0.9rem; color: var(--accent); }
+.chapter-blurb { font-size: 0.9rem; color: var(--text-muted); line-height: 1.45; }
+
+.chapter-done {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 2px 8px;
+  font-size: 0.78rem;
+  color: var(--accent-2);
+  background: var(--ok-bg);
+  border-radius: var(--radius);
+}
+
+/* What the learner brought with them from an earlier chapter. */
+.carry-notes {
+  margin-top: 12px;
+  padding-left: 12px;
+  border-left: 3px solid var(--accent-2);
+}
+
+.carry-note {
+  margin: 4px 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* ---------- the gap between profit and cash (D-017) ---------- */
+
+/* Deliberately styled like the profit total rather than as a footnote: the two numbers
+   have to read as equally important, because the second one is what pays the rent. */
+.ledger-row.cash-flow {
+  border-top: 1px dashed var(--border);
+  color: var(--accent-2);
+}
+
+.ledger-row.cash-flow.negative { color: var(--danger); }
+
+.ledger.mix { margin-top: 12px; }

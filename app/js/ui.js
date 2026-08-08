@@ -7,7 +7,7 @@
 import { money, moneyShort, moneySigned, count, proportion } from './format.js';
 import {
   weeklyPnl, ownerLoad, project, BAND_SAME, BAND_LOT, applyEffects, predictionWindow,
-  resolveNumberInput, resolveAllocation, allocationTotal,
+  resolveNumberInput, resolveAllocation, allocationTotal, weeklyCashFlow,
 } from './engine.js';
 import { t, tCount, localised } from './i18n.js';
 import { drawScene, drawChart, animateNumber, pulse } from './scene.js';
@@ -234,7 +234,34 @@ function ledgerRows(pnl) {
     { key: 'pnl.wages', value: -pnl.wages, dir: 'out', hideIfZero: true },
     { key: 'pnl.fees', value: -pnl.licenceFees, dir: 'out', hideIfZero: true },
     { key: 'pnl.spoilage', value: -pnl.spoilage, dir: 'out', hideIfZero: true },
+
+    // Chapters 2-4 (D-017). Every one of these is zero under chapter 1's state, so
+    // that ledger is unchanged — a row appears only once the business has the thing
+    // it describes.
+    {
+      key: pnl.fxEffect >= 0 ? 'pnl.fxGain' : 'pnl.fxLoss',
+      value: pnl.fxEffect,
+      dir: pnl.fxEffect >= 0 ? 'in' : 'out',
+      hideIfZero: true,
+    },
+    { key: 'pnl.freight', value: -pnl.freight, dir: 'out', hideIfZero: true },
+    { key: 'pnl.duty', value: -pnl.duty, dir: 'out', hideIfZero: true },
+    { key: 'pnl.depreciation', value: -pnl.depreciation, dir: 'out', hideIfZero: true },
+    { key: 'pnl.interest', value: -pnl.interest, dir: 'out', hideIfZero: true },
   ].filter((r) => !(r.hideIfZero && r.value === 0));
+}
+
+/**
+ * A product line's name for the panel.
+ *
+ * Scenario content supplies `lines[].label` as a localised pair like everything else.
+ * A line without one falls back to its id, which is not a UI string and so is not an
+ * i18n violation — it is content the author forgot to name, and showing it is how they
+ * find out.
+ */
+function lineLabel(state, id) {
+  const line = (state.lines || []).find((candidate) => candidate.id === id);
+  return localised(line && line.label) || id;
 }
 
 function ledgerRow(row, scale) {
@@ -281,11 +308,55 @@ export function renderPnl(container, state) {
   total.appendChild(el('div', `ledger-value${pnl.profit < 0 ? ' negative' : ''}`, money(pnl.profit)));
   card.appendChild(total);
 
+  // What the week earned and what actually reaches the bank are different numbers as
+  // soon as there is an asset, a loan or a credit term (D-017). This is the whole
+  // lesson of chapters 2 and 3, and it is taught by putting the two figures next to
+  // each other in the panel the learner already reads — not by a new control.
+  const flow = weeklyCashFlow(state, 0);
+  if (flow.cashFlow !== pnl.profit) {
+    const cashRow = el('div', `ledger-row total cash-flow${flow.cashFlow < 0 ? ' negative' : ''}`);
+    cashRow.appendChild(el('div', 'ledger-label', t('pnl.reachesTheBank')));
+    cashRow.appendChild(el('div', 'ledger-bar'));
+    cashRow.appendChild(el('div', `ledger-value${flow.cashFlow < 0 ? ' negative' : ''}`,
+      money(flow.cashFlow)));
+    card.appendChild(cashRow);
+  }
+
   container.appendChild(card);
+
+  if (flow.cashFlow !== pnl.profit) {
+    const parts = [];
+    if (flow.depreciation) parts.push(t('pnl.why.depreciation', { amount: money(flow.depreciation) }));
+    if (flow.repayment) parts.push(t('pnl.why.repayment', { amount: money(flow.repayment) }));
+    container.appendChild(el('div', `pnl-note${flow.cashFlow < 0 && pnl.profit > 0 ? ' warn' : ''}`,
+      parts.length ? parts.join(' ') : t('pnl.why.workingCapital')));
+  }
+
+  // Per-line contribution, once there is more than one product. "Which of these
+  // actually earns" is not answerable from a blended margin, and answering it is the
+  // point of the mix decisions in chapter 2.
+  if (pnl.perLine.length > 1) {
+    const mix = el('div', 'ledger mix');
+    mix.appendChild(el('div', 'ledger-group-title', t('pnl.byProduct')));
+    const best = Math.max(...pnl.perLine.map((l) => Math.abs(l.contribution)), 1);
+    for (const line of pnl.perLine) {
+      const row = el('div', 'ledger-row in');
+      row.appendChild(el('div', 'ledger-label', lineLabel(state, line.id)));
+      const bar = el('div', 'ledger-bar');
+      const fill = el('div', 'ledger-fill in');
+      bar.appendChild(fill);
+      row.appendChild(bar);
+      row.appendChild(el('div', 'ledger-value',
+        `${money(line.contribution)} · ${Math.round(line.margin * 100)}%`));
+      growBar(fill, Math.abs(line.contribution) / best);
+      mix.appendChild(row);
+    }
+    container.appendChild(mix);
+  }
 
   // Per-unit economics. This used to appear only for the first four turns; it is the
   // single most reusable idea in the whole scenario, so it stays on screen.
-  if (pnl.unitsSold > 0) {
+  if (pnl.unitsSold > 0 && pnl.perLine.length === 1) {
     container.appendChild(el('div', 'pnl-note', t('pnl.perUnit', {
       price: money(state.price),
       cost: money(state.unitCost),
@@ -340,15 +411,60 @@ export function renderTrajectory(container, state) {
 
 // --- turn phases ---------------------------------------------------------
 
-export function renderSituation(container, turn) {
+/**
+ * `notes` are the lines a carried flag contributed to the opening (ADR-0007) — "you
+ * came here keeping proper books, and the bank manager can see that". They appear on
+ * the first turn only, because after that the learner is in this chapter's story.
+ */
+export function renderSituation(container, turn, notes = []) {
   clear(container);
   const card = el('div', 'card fade-in');
   const head = el('div', 'card-title');
   head.appendChild(el('span', 'concept-tag', localised(turn.conceptLabel) || turn.concept || ''));
   card.appendChild(head);
   card.appendChild(el('p', 'situation', localised(turn.situation)));
+
+  if (notes.length && turn.id === 't01') {
+    const carried = el('div', 'carry-notes');
+    for (const note of notes) carried.appendChild(el('p', 'carry-note', localised(note)));
+    card.appendChild(carried);
+  }
+
   container.appendChild(card);
   return card;
+}
+
+/**
+ * The chapter select (ADR-0007).
+ *
+ * Nothing is locked. A finished chapter is marked as finished and that is all it does
+ * — no percentage, no score, no "next recommended" (ADR-0004). The one thing the
+ * screen must say plainly is that stopping after chapter 1 is a complete outcome, not
+ * a failure to progress: `AGENTS.md` section 2 and Q-006.
+ */
+export function renderChapterSelect(intro, container, chapters, carry, onOpen) {
+  clear(intro);
+  clear(container);
+
+  const head = el('div', 'card fade-in');
+  head.appendChild(el('div', 'card-title', t('chapter.selectTitle')));
+  head.appendChild(el('p', 'situation', t('chapter.selectIntro')));
+  head.appendChild(el('p', 'pnl-note', t('chapter.notALadder')));
+  intro.appendChild(head);
+
+  const list = el('div', 'chapter-list');
+  for (const chapter of chapters) {
+    const done = (carry.completed || []).includes(chapter.id);
+    const btn = el('button', `chapter-card${done ? ' done' : ''}`);
+    btn.type = 'button';
+    btn.appendChild(el('span', 'chapter-title', localised(chapter.title)));
+    btn.appendChild(el('span', 'chapter-shift', localised(chapter.shift)));
+    btn.appendChild(el('span', 'chapter-blurb', localised(chapter.blurb)));
+    if (done) btn.appendChild(el('span', 'chapter-done', t('chapter.finished')));
+    btn.addEventListener('click', () => onOpen(chapter.id, true));
+    list.appendChild(btn);
+  }
+  container.appendChild(list);
 }
 
 export function renderInfo(container, turn, state, onSeek, sought) {

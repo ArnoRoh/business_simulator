@@ -8,8 +8,10 @@ import {
   scheduleLater, project, baseOwnerHours, bandFor, BAND_SAME, BAND_LOT,
   resolveNumberInput, resolveAllocation, allocationTotal, bandForValue, gradePrediction,
   weeksOfCostsCovered, evaluateGoal, needsRecovery, predictionWindow, decisionOutcomes,
+  linesOf, workingCapital, weeklyCashFlow, cashCycleWeeks,
 } from '../app/js/engine.js';
 import * as record from '../app/js/record.js';
+import { applyCarryIn, collectCarry, situationFor, CARRY_FLAGS } from '../app/js/carry.js';
 
 let passed = 0;
 let failed = 0;
@@ -453,6 +455,289 @@ console.log('\nrecord: the profile refuses to overclaim');
     check(`statement is observational: "${s.text.slice(0, 40)}..."`,
       !/likely|potential|suited|ready for|aptitude|will succeed/i.test(s.text));
   }
+}
+
+// ---------------------------------------------------------------------------
+// Chapters 2-4 (ADR-0007, D-017).
+//
+// The first block is the important one and it is not really a test of the new
+// mechanics at all — it is the guarantee that they cost chapter 1 nothing. Every
+// field added for the later chapters has a default under which it contributes
+// exactly zero, and `cash += cashFlow` has to stay indistinguishable from the
+// `cash += profit` it replaced.
+// ---------------------------------------------------------------------------
+
+console.log('\nengine: chapter 1 is unaffected by the chapter 2-4 fields');
+{
+  const s = createState({ price: 500, unitCost: 300, demand: 200, capacity: 180, rent: 20000 });
+
+  eq('no lines authored means one implicit line', linesOf(s).length, 1);
+  eq('implicit line carries the flat price', linesOf(s)[0].price, 500);
+  eq('working capital is zero without terms', workingCapital(s), 0);
+  eq('depreciation is zero without an asset', weeklyPnl(s).depreciation, 0);
+  eq('interest is zero without debt', weeklyPnl(s).interest, 0);
+  eq('fx effect is zero without exposure', weeklyPnl(s).fxEffect, 0);
+  eq('duty is zero without exports', weeklyPnl(s).duty, 0);
+
+  const flow = weeklyCashFlow(s, 0);
+  eq('cash flow equals profit at every default', flow.cashFlow, weeklyPnl(s).profit);
+
+  // The whole-run version of the same claim: bank balance after twenty weeks must be
+  // what simply accumulating profit would have produced.
+  let byProfit = s.cash;
+  let walk = s;
+  for (let i = 0; i < 20; i += 1) {
+    byProfit += weeklyPnl(walk).profit;
+    walk = advanceWeek(walk).state;
+  }
+  eq('twenty weeks of cash flow equals twenty weeks of profit', walk.cash, byProfit);
+}
+
+console.log('\nengine: product mix');
+{
+  const s = createState({
+    lines: [
+      { id: 'bread', price: 1200, unitCost: 900, demand: 400, capacity: 400 },
+      { id: 'cake', price: 9000, unitCost: 4000, demand: 20, capacity: 20 },
+    ],
+    rent: 120000, staff: 1, wagePerStaff: 60000, spoilRate: 0,
+  });
+
+  eq('flat demand is the sum of the lines', s.demand, 420);
+  eq('flat capacity is the sum of the lines', s.capacity, 420);
+
+  const p = weeklyPnl(s);
+  eq('revenue sums both lines', p.revenue, 400 * 1200 + 20 * 9000);
+  eq('two lines reported', p.perLine.length, 2);
+
+  const bread = p.perLine.find((l) => l.id === 'bread');
+  const cake = p.perLine.find((l) => l.id === 'cake');
+  check('bread earns more revenue than cake', bread.revenue > cake.revenue);
+  check('cake earns a better margin than bread', cake.margin > bread.margin,
+    `bread ${bread.margin.toFixed(2)}, cake ${cake.margin.toFixed(2)}`);
+
+  // The lesson this exists for: the line that sells most is not the line that earns.
+  check('the bigger line is not automatically the better one',
+    cake.margin > bread.margin && bread.unitsSold > cake.unitsSold);
+
+  const shifted = applyEffects(s, { 'lines.cake.capacity': 10, 'lines.bread.capacity': -100 });
+  eq('a line effect adds to capacity', shifted.lines.find((l) => l.id === 'cake').capacity, 30);
+  eq('flat capacity follows the lines', shifted.capacity, 330);
+
+  const repriced = applyEffects(s, { 'lines.bread.price': 1400 });
+  eq('a line price replaces rather than adds', repriced.lines.find((l) => l.id === 'bread').price, 1400);
+
+  // A projection must not write through into the state it was asked about.
+  const before = s.lines[0].capacity;
+  project(s, 12);
+  eq('projecting does not mutate the real lines', s.lines[0].capacity, before);
+
+  // Drift has to reach the lines, or the headline number moves while the ledger does not.
+  const drifted = advanceWeeks(s, 6).state;
+  check('weekly drift reaches the product lines',
+    drifted.lines.reduce((sum, l) => sum + l.demand, 0) === drifted.demand);
+}
+
+console.log('\nengine: depreciation is a cost with no cash movement');
+{
+  const s = createState({
+    price: 1000, unitCost: 600, demand: 300, capacity: 300, rent: 50000, spoilRate: 0,
+    assetValue: 5200000, assetLifeWeeks: 260,
+  });
+  const p = weeklyPnl(s);
+  eq('depreciation is the asset over its life', p.depreciation, 20000);
+
+  const flow = weeklyCashFlow(s, 0);
+  eq('depreciation is charged to profit', p.profit, p.grossProfit - p.fixedCost);
+  eq('and added back for cash', flow.cashFlow, p.profit + 20000);
+
+  const after = advanceWeek(s).state;
+  eq('the asset wears down by what was charged', after.assetValue, 5180000);
+}
+
+console.log('\nengine: debt separates profit from cash');
+{
+  const s = createState({
+    price: 1000, unitCost: 600, demand: 300, capacity: 300, rent: 50000, spoilRate: 0,
+    debt: 5200000, interestRate: 0.26, repayPerWeek: 40000,
+  });
+  const p = weeklyPnl(s);
+  eq('interest accrues weekly on the balance', p.interest, 26000);
+
+  const flow = weeklyCashFlow(s, 0);
+  eq('repayment is cash out and not a cost', flow.cashFlow, p.profit - 40000);
+  check('interest is a cost and repayment is not', p.profit === p.grossProfit - p.fixedCost);
+
+  const after = advanceWeek(s).state;
+  eq('the balance falls by the repayment', after.debt, 5160000);
+
+  // A repayment cannot take the balance below zero, and cannot draw more cash than the
+  // debt that remains.
+  const nearlyClear = createState({ ...s, debt: 15000, repayPerWeek: 40000 });
+  eq('the final repayment is only what is left', weeklyCashFlow(nearlyClear, 0).repayment, 15000);
+  eq('the balance clears rather than going negative', advanceWeek(nearlyClear).state.debt, 0);
+}
+
+console.log('\nengine: working capital consumes cash when the business grows');
+{
+  const base = {
+    price: 1000, unitCost: 600, demand: 300, capacity: 300, rent: 50000, spoilRate: 0,
+    reputation: 50,
+  };
+  const flat = createState(base);
+  const geared = createState({ ...base, debtorWeeks: 4, inventoryWeeks: 2, creditorWeeks: 1 });
+
+  eq('cash cycle is debtors plus stock less creditors', cashCycleWeeks(geared), 5);
+  check('working capital is real money', workingCapital(geared) > 0);
+  eq('the same trade earns the same profit either way',
+    weeklyPnl(flat).profit, weeklyPnl(geared).profit);
+
+  // Growth. Demand and capacity both have to move — extra demand the business cannot
+  // serve is not extra trade, and so ties up nothing.
+  const grow = { demand: 120, capacity: 120 };
+  const growFlat = advanceWeek(applyEffects(flat, grow));
+  const growGeared = advanceWeek(applyEffects(geared, grow));
+  check('growing on credit terms banks less than growing on cash terms',
+    growGeared.state.cash < growFlat.state.cash,
+    `geared ${growGeared.state.cash}, flat ${growFlat.state.cash}`);
+
+  // And the reverse — shrinking releases it, which is why a business in trouble can
+  // look briefly cash-rich.
+  const shrinkGeared = advanceWeek(applyEffects(geared, { demand: -120 }));
+  const shrinkFlat = advanceWeek(applyEffects(flat, { demand: -120 }));
+  check('shrinking releases working capital', shrinkGeared.state.cash > shrinkFlat.state.cash);
+
+  // A standstill nets to nothing: the cycle is a level, not a leak.
+  const still = advanceWeek(geared);
+  const stillFlat = advanceWeek(flat);
+  check('a flat business does not bleed cash through the cycle',
+    Math.abs((still.state.cash - geared.cash) - (stillFlat.state.cash - flat.cash)) < 12000);
+}
+
+console.log('\nengine: profitable and insolvent at the same time');
+{
+  const s = createState({
+    price: 1000, unitCost: 600, demand: 300, capacity: 300, rent: 50000, spoilRate: 0,
+    debt: 4000000, interestRate: 0.2, repayPerWeek: 90000, debtorWeeks: 6,
+  });
+  const p = weeklyPnl(s);
+  const flow = weeklyCashFlow(s, 0);
+  check('the week is profitable', p.profit > 0, `profit ${p.profit}`);
+  check('and still loses money', flow.cashFlow < 0, `cash flow ${flow.cashFlow}`);
+  check('health check names it', healthCheck(s).includes('profitable-but-cash-negative'));
+  check('runway counts the loan repayment',
+    weeksOfCostsCovered(s) < weeksOfCostsCovered(createState({ ...s, repayPerWeek: 0, debt: 0 })));
+}
+
+console.log('\nengine: exporting');
+{
+  const s = createState({
+    price: 4000, unitCost: 2200, demand: 1000, capacity: 1000, rent: 400000, spoilRate: 0,
+    exportShare: 0.5, dutyRate: 0.1, freightPerUnit: 300,
+    fxShare: 0.5, fxRate: 2500, fxBase: 2500,
+  });
+  const p = weeklyPnl(s);
+  eq('freight applies only to exported units', p.freight, 500 * 300);
+  eq('duty applies only to exported revenue', p.duty, Math.round(4000000 * 0.5 * 0.1));
+  eq('a rate at its base is no gain and no loss', p.fxEffect, 0);
+
+  const stronger = weeklyPnl(applyEffects(s, { fxRate: 2750 }));
+  eq('a 10% move lands on the exposed half only', stronger.fxEffect, Math.round(4000000 * 0.5 * 0.1));
+  check('and it reaches the bottom line', stronger.profit > p.profit);
+
+  const weaker = weeklyPnl(applyEffects(s, { fxRate: 2250 }));
+  check('a move the other way costs money', weaker.profit < p.profit);
+
+  eq('exposure cannot exceed all of revenue', applyEffects(s, { fxShare: 4 }).fxShare, 1);
+  eq('duty cannot exceed the sale', applyEffects(s, { dutyRate: 3 }).dutyRate, 1);
+}
+
+console.log('\nengine: the chapter 2-4 fields cannot run away');
+{
+  // D-014's guarantee, re-established for the financing and working-capital fields.
+  // Both are new routes to the unbounded cost spiral that reached -900,000 in session
+  // 006, and neither was covered by the original insolvency rule.
+  let s = createState({
+    price: 900, unitCost: 800, demand: 200, capacity: 400, rent: 300000, spoilRate: 0.5,
+    staff: 3, wagePerStaff: 120000, debt: 8000000, interestRate: 0.3, repayPerWeek: 200000,
+    debtorWeeks: 8, inventoryWeeks: 4, assetValue: 4000000, assetLifeWeeks: 200,
+  });
+  for (let i = 0; i < 60; i += 1) s = advanceWeek(s).state;
+
+  check('repayments are restructured rather than draining forever', s.repayPerWeek < 200000);
+  check('debtor weeks are chased down', s.debtorWeeks < 8);
+  check('equipment goes with the capacity it provided', s.assetValue < 4000000);
+  check('the hole stops deepening', s.cash > -40000000, `cash ${s.cash}`);
+  check('the business shrinks towards a stall rather than to nothing', s.demand > 0);
+  check('every number stays finite',
+    Object.values(s).every((v) => typeof v !== 'number' || Number.isFinite(v)));
+}
+
+console.log('\nengine: goals can set a ceiling as well as a floor');
+{
+  const s = createState({ debtorWeeks: 3, inventoryWeeks: 2, creditorWeeks: 4 });
+  const goal = {
+    conditions: [
+      { id: 'cycle', metric: 'cashCycleWeeks', max: 2 },
+      { id: 'cash', field: 'cash', min: 100000 },
+    ],
+  };
+  const result = evaluateGoal(s, goal);
+  eq('a cash cycle of 1 meets a ceiling of 2', result.conditions[0].met, true);
+  eq('and the ceiling is reported as such', result.conditions[0].direction, 'atMost');
+  eq('a floor still reads as a floor', result.conditions[1].direction, 'atLeast');
+  eq('a longer cycle misses the ceiling',
+    evaluateGoal(createState({ debtorWeeks: 12 }), goal).conditions[0].met, false);
+}
+
+console.log('\ncarry: what travels between chapters');
+{
+  const scenario = {
+    startState: { cash: 400000, rent: 180000 },
+    carryIn: [
+      { flag: 'keepsRecords', when: true, startState: { cash: 650000 }, note: { en: 'books', sw: 'vitabu' } },
+      { flag: 'formality', atLeast: 2, startState: { licenceFees: 40000 } },
+    ],
+    turns: [],
+  };
+
+  // The case the whole design rests on: someone who has played nothing before.
+  const cold = applyCarryIn(scenario, {});
+  eq('an empty carry leaves the authored opening alone', cold.startState.cash, 400000);
+  eq('and adds no opening notes', cold.notes.length, 0);
+  eq('and keeps the rest of the opening', cold.startState.rent, 180000);
+
+  const warm = applyCarryIn(scenario, { keepsRecords: true, formality: 2 });
+  eq('a matching flag moves the field it names', warm.startState.cash, 650000);
+  eq('atLeast matches a number floor', warm.startState.licenceFees, 40000);
+  eq('and the note is offered', warm.notes.length, 1);
+
+  eq('a flag set false does not match "when: true"',
+    applyCarryIn(scenario, { keepsRecords: false }).startState.cash, 400000);
+  eq('a number below the floor does not match',
+    applyCarryIn(scenario, { formality: 1 }).startState.licenceFees, undefined);
+
+  // Nothing outside the closed set survives, wherever it came from.
+  const collected = collectCarry(createState({
+    keepsRecords: true,
+    formality: 2,
+    flags: { builtTeam: true, wealth: 9999 },
+  }));
+  eq('flags on state are collected', collected.keepsRecords, true);
+  eq('flags in state.flags are collected too', collected.builtTeam, true);
+  eq('a number carries as a number', collected.formality, 2);
+  check('anything outside the six is dropped', !('wealth' in collected));
+  check('every collected key is one of the six',
+    Object.keys(collected).every((k) => CARRY_FLAGS.includes(k)));
+
+  // Earlier chapters' flags are not erased by a later one that never sets them.
+  const kept = collectCarry(createState({}), { heldStandard: true });
+  eq('a flag from an earlier chapter survives', kept.heldStandard, true);
+
+  const turn = { situation: { en: 'plain', sw: 'plain' }, carryVariant: { flag: 'builtTeam', when: true, situation: { en: 'tinted', sw: 'tinted' } } };
+  eq('a turn variant fires on its flag', situationFor(turn, { builtTeam: true }).en, 'tinted');
+  eq('and not without it', situationFor(turn, {}).en, 'plain');
+  eq('six flags, and the list is closed', CARRY_FLAGS.length, 6);
 }
 
 console.log(`\n${passed} passed, ${failed} failed\n`);

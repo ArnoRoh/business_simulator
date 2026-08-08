@@ -101,6 +101,7 @@ docs/                  Durable design and domain documentation.
   personas.md          Learner and facilitator archetypes.
   curriculum.md        Capability map and module outline.
   game-design.md       Simulation loop, mechanics, progression.
+  arc.md               The four chapters and the concept map behind them (ADR-0007).
   assessment.md        What we observe, what we infer, what we refuse to claim.
   grants.md            How simulator output feeds funding and training pipelines.
   localization.md      Language, literacy, numeracy and accessibility rules.
@@ -108,6 +109,7 @@ docs/                  Durable design and domain documentation.
   adr/                 Architecture Decision Records. Numbered, immutable once merged.
 
 memory/                Persistent project memory. READ THIS FIRST. See §5.
+  contracts/           Interface contracts for work split across several agents.
   PROJECT_STATE.md     Current snapshot: where we are right now.
   DECISIONS.md         Chronological decision log with rationale.
   OPEN_QUESTIONS.md    Known unknowns, blocked items, things needing a human.

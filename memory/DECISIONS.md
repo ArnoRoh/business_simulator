@@ -276,6 +276,57 @@ revisiting how option bands are declared on an insolvent path.
 
 ---
 
+## D-016 — Four chapters, bounded starts, six carried flags
+**Date:** 2026-08-08 · **Decided by:** Project owner, in session · **ADR:** [ADR-0007](../docs/adr/0007-four-chapter-arc.md)
+**Decision:** The simulator becomes four chapters following one character — mandazi stall
+(exists), bakery, factory, export. Each is a **self-contained 20-turn playthrough with an
+authored `startState`**, playable alone and in any order. What travels between chapters is
+narrative plus a **closed set of six flags** — `keepsRecords`, `formality`, `tookCredit`,
+`builtTeam`, `heldStandard`, `concentrated`. Flags tint opening narrative and at most two
+turns per chapter; they never gate, never make a chapter unplayable, and are never summed.
+Full design in [`docs/arc.md`](../docs/arc.md).
+**Why:** A stall cannot teach the capabilities `AGENTS.md` §2 actually commits us to —
+financing an asset, working capital, delegation with authority, meeting someone else's
+standard — because a stall is never destroyed by neglecting them. The owner chose the
+hybrid explicitly over both full state carry-forward and no carry at all.
+**Considered and rejected:** Full carry-forward — the more satisfying design, and it loses
+the fixed opening state that `validate-scenario.mjs` walks from and that prediction windows
+(D-015) are sized against. No carry at all — cheapest, survives every check, and throws away
+the one thing chapters uniquely offer over four unrelated scenarios. One 60-turn scenario —
+a mandazi stall does not appraise capex or export, and forcing it to would teach each
+concept in a setting where the learner can see it does not belong.
+**Revisit if:** Any chapter needs a seventh flag twice. That is the closed set being the
+wrong abstraction rather than a tight one.
+
+---
+
+## D-017 — Advanced concepts go in the engine, not in new controls
+**Date:** 2026-08-08 · **Decided by:** Project owner, in session · **ADR:** [ADR-0007](../docs/adr/0007-four-chapter-arc.md)
+**Decision:** Chapters 2–4 add no new decision types. Everything is expressed with the four
+that exist — choice, number, allocate, diagnose — and the depth arrives as **new mechanics
+in the engine that surface as lines in the ledger the learner already reads**: product mix
+(`lines[]`), depreciation, debt and interest, working capital (`debtorWeeks`,
+`creditorWeeks`, `inventoryWeeks`), FX, and landed cost. The `workout` phase becomes
+**opt-in per turn**, required only where a numeric profit prediction is asked.
+The load-bearing change: `advanceWeek` moves from `cash += profit` to `cash += cashFlow`,
+which are **equal by construction** when every new field is at its default. Chapter 1 is
+therefore unchanged, and `test-engine.mjs` asserts it.
+**Why:** The owner asked for a simpler interaction and deeper content. Working capital is
+better taught by cash and profit visibly diverging in a panel the learner already knows how
+to read than by a working-capital widget — which is also how the concept presents in a real
+business. And every new control type is a new way for a control to be unable to reach its
+own answer (D-015); session 007 shipped exactly that failure.
+**Considered and rejected:** Purpose-built controls per concept — loses against the
+mobile-first constraint (`AGENTS.md` §3) and against D-015's evidence. Narrating the
+concepts in outcome text without modelling them — cheapest by far, and it makes the
+scenario a story to memorise rather than a system to reason about, which the engine's
+opening comment exists to forbid.
+**Revisit if:** A concept in `docs/arc.md` cannot be made to produce a legible consequence
+in the ledger. Narrating it is then the honest fallback, and it should be labelled as
+narration rather than passed off as modelled.
+
+---
+
 ## Pending — proposed, not decided
 
 Entries below are **not decisions.** They are recorded here so the index is complete and

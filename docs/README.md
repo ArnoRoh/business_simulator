@@ -15,9 +15,10 @@ Start with the background note. Everything else is downstream of it.
 | 4 | [`assessment.md`](./assessment.md) | What we observe, what we infer, what we refuse to claim |
 | 5 | [`curriculum.md`](./curriculum.md) | Capability map — what a learner should be able to do |
 | 6 | [`game-design.md`](./game-design.md) | Simulation loop, systems, mechanics |
-| 7 | [`personas.md`](./personas.md) | Learner and programme-side archetypes |
-| 8 | [`localization.md`](./localization.md) | Language, literacy, numeracy, device and data constraints |
-| 9 | [`grants.md`](./grants.md) | How output reaches funding and training pipelines |
+| 7 | [`arc.md`](./arc.md) | The four-chapter arc: stall, bakery, factory, export, and what each one teaches |
+| 8 | [`personas.md`](./personas.md) | Learner and programme-side archetypes |
+| 9 | [`localization.md`](./localization.md) | Language, literacy, numeracy, device and data constraints |
+| 10 | [`grants.md`](./grants.md) | How output reaches funding and training pipelines |
 | — | [`adr/`](./adr/) | Architecture Decision Records |
 | — | [`context/`](./context/) | Regional and evidence grounding |
 

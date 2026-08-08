@@ -39,13 +39,21 @@ collide. It also injects a `viewport` meta tag, since a host page that supplies 
 
 ## What it does
 
-One scenario: a small cooked-food business. Each turn follows the loop from
-[`../docs/game-design.md`](../docs/game-design.md):
+**Four chapters, one owner** ([ADR-0007](../docs/adr/0007-four-chapter-arc.md),
+[`../docs/arc.md`](../docs/arc.md)): a mandazi stall, a bakery, a factory, and exporting.
+Each is a self-contained 20-turn playthrough with its own authored opening, playable
+alone and in any order — nothing is locked. What travels between them is narrative plus
+six flags recording how the previous chapter was played.
+
+Each turn follows the loop from [`../docs/game-design.md`](../docs/game-design.md):
 
 ```
 situation → (optional information, which costs time or money) → decision
-          → WORK IT OUT → PREDICTION → consequence, before and after
+          → [work it out] → PREDICTION → consequence, before and after
 ```
+
+"Work it out" is opt-in per turn since [D-017](../memory/DECISIONS.md), and automatic
+wherever the prediction is a number. The common turn is shorter than it was.
 
 The prediction step is the point. Before finding out what happened, the learner commits
 to what they expect. That single mechanic does two jobs at once: it is the moment of
@@ -79,7 +87,9 @@ own data ([ADR-0002](../docs/adr/0002-mobile-first-offline-pwa.md)).
 | `js/ui.js` | Rendering. One decision per screen. |
 | `js/scene.js` | SVG graphics that reflect game state. |
 | `js/storage.js` | Local-only persistence. |
-| `js/main.js` | Turn state machine. |
+| `js/main.js` | Chapter and turn state machine. |
+| `js/carry.js` | The six flags that travel between chapters, and the rules bounding them. |
+| `content/chapters.json` | The chapter manifest. Loaded at startup; scenario files are fetched one at a time. |
 | `content/scenario-*.json` | Scenarios, authored as **data, not code**, with both languages inline. |
 | `content/ui.json` | Interface strings, key-major so the languages sit side by side. |
 
@@ -94,11 +104,24 @@ with local business knowledge and no programming skill to write and review conte
 ## Tests
 
 ```bash
-node scripts/test-engine.mjs        # economics, drift, consequences, owner time
+node scripts/test-engine.mjs        # economics, drift, consequences, owner time, carry
 node scripts/validate-scenario.mjs  # every option's declared prediction, on every path
-node scripts/validate-i18n.mjs      # no missing strings in either language
+node scripts/validate-i18n.mjs      # no missing strings in either language, every chapter
+node scripts/simulate-runs.mjs      # plays every chapter four ways and prints the numbers
+node scripts/smoke-app.mjs          # drives the real app against a stub DOM
 bash  scripts/check-links.sh
 ```
+
+`simulate-runs.mjs` exists because `validate-scenario.mjs` has twice reported a clean
+scenario that contained a dead business — demand run to zero, and costs compounded to
+-900,000. Band stability says nothing about viability. **Read its output**, do not just
+check that it exited 0.
+
+`smoke-app.mjs` drives the actual application against a minimal stub DOM. It cannot see
+layout, colour or whether a control is reachable with a thumb — nothing here can, there is
+no browser in this environment. What it does catch is the class of failure that once
+rendered every scene as a solid black rectangle: wiring that type-checks and does not
+work.
 
 `test-engine.mjs` covers the economics and — importantly — asserts that the generated
 profile contains no score, rank or percentile field, and that its statements stay
@@ -128,8 +151,8 @@ language you do not read.
   and text, which does not catch layout.
 - **No service worker**, so it is not yet installable or offline-capable. The manifest is
   in place; the caching layer is not.
-- **One scenario.** Far-transfer testing — the same concept in an unfamiliar business —
-  needs a second scenario and does not exist yet.
+- **Far-transfer testing** — the same concept in an unfamiliar business — is now possible
+  across four chapters but is not implemented.
 - **No pre/post or delayed retest**, both of which the assessment design calls for.
 - **Prediction is single-metric** (weekly profit). Richer prediction targets would give a
   better signal.

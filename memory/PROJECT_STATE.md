@@ -1,7 +1,7 @@
 # Project state
 
-**Snapshot as of:** 2026-08-06
-**Last session:** [`sessions/2026-08-06-007-controls-that-can-reach-the-answer.md`](./sessions/2026-08-06-007-controls-that-can-reach-the-answer.md)
+**Snapshot as of:** 2026-08-08
+**Last session:** [`sessions/2026-08-08-008-four-chapter-arc-engine.md`](./sessions/2026-08-08-008-four-chapter-arc-engine.md)
 
 > This file is a **snapshot, not a history**. Overwrite it at the end of every session
 > so it always describes the present. History belongs in `sessions/` and
@@ -11,36 +11,47 @@
 
 ## Where we are
 
-**There is a playable simulator in two languages, and the learner now makes the decisions
-rather than picking from a list.** `app/` runs in a browser, phone-first, 20 turns end to
-end, in English or Kiswahili. Six turns take a number the learner sets, one splits profit
-three ways, one asks them to diagnose which ledger line caused a loss, and a goal spans the
-whole run.
+**The simulator is now a four-chapter arc, and three of the four chapters have no content
+in them yet.** That sentence is the whole state of the project.
 
-Seven sessions: repository bootstrap (001), an ideation discussion on pedagogy and placement
-(002), the first build (003), a shareable single-file version (004), a rework for depth and
-Kiswahili (005), free-input decisions plus a campaign (006) — that one after the owner
-played 005 and said it was "the same game with just some additional UI portions", which it
-was — and (007) a repair of two controls that could not reach their own answers, again found
-by the owner playing it and not by any check.
+Chapter 1 — the mandazi stall, 20 turns, English and Kiswahili — is playable and unchanged
+in behaviour. Chapters 2, 3 and 4 (bakery, factory, export) are **fully designed and
+fully unwritten**: the concepts, the engine mechanics, the opening balance sheets, the
+validators and the authoring contract all exist; the 60 turns of content do not.
+
+Session 008 built everything the content needs and none of the content. Three authoring
+agents were briefed and all three died on an API quota before writing a line. Nothing is
+half-finished — there are no stub files, and the app handles a chapter that is listed but
+not authored by saying so.
+
+Eight sessions: repository bootstrap (001), an ideation discussion on pedagogy and
+placement (002), the first build (003), a shareable single-file version (004), a rework
+for depth and Kiswahili (005), free-input decisions plus a campaign (006), a repair of two
+controls that could not reach their own answers (007), and the four-chapter arc plus the
+engine to carry it (008). Two of those — 006 and 007 — happened because the owner played
+the thing and found what no check could see.
 
 The project rests on the owner's background note
 ([`docs/context/transformational-entrepreneurship.md`](../docs/context/transformational-entrepreneurship.md)) —
-read it before anything else.
+read it before anything else. The arc is in
+[`docs/arc.md`](../docs/arc.md) and [ADR-0007](../docs/adr/0007-four-chapter-arc.md).
 
 ## What exists
 
 | Area | State |
 |---|---|
-| **`app/` — the simulator** | **Playable.** 20 turns (6 free-input, 1 allocation, 1 diagnose), goal + recovery chapters, English + Kiswahili. |
+| **Chapter 1 — the stall** | **Playable.** 20 turns, English + Kiswahili, goal + recovery chapters. |
+| **Chapters 2–4** | **Designed, not written.** `docs/arc.md` has all 60 concepts; the contract has the opening states. No scenario files. |
+| **The engine** | Extended for product mix, depreciation, debt, working capital, FX and landed cost. Chapter 1 unaffected, asserted. |
+| **The chapter layer** | Manifest, select screen, `carry.js`, per-chapter save. Working and smoke-tested. |
 | Operating guide (`AGENTS.md`, `CLAUDE.md`) | Written. Carries the thesis and memory protocol. |
-| Memory system | In use — this file, 15 decisions, 13 open questions (2 resolved), glossary, 7 session entries. |
+| Memory system | In use — this file, 17 decisions, 16 open questions (2 resolved), glossary, 8 session entries, 2 contracts. |
 | Governance, licences | Written. MIT code + CC BY-SA 4.0 content. |
-| Design docs (`docs/`) | First draft. **Now well behind the code** — see below. |
+| Design docs (`docs/`) | `arc.md` is current. The rest is first draft and **still well behind the code**. |
 | Regional context (`docs/context/`) | Owner's note in place. Country detail still a **deliberate stub**. |
-| ADRs | Six, **all `Accepted`** — 0005 ratified 2026-08-04. |
-| Tests | 4 checks, all green: engine (135), scenario (42/42 choice + 21/21 numeric + reachability), i18n, links. |
-| Curriculum content | One scenario. No second scenario, so still no transfer testing. |
+| ADRs | Seven, all `Accepted`. |
+| Tests | 6 checks, all green: engine (211), scenario, i18n, links, **simulate-runs**, **smoke-app** (17). |
+| Curriculum content | One chapter. Transfer testing still blocked on a second. |
 | Partners, pilot sites, funding | Still not recorded. See Q-002. |
 
 ## How to run it
@@ -103,6 +114,11 @@ The session 004 claude.ai artifact link is abandoned and stale.
 12. **Every control must be able to reach the answer** (D-015) — a numeric input includes
     where the learner already is, and a prediction stepper covers every outcome the decision
     could produce.
+13. **Four chapters, bounded starts, six carried flags** (ADR-0007, D-016). Each chapter is
+    self-contained and playable alone, in any order. Nothing is locked, nothing is summed,
+    and the arc is explicitly **not a ladder** — a stall run well is a real business.
+14. **Advanced concepts go in the engine, not in new controls** (D-017). No new decision
+    types; depth arrives as lines in the ledger the learner already reads.
 
 ## What the app now does that the docs do not describe
 
@@ -113,7 +129,13 @@ The session 004 claude.ai artifact link is abandoned and stale.
 - **Numeric prediction** — name a profit figure, graded close / near / off, on a stepper sized to hold every outcome the decision could produce (D-015).
 - **A goal across the run**, plus **recovery chapters** when cash goes below zero.
 - **Predict-then-reveal**, with each band labelled with the money it covers.
-- **Work it out** — the arithmetic of the current position, shown before predicting.
+- **Work it out** — the arithmetic of the current position, shown before predicting. **Now
+  opt-in per turn** (D-017), and automatic wherever the prediction is a number.
+- **A chapter select** — four chapters, none locked, none scored.
+- **Profit and cash shown as different numbers** whenever they differ, with a line saying
+  why. This is what chapters 2–4 are built on.
+- **Per-product contribution margin** in the money panel, once a business sells more than
+  one thing.
 - **Before/after ledger** on every reveal, with the changed line highlighted, and a note
   naming the line that moved when a prediction was wrong.
 - **Delayed consequences** that attribute themselves to the earlier decision.
@@ -124,7 +146,7 @@ The session 004 claude.ai artifact link is abandoned and stale.
   no rank, no percentile, enforced by tests.
 
 Still unimplemented: far-transfer testing, pre/post, delayed retest. All need a second
-scenario.
+chapter to exist as content, not just as a design.
 
 ## What is not decided
 
@@ -137,36 +159,58 @@ Blocking, in priority order — full list in [`OPEN_QUESTIONS.md`](./OPEN_QUESTI
 - **Q-004** — Playthrough length. Q-013 now asks whether 20 deeper turns is right.
 - **Q-015** — Is the Kiswahili register right? Needs a first-language speaker; the app says
   so on screen until it is checked.
+- **Q-018** — Are the chapter 2–4 opening balance sheets realistic for Tanzania? Three
+  times chapter 1's exposure, and much less common-knowledge — few people can sanity-check
+  a term-loan rate.
 
 ## Immediate next steps
 
-1. **The owner plays `t01`, `t02` and any profit estimate again** — those are what session
-   007 repaired, and whether estimating is now merely possible or actually comfortable is
-   not answerable by argument.
-2. **The owner plays the whole thing again**, in both languages. Q-011 (does this hold anyone's
-   attention) and Q-013 (is it now the right length) are still unanswered by argument.
-3. **Get the Kiswahili reviewed** by a first-language speaker with business exposure —
-   Q-015 lists the specific word choices to check.
-4. **Look at it on a real phone.** Nobody has, and the disabled stepper buttons added in
-   007 have not been seen on any screen. There is no browser in the working environment
-   any more, so this version has been verified headlessly for behaviour and text but not
-   for layout.
-5. Verified Tanzanian figures to replace the placeholders, so the in-app banner can come
-   down.
-6. Reconcile `docs/` with the code — Q-012 being settled was the stated precondition.
-7. A second scenario in a different business — still the precondition for transfer testing.
-8. Service worker, so ADR-0002's offline requirement is actually met.
+1. **Author chapters 2, 3 and 4.** This is the one thing standing between the project and
+   what session 008 was for. Everything needed is in
+   [`contracts/2026-08-08-chapters-2-4.md`](./contracts/2026-08-08-chapters-2-4.md): the
+   exact opening state for each chapter, already sized against the engine; which engine
+   fields each must exercise and on which turns; which carry flags it must emit; the four
+   commands to verify with. The concept tables are in [`docs/arc.md`](../docs/arc.md)
+   §5–§7. **Do them one at a time.** Three at once was tried and gains nothing that
+   sequencing does not — see `docs/agent-orchestration.md` §4.2.
+2. **The owner plays chapter 1 again**, in both languages. Session 008 changed the turn
+   loop and the money panel, and sessions 006 and 007 both existed because the owner
+   played it and found what no check could see.
+3. **Look at it on a real phone.** Still nobody has. The chapter select, the per-product
+   ledger rows and the "reaches your hand this week" line have been seen on no screen.
+   There is no browser in the working environment; `scripts/smoke-app.mjs` verifies the
+   wiring headlessly and can say nothing about layout.
+4. **Get the Kiswahili reviewed** (Q-015). Eighteen new interface strings were added in
+   008 by exactly the route that raised the question.
+5. Verified Tanzanian figures (Q-015, Q-018) so the in-app banner can come down.
+6. Reconcile `docs/` with the code. `arc.md` is current; `game-design.md`,
+   `curriculum.md` and `assessment.md` are not.
+7. Service worker, so ADR-0002's offline requirement is actually met.
 
 ## Notes for whoever picks this up next
 
 - Read `AGENTS.md` §2 first. A business-plan builder, pitch scoring and personality
   assessment are all ruled out by the thesis and will look like obvious wins.
-- **Run all four checks after any content edit**, and `validate-i18n.mjs` after touching any
+- **Run all six checks after any content edit**, and `validate-i18n.mjs` after touching any
   string. Every new UI string needs both languages in `app/content/ui.json`.
-- **`validate-scenario.mjs` checks band stability and numeric sanity, not viability.** It
-  has now missed two whole-business failures — demand running to zero (session 005) and
-  costs compounding to −900,000 (session 006). If you change the drift or cost rules,
-  simulate full runs and print the state. That is how both were found.
+- **`validate-scenario.mjs` checks band stability, reachability, structure and scene names
+  — not viability.** It has missed two whole-business failures: demand running to zero
+  (session 005) and costs compounding to −900,000 (session 006). `scripts/simulate-runs.mjs`
+  now exists for exactly this. **Read its output**, with `-v` if you need the detail; do not
+  just check that it exited 0.
+- **`cash += cashFlow` is the line to be careful around** (D-017). It is `cash += profit`
+  by construction whenever the chapter 2–4 fields are at their defaults. If you add a field
+  that moves cash, put it in `weeklyCashFlow` and keep the assertion that chapter 1's
+  twenty-week cash total is unchanged — it is the cheapest protection in `test-engine.mjs`.
+- **Working capital is held in state (`wcHeld`), not derived per week.** It is settled at
+  `createState` and reconciled in `advanceWeek`. Deriving a change from a single state
+  catches drift and misses every swing the learner caused — that bug was already made once
+  in session 008 and fixed.
+- **The six carry flags are a closed set on purpose.** A seventh needs a `DECISIONS.md`
+  entry (ADR-0007 "revisit if"). Needing one twice means the abstraction is wrong, not that
+  the cap is too tight.
+- **`chapters.json` listing a chapter with no file is a supported state**, not a bug. The
+  app shows a "not ready yet" card, the checks skip it, and `smoke-app.mjs` asserts it.
 - **Adding a decision type** touches four places: the engine resolver, the renderer, the
   phase machine in `main.js`, and the validator.
 - **A control the learner cannot move, or cannot answer with, is a data-integrity bug,**

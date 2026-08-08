@@ -22,6 +22,7 @@ const MODULES = [
   ['record', 'app/js/record.js'],
   ['storage', 'app/js/storage.js'],
   ['scene', 'app/js/scene.js'],
+  ['carry', 'app/js/carry.js'],
   ['ui', 'app/js/ui.js'],
   ['main', 'app/js/main.js'],
 ];
@@ -76,9 +77,22 @@ ${body}
 })();`;
 }
 
-const scenario = read('app/content/scenario-mama-asha.json');
+const chaptersJson = read('app/content/chapters.json');
 const uiStrings = read('app/content/ui.json');
 const css = read('app/css/styles.css');
+
+// Every authored chapter, keyed by the filename the manifest names, so the embedded
+// build can serve openChapter() from memory. A chapter listed but not yet written is
+// skipped — the manifest legitimately runs ahead of the content (ADR-0007).
+const scenarios = {};
+for (const chapter of JSON.parse(chaptersJson).chapters || []) {
+  try {
+    scenarios[chapter.file] = JSON.parse(read(`app/content/${chapter.file}`));
+  } catch {
+    console.log(`  skipping ${chapter.file} — not authored yet`);
+  }
+}
+if (Object.keys(scenarios).length === 0) throw new Error('no chapters could be read');
 
 let js = MODULES.map(([name, path]) => {
   const src = read(path);
@@ -91,10 +105,24 @@ let js = MODULES.map(([name, path]) => {
 // leaves the original `catch` dangling and the script fails to parse.
 const before = js;
 js = js.replace(
-  /let strings;\s*let loaded;\s*try \{[\s\S]*?\} catch \(err\) \{[\s\S]*?\n  \}/,
-  '  const strings = EMBEDDED_UI;\n  const loaded = EMBEDDED_SCENARIO;',
+  /let strings;\s*let manifest;\s*try \{[\s\S]*?\} catch \(err\) \{[\s\S]*?\n  \}/,
+  '  const strings = EMBEDDED_UI;\n  const manifest = EMBEDDED_CHAPTERS;',
 );
-if (js === before) throw new Error('content-fetch block not found — did main.js change?');
+if (js === before) throw new Error('startup-fetch block not found — did main.js change?');
+
+// The per-chapter fetch, served from the embedded map instead. The guard stays: a
+// chapter in the manifest with no content must show the "not ready" card, not throw.
+const beforeChapter = js;
+js = js.replace(
+  /let loaded;\s*try \{\s*const res = await fetch\([\s\S]*?\} catch \(err\) \{[\s\S]*?\n  \}/,
+  `  const loaded = EMBEDDED_SCENARIOS[chapter.file];
+  if (!loaded) {
+    ui.clear(dom.decision);
+    dom.situation.appendChild(ui.el('div', 'card', t('chapter.unavailable')));
+    return;
+  }`,
+);
+if (js === beforeChapter) throw new Error('chapter-fetch block not found — did main.js change?');
 js = js.replace(
   "document.addEventListener('DOMContentLoaded', init);",
   `if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
@@ -121,7 +149,7 @@ const viewportShim = `<script>
 })();
 <\/script>`;
 
-const out = `<title>Business Simulator — Mama Asha's Food Stall</title>
+const out = `<title>Business Simulator</title>
 ${viewportShim}
 <style>
 ${css}
@@ -132,7 +160,8 @@ ${bodyInner}
 <script>
 (function () {
   'use strict';
-  const EMBEDDED_SCENARIO = ${scenario.trim()};
+  const EMBEDDED_CHAPTERS = ${chaptersJson.trim()};
+  const EMBEDDED_SCENARIOS = ${JSON.stringify(scenarios)};
   const EMBEDDED_UI = ${uiStrings.trim()};
 ${js}
 })();

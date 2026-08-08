@@ -13,9 +13,21 @@ import {
   resolveNumberInput, resolveAllocation, allocationTotal, bandForValue,
   predictionWindow, decisionOutcomes,
 } from '../app/js/engine.js';
+import { applyCarryIn, CARRY_FLAGS } from '../app/js/carry.js';
+
+// Read out of scene.js rather than duplicated here, so adding a scene cannot leave the
+// validator rejecting a name that now works.
+const SCENES = [...readFileSync(new URL('../app/js/scene.js', import.meta.url), 'utf8')
+  .matchAll(/^\s+'?([a-zA-Z-]+)'?:\s*(?:\(root|build)/gm)].map((m) => m[1]);
 
 const path = process.argv[2] || 'app/content/scenario-mama-asha.json';
 const scenario = JSON.parse(readFileSync(path, 'utf8'));
+
+// Every walk below starts from the opening a learner arriving with NO carried flags
+// would get. That is the guaranteed-playable case (ADR-0007): a chapter must be
+// correct for someone who has played nothing before it, and a carry rule can only move
+// fields it names itself.
+const openingState = applyCarryIn(scenario, {}).startState;
 
 // `bandFor` is imported, not redefined. It used to live here, which meant the boundary
 // the learner is graded against existed in the test tooling and nowhere else — the app
@@ -122,7 +134,7 @@ function validateAllocationTurn(state, turn, pathIndex) {
 }
 
 for (const pathChoice of paths) {
-  let state = createState(scenario.startState || {});
+  let state = createState(openingState);
 
   for (const turn of scenario.turns) {
     const type = turn.decision.type || 'choice';
@@ -257,8 +269,70 @@ for (const turn of scenario.turns) {
   }
 
   if (!turn.situation) { console.log(`  FAIL ${turn.id} missing situation`); problems += 1; }
+
+  // drawScene falls back to 'stall-small' for a name it does not know, so a typo — or
+  // a scene an author wished existed — renders a mandazi stall in the middle of a
+  // factory chapter and nothing anywhere reports a problem.
+  if (turn.scene && !SCENES.includes(turn.scene)) {
+    console.log(`  FAIL ${turn.id} scene "${turn.scene}" does not exist; drawScene would silently draw a stall`);
+    problems += 1;
+  }
 }
 console.log(`  ${ids.size} unique turn ids`);
+
+// --- chapters (ADR-0007) -------------------------------------------------
+//
+// Two ways a chapter can be quietly broken for the learner who needs it most — the
+// one arriving with nothing, having played no earlier chapter. Both are silent: the
+// app renders, and the opening is simply wrong.
+console.log('\ncarry:');
+{
+  const rules = [
+    ...(Array.isArray(scenario.carryIn) ? scenario.carryIn.map((r) => ['carryIn', r]) : []),
+    ...scenario.turns.filter((t) => t.carryVariant).map((t) => [`${t.id}.carryVariant`, t.carryVariant]),
+  ];
+
+  for (const [where, rule] of rules) {
+    if (!CARRY_FLAGS.includes(rule.flag)) {
+      console.log(`  FAIL ${where} names "${rule.flag}", which is not one of the six carried flags`);
+      problems += 1;
+    }
+    if (rule.when === undefined && rule.atLeast === undefined) {
+      console.log(`  FAIL ${where} has neither "when" nor "atLeast", so it can never be evaluated`);
+      problems += 1;
+    }
+  }
+
+  // A rule that fires on an absent flag would change the opening for a learner who
+  // brought nothing — which is the case the whole design rests on being safe.
+  const empty = applyCarryIn(scenario, {});
+  if (empty.notes.length > 0) {
+    console.log(`  FAIL an empty carry produced ${empty.notes.length} opening note(s)`);
+    problems += 1;
+  }
+  if (JSON.stringify(empty.startState) !== JSON.stringify(scenario.startState || {})) {
+    console.log('  FAIL an empty carry moved the authored startState');
+    problems += 1;
+  }
+
+  // ADR-0007 caps a flag's turn-level reach. Exceeding it is how "tint" becomes
+  // "branch", and branching content cannot be walked by three paths.
+  const tinted = scenario.turns.filter((t) => t.carryVariant).length;
+  if (tinted > 2) {
+    console.log(`  FAIL ${tinted} turns carry a variant; ADR-0007 allows at most 2 per chapter`);
+    problems += 1;
+  }
+
+  // A product line with no name renders as its raw id in the ledger.
+  for (const line of (scenario.startState || {}).lines || []) {
+    if (!line.label) {
+      console.log(`  FAIL product line "${line.id}" has no label, so it shows its id on screen`);
+      problems += 1;
+    }
+  }
+
+  console.log(`  ${rules.length} carry rule(s), ${tinted} tinted turn(s)`);
+}
 
 // A range that excludes where the learner already is, or a prediction window that
 // cannot hold the answer, both read on screen as a broken control: buttons that do
@@ -266,7 +340,7 @@ console.log(`  ${ids.size} unique turn ids`);
 // was visible to any check here — band stability said nothing about reachability.
 console.log('\nreachability:');
 for (const pathChoice of paths) {
-  let state = createState(scenario.startState || {});
+  let state = createState(openingState);
 
   for (const turn of scenario.turns) {
     const type = turn.decision.type || 'choice';

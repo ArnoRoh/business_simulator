@@ -27,6 +27,12 @@ export const DEFAULT_STATE = {
   ownerHours: 60,
   ownerHoursUsed: 40,
 
+  // How the owner's week scales with the business. Authored per chapter: an hour per
+  // six units and twelve hours relieved per employee are stall figures, and a factory
+  // that used them would demand thousands of hours a week (see baseOwnerHours).
+  hoursPerCapacity: 1 / 6,
+  hoursPerStaff: 12,
+
   // Weekly overhead that is not proportional to output — buying, banking, travel.
   // Content adjusts THIS for a permanent change to the owner's weekly load; adjusting
   // `ownerHoursUsed` only affects the current week, because advanceWeek recomputes it.
@@ -38,6 +44,54 @@ export const DEFAULT_STATE = {
   spoilRate: 0.5,
   keepsRecords: false,
   flags: {},
+
+  // --- chapters 2-4 (ADR-0007, D-017) -------------------------------------
+  //
+  // Every field below defaults so that a scenario not using it behaves exactly as it
+  // did before they existed. Chapter 1 sets none of them, and test-engine.mjs asserts
+  // that its ledger and its cash movement are unchanged. If you add a field here, it
+  // MUST have a default under which it contributes nothing.
+
+  // Product mix. When null, the flat price/unitCost/demand/capacity fields above are
+  // the single implicit line. When set, they are ignored for the P&L and each entry
+  // is { id, price, unitCost, demand, capacity }. Contribution margin differs per
+  // line, which is the whole point: the line that sells most usually earns least.
+  lines: null,
+
+  // A machine wears out in a good week too. Depreciation is a cost with no cash
+  // movement, which is half of why profit and cash are different words.
+  assetValue: 0,
+  assetLifeWeeks: 0,
+
+  // Borrowing. `interestRate` is annual; interest accrues weekly on the outstanding
+  // balance and IS a cost. `repayPerWeek` is cash leaving the business and is NOT a
+  // cost — that is the other half.
+  debt: 0,
+  interestRate: 0,
+  repayPerWeek: 0,
+
+  // Working capital, in weeks of the flow each applies to. Money owed to you, stock
+  // sitting on a shelf, and money you have not yet paid your supplier. While the
+  // business is flat these net out to nothing; while it grows they consume cash, and
+  // that is what kills a profitable bakery.
+  debtorWeeks: 0,
+  inventoryWeeks: 0,
+  creditorWeeks: 0,
+
+  // An employee costs more than their wage once statutory contributions are in.
+  payrollOnCost: 0,
+
+  // Earning in someone else's currency. `fxShare` of revenue is priced abroad at
+  // `fxRate`; `fxBase` is the rate that revenue was quoted against, so a move in
+  // `fxRate` is a gain or a loss on exactly that share.
+  fxShare: 0,
+  fxRate: 1,
+  fxBase: 1,
+
+  // Landed cost. Applies only to the exported share of what is sold.
+  exportShare: 0,
+  dutyRate: 0,
+  freightPerUnit: 0,
 
   // Consequences scheduled by an earlier decision, waiting for their week to arrive.
   // Each is { dueWeek, effects, cause, causeWeek }. See scheduleLater().
@@ -64,14 +118,54 @@ export function bandFor(delta) {
 const ADDITIVE = new Set([
   'cash', 'demand', 'capacity', 'reputation', 'hygiene',
   'ownerHoursUsed', 'ownerHours', 'ownerHoursFixed', 'rent', 'licenceFees',
+  'debt', 'assetValue',
 ]);
 
 // Fields where a plain number REPLACES the current value.
 const ABSOLUTE = new Set([
   'price', 'unitCost', 'staff', 'formality', 'wagePerStaff', 'spoilRate', 'week',
+  'assetLifeWeeks', 'interestRate', 'repayPerWeek', 'hoursPerCapacity', 'hoursPerStaff',
+  'debtorWeeks', 'inventoryWeeks', 'creditorWeeks', 'payrollOnCost',
+  'fxShare', 'fxRate', 'fxBase', 'exportShare', 'dutyRate', 'freightPerUnit',
 ]);
 
-const CLAMPED = { reputation: [0, 100], hygiene: [0, 100], formality: [0, 3] };
+const CLAMPED = {
+  reputation: [0, 100],
+  hygiene: [0, 100],
+  formality: [0, 3],
+  // Working capital is authored in weeks. A quarter is already a punishing cycle and
+  // an unbounded one lets a single authoring slip consume cash without limit — which
+  // is the failure mode D-014 exists to prevent, arriving through a new door.
+  debtorWeeks: [0, 26],
+  inventoryWeeks: [0, 26],
+  creditorWeeks: [0, 26],
+  fxShare: [0, 1],
+  exportShare: [0, 1],
+  dutyRate: [0, 1],
+  payrollOnCost: [0, 1],
+  interestRate: [0, 2],
+};
+
+// Effects may address one product line as `lines.<id>.<field>`.
+const LINE_EFFECT = /^lines\.([A-Za-z0-9_-]+)\.([A-Za-z]+)$/;
+const LINE_ADDITIVE = new Set(['demand', 'capacity']);
+
+/**
+ * The product lines this state sells, always as an array.
+ *
+ * A scenario that never mentions `lines` has exactly one, built from the flat fields,
+ * so every calculation below can be written once against a list.
+ */
+export function linesOf(state) {
+  if (Array.isArray(state.lines) && state.lines.length > 0) return state.lines;
+  return [{
+    id: 'main',
+    price: state.price,
+    unitCost: state.unitCost,
+    demand: state.demand,
+    capacity: state.capacity,
+  }];
+}
 
 // The standard an owner holds without effort. Weekly slippage stops here; going below
 // takes active neglect (see the overload penalty in advanceWeek).
@@ -81,6 +175,19 @@ export function createState(overrides = {}) {
   const state = { ...DEFAULT_STATE, ...overrides };
   state.flags = { ...DEFAULT_STATE.flags, ...(overrides.flags || {}) };
   state.pending = [...(overrides.pending || [])];
+  state.lines = Array.isArray(overrides.lines) && overrides.lines.length
+    ? overrides.lines.map((line) => ({ ...line }))
+    : null;
+
+  // With product lines authored, the flat demand and capacity fields are the totals of
+  // those lines. They are what the stats panel, the drift rules and every existing
+  // check read, so leaving them at a default would show the learner one business while
+  // the ledger described another.
+  if (state.lines) {
+    const total = (key) => state.lines.reduce((sum, line) => sum + (Number(line[key]) || 0), 0);
+    if (!('demand' in overrides)) state.demand = total('demand');
+    if (!('capacity' in overrides)) state.capacity = total('capacity');
+  }
 
   // Derive the opening week's load from the opening state, unless content pins it.
   // Otherwise week 1 shows a default that does not match the business on screen.
@@ -88,6 +195,11 @@ export function createState(overrides = {}) {
   if (!('baseDemand' in overrides)) state.baseDemand = state.demand;
   if (!('openingDemand' in overrides)) state.openingDemand = state.demand;
   if (!('openingRent' in overrides)) state.openingRent = state.rent;
+
+  // Settle the opening working-capital balance, so a chapter that starts with credit
+  // terms already in place is not charged on its first week for a position it began
+  // with. Only changes from here on cost or release cash.
+  if (!('wcHeld' in overrides)) state.wcHeld = workingCapital(state);
 
   return state;
 }
@@ -99,32 +211,123 @@ export function createState(overrides = {}) {
  * ahead of demand pays for it — that is the lesson, so it must be real.
  */
 export function weeklyPnl(state) {
-  const unitsSold = Math.max(0, Math.min(state.demand, state.capacity));
-  const revenue = unitsSold * state.price;
-  const variableCost = unitsSold * state.unitCost;
+  // Per line, so contribution margin can differ by product. With no `lines` authored
+  // this loop runs exactly once over the flat fields and the arithmetic below is
+  // identical to what it was before product mix existed.
+  const lines = linesOf(state);
+  const perLine = lines.map((line) => {
+    const sold = Math.max(0, Math.min(Number(line.demand) || 0, Number(line.capacity) || 0));
+    const lineRevenue = sold * (Number(line.price) || 0);
+    const lineVariable = sold * (Number(line.unitCost) || 0);
+    const unsold = Math.max(0, (Number(line.capacity) || 0) - (Number(line.demand) || 0));
+    return {
+      id: line.id,
+      unitsSold: sold,
+      unmetDemand: Math.max(0, (Number(line.demand) || 0) - (Number(line.capacity) || 0)),
+      revenue: lineRevenue,
+      variableCost: lineVariable,
+      contribution: lineRevenue - lineVariable,
+      // Reported per line because "which product actually earns" is the lesson, and a
+      // blended margin is exactly what hides it.
+      margin: lineRevenue > 0 ? (lineRevenue - lineVariable) / lineRevenue : 0,
+      spoilage: Math.round(unsold * (Number(line.unitCost) || 0) * (state.spoilRate || 0)),
+    };
+  });
 
-  const unsoldCapacity = Math.max(0, state.capacity - state.demand);
-  const spoilage = Math.round(unsoldCapacity * state.unitCost * (state.spoilRate || 0));
+  const sum = (key) => perLine.reduce((total, line) => total + line[key], 0);
+  const unitsSold = sum('unitsSold');
+  const revenue = sum('revenue');
+  const variableCost = sum('variableCost');
+  const spoilage = sum('spoilage');
 
-  const wages = state.staff * state.wagePerStaff;
-  const fixedCost = state.rent + wages + (state.licenceFees || 0);
+  // Currency movement lands on the share of revenue that was priced abroad. At the
+  // default (`fxShare` 0, rate equal to base) this is exactly zero.
+  const fxShare = state.fxShare || 0;
+  const fxBase = state.fxBase || 1;
+  const fxEffect = fxBase > 0
+    ? Math.round(revenue * fxShare * (((state.fxRate || 1) / fxBase) - 1))
+    : 0;
 
-  const profit = revenue - variableCost - fixedCost - spoilage;
-  const margin = revenue > 0 ? (revenue - variableCost) / revenue : 0;
+  // Landed cost applies only to what is actually exported.
+  const exportUnits = Math.round(unitsSold * (state.exportShare || 0));
+  const freight = Math.round(exportUnits * (state.freightPerUnit || 0));
+  const duty = Math.round(revenue * (state.exportShare || 0) * (state.dutyRate || 0));
+
+  const grossProfit = revenue + fxEffect - variableCost - freight - duty;
+
+  const wages = Math.round(state.staff * state.wagePerStaff * (1 + (state.payrollOnCost || 0)));
+  const depreciation = state.assetLifeWeeks > 0
+    ? Math.round((state.assetValue || 0) / state.assetLifeWeeks)
+    : 0;
+  const interest = Math.round(((state.debt || 0) * (state.interestRate || 0)) / 52);
+
+  const fixedCost = state.rent + wages + (state.licenceFees || 0) + depreciation + interest;
+
+  const profit = grossProfit - fixedCost - spoilage;
 
   return {
     unitsSold,
-    unmetDemand: Math.max(0, state.demand - state.capacity),
+    unmetDemand: sum('unmetDemand'),
     revenue,
     variableCost,
-    grossProfit: revenue - variableCost,
-    margin,
+    grossProfit,
+    // Blended contribution margin, kept for every existing caller. `perLine` is what
+    // a mix decision should actually be read against.
+    margin: revenue > 0 ? grossProfit / revenue : 0,
     wages,
     rent: state.rent,
     licenceFees: state.licenceFees || 0,
     fixedCost,
     spoilage,
     profit,
+
+    // Chapters 2-4. All zero under chapter 1's state.
+    perLine,
+    fxEffect,
+    freight,
+    duty,
+    depreciation,
+    interest,
+  };
+}
+
+/**
+ * Cash tied up in the trading cycle: money customers owe you, plus stock on the
+ * shelf, minus money you have not yet paid your suppliers.
+ *
+ * Expressed in weeks of the flow each applies to, so it moves when the business
+ * moves. That is the point — at a standstill it is constant and costs nothing, and
+ * growth makes it consume cash faster than the growth earns it.
+ */
+export function workingCapital(state) {
+  const pnl = weeklyPnl(state);
+  return Math.round(
+    (pnl.revenue * (state.debtorWeeks || 0))
+    + (pnl.variableCost * (state.inventoryWeeks || 0))
+    - (pnl.variableCost * (state.creditorWeeks || 0)),
+  );
+}
+
+/**
+ * What actually reaches the bank this week, as opposed to what the business earned.
+ *
+ * `profit` and `cashFlow` are equal by construction whenever the chapter-2-4 fields
+ * are at their defaults — no assets, no debt, no working-capital terms — which is why
+ * chapter 1 is untouched by any of this (D-017).
+ *
+ * `wcChange` is supplied by advanceWeek, which knows the position at both ends of the
+ * week. On its own this function reports the movement excluding working capital.
+ */
+export function weeklyCashFlow(state, wcChange = 0) {
+  const pnl = weeklyPnl(state);
+  const repayment = Math.min(Number(state.repayPerWeek) || 0, Number(state.debt) || 0);
+  return {
+    profit: pnl.profit,
+    // Depreciation was charged as a cost and no money left the building.
+    depreciation: pnl.depreciation,
+    repayment,
+    workingCapitalChange: wcChange,
+    cashFlow: pnl.profit + pnl.depreciation - repayment - wcChange,
   };
 }
 
@@ -140,7 +343,31 @@ export function applyEffects(state, effects = {}) {
   // drain the real playthrough's scheduled consequences.
   const next = { ...state, flags: { ...state.flags }, pending: [...(state.pending || [])] };
 
+  // Product lines are cloned before anything can touch them, so a projection cannot
+  // write through into the real playthrough — the same trap `pending` was already
+  // guarded against above.
+  if (Array.isArray(next.lines)) next.lines = next.lines.map((line) => ({ ...line }));
+  let touchedLines = false;
+
   for (const [key, raw] of Object.entries(effects)) {
+    // `lines.<id>.<field>` addresses one product. Demand and capacity add; price and
+    // unit cost replace — the same split as the flat fields they mirror.
+    const lineMatch = LINE_EFFECT.exec(key);
+    if (lineMatch && Array.isArray(next.lines)) {
+      const [, lineId, field] = lineMatch;
+      const line = next.lines.find((candidate) => candidate.id === lineId);
+      const amount = Number(raw);
+      if (line && Number.isFinite(amount)) {
+        line[field] = LINE_ADDITIVE.has(field) || /^[+-]/.test(String(raw))
+          ? (Number(line[field]) || 0) + amount
+          : amount;
+        if (LINE_ADDITIVE.has(field)) line[field] = Math.max(0, Math.round(line[field]));
+        else line[field] = Math.max(0, line[field]);
+        touchedLines = true;
+      }
+      continue;
+    }
+
     if (typeof raw === 'boolean') {
       if (key in next && typeof next[key] === 'boolean') next[key] = raw;
       else next.flags[key] = raw;
@@ -188,6 +415,11 @@ export function applyEffects(state, effects = {}) {
   next.wagePerStaff = Math.max(0, next.wagePerStaff);
   next.unitCost = Math.max(0, next.unitCost);
   next.price = Math.max(0, next.price);
+  next.debt = Math.max(0, next.debt || 0);
+  next.assetValue = Math.max(0, next.assetValue || 0);
+  next.repayPerWeek = Math.max(0, next.repayPerWeek || 0);
+  next.freightPerUnit = Math.max(0, next.freightPerUnit || 0);
+  next.fxRate = Math.max(0, next.fxRate ?? 1);
 
   // A demand change authored in content is structural — a customer won or lost, not a
   // mood swing — so it moves the baseline the weekly reputation drift pulls towards.
@@ -197,6 +429,35 @@ export function applyEffects(state, effects = {}) {
   // baseline to nothing and the business could never recover, which is not how a stall
   // by a bus stand behaves however badly it is run. Being reduced to passing trade is
   // the lesson; being erased is just an unwinnable game.
+  // Keep the flat totals and the product lines describing the same business.
+  //
+  // Content addresses one or the other, never both in one effects block. A `lines.*`
+  // effect is authoritative and the totals follow it; a flat `demand` or `capacity`
+  // effect means "the whole business moved" and is spread across the lines in
+  // proportion. Without this the stats panel and the ledger drift apart, each
+  // internally consistent and describing different businesses.
+  if (Array.isArray(next.lines)) {
+    const totalOf = (key) => next.lines.reduce((sum, line) => sum + (Number(line[key]) || 0), 0);
+
+    if (touchedLines) {
+      next.demand = totalOf('demand');
+      next.capacity = totalOf('capacity');
+    } else {
+      for (const key of ['demand', 'capacity']) {
+        if (next[key] === state[key]) continue;
+        const before = totalOf(key);
+        if (before <= 0) continue;
+        const ratio = next[key] / before;
+        next.lines = next.lines.map((line) => ({
+          ...line,
+          [key]: Math.max(0, Math.round((Number(line[key]) || 0) * ratio)),
+        }));
+      }
+      next.demand = totalOf('demand');
+      next.capacity = totalOf('capacity');
+    }
+  }
+
   if (next.demand !== state.demand) {
     const baseline = next.baseDemand ?? state.demand;
     const floor = Math.round((next.openingDemand ?? baseline) * 0.25);
@@ -240,9 +501,19 @@ export function scheduleLater(state, later = [], cause = '') {
  */
 export function advanceWeek(state) {
   const pnl = weeklyPnl(state);
-  let next = { ...state, flags: { ...state.flags }, pending: [...(state.pending || [])] };
 
-  next.cash = state.cash + pnl.profit;
+  // What was already tied up in the trading cycle, carried in state rather than
+  // recomputed from `state` here.
+  //
+  // This matters more than it looks. A decision — agreeing 30-day terms, taking on a
+  // wholesale customer — is applied by the caller BEFORE any week passes, so measuring
+  // the change from the start of this function would miss exactly the swings the
+  // learner caused and catch only the drift. Holding the balance means the
+  // reconciliation below picks up every movement since it was last settled, whoever
+  // caused it.
+  const wcBefore = state.wcHeld ?? workingCapital(state);
+
+  let next = { ...state, flags: { ...state.flags }, pending: [...(state.pending || [])] };
   next.week = state.week + 1;
 
   // 1. Fire consequences that have come due, before drift, so their effects then drift
@@ -282,16 +553,52 @@ export function advanceWeek(state) {
   // always has some passing trade.
   const base = Math.max(0, next.baseDemand ?? next.demand);
   const target = base * (0.4 + 0.012 * next.reputation);
-  next.demand = Math.max(
+  const driftedDemand = Math.max(
     Math.round(base * 0.15),
     Math.round(next.demand + (target - next.demand) * 0.25),
   );
+
+  // With product lines, drift has to reach the lines or it never reaches the ledger:
+  // the P&L reads per-line demand and would sit perfectly still while the headline
+  // number moved. Reputation is a property of the business, not of one product, so
+  // every line moves by the same proportion.
+  if (Array.isArray(next.lines) && next.demand > 0) {
+    const ratio = driftedDemand / next.demand;
+    next.lines = next.lines.map((line) => ({
+      ...line,
+      demand: Math.max(0, Math.round((Number(line.demand) || 0) * ratio)),
+    }));
+    next.demand = next.lines.reduce((sum, line) => sum + line.demand, 0);
+  } else {
+    next.demand = driftedDemand;
+  }
 
   // 5. Baseline decay — standards slip unless maintained. It stops at the level you
   //    hold without trying; going below that takes active neglect, which is what the
   //    overload penalty above represents.
   if (next.hygiene > HYGIENE_FLOOR) next.hygiene -= 1;
   next.hygiene = Math.max(0, Math.min(100, next.hygiene));
+
+  // 5b. Bank the week — and note that what reaches the bank is not what was earned.
+  //
+  // This line used to read `cash += pnl.profit`, and for chapter 1 it still does: with
+  // no assets, no debt and no working-capital terms, `cashFlow` is `profit` exactly
+  // (D-017). Everything chapters 2-4 teach about solvency lives in the gap between
+  // them, and it is computed here rather than narrated in content.
+  //
+  // The exchange rate is not drifted here on purpose. A currency move is authored as a
+  // scheduled consequence so that when it arrives the learner is told what caused it,
+  // like every other delayed effect in this engine.
+  const wcAfter = workingCapital(next);
+  const flow = weeklyCashFlow(state, wcAfter - wcBefore);
+
+  next.cash = state.cash + flow.cashFlow;
+  next.wcHeld = wcAfter;
+  next.debt = Math.max(0, (next.debt || 0) - flow.repayment);
+  // The asset wears down by exactly what was charged for it, so depreciation stops
+  // when the machine is written off instead of running forever.
+  next.assetValue = Math.max(0, (next.assetValue || 0) - pnl.depreciation);
+  if (next.assetValue === 0) next.assetLifeWeeks = 0;
 
   // 6. Insolvency sheds what you can no longer pay for.
   //
@@ -310,8 +617,32 @@ export function advanceWeek(state) {
 
     const capacityFloor = Math.max(60, Math.round((next.openingDemand ?? 180) * 0.5));
     if (next.capacity > capacityFloor) {
-      next.capacity = Math.max(capacityFloor, Math.round(next.capacity * 0.9));
+      const shrunk = Math.max(capacityFloor, Math.round(next.capacity * 0.9));
+      // Equipment goes with the capacity it provided, so the depreciation charge falls
+      // alongside it rather than being paid on a machine that is no longer there.
+      if (next.capacity > 0 && next.assetValue > 0) {
+        next.assetValue = Math.round(next.assetValue * (shrunk / next.capacity));
+      }
+      next.capacity = shrunk;
+      if (Array.isArray(next.lines)) {
+        next.lines = next.lines.map((line) => ({
+          ...line,
+          capacity: Math.max(0, Math.round((Number(line.capacity) || 0) * 0.9)),
+        }));
+      }
     }
+
+    // A business that cannot pay does not keep servicing a loan on the original terms.
+    // Without this, `repayPerWeek` drains cash for the rest of the run at a rate
+    // nothing can reduce — the same unbounded-cost failure D-014 was written for,
+    // arriving through the financing fields instead of the operating ones.
+    if (next.repayPerWeek > 0 && -next.cash > next.repayPerWeek * 4) {
+      next.repayPerWeek = Math.round(next.repayPerWeek * 0.85);
+    }
+
+    // Chasing your debtors is the first thing anyone does when the money runs out, and
+    // it releases cash. It also bounds the working-capital drain.
+    if (next.debtorWeeks > 0) next.debtorWeeks = Math.max(0, next.debtorWeeks - 0.25);
   }
 
   // 7. Reset the owner's week. Hours spent researching THIS week are spent; next week
@@ -320,7 +651,7 @@ export function advanceWeek(state) {
   //    information-seeking indicator exists to reward — would slowly destroy you.
   next.ownerHoursUsed = baseOwnerHours(next);
 
-  return { state: next, pnl, fired };
+  return { state: next, pnl, fired, flow };
 }
 
 /**
@@ -378,8 +709,16 @@ export function project(state, weeks = 12) {
  * into an overload you cannot work your way out of.
  */
 export function baseOwnerHours(state) {
-  const fromOutput = Math.round(state.capacity / 6);
-  const relievedByStaff = (state.staff || 0) * 12;
+  // The rate was fixed at one hour per six units, which is right for a stall and
+  // absurd at factory volumes — 15,000 loaves would demand 2,500 hours a week. It is
+  // authored per chapter now, because the whole point of scale is that the hours per
+  // unit fall. Both defaults reproduce the original numbers exactly, so chapter 1 is
+  // untouched.
+  const perUnit = Number.isFinite(state.hoursPerCapacity) ? state.hoursPerCapacity : 1 / 6;
+  const perStaff = Number.isFinite(state.hoursPerStaff) ? state.hoursPerStaff : 12;
+
+  const fromOutput = Math.round(state.capacity * perUnit);
+  const relievedByStaff = (state.staff || 0) * perStaff;
   return Math.max(8, (state.ownerHoursFixed ?? 15) + fromOutput - relievedByStaff);
 }
 
@@ -402,7 +741,29 @@ export function healthCheck(state) {
   if (state.hygiene < 35) problems.push('hygiene-risk');
   if (pnl.spoilage > pnl.grossProfit * 0.3 && pnl.spoilage > 0) problems.push('spoilage-high');
   if (ownerLoad(state).overloaded) problems.push('owner-overloaded');
+
+  // The chapter 2 and 3 killer, and the one an owner reading only the profit line
+  // never sees coming: trading profitably straight into an empty account.
+  const flow = weeklyCashFlow(state, 0);
+  if (pnl.profit > 0 && flow.cashFlow < 0) problems.push('profitable-but-cash-negative');
+  if ((state.debt || 0) > 0 && pnl.profit > 0 && pnl.profit < flow.repayment) {
+    problems.push('debt-service-strain');
+  }
   return problems;
+}
+
+/**
+ * The cash conversion cycle, in weeks: how long money is out of your hands between
+ * paying for an input and being paid for what you made from it.
+ *
+ * Reported rather than scored. It is the number chapter 3 is built around, and it is
+ * authored directly, so this is a convenience for content and the goal evaluator
+ * rather than a derivation.
+ */
+export function cashCycleWeeks(state) {
+  return (Number(state.debtorWeeks) || 0)
+    + (Number(state.inventoryWeeks) || 0)
+    - (Number(state.creditorWeeks) || 0);
 }
 
 /**
@@ -595,9 +956,12 @@ export function gradePrediction(predicted, actual, granularity = 0) {
 
 /** How many weeks of current fixed costs current cash covers. */
 export function weeksOfCostsCovered(state) {
+  // Loan repayments belong here: they are as unavoidable as rent, and a runway figure
+  // that ignores them tells a borrowing business it has months when it has weeks.
   const costs = (Number(state.rent) || 0)
-    + ((Number(state.staff) || 0) * (Number(state.wagePerStaff) || 0))
-    + (Number(state.licenceFees) || 0);
+    + ((Number(state.staff) || 0) * (Number(state.wagePerStaff) || 0) * (1 + (Number(state.payrollOnCost) || 0)))
+    + (Number(state.licenceFees) || 0)
+    + Math.min(Number(state.repayPerWeek) || 0, Number(state.debt) || 0);
   if (costs <= 0) return 0;
   return Math.max(0, Number(state.cash) || 0) / costs;
 }
@@ -608,14 +972,24 @@ export function evaluateGoal(state, goal) {
   const progress = conditions.map((condition) => {
     let current = 0;
     if (condition.metric === 'weeksOfCostsCovered') current = weeksOfCostsCovered(state);
+    else if (condition.metric === 'weeklyProfit') current = weeklyPnl(state).profit;
+    else if (condition.metric === 'weeklyCashFlow') current = weeklyCashFlow(state, 0).cashFlow;
+    else if (condition.metric === 'contributionMargin') current = weeklyPnl(state).margin;
+    else if (condition.metric === 'cashCycleWeeks') current = cashCycleWeeks(state);
     else if (condition.field) current = Number(state[condition.field]) || 0;
 
-    const target = Number(condition.min);
+    // A condition may set a ceiling instead of a floor. The cash cycle is the obvious
+    // case: shorter is the achievement, and `min` cannot express that.
+    const target = Number(condition.max ?? condition.min);
+    const met = Number.isFinite(target)
+      && (condition.max !== undefined ? current <= target : current >= target);
+
     return {
       id: condition.id,
-      met: Number.isFinite(target) && current >= target,
+      met,
       current,
-      target: condition.min,
+      target: condition.max ?? condition.min,
+      direction: condition.max !== undefined ? 'atMost' : 'atLeast',
     };
   });
   return {

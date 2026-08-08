@@ -8,9 +8,11 @@ than instruction, and it **observes** what a learner actually does — producing
 behavioural record intended as a cheap first stage of an execution test for grant
 programmes and training providers.
 
-> **Status: playable proof of concept.** One scenario, 16 turns, phone-first, about
-> 33KB. Rough, and meant to be played and argued with. See
-> [`memory/PROJECT_STATE.md`](./memory/PROJECT_STATE.md) for where things actually stand.
+> **Status: playable proof of concept.** Four chapters of 20 turns — a mandazi stall, a
+> bakery, a factory, exporting — in English and Kiswahili, phone-first. Rough, and meant
+> to be played and argued with. The Tanzanian figures are placeholders and the app says
+> so on screen. See [`memory/PROJECT_STATE.md`](./memory/PROJECT_STATE.md) for where
+> things actually stand.
 
 ## Try it
 
@@ -26,6 +28,13 @@ Each turn: a situation, information you can buy with time or money, a decision �
 **you predict what will happen before you find out.** That prediction step is the whole
 design. It is the moment of engagement and the measurement at the same time, because you
 cannot reliably predict a system you do not understand.
+
+The four chapters follow one owner as her business changes shape, and each one changes
+what can kill her: not knowing your margin, then running out of cash while profitable,
+then building capacity you cannot fill or supervise, then meeting someone else's standard
+in someone else's currency. They are **not a ladder** — a stall run well is a real
+business, not a step towards a bigger one — and none is locked behind another. See
+[`docs/arc.md`](./docs/arc.md).
 
 ---
 

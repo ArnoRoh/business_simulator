@@ -96,7 +96,57 @@ sort of specific rather than asking.
 **Current assumption:** The ISO code `TZS` in both languages, because it is unambiguous and
 not invented. `app/js/format.js` has a single place to change it.
 
+### Q-018 — Are the chapter 2–4 opening states realistic for Tanzania?  [BLOCKING for chapters 2–4 · needs local review]
+**Raised:** 2026-08-08 (session 008) · **Owner:** Project owner / someone running a real
+bakery or food processor in Tanzania
+**Question:** Chapters 2, 3 and 4 open on authored balance sheets — rent, wages, oven
+cost, loan size, interest rate, margins, staff numbers, weekly volumes. Every one of
+those figures was chosen to make the simulation work, not because anyone knows what a
+bakery in Dar es Salaam actually pays. Specifically: is TZS 180,000 a week plausible rent
+for a small bakery premises; is 90,000 a week a plausible wage; is a second-hand oven
+TZS 3,000,000; is 22% a plausible commercial term-loan rate; are the wholesale bread
+margins near 30%; is a 9-person factory paying 180,000 a week each?
+**Why it matters:** This is a bigger exposure than chapter 1's, because there are three
+times as many numbers and they are less common knowledge — most people can sanity-check
+the price of a mandazi and very few can sanity-check a term-loan rate. `AGENTS.md` §6 is
+explicit that wrong specifics discredit the whole tool with the people it is meant to
+serve. Chapter 1's placeholders are already unverified (Q-015 and the in-app banner);
+this triples the surface.
+**Current assumption:** All three chapters ship with `unverified: true`, so the existing
+in-app banner appears. That is honest, not sufficient. The owner runs Upendo Honey /
+Third Man Ltd and Tanganyika Blue and is the nearest available ground truth for the
+factory and export chapters in particular.
+
 ## Open
+
+### Q-019 — Does anyone play past chapter 1?  [open]
+**Raised:** 2026-08-08 (session 008) · **Owner:** Project owner / field testing
+**Question:** [ADR-0007](../docs/adr/0007-four-chapter-arc.md) assumes a learner who
+finishes the stall will want the bakery. Nothing supports that. The chapters are
+deliberately unlocked and unranked, so there is no extrinsic pull at all — only whether
+the next business is interesting enough on its own.
+**Why it matters:** If nobody progresses, the arc is three chapters of unread content and
+the answer was one deeper scenario after all. It also decides whether the six carried
+flags earn their complexity: continuity nobody experiences is not continuity.
+**Related:** This is [Q-011](#q-011--does-compelling-rather-than-fun-actually-retain-learners--open)
+at chapter scale, and it inherits Q-011's problem — it is an argument, not evidence.
+ADR-0007's "revisit if" names this specifically as the trigger for reconsidering full
+state carry-forward.
+**Current assumption:** Untested. Needs someone who is not the author playing two
+chapters in a row.
+
+### Q-020 — Do the carried flags feel like anything?  [open]
+**Raised:** 2026-08-08 (session 008) · **Owner:** Project owner / playtesting
+**Question:** Six flags travel between chapters and tint the opening plus at most two
+turns. Is that enough for a learner to notice that their earlier decisions followed them,
+or does it read as nothing at all?
+**Why it matters:** The hybrid design (D-016) exists precisely to buy felt continuity
+cheaply. If it buys none, the honest options are to drop it — four independent scenarios,
+which is simpler and survives every check — or to accept the testability cost of real
+state carry-forward. Keeping a mechanism that does nothing is the one outcome with no
+argument for it.
+**Current assumption:** Untested, and deliberately small. The cap is in ADR-0007 rather
+than in taste, so raising it is a decision with a record, not a drift.
 
 ### Q-013 — Is 20 turns the right length?  [open]
 **Raised:** 2026-08-02 (session 003) · **Owner:** Project owner / playtesting

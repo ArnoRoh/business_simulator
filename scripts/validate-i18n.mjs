@@ -14,7 +14,20 @@ const LANGUAGES = ['en', 'sw'];
 const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
 
 const strings = JSON.parse(read('app/content/ui.json'));
-const scenario = JSON.parse(read('app/content/scenario-mama-asha.json'));
+
+// Every chapter in the manifest, not one hardcoded file (ADR-0007). A chapter that has
+// not been authored yet is reported and skipped rather than crashing the check — the
+// manifest legitimately names chapters ahead of their content.
+const manifest = JSON.parse(read('app/content/chapters.json'));
+const chapters = [];
+const missing = [];
+for (const chapter of manifest.chapters || []) {
+  try {
+    chapters.push([chapter.id, JSON.parse(read(`app/content/${chapter.file}`))]);
+  } catch {
+    missing.push(chapter.file);
+  }
+}
 
 let problems = 0;
 const fail = (msg) => { console.log(`  FAIL ${msg}`); problems += 1; };
@@ -104,10 +117,13 @@ if (unused.length) {
 
 // --- scenario content carries every language -----------------------------
 
-console.log('\nscenario — content language coverage:');
+console.log('\nchapters — content language coverage:');
 const CONTENT_KEYS = new Set([
   'situation', 'label', 'detail', 'reveals', 'outcome', 'lesson',
   'prompt', 'predictQuestion', 'conceptLabel', 'title', 'blurb', 'cause',
+  // Chapter-level content (ADR-0007): the manifest's one-line framing, the notes a
+  // carried flag adds to an opening, and a product line's name in the ledger.
+  'shift', 'note', 'description',
 ]);
 
 let localised = 0;
@@ -130,8 +146,10 @@ const walk = (node, path) => {
     }
   }
 };
-walk(scenario, '');
-console.log(`  ${localised} localised content strings × ${LANGUAGES.length} languages`);
+walk(manifest, 'chapters.json');
+for (const [id, scenario] of chapters) walk(scenario, id);
+console.log(`  ${chapters.length} chapter(s), ${localised} localised content strings × ${LANGUAGES.length} languages`);
+if (missing.length) console.log(`  not authored yet, skipped: ${missing.join(', ')}`);
 
 console.log(`\n${problems === 0 ? 'all good' : `${problems} problem(s)`}\n`);
 process.exit(problems === 0 ? 0 : 1);
