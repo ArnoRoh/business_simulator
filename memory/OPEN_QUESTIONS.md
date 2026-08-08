@@ -119,6 +119,26 @@ factory and export chapters in particular.
 
 ## Open
 
+### Q-021 — "Up a lot" is unreachable in chapter 1, and only content can fix it  [open]
+**Raised:** 2026-08-08 (session 010) · **Owner:** Project owner
+**Question:** Of chapter 1's forty-two option predictions, exactly **one** lands in "up a
+lot". Should chapter 1's content change so the fourth band means something?
+**Why it matters:** A four-way prediction that behaves as a three-way one narrows the
+signal prediction accuracy is supposed to carry ([Q-014](#q-014--do-the-prediction-bands-match-how-learners-think--open)),
+and it is quietly unfair — a learner who reasons their way to "a lot" is almost always
+marked wrong because the content never produces a lot.
+**Why it is not just a band setting.** This was tried. Chapter 1's positive deltas run
+358 … 10,845 and then jump straight to 38,600. Every edge in that gap gives the same
+result, and the only lower edge that would promote more options (8,000) makes `t08` land
+in two different bands depending on the path taken to reach it — which the validator
+rejects, correctly. The bakery was fixed this way and chapter 1 cannot be
+([D-018](./DECISIONS.md)).
+**Why it was not fixed anyway:** the remedy is to author an outcome in the 12,000–38,000
+range, and chapter 1 is content the owner has **played and accepted**. Rebalancing it is
+their call, not an integrator's.
+**Current assumption:** Left as it is. Chapter 1 keeps the engine's default edges, and
+chapters 2 onward author their own.
+
 ### Q-019 — Does anyone play past chapter 1?  [open]
 **Raised:** 2026-08-08 (session 008) · **Owner:** Project owner / field testing
 **Question:** [ADR-0007](../docs/adr/0007-four-chapter-arc.md) assumes a learner who

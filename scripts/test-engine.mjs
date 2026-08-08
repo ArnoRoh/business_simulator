@@ -5,7 +5,7 @@
 
 import {
   createState, applyEffects, weeklyPnl, advanceWeek, advanceWeeks, ownerLoad, healthCheck,
-  scheduleLater, project, baseOwnerHours, bandFor, BAND_SAME, BAND_LOT,
+  scheduleLater, project, baseOwnerHours, bandFor, setBands, bandEdges, BAND_DEFAULTS,
   resolveNumberInput, resolveAllocation, allocationTotal, bandForValue, gradePrediction,
   weeksOfCostsCovered, evaluateGoal, needsRecovery, predictionWindow, decisionOutcomes,
   linesOf, workingCapital, weeklyCashFlow, cashCycleWeeks,
@@ -173,6 +173,8 @@ console.log('\nengine: owner time and health');
 
 console.log('\nengine: prediction bands');
 {
+  const { same: BAND_SAME, lot: BAND_LOT } = setBands(null);
+  eq('an unset chapter gets the stall\'s edges', BAND_SAME, BAND_DEFAULTS.same);
   eq('a big drop is "down"', bandFor(-20000), 'down');
   eq('just below the same-band edge is "down"', bandFor(-BAND_SAME - 1), 'down');
   eq('no change is "same"', bandFor(0), 'same');
@@ -180,6 +182,25 @@ console.log('\nengine: prediction bands');
   eq('just above it is "up a little"', bandFor(BAND_SAME + 1), 'up_bit');
   eq('the up-a-lot edge is still "up a little"', bandFor(BAND_LOT), 'up_bit');
   eq('past it is "up a lot"', bandFor(BAND_LOT + 1), 'up_lot');
+}
+
+console.log('\nengine: prediction bands scale to the chapter');
+{
+  // A fixed number of shillings does not mean the same thing to a stall and to a
+  // bakery. Held at the stall's figures, one chapter never reached "up a lot" and the
+  // other never reached "up a little" (Q-014).
+  setBands({ same: 8000, lot: 50000 });
+  eq('the chapter\'s own same-edge holds', bandFor(8000), 'same');
+  eq('past it is "up a little"', bandFor(8001), 'up_bit');
+  eq('what a stall would have called "up a lot" is "up a little" here', bandFor(20000), 'up_bit');
+  eq('and the chapter\'s own lot-edge holds', bandFor(50001), 'up_lot');
+  eq('the edges are readable, so the app can label them', bandEdges().lot, 50000);
+
+  setBands({ same: 9000, lot: 1000 });
+  eq('an inverted pair does not make "up a little" unreachable', bandEdges().lot > 9000, true);
+
+  setBands(null);
+  eq('and it resets to the stall for a chapter that names none', bandEdges().same, BAND_DEFAULTS.same);
 }
 
 console.log('\nengine: number inputs and declarative response curves');

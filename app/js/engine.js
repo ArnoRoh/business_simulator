@@ -104,13 +104,39 @@ export const DEFAULT_STATE = {
 // had a precise meaning to the validator and a vague one to the learner — the learner
 // was graded against a boundary nobody had shown them (Q-014). They are exported now so
 // the app can label each choice with the actual amounts.
-export const BAND_SAME = 1500;
-export const BAND_LOT = 12000;
+// They are also scaled per chapter, because a fixed number of shillings does not mean
+// the same thing to a stall and to a bakery. Held at the stall's figures, "up a lot"
+// was more than 12,000 on a business earning 20,000 a week — reached once in forty-two
+// options in chapter 1 — and the same threshold on a bakery earning 57,000 a week
+// swallowed almost everything, leaving "up a little" reached twice in forty-five. Both
+// chapters were offering a four-way prediction that behaved as a three-way one, and a
+// different three each time. A scenario sets its own edges; the defaults are the
+// stall's, so chapter 1 is unchanged (Q-014).
+export const BAND_DEFAULTS = { same: 1500, lot: 12000 };
+
+let bands = { ...BAND_DEFAULTS };
+
+/** Set the edges for the loaded chapter. Called alongside setCurrency. */
+export function setBands(override) {
+  const same = Number(override && override.same);
+  const lot = Number(override && override.lot);
+  bands = {
+    same: same > 0 ? same : BAND_DEFAULTS.same,
+    lot: lot > 0 ? lot : BAND_DEFAULTS.lot,
+  };
+  if (bands.lot <= bands.same) bands.lot = bands.same * 8;
+  return bandEdges();
+}
+
+/** The edges in force, for labelling each choice with the money it covers (D-015). */
+export function bandEdges() {
+  return { ...bands };
+}
 
 export function bandFor(delta) {
-  if (delta < -BAND_SAME) return 'down';
-  if (delta <= BAND_SAME) return 'same';
-  if (delta <= BAND_LOT) return 'up_bit';
+  if (delta < -bands.same) return 'down';
+  if (delta <= bands.same) return 'same';
+  if (delta <= bands.lot) return 'up_bit';
   return 'up_lot';
 }
 
@@ -618,17 +644,23 @@ export function advanceWeek(state) {
     const capacityFloor = Math.max(60, Math.round((next.openingDemand ?? 180) * 0.5));
     if (next.capacity > capacityFloor) {
       const shrunk = Math.max(capacityFloor, Math.round(next.capacity * 0.9));
+      // One ratio, applied everywhere. The floor used to be applied to the total while
+      // the lines were shrunk by a flat 0.9 and the total was never recomputed from
+      // them — so in any chapter with a product mix the lines kept shrinking past the
+      // floor week after week and the business could be driven to a state it could
+      // never leave, which is exactly what D-014 exists to prevent.
+      const ratio = next.capacity > 0 ? shrunk / next.capacity : 1;
       // Equipment goes with the capacity it provided, so the depreciation charge falls
       // alongside it rather than being paid on a machine that is no longer there.
-      if (next.capacity > 0 && next.assetValue > 0) {
-        next.assetValue = Math.round(next.assetValue * (shrunk / next.capacity));
-      }
-      next.capacity = shrunk;
+      if (next.assetValue > 0) next.assetValue = Math.round(next.assetValue * ratio);
       if (Array.isArray(next.lines)) {
         next.lines = next.lines.map((line) => ({
           ...line,
-          capacity: Math.max(0, Math.round((Number(line.capacity) || 0) * 0.9)),
+          capacity: Math.max(0, Math.round((Number(line.capacity) || 0) * ratio)),
         }));
+        next.capacity = next.lines.reduce((sum, line) => sum + line.capacity, 0);
+      } else {
+        next.capacity = shrunk;
       }
     }
 

@@ -5,11 +5,17 @@
 // right — which would poison the behavioural record and make the whole assessment
 // worthless. This must stay green.
 //
-// Run: node scripts/validate-scenario.mjs
+// Run: node scripts/validate-scenario.mjs                    every authored chapter
+//      node scripts/validate-scenario.mjs app/content/x.json  just that one
+//
+// With no argument this used to validate chapter 1 and only chapter 1, so a second
+// chapter could be authored, listed in the manifest, loaded by the app and shipped
+// without this check ever having looked at it. It walks the manifest now.
 
 import { readFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import {
-  createState, applyEffects, weeklyPnl, advanceWeeks, scheduleLater, bandFor,
+  createState, applyEffects, weeklyPnl, advanceWeeks, scheduleLater, bandFor, setBands,
   resolveNumberInput, resolveAllocation, allocationTotal, bandForValue,
   predictionWindow, decisionOutcomes,
 } from '../app/js/engine.js';
@@ -20,8 +26,31 @@ import { applyCarryIn, CARRY_FLAGS } from '../app/js/carry.js';
 const SCENES = [...readFileSync(new URL('../app/js/scene.js', import.meta.url), 'utf8')
   .matchAll(/^\s+'?([a-zA-Z-]+)'?:\s*(?:\(root|build)/gm)].map((m) => m[1]);
 
-const path = process.argv[2] || 'app/content/scenario-mama-asha.json';
+if (!process.argv[2]) {
+  // One child per chapter rather than a loop, because everything below is written
+  // against a single scenario in module scope — and a chapter that leaves state behind
+  // for the next one is exactly the class of bug this script exists to catch.
+  const manifest = JSON.parse(readFileSync(new URL('../app/content/chapters.json', import.meta.url), 'utf8'));
+  let worst = 0;
+  for (const chapter of manifest.chapters || []) {
+    const file = `app/content/${chapter.file}`;
+    try { readFileSync(new URL(`../${file}`, import.meta.url)); } catch {
+      console.log(`\n${chapter.id}: not authored yet, skipped`);
+      continue;
+    }
+    const run = spawnSync(process.execPath, [process.argv[1], file], { stdio: 'inherit' });
+    worst = Math.max(worst, run.status || 0);
+  }
+  process.exit(worst);
+}
+
+const path = process.argv[2];
 const scenario = JSON.parse(readFileSync(path, 'utf8'));
+
+// The chapter's own band edges, exactly as the app will set them when it loads the
+// file. Grading a bakery against a stall's thresholds is how "up a little" came to be
+// reachable twice in forty-five options.
+setBands(scenario.bands);
 
 // Every walk below starts from the opening a learner arriving with NO carried flags
 // would get. That is the guaranteed-playable case (ADR-0007): a chapter must be

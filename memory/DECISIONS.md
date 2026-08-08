@@ -327,6 +327,70 @@ narration rather than passed off as modelled.
 
 ---
 
+## D-018 — Prediction band edges are per chapter, and each chapter must choose its own
+**Date:** 2026-08-08 (session 010) · **Decided by:** Claude, from evidence
+**Decision:** `BAND_SAME` and `BAND_LOT` — the boundaries between "goes down", "about the
+same", "up a little" and "up a lot" — move from engine constants to a top-level `bands` key
+on the scenario, read by `main.js` and by `validate-scenario.mjs`. The engine's defaults
+stay at the stall's 1,500 / 12,000, so chapter 1 is untouched and asserted so. Every
+chapter from 2 onward **must** author its own edges, chosen from the actual spread of its
+option deltas.
+**Why:** Session 009 measured it. With the stall's edges, "up a lot" was reachable by one
+option in forty-two in chapter 1, and "up a little" by two in forty-five in the bakery.
+Both chapters offered the learner a four-way prediction that behaved as a three-way one,
+and a *different* three each time. Prediction accuracy is the signal the whole assessment
+rests on ([Q-014](./OPEN_QUESTIONS.md)), so a band nobody can land in is not a cosmetic
+problem — it is a measurement being taken with a broken instrument.
+**How the bakery's were chosen**, because the method is the reusable part: dump every
+option's delta from `validate-scenario.mjs`, sort them, and pick edges that fall in the
+*gaps* between clusters. Edges landing inside a cluster make an option's band depend on
+which path the learner took to reach the turn, which the validator then rejects as
+unstable — correctly. The bakery's deltas cluster tightly enough that only one pair worked:
+`{ same: 2000, lot: 21200 }`. That makes "about the same" mean the do-nothing options and
+almost nothing else, which reads honestly on a business earning ~300,000 a week.
+**Considered and rejected:** Deriving edges from opening weekly profit. Tempting, needs no
+authoring, and it produces unstable bands — the right edge depends on how the *content's*
+outcomes cluster, not on the size of the business.
+
+## D-019 — A chapter must be finishable by a learner who reads the warnings
+**Date:** 2026-08-08 (session 010) · **Decided by:** Claude, from evidence
+**Decision:** `simulate-runs.mjs` gains a fifth simulated player, `attentive`, and its
+ending is a **FAIL** where the other four only warn. It picks, at every turn, the option
+leaving the business best off four weeks later, judged on exactly what the app already puts
+on screen: weekly profit, what reaches the bank, the reputation and hygiene meters, and the
+health warnings. It plans no further than four weeks and remembers nothing.
+**Why:** Session 009 found that all four existing strategies ended loss-making or insolvent
+in both authored chapters, and could not say whether that was a balance problem or an
+artefact of crude strategies — "always take the first option" is closer to not engaging
+than to playing carefully. Nothing in the repository could answer "can this chapter be
+finished well at all?", which is the direct form of the owner's question about whether
+people will play it through.
+**What it must not be:** a profit maximiser. One was tried first. It ran chapter 1 to 1.4m
+in the bank by turn 16 and then collapsed to a 90,000-a-week loss with reputation at zero —
+which is not a balance failure, it is the lesson, and requiring myopic greed to succeed
+would forbid this project from teaching the thing it exists to teach. The floor a chapter
+must clear is a learner who *heeds the feedback they are given*, not one who ignores it.
+**Result:** chapter 1 finishes at 2.24m cash and 2/3 goal conditions; the bakery at 8.3m
+and 3/3. Neither did before.
+**Revisit if:** Tuning `HEALTH_PENALTY` or `METER_WEIGHT` becomes the routine way to make a
+chapter pass. That would mean the probe is being fitted to the content instead of measuring
+it, and the honest response is to write the strategy the content actually needs and say so.
+
+## D-020 — The end of a chapter recaps the concepts, not the performance
+**Date:** 2026-08-08 (session 010) · **Decided by:** Claude
+**Decision:** The end-of-chapter screen lists every concept the chapter taught, in order,
+each with the decision the learner made against it. No tick, no cross, no ordering by
+outcome.
+**Why:** Every turn already carries a `conceptLabel`, shown as a tag for about a minute and
+then never again. Twenty of those go past in half an hour, and a learner finishes able to
+say what happened but not what it was teaching. This is the only place the whole list is
+visible at once, and it costs nothing to author because the labels already exist.
+**Why it carries no marks:** ADR-0004 and D-008. A recap that ranked the learner's
+decisions would be a score on the screen that most needs not to have one, and this is
+exactly where one would grow. `smoke-app.mjs` asserts it does not.
+
+---
+
 ## Pending — proposed, not decided
 
 Entries below are **not decisions.** They are recorded here so the index is complete and

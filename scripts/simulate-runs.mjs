@@ -42,6 +42,26 @@ const STRATEGIES = [
     pick: (n, turnIndex) => (turnIndex * 7 + 3) % n,
     number: (values, turnIndex) => values[(turnIndex * 5 + 1) % values.length],
   },
+  // The other four are corners of the decision space, and session 009 found that every
+  // one of them ended wrecked in both authored chapters. That is not by itself a
+  // balance problem — "always take the first option" is closer to not engaging than to
+  // playing cautiously. What it could not tell us is whether *anyone* can finish well.
+  // `attentive` answers that. It takes the option that leaves the business best off a
+  // month later, judged on exactly what the app already puts in front of the learner:
+  // the week's profit, what reaches the bank, and the health warnings in the money
+  // panel — hygiene, spoilage, reputation, owner hours. Nothing hidden, no planning
+  // beyond four weeks, no memory of what worked before.
+  //
+  // It is deliberately *not* a profit maximiser. A pure one was tried first and it ran
+  // chapter 1 to 1.4m in the bank by turn 16 and then collapsed to a 90,000-a-week
+  // loss with reputation at zero — which is not a balance problem, it is the lesson.
+  // Requiring myopic greed to succeed would forbid this project from teaching the
+  // thing it exists to teach.
+  //
+  // What a chapter must support is a learner who reads the warnings they are given.
+  // If `attentive` cannot finish solvent and profitable, no such learner can, and for
+  // this strategy alone a bad ending is a FAIL rather than a warning.
+  { id: 'attentive', greedy: true },
 ];
 
 let problems = 0;
@@ -61,10 +81,70 @@ function numberValues(input) {
 
 const fmt = (n) => (Number.isFinite(n) ? Math.round(n).toLocaleString('en-US') : String(n));
 
+// How good this option looks a month out. Weekly profit plus what actually reaches the
+// bank, weighted equally, because chapters 2-4 exist on the gap between those two.
+//
+// The lookahead is not decoration. Scoring the option's *immediate* effect made this
+// strategy identical to `timid` on chapter 1, turn for turn: most effects move demand,
+// reputation or hygiene rather than this week's P&L, so every option tied and the tie
+// went to the first one. Four weeks is long enough for the engine to turn a reputation
+// or hygiene change back into money, which is the feedback the learner is being taught
+// to see.
+const LOOKAHEAD_WEEKS = 4;
+
+// What one health warning is worth, as a multiple of the chapter's opening weekly
+// profit. Expressed that way so it means the same thing to a stall turning over
+// 26,000 a week and a factory turning over 788,000. At 1.5 it is heavy enough that
+// this strategy will give up real money to keep hygiene up and its owner off the
+// floor, which is the behaviour the chapters are written to reward.
+const HEALTH_PENALTY = 1.5;
+
+// And what a full 50-point slide in reputation or hygiene is worth, on the same scale.
+const METER_WEIGHT = 2;
+
+function scoreEffects(state, effects, later, turnId, unit) {
+  let after;
+  try {
+    after = advanceWeeks(
+      scheduleLater(applyEffects(state, effects), later || [], turnId),
+      LOOKAHEAD_WEEKS,
+    ).state;
+  } catch { return -Infinity; }
+  const profit = weeklyPnl(after).profit;
+  const banked = (after.cash - state.cash) / LOOKAHEAD_WEEKS;
+  if (!Number.isFinite(profit) || !Number.isFinite(banked)) return -Infinity;
+  // Reputation and hygiene are on screen as meters the whole time, not just as
+  // warnings, so this reads them the way a learner watching the meters would — a slide
+  // costs something before it crosses a threshold, not only after. Without this the
+  // strategy trades reputation away a few points at a time for profit it can see, and
+  // arrives at the last quarter of a chapter with none left. That is a real thing
+  // learners do; it is not a thing an "is this chapter finishable" probe should do.
+  const meters = ((after.reputation - 50) + (after.hygiene - 50)) / 50;
+  return profit + banked
+    + meters * METER_WEIGHT * unit
+    - healthCheck(after).length * HEALTH_PENALTY * unit;
+}
+
+// Picks the candidate with the best score. Ties go to the earlier candidate, so the
+// run stays deterministic and reproducible.
+function bestOf(state, candidates, turnId, unit) {
+  let best = candidates[0];
+  let bestScore = -Infinity;
+  for (const candidate of candidates) {
+    const score = scoreEffects(state, candidate.effects, candidate.later, turnId, unit);
+    if (score > bestScore) { bestScore = score; best = candidate; }
+  }
+  return best;
+}
+
 function playOnce(scenario, strategy) {
   let state = createState(applyCarryIn(scenario, {}).startState);
+  // The scale a health warning is priced against, fixed at the opening position so it
+  // does not drift with the run. See HEALTH_PENALTY.
+  const unit = Math.max(1, Math.abs(weeklyPnl(state).profit));
   const trace = [];
   let recoveries = 0;
+  const brokeAt = [];
   const turns = [...scenario.turns];
 
   for (let i = 0; i < turns.length && i < 200; i += 1) {
@@ -77,40 +157,59 @@ function playOnce(scenario, strategy) {
     if (type === 'number') {
       const values = numberValues(decision.input || {});
       if (values.length === 0) { fail(`${turn.id}: numeric input has no reachable values`); break; }
-      effects = resolveNumberInput(state, decision.input, strategy.number(values, i));
+      if (strategy.greedy) {
+        effects = bestOf(state, values.map(
+          (value) => ({ effects: resolveNumberInput(state, decision.input, value) }),
+        ), turn.id, unit).effects;
+      } else {
+        effects = resolveNumberInput(state, decision.input, strategy.number(values, i));
+      }
     } else if (type === 'allocate') {
       const total = allocationTotal(state, decision.allocate || {});
       const buckets = decision.allocate?.buckets || [];
       if (buckets.length === 0) { fail(`${turn.id}: allocation has no buckets`); break; }
-      const target = buckets[strategy.pick(buckets.length, i)];
-      effects = resolveAllocation(state, decision.allocate, { [target.id]: total });
+      const candidates = buckets.map(
+        (bucket) => ({ effects: resolveAllocation(state, decision.allocate, { [bucket.id]: total }) }),
+      );
+      effects = strategy.greedy
+        ? bestOf(state, candidates, turn.id, unit).effects
+        : candidates[strategy.pick(buckets.length, i)].effects;
     } else {
       const options = decision.options || [];
       if (options.length === 0) { fail(`${turn.id}: choice turn has no options`); break; }
-      const option = options[strategy.pick(options.length, i)];
+      const option = strategy.greedy
+        ? bestOf(state, options.map((o) => ({ ...o, effects: o.effects || {}, later: o.later || [] })), turn.id, unit)
+        : options[strategy.pick(options.length, i)];
       effects = option.effects || {};
       later = option.later || [];
     }
 
+    const cashBefore = state.cash;
+    const weeks = turn.advanceWeeks || 1;
     const advanced = advanceWeeks(
       scheduleLater(applyEffects(state, effects), later, turn.id),
-      turn.advanceWeeks || 1,
+      weeks,
     );
     state = advanced.state;
 
     const pnl = weeklyPnl(state);
-    const flow = weeklyCashFlow(state, 0);
-    trace.push({ turn: turn.id, week: state.week, state, pnl, flow });
+    // What actually reached the bank, per week, taken from the cash the engine banked
+    // rather than recomputed here. `weeklyCashFlow(state, 0)` was used for this and
+    // asserts no working-capital movement — so the column read as if the money were
+    // fine on exactly the turns where a chapter 2-4 business is quietly draining.
+    const banked = Math.round((state.cash - cashBefore) / weeks);
+    trace.push({ turn: turn.id, week: state.week, state, pnl, banked });
 
     // The recovery chapter is inserted by main.js on the same condition, so a
     // simulation that skips it is not walking the path a learner walks.
     if (scenario.recovery && state.cash < 0 && recoveries < 2) {
       recoveries += 1;
+      brokeAt.push(turn.id);
       turns.splice(i + 1, 0, { ...JSON.parse(JSON.stringify(scenario.recovery)), id: `recovery-${recoveries}` });
     }
   }
 
-  return { state, trace, recoveries };
+  return { state, trace, recoveries, brokeAt };
 }
 
 function inspect(scenario, run, strategy) {
@@ -125,7 +224,7 @@ function inspect(scenario, run, strategy) {
     console.log(
       `      ${row.turn.padEnd(8)}${String(row.week).padEnd(6)}`
       + `${fmt(row.state.cash).padStart(12)}  ${fmt(row.pnl.profit).padStart(12)}  `
-      + `${fmt(row.flow.cashFlow).padStart(12)}  ${fmt(row.state.demand).padStart(6)}  `
+      + `${fmt(row.banked).padStart(12)}  ${fmt(row.state.demand).padStart(6)}  `
       + `${fmt(row.state.capacity).padStart(5)} ${fmt(row.state.reputation).padStart(4)} `
       + `${cashCycleWeeks(row.state).toFixed(1).padStart(6)}`,
     );
@@ -162,9 +261,28 @@ function inspect(scenario, run, strategy) {
 
   // Chapters 2-4 are built on the gap between profit and cash. If a chapter never
   // opens one, its advanced content is being narrated rather than modelled (D-017).
-  const diverged = trace.some((row) => row.flow.cashFlow !== row.pnl.profit);
+  const diverged = trace.some((row) => row.banked !== row.pnl.profit);
   if (scenario.id !== 'mama-asha' && !diverged) {
     warn(`${strategy.id}: cash and profit were identical all run — no working capital, debt or assets in play`);
+  }
+
+  // "Does the timid strategy survive? A chapter only the boldest path can finish is not
+  // a teaching tool" — the authoring contract has said so since chapters 2-4 were
+  // specified, and nothing checked it. These are warnings rather than failures because
+  // the four strategies are crude: "always take the first option" is closer to not
+  // engaging than to playing cautiously, and a run that ends in trouble can be the
+  // lesson. Read them. If every strategy ends wrecked, the chapter is not teaching
+  // anyone that their decisions mattered.
+  //
+  // For `attentive` they are failures. That strategy only ever takes the option that
+  // leaves the business better off this week — it is the floor, not the ceiling, of
+  // playing thoughtfully. A chapter it cannot finish solvent and profitable has no
+  // path a learner could find either, and a chapter where care is not rewarded is not
+  // a teaching tool (contract A.11).
+  const report = strategy.greedy ? fail : warn;
+  if (state.cash < 0) report(`${strategy.id}: ends insolvent, cash ${fmt(state.cash)}`);
+  if (weeklyPnl(state).profit < 0) {
+    report(`${strategy.id}: ends loss-making, weekly profit ${fmt(weeklyPnl(state).profit)}`);
   }
 
   const finalHealth = healthCheck(state);
@@ -195,7 +313,19 @@ for (const chapter of manifest.chapters || []) {
   }
 
   console.log(`\n${'='.repeat(78)}\n${chapter.id} — ${scenario.turns.length} turns\n${'='.repeat(78)}`);
-  for (const strategy of STRATEGIES) inspect(scenario, playOnce(scenario, strategy), strategy);
+  const runs = STRATEGIES.map((strategy) => {
+    const run = playOnce(scenario, strategy);
+    inspect(scenario, run, strategy);
+    return run;
+  });
+
+  // A turn that bankrupts every strategy is not a decision, it is a scripted
+  // bankruptcy — the learner is told their choice mattered and then shown that it did
+  // not, which teaches the opposite of what the turn is for.
+  const firstBreak = runs.map((run) => run.brokeAt[0]);
+  if (firstBreak.every((id) => id !== undefined && id === firstBreak[0])) {
+    fail(`${chapter.id}: every strategy goes insolvent at ${firstBreak[0]} — no option avoids it`);
+  }
 
   // Every chapter must be playable by someone who has played nothing before it.
   const withCarry = applyCarryIn(scenario, {});

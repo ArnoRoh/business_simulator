@@ -340,6 +340,14 @@
     "en": "What this does not tell you",
     "sw": "Mambo ambayo haya hayakuambii"
   },
+  "profile.recapTitle": {
+    "en": "What this chapter was about",
+    "sw": "Sura hii ilihusu nini"
+  },
+  "profile.recapIntro": {
+    "en": "One idea per week, and what you did about it.",
+    "sw": "Wazo moja kila wiki, na ulichofanya kuhusu hilo."
+  },
   "profile.finished.title": {
     "en": "You finished.",
     "sw": "Umemaliza."

@@ -1,8 +1,12 @@
-name: Docs checks
+name: Checks
 
-# Stack-agnostic checks. There is no application code yet (see memory/DECISIONS.md
-# D-001), so these validate the documentation and memory system instead: that internal
-# links resolve, and that the memory files the project depends on still exist.
+# The documentation and memory checks, plus the application ones.
+#
+# This file used to say "there is no application code yet" and run only the link and
+# memory checks. That stopped being true at session 003, and the five checks that guard
+# the engine, the content and the app wiring ran on contributors' machines and nowhere
+# else — which is how a smoke test came to be broken on `main` without anything saying
+# so. They are cheap: no dependencies, no build step (ADR-0006).
 
 on:
   push:
@@ -14,6 +18,32 @@ permissions:
   contents: read
 
 jobs:
+  app:
+    name: Engine, content and app
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Engine
+        run: node scripts/test-engine.mjs
+
+      - name: Scenarios
+        run: node scripts/validate-scenario.mjs
+
+      - name: Both languages
+        run: node scripts/validate-i18n.mjs
+
+      # This one prints numbers a person is meant to read; CI can only tell you it did
+      # not find a whole-business failure. See its header comment.
+      - name: Full playthroughs
+        run: node scripts/simulate-runs.mjs
+
+      - name: App wiring
+        run: node scripts/smoke-app.mjs
+
   links:
     name: Internal links resolve
     runs-on: ubuntu-latest

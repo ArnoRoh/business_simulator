@@ -138,9 +138,15 @@ globalThis.fetch = async (url) => {
 
 for (const id of [
   'stats', 'scene', 'progress', 'situation', 'info', 'decision', 'consequence',
-  'pnl', 'trajectory', 'banner', 'lang-banner', 'title', 'reset', 'lang',
+  'pnl', 'trajectory', 'banner', 'lang-banner', 'title', 'reset', 'chapters', 'lang',
   'pnl-toggle', 'pnl-wrap', 'goal', 'foot-privacy',
 ]) byId.set(id, new Node('div'));
+
+/** Which chapters in the manifest have no scenario file yet. */
+const manifest = JSON.parse(read('app/content/chapters.json'));
+const unauthoredIds = manifest.chapters
+  .filter((c) => { try { read(`app/content/${c.file}`); return false; } catch { return true; } })
+  .map((c) => c.id);
 
 // --- drive it ------------------------------------------------------------
 
@@ -171,7 +177,12 @@ console.log('\napp: a chapter that is listed but not yet authored');
   // learners can reach — tapping a chapter whose file does not exist. It must say so
   // and leave the app usable, not throw and leave a blank screen.
   const cards = decision.querySelectorAll('.chapter-card');
-  const unauthored = cards.find((c) => /bakery|factory|export/i.test(c.textContent));
+  // Which chapters are authored changes as content lands, so ask the manifest rather
+  // than naming them here — this test used to hardcode the list and started clicking
+  // into a real chapter the moment one of them was written.
+  const titles = unauthoredIds
+    .map((id) => manifest.chapters.find((c) => c.id === id).title.en);
+  const unauthored = cards.find((c) => titles.some((title) => c.textContent.includes(title)));
   if (!unauthored) {
     check('every listed chapter is authored', true);
   } else {
@@ -228,10 +239,116 @@ console.log('\napp: playing a turn through its phases');
     progress.getAttribute('aria-valuemax') === '20', progress.getAttribute('aria-valuemax'));
 }
 
+console.log('\napp: leaving a chapter without finishing it');
+{
+  // "Start again" restarts the chapter in progress, so before this button existed the
+  // only way out of a chapter opened by mistake was to finish it or clear the browser
+  // storage. On a shared phone in a programme that is a trap.
+  const chapters = byId.get('chapters');
+  check('a way out of a chapter is offered while playing', chapters.hidden === false);
+  chapters.click();
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  check('it returns to the chapter list',
+    decision.querySelectorAll('.chapter-card').length === 4);
+  check('and it is not offered on the chapter list itself', chapters.hidden === true);
+}
+
 console.log('\napp: the carried flags are banked');
 {
   const saved = storeData.get('business-simulator:carry:v1');
   check('nothing is banked mid-chapter', saved === undefined || !/completed":\["mama-asha/.test(saved));
+}
+
+console.log('\napp: resuming a chapter that had a recovery turn');
+{
+  // Recovery turns are spliced into `scenario.turns` at run time, but the scenario file
+  // is re-fetched clean every time the app starts — and on the target devices it is
+  // killed and restarted often. The saved `turnIndex` counts the spliced list, so
+  // without restoring the splices a resume skipped one authored turn per recovery the
+  // learner had been through, and ended the chapter early.
+  const { createState } = await import('../app/js/engine.js');
+  const scenario = JSON.parse(read('app/content/scenario-mama-asha.json'));
+  const index = 6;
+
+  storeData.set('business-simulator:v1', JSON.stringify({
+    scenarioId: scenario.id,
+    turnIndex: index,
+    phase: 'situation',
+    state: createState(scenario.startState),
+    history: [],
+    sought: [],
+    fired: [],
+    weeksPassed: 1,
+    recoveriesUsed: 1,
+    recoveryAt: [index],
+    record: { scenarioId: scenario.id, observations: [] },
+  }));
+
+  // A fresh module instance, which is what a reload gives you.
+  boot.length = 0;
+  await import('../app/js/main.js?reload=1');
+  for (const fn of boot) await fn();
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  const recoveryText = scenario.recovery.situation.en;
+  const skippedText = scenario.turns[index].situation.en;
+  check('the recovery turn is still the turn in front of the learner',
+    situation.textContent.includes(recoveryText), situation.textContent.slice(0, 80));
+  check('and no authored turn was skipped past',
+    !situation.textContent.includes(skippedText));
+  check('progress counts the recovery turn too',
+    byId.get('progress').getAttribute('aria-valuemax') === String(scenario.turns.length + 1),
+    byId.get('progress').getAttribute('aria-valuemax'));
+}
+
+console.log('\napp: the end of a chapter');
+{
+  // Resumed onto the last turn and played out, because the end screen is the one part
+  // of the app a learner reaches exactly once and only after half an hour — which is
+  // why nothing checked it until now.
+  const { createState } = await import('../app/js/engine.js');
+  const scenario = JSON.parse(read('app/content/scenario-mama-asha.json'));
+  const last = scenario.turns.length - 1;
+
+  storeData.set('business-simulator:v1', JSON.stringify({
+    scenarioId: scenario.id,
+    turnIndex: last,
+    phase: 'situation',
+    state: createState(scenario.startState),
+    history: [],
+    sought: [],
+    fired: [],
+    weeksPassed: 1,
+    recoveriesUsed: 2,   // no more recovery turns can be spliced in ahead of the end
+    recoveryAt: [],
+    record: { scenarioId: scenario.id, observations: [] },
+  }));
+
+  boot.length = 0;
+  await import('../app/js/main.js?reload=2');
+  for (const fn of boot) await fn();
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  for (let i = 0; i < 12 && decision.querySelectorAll('.recap-item').length === 0; i += 1) {
+    const next = decision.all().reverse().find(
+      (n) => n.tagName === 'BUTTON' && !n.attributes.disabled && (n.listeners.click || []).length,
+    );
+    if (!next) break;
+    next.click();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  }
+
+  const recap = decision.querySelectorAll('.recap-item');
+  check('the end screen recaps every concept the chapter taught',
+    recap.length === scenario.turns.length, `got ${recap.length} of ${scenario.turns.length}`);
+  check('the recap names the concept, not the turn number',
+    /price|bei/i.test(decision.textContent));
+
+  // ADR-0004: the end screen carries no score, rank or percentile, and the recap is
+  // the newest thing on it that could grow one.
+  const recapText = [...recap].map((n) => n.textContent).join(' ');
+  check('and it marks nothing right or wrong',
+    !/correct|wrong|score|rank|%|sahihi|makosa|alama/i.test(recapText), recapText.slice(0, 80));
 }
 
 console.log(`\n${passed} passed, ${failed} failed\n`);

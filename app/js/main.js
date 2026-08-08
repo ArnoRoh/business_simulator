@@ -16,7 +16,7 @@
 import {
   createState, applyEffects, weeklyPnl, advanceWeeks, scheduleLater,
   resolveNumberInput, resolveAllocation, bandForValue, gradePrediction,
-  evaluateGoal, needsRecovery, predictionWindow,
+  evaluateGoal, needsRecovery, predictionWindow, setBands,
 } from './engine.js';
 import * as record from './record.js';
 import * as store from './storage.js';
@@ -57,6 +57,7 @@ function cacheDom() {
   dom.langBanner = q('lang-banner');
   dom.title = q('title');
   dom.reset = q('reset');
+  dom.chapters = q('chapters');
   dom.lang = q('lang');
   dom.pnlToggle = q('pnl-toggle');
   dom.pnlWrap = q('pnl-wrap');
@@ -86,6 +87,10 @@ function newSession() {
     fired: [],
     weeksPassed: 0,
     recoveriesUsed: 0,
+    // Where recovery turns were spliced into the chapter. Saved, because the scenario
+    // file is re-fetched clean on every load and the turn list has to be rebuilt to
+    // match the index the session is holding — see restoreRecoveries().
+    recoveryAt: [],
     record: record.createRecord(scenario.id),
   };
 }
@@ -434,8 +439,8 @@ function onNext() {
   // scenario most needs to teach and the one a fail screen would skip.
   if (scenario.recovery && needsRecovery(session.state) && session.recoveriesUsed < 2) {
     session.recoveriesUsed += 1;
-    scenario.turns.splice(session.turnIndex, 0, JSON.parse(JSON.stringify(scenario.recovery)));
-    scenario.turns[session.turnIndex].id = `recovery-${session.recoveriesUsed}`;
+    insertRecovery(session.turnIndex, session.recoveriesUsed);
+    session.recoveryAt.push(session.turnIndex);
   }
 
   persist();
@@ -464,6 +469,7 @@ function renderChapterSelect() {
   ui.clear(dom.scene);
   dom.pnlWrap.setAttribute('hidden', '');
   dom.pnlToggle.hidden = true;
+  renderChrome();
 
   ui.renderChapterSelect(dom.situation, dom.decision, chapters, carry, openChapter);
   window.scrollTo({ top: 0 });
@@ -490,6 +496,7 @@ async function openChapter(chapterId, forceNew) {
   scenario = loaded;
   carryIn = applyCarryIn(scenario, carry.flags);
   setCurrency(scenario.currency || 'TZS');
+  setBands(scenario.bands);
   renderChrome();
   await start(forceNew);
 }
@@ -530,7 +537,10 @@ function renderEnd() {
 
   const profile = record.buildProfile(session.record);
   const tally = record.predictionTally(session.record);
-  ui.renderProfile(dom.decision, profile, tally, session.state, session.history);
+  ui.renderProfile(
+    dom.decision, profile, tally, session.state, session.history,
+    scenario.turns, session.record.observations,
+  );
 
   const actions = ui.el('div', 'end-actions');
 
@@ -597,6 +607,12 @@ function renderChrome() {
   dom.title.textContent = localised(scenario && scenario.title) || t('app.title');
   if (!scenario) { dom.banner.hidden = true; }
   dom.reset.textContent = t('btn.startAgain');
+
+  // Getting out of a chapter you opened by mistake used to mean finishing it: "Start
+  // again" restarts the chapter in progress, and the chapter list was only reachable
+  // from the end screen. On a shared phone in a programme that is a trap.
+  dom.chapters.textContent = t('btn.chooseChapter');
+  dom.chapters.hidden = !scenario;
   dom.footPrivacy.textContent = t('foot.privacy');
 
   const open = !dom.pnlWrap.hasAttribute('hidden');
@@ -644,6 +660,31 @@ function buildLanguageToggle() {
 
 // --- startup -------------------------------------------------------------
 
+/** Splice one recovery chapter into the loaded scenario at `index`. */
+function insertRecovery(index, ordinal) {
+  const turn = JSON.parse(JSON.stringify(scenario.recovery));
+  turn.id = `recovery-${ordinal}`;
+  scenario.turns.splice(index, 0, turn);
+}
+
+/**
+ * Put back the recovery turns a saved session had already been given.
+ *
+ * `scenario.turns` is mutated when cash goes below zero, but the scenario file is
+ * re-fetched clean every time the app starts — and on the target devices it is killed
+ * and restarted often (storage.js). Without this the saved `turnIndex` points into a
+ * shorter list than the one it was recorded against, so resuming skipped one authored
+ * turn per recovery the learner had been through and ended the chapter early.
+ */
+function restoreRecoveries() {
+  if (!scenario.recovery) return;
+  const at = Array.isArray(session.recoveryAt) ? session.recoveryAt : [];
+  at.forEach((index, i) => {
+    if (index >= 0 && index <= scenario.turns.length) insertRecovery(index, i + 1);
+  });
+  session.recoveryAt = at;
+}
+
 async function start(forceNew) {
   const saved = forceNew ? null : store.load();
   if (saved && saved.scenarioId === scenario.id && Array.isArray(saved.history)) {
@@ -651,6 +692,7 @@ async function start(forceNew) {
     session.sought = session.sought || [];
     session.fired = session.fired || [];
     session.state.pending = session.state.pending || [];
+    restoreRecoveries();
   } else {
     session = newSession();
   }
@@ -699,6 +741,14 @@ async function init() {
     store.clear();
     if (scenario) start(true); else renderChapterSelect();
     window.scrollTo({ top: 0 });
+  });
+
+  // Leaving a chapter does not discard it: the save stays, so reopening the same
+  // chapter resumes where the learner stopped. Opening a different one starts that one
+  // fresh, because there is a single save slot. Nothing is locked (ADR-0007).
+  dom.chapters.addEventListener('click', () => {
+    scenario = null;
+    renderChapterSelect();
   });
 
   dom.pnlToggle.addEventListener('click', () => {

@@ -6,7 +6,7 @@
 
 import { money, moneyShort, moneySigned, count, proportion } from './format.js';
 import {
-  weeklyPnl, ownerLoad, project, BAND_SAME, BAND_LOT, applyEffects, predictionWindow,
+  weeklyPnl, ownerLoad, project, bandEdges, applyEffects, predictionWindow,
   resolveNumberInput, resolveAllocation, allocationTotal, weeklyCashFlow,
 } from './engine.js';
 import { t, tCount, localised } from './i18n.js';
@@ -906,10 +906,11 @@ export function renderWorkout(container, turn, choiceLabel, state, onReady) {
 
 /** The money range each band actually means — see engine.bandFor and Q-014. */
 function bandHint(choiceId) {
-  if (choiceId === 'up_lot') return t('predict.band.up_lot', { high: money(BAND_LOT) });
-  if (choiceId === 'up_bit') return t('predict.band.up_bit', { low: money(BAND_SAME), high: money(BAND_LOT) });
-  if (choiceId === 'same') return t('predict.band.same', { high: money(BAND_SAME) });
-  if (choiceId === 'down') return t('predict.band.down', { low: money(BAND_SAME) });
+  const { same, lot } = bandEdges();
+  if (choiceId === 'up_lot') return t('predict.band.up_lot', { high: money(lot) });
+  if (choiceId === 'up_bit') return t('predict.band.up_bit', { low: money(same), high: money(lot) });
+  if (choiceId === 'same') return t('predict.band.same', { high: money(same) });
+  if (choiceId === 'down') return t('predict.band.down', { low: money(same) });
   return '';
 }
 
@@ -1134,7 +1135,46 @@ export function renderProgress(container, done, total) {
 
 // --- end-of-run profile --------------------------------------------------
 
-export function renderProfile(container, profile, tally, state, history) {
+// The concepts this chapter actually put in front of the learner, with the decision
+// they made against each one.
+//
+// Every turn already carries a `conceptLabel` and it is shown for about a minute as a
+// tag above the situation, then never again. Twenty of those go past in half an hour,
+// which is how a learner finishes a chapter able to say what happened and not what it
+// was teaching. This is the only place the whole list is visible at once.
+//
+// It is a recap, not a result. There is no tick, no cross and no ordering by how well
+// anything went — the decision label is there so the concept has something concrete
+// attached to it, which is the same reason the situations are scenes rather than
+// exercises (contract section B). Nothing here may read as a mark (ADR-0004).
+function renderConceptRecap(container, turns, decisions) {
+  const made = new Map();
+  for (const d of decisions) if (d.kind === 'decision') made.set(d.turnId, d);
+
+  const rows = [];
+  for (const turn of turns) {
+    const label = localised(turn.conceptLabel);
+    if (!label) continue;
+    rows.push({ label, choice: localised(made.get(turn.id)?.optionLabel) });
+  }
+  if (rows.length === 0) return;
+
+  const card = el('div', 'card recap fade-in');
+  card.appendChild(el('div', 'card-title', t('profile.recapTitle')));
+  card.appendChild(el('p', 'recap-intro', t('profile.recapIntro')));
+
+  const list = el('ul', 'recap-list');
+  for (const row of rows) {
+    const item = el('li', 'recap-item');
+    item.appendChild(el('span', 'recap-concept', row.label));
+    if (row.choice) item.appendChild(el('span', 'recap-choice', row.choice));
+    list.appendChild(item);
+  }
+  card.appendChild(list);
+  container.appendChild(card);
+}
+
+export function renderProfile(container, profile, tally, state, history, turns = [], decisions = []) {
   clear(container);
 
   // Completion is the gate (ADR-0005, resolved by the owner in session 005). Finishing
@@ -1176,6 +1216,8 @@ export function renderProfile(container, profile, tally, state, history) {
   card.appendChild(chartWrap);
   container.appendChild(card);
   if (history && history.length > 1) drawChart(chartWrap, history);
+
+  renderConceptRecap(container, turns, decisions);
 
   const limits = el('div', 'card limitations');
   limits.appendChild(el('div', 'card-title', t('profile.limitationsTitle')));
