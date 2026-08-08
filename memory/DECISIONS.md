@@ -391,6 +391,60 @@ exactly where one would grow. `smoke-app.mjs` asserts it does not.
 
 ---
 
+## D-021 — A control anchors on a value that exists, and the checks prove it
+**Date:** 2026-08-08 (session 011) · **Decided by:** Claude, from evidence
+**Decision:** `engine.js` gains `readField(state, field)`, which reads a flat field or a
+product line addressed as `lines.<id>.<field>`. Everything that asks "where is the learner
+now?" goes through it — the `start: "current"` anchor in `resolveNumberInput`, the stepper's
+opening position and the response feedback in `ui.js`, and the monotonicity check in
+`validate-scenario.mjs`. The validator now **FAILs** a number input whose field is not a
+real state field, or whose `start: "current"` has no current value to anchor on.
+**Why:** `state['lines.export.price']` is `undefined`, because lines live in an array. Every
+caller used a plain index and silently got zero, so a response curve authored as "for every
+50 shillings you move the price" was measured from **zero** instead of from the price. Two
+live examples, both authored correctly and both broken by the engine: chapter 4's export
+pricing turn cost the learner **34–50 reputation for naming any price at all**, and chapter
+3's competitive pricing turn wiped roughly **2,000 loaves of weekly demand for holding its
+own price steady**. Both were recorded as the learner's judgement.
+**Why the checks did not see it:** a curve measured from the wrong anchor is still finite,
+still maps to a band, and is still monotonic — which is everything `validate-scenario.mjs`
+asked. It is the same lesson as [D-015](#d-015--every-control-must-be-able-to-reach-the-answer):
+the checks test the model and say almost nothing about the controls, so a control defect has
+to be made into a check of its own or it will not be found.
+**Considered and rejected:** leaving the two turns anchored on authored constants, which is
+what the fix looked like before the cause was understood. It works until an earlier turn
+moves the same price — chapter 4 has one that does — and it leaves the defect armed for the
+next author who writes the obvious thing.
+**Revisit if:** a third address space appears. Two (flat fields, line paths) is a helper;
+three is a path resolver, and the honest response then is to store lines as a map.
+
+## D-022 — An effect that must survive every path moves the whole constraint, and is signed
+**Date:** 2026-08-08 (session 011) · **Decided by:** Claude, from evidence
+**Decision:** Two authoring rules, applied to chapters 3 and 4 and binding on new content:
+1. **An option that changes the order book moves `demand` and `capacity` together.**
+2. **Use a signed delta (`"+60"`, `"-0.045"`) for any field an earlier turn can also move.**
+   An unsigned number is an absolute set, and it means "whatever the author assumed the
+   state was", which is a different thing on every path.
+**Why:** thirteen of the nineteen prediction failures in chapters 3 and 4 were one of these
+two shapes. Demand alone does nothing when the business is already capacity-constrained and
+raises spoilage when it is not, so the *sign* of the outcome depended on which side of the
+constraint an earlier decision had left the firm — the option was graded differently for
+identical reasoning. The unsigned form was worse: chapter 4 set an export price of 60
+shillings where it meant to add 60, and set a duty rate that was a *cut* on one path and an
+*increase* on another, so the declared answer was wrong for the learner who was right.
+**Also recorded, because it cost an afternoon:** `spoilRate` charges **unsold capacity
+only**. It is not a model of transit damage or of anything that happens to goods that
+actually ship. Chapter 4's packaging turn was using it for both, which made a decision about
+sea freight quietly depend on how much stock went unsold at home.
+**Considered and rejected:** widening the band edges until the unstable options fit inside
+one band. It passes the validator, and it makes the prediction meaningless in exactly the
+turns where the business is most exposed.
+**Revisit if:** an author needs an option that genuinely can go either way. That is a real
+thing in business, but it cannot be graded as a prediction — put the consequence in `later`,
+where it is attributed rather than scored.
+
+---
+
 ## Pending — proposed, not decided
 
 Entries below are **not decisions.** They are recorded here so the index is complete and
@@ -402,4 +456,5 @@ Of the further proposals from
 [session 002](./sessions/2026-08-02-002-pedagogy-and-timing-ideation.md),
 **predict-then-reveal** is implemented and now shows the learner the money ranges each band
 covers. **Far-transfer testing** and **pre/post plus delayed retest** remain unimplemented
-and unratified; both need a second scenario.
+and unratified. Both were blocked on a second scenario; as of session 011 there are four, so
+what remains is a design and ratification question rather than a content one.

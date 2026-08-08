@@ -30,7 +30,15 @@ node scripts/build-single-file.mjs
 
 **Do not edit `standalone.html` directly.** Edit the real files under `app/` and rebuild,
 or your changes will be overwritten. It is committed for convenience, which means it can
-drift — rebuild it after any change to `app/`.
+drift — rebuild it after any change to `app/`. It went one whole chapter stale between
+sessions 008 and 011 without anything noticing.
+
+With four chapters embedded it is **~610 KB**. The served app's shell is ~230 KB and it
+fetches one chapter (~115–145 KB) on demand, so opening the stall costs roughly half what
+the single file does and the three chapters a learner never opens cost nothing at all.
+That gap is why this is a convenience artifact and not the delivery route — a learner pays
+for their own data ([AGENTS.md](../AGENTS.md) §3). Uncompressed figures; the served app is
+gzipped in transit and the single file usually is not.
 
 The build wraps each ES module in its own scope rather than concatenating them, because
 `scene.js` and `ui.js` both declare a private `clear` helper that would otherwise
@@ -89,6 +97,7 @@ own data ([ADR-0002](../docs/adr/0002-mobile-first-offline-pwa.md)).
 | `js/storage.js` | Local-only persistence. |
 | `js/main.js` | Chapter and turn state machine. |
 | `js/carry.js` | The six flags that travel between chapters, and the rules bounding them. |
+| `sw.js` | Service worker. Shell cache-first, content network-first with a cache fallback. |
 | `content/chapters.json` | The chapter manifest. Loaded at startup; scenario files are fetched one at a time. |
 | `content/scenario-*.json` | Scenarios, authored as **data, not code**, with both languages inline. |
 | `content/ui.json` | Interface strings, key-major so the languages sit side by side. |
@@ -107,7 +116,7 @@ with local business knowledge and no programming skill to write and review conte
 node scripts/test-engine.mjs        # economics, drift, consequences, owner time, carry
 node scripts/validate-scenario.mjs  # every option's declared prediction, on every path
 node scripts/validate-i18n.mjs      # no missing strings in either language, every chapter
-node scripts/simulate-runs.mjs      # plays every chapter four ways and prints the numbers
+node scripts/simulate-runs.mjs      # plays every chapter five ways and prints the numbers
 node scripts/smoke-app.mjs          # drives the real app against a stub DOM
 bash  scripts/check-links.sh
 ```
@@ -133,6 +142,11 @@ engine actually computes, on every path through the scenario. If they disagree t
 is marked wrong for being right. **It checks band stability, not viability** — it will not
 notice a business that has been driven to a dead state, which has happened once.
 
+Each chapter is graded against **its own band edges** ([D-018](../memory/DECISIONS.md)),
+declared as `bands` in the scenario file. An edge must fall in a gap between clusters of
+outcomes; put one inside a cluster and an option's band starts depending on the path the
+learner took to reach it, which the validator then rejects as unstable — correctly.
+
 `validate-i18n.mjs` exists because `t()` returns the key itself when a string is missing, so
 a gap ships as a literal `pnl.sales` on screen without throwing — which is invisible in a
 language you do not read.
@@ -149,8 +163,9 @@ language you do not read.
   [Q-015](../memory/OPEN_QUESTIONS.md).
 - **Nobody has seen this version on a real phone.** It is verified headlessly for behaviour
   and text, which does not catch layout.
-- **No service worker**, so it is not yet installable or offline-capable. The manifest is
-  in place; the caching layer is not.
+- **Offline is untested on a real device.** `sw.js` caches the shell and falls back to a
+  cached chapter, and `smoke-app.mjs` checks every pre-cached path exists — but nobody has
+  yet installed the app on a phone, turned the connection off and played a chapter.
 - **Far-transfer testing** — the same concept in an unfamiliar business — is now possible
   across four chapters but is not implemented.
 - **No pre/post or delayed retest**, both of which the assessment design calls for.

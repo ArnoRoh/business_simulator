@@ -119,6 +119,68 @@ factory and export chapters in particular.
 
 ## Open
 
+### Q-022 — Should band stability be checked on more than three paths, and fail?  [open]
+**Raised:** 2026-08-08 (session 011) · **Owner:** Project owner, for the chapter 1 part
+**Question:** `validate-scenario.mjs` walks three fixed paths — always the first option,
+always the middle, always the last. Nobody plays that way, and an option's band depends on
+the state earlier decisions left behind. Session 011 added a 400-path random sweep with a
+fixed seed. It **reports** and does not fail. Should it fail?
+**What it found immediately**, in content the three-path check had just passed clean:
+
+| Chapter | Holds its band across 400 paths | Drifting options |
+|---|---|---|
+| mama-asha | 41/42 | `t09/ask-later` |
+| bakery | 38/45 | `t08`, `t09`, `t12`, `t14`, `t15`, `t18` ×2 |
+| factory | 41/45 | `t12`, `t14`, `t19` ×2 |
+| export | 45/45 | — |
+
+> The factory row read `45/45` when this question was first written, in the same pass that
+> fixed its four declared-band failures. It does not: the check prints `41/45`, standalone
+> and in a full run. Corrected at the end of session 011 from what the check actually says.
+> Only chapter 4 clears the sweep.
+
+**Why it matters:** an option that changes band between paths grades identical reasoning
+differently depending on decisions made ten turns earlier. That is the same unfairness
+[D-015](./DECISIONS.md) and the three-path check exist to prevent — the check was simply
+not looking hard enough. Prediction accuracy is the signal the assessment rests on.
+**Why it does not fail today:** turning it into a FAIL turns three of the four chapters
+red, and chapter 1 is content the owner has played and accepted — see
+[Q-021](#q-021--up-a-lot-is-unreachable-in-chapter-1-and-only-content-can-fix-it). An
+integrator should not force a rebalance of the owner's accepted content by way of a check.
+**Current assumption:** reports every run, next to the numbers a person already reads.
+Make it a FAIL once the owner has ruled on chapters 1 and 2.
+
+### Q-023 — Is the export chapter now too easy, and is its narrowed freight range right?  [open]
+**Raised:** 2026-08-08 (session 011) · **Owner:** Project owner / playtesting
+**Question:** Two things about chapter 4 that a human should look at:
+1. An `attentive` player now finishes at ~137m cash, ~5.7m a week and reputation 77. Before
+   session 011 it finished at ~97m with reputation 33 — the difference is almost entirely
+   one engine defect ([D-021](./DECISIONS.md)) that was charging 34–50 reputation for
+   naming any export price at all. There is no earlier honest calibration to compare
+   against, because every previous run was measuring a broken control.
+2. Turn 2's freight range was narrowed from 100–320 to 120–240 per unit, to stop a single
+   number chosen at turn 2 swinging turn 3's Incoterms comparison by more than the whole
+   band was wide. The top of the range now describes 240, not 320.
+**Why it matters:** [D-019](./DECISIONS.md) sets the floor — a chapter must be finishable
+by someone who heeds the warnings — and says nothing about a ceiling. A last chapter that
+is the *easiest* to finish well would be the arc arriving backwards.
+**Current assumption:** left as it is. It is no longer measuring a broken control as the
+learner's judgement, which was the thing that had to be true; whether it now has enough
+teeth is a playtesting question, not one more round of tuning by the author.
+
+### Q-024 — Bakery turn 16 is a prediction with only one answer  [open]
+**Raised:** 2026-08-08 (session 011) · **Owner:** whoever next edits chapter 2's content
+**Question:** All three options on the bakery's turn 16 (keeping books) declare `same`, so
+`validate-scenario.mjs` prints `weak t16`. The learner predicts, and every choice is the
+same prediction.
+**Why it matters:** small, and worth fixing when the file is next open. A turn that cannot
+discriminate teaches nothing at the moment of engagement, and it quietly dilutes the
+prediction signal. It is also a nag on every validation run, which is how real warnings
+come to be ignored.
+**Current assumption:** left alone. The turn's *content* is sound — record-keeping does not
+move this week's profit, which is exactly its lesson — so the honest fix is probably a
+delayed consequence rather than a same-week effect, and that is a content decision.
+
 ### Q-021 — "Up a lot" is unreachable in chapter 1, and only content can fix it  [open]
 **Raised:** 2026-08-08 (session 010) · **Owner:** Project owner
 **Question:** Of chapter 1's forty-two option predictions, exactly **one** lands in "up a

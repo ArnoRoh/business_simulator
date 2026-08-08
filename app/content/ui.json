@@ -252,10 +252,6 @@
     "en": "Not what you expected.",
     "sw": "Si ulivyotegemea."
   },
-  "reveal.youSaid": {
-    "en": "You said {predicted}. It was {actual}.",
-    "sw": "Ulisema {predicted}. Ilikuwa {actual}."
-  },
   "reveal.weeklyProfit": {
     "en": "Weekly profit",
     "sw": "Faida ya wiki"
@@ -675,18 +671,6 @@
   "goal.conditionValue": {
     "en": "Now {current}; need {target}.",
     "sw": "Sasa {current}; inahitajika {target}."
-  },
-  "recovery.title": {
-    "en": "Cash below zero",
-    "sw": "Pesa iko chini ya sifuri"
-  },
-  "recovery.body": {
-    "en": "This is a recovery chapter. Choose a way to keep the business open.",
-    "sw": "Hii ni sura ya kurekebisha hali. Chagua njia ya kuweka biashara wazi."
-  },
-  "recovery.continue": {
-    "en": "The run continues.",
-    "sw": "Safari inaendelea."
   },
   "btn.nextChapter": {
     "en": "Next chapter",

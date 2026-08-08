@@ -100,6 +100,57 @@ compliance capability too expensive for individual small firms to recreate.
 **Anchor firm** *[domain]* — An established firm large enough that new suppliers and
 service businesses can be spawned around it, using its purchase commitments as demand.
 
+## Trade, cost and cash
+
+Vocabulary chapters 3 and 4 teach. Listed here because the same word is used by the
+content, the engine's state fields and the design docs, and the three must not drift.
+
+**Working capital** *[domain]* — Money tied up in the trading cycle rather than
+available to spend: stock on the shelf, plus what customers owe you, minus what you owe
+suppliers. A growing business absorbs it, which is why a firm can be profitable and out
+of cash in the same week. Held in state as `wcHeld`.
+
+**Cash conversion cycle** *[domain]* — How long that money stays tied up, in weeks:
+stock cover plus debtor weeks minus creditor weeks. Authored per chapter as
+`inventoryWeeks`, `debtorWeeks` and `creditorWeeks`, and reported to the learner as
+"cycle".
+
+**Bottleneck** — see *Project terms* above. Chapter 3 is built on it: spending on a
+stage that was never the constraint must visibly fail to move the ledger.
+
+**Fixed cost absorption** *[domain]* — Why a second production line at low utilisation
+can leave a firm worse off than no second line: the cost arrives in full, the volume
+does not.
+
+**Payroll on-cost** *[domain]* — What an employee costs above their wage once statutory
+contributions are included. Rates are jurisdiction-specific and **not invented here** —
+the chapter marks its figure `UNVERIFIED` (see [Q-018](./OPEN_QUESTIONS.md)).
+
+**Landed cost** *[domain]* — What a unit costs by the time it reaches the buyer's door:
+ex-works price plus freight, insurance, duty and clearing. The gap between it and the
+price a foreign buyer quotes is the part exporters routinely underestimate.
+
+**Incoterms** *[domain]* — Standard three-letter terms fixing who pays which cost and
+who carries which risk at each point of a shipment. Chapter 4 uses EXW (buyer collects
+at your gate), FOB (you deliver to the ship) and CIF (you pay freight and insurance to
+the destination port).
+
+**Letter of credit** *[domain]* — A bank's undertaking to pay the seller once shipping
+documents match the terms exactly. Reduces the risk of not being paid, costs a fee, and
+pays nothing if a document is wrong.
+
+**Preferential access** *[domain]* — A reduced or zero duty rate available under a trade
+arrangement, usually conditional on proving where the goods were made. The proof is
+paperwork with a cost and a lead time, which is the decision chapter 4 poses.
+
+**Minimum order quantity (MOQ)** *[domain]* — The smallest order a buyer will place.
+A large one can exceed the capacity a firm has, or displace the domestic customers it
+already serves.
+
+**Private label** *[domain]* — Making a product sold under the buyer's brand rather than
+your own. Usually a bigger order at a lower margin, and it leaves the maker without a
+customer relationship of their own.
+
 ## Project entities
 
 **Upendo Honey / Third Man Ltd** — Owner's Tanzanian honey business (~130 employees,
