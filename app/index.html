@@ -53,5 +53,17 @@
   </div>
 
   <script type="module" src="./js/main.js"></script>
+
+  <!-- Registered after load, and failing silently on purpose. Offline support is a
+       requirement (ADR-0002) but it is not a precondition for playing: a browser that
+       refuses the worker, or a page opened over file://, must still get a working app
+       rather than an error. -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
 </body>
 </html>

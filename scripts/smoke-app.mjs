@@ -13,7 +13,7 @@
 //
 // Run: node scripts/smoke-app.mjs
 
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 
 const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
 
@@ -349,6 +349,26 @@ console.log('\napp: the end of a chapter');
   const recapText = [...recap].map((n) => n.textContent).join(' ');
   check('and it marks nothing right or wrong',
     !/correct|wrong|score|rank|%|sahihi|makosa|alama/i.test(recapText), recapText.slice(0, 80));
+}
+
+console.log('\napp: the service worker can actually cache the shell');
+{
+  // `cache.addAll` rejects as a unit: one missing file and the install fails, leaving
+  // no worker and no offline support at all — silently, because registration is
+  // deliberately allowed to fail without complaining. So the one thing worth checking
+  // headlessly is that every path it names is a file that exists.
+  const sw = read('app/sw.js');
+  const shell = [...sw.matchAll(/'\.\/([^']+)'/g)].map((m) => m[1]).filter((p) => p.includes('.'));
+  check('the shell list is not empty', shell.length > 5, `got ${shell.length}`);
+
+  const missing = shell.filter((p) => !existsSync(new URL(`../app/${p}`, import.meta.url)));
+  check('every file the service worker pre-caches exists', missing.length === 0, missing.join(', '));
+
+  check('the page registers it', /serviceWorker\.register/.test(read('app/index.html')));
+
+  // A cached build-info.json would report a deploy that had not happened, which is the
+  // exact failure it was added to catch. See PROJECT_STATE.md.
+  check('build-info.json is exempt from the cache', /build-info\.json/.test(sw));
 }
 
 console.log(`\n${passed} passed, ${failed} failed\n`);
