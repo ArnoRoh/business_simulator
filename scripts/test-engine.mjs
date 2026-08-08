@@ -8,7 +8,7 @@ import {
   scheduleLater, project, baseOwnerHours, bandFor, setBands, bandEdges, BAND_DEFAULTS,
   resolveNumberInput, resolveAllocation, allocationTotal, bandForValue, gradePrediction,
   weeksOfCostsCovered, evaluateGoal, needsRecovery, predictionWindow, decisionOutcomes,
-  linesOf, workingCapital, weeklyCashFlow, cashCycleWeeks,
+  linesOf, workingCapital, weeklyCashFlow, cashCycleWeeks, readField,
 } from '../app/js/engine.js';
 import * as record from '../app/js/record.js';
 import { applyCarryIn, collectCarry, situationFor, CARRY_FLAGS } from '../app/js/carry.js';
@@ -222,6 +222,40 @@ console.log('\nengine: number inputs and declarative response curves');
   eq('number input response at max is additive', atMax.demand, -192);
   eq('number input does not mutate state', state.price, 500);
   eq('number input effects apply to state', applyEffects(state, atMax).demand, 8);
+}
+
+console.log('\nengine: a number input anchored on a product line');
+{
+  // Content addresses a line as `lines.<id>.<field>`, and `state` holds lines in an
+  // array — so `state['lines.bread.price']` is undefined and every "where am I now?"
+  // read used to come back as zero. A response curve measured from zero charged the
+  // learner the whole price as if it were a change: chapter 4 turn 4 cost 34–50
+  // reputation for naming any price, and chapter 3 turn 18 wiped ~2,000 loaves of
+  // demand for holding its own price steady. Both graded as the learner's judgement.
+  const state = createState({
+    lines: [{ id: 'bread', price: 900, unitCost: 600, demand: 500, capacity: 500 }],
+  });
+  const input = {
+    field: 'lines.bread.price',
+    min: 700,
+    max: 1100,
+    step: 25,
+    start: 'current',
+    responses: [{ field: 'lines.bread.demand', perStep: 25, change: -60 }],
+  };
+
+  eq('readField reaches into a product line', readField(state, 'lines.bread.price'), 900);
+  eq('readField still reads a flat field', readField(state, 'cash'), state.cash);
+  eq('readField reports a field that is not there', readField(state, 'lines.cake.price'), undefined);
+  eq('readField reports an unknown line', readField(state, 'lines.nope.price'), undefined);
+
+  const held = resolveNumberInput(state, input, 900);
+  eq('holding the current price moves demand not at all', held['lines.bread.demand'], '+0');
+
+  const cut = resolveNumberInput(state, input, 700);
+  eq('cutting the price wins customers', cut['lines.bread.demand'], '+480');
+  eq('and it is measured from the price, not from zero',
+    applyEffects(state, cut).lines[0].demand, 980);
 }
 
 console.log('\nengine: allocation inputs');

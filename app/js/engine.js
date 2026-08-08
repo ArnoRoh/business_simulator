@@ -193,6 +193,34 @@ export function linesOf(state) {
   }];
 }
 
+/**
+ * Read a state field by the same name an effect would use to write it — including a
+ * product line addressed as `lines.<id>.<field>`.
+ *
+ * This exists because content addresses lines through a path and `state` stores them in
+ * an array, so `state['lines.export.price']` is `undefined`. Every caller that wanted
+ * "where the learner is now" used the plain index and silently got zero: a `number`
+ * decision anchored on `start: "current"` measured its response curve from 0 rather than
+ * from the current price, and the stepper opened at its own minimum instead of at the
+ * learner's own position — which [D-015](../../memory/DECISIONS.md) calls a
+ * data-integrity bug, not a cosmetic one. Chapter 4 turn 4 cost the learner 34–50
+ * reputation for naming any price at all; chapter 3 turn 18 wiped roughly 2,000 loaves
+ * of demand for holding its own price. Both look like judgement in the record.
+ *
+ * Returns `undefined` when the field does not exist, so a caller can tell a real zero
+ * from a field that was never there. `validate-scenario.mjs` fails a `start: "current"`
+ * that lands on one.
+ */
+export function readField(state, field) {
+  const lineMatch = LINE_EFFECT.exec(String(field));
+  if (lineMatch) {
+    const [, lineId, name] = lineMatch;
+    const line = linesOf(state).find((candidate) => candidate.id === lineId);
+    return line ? line[name] : undefined;
+  }
+  return state[field];
+}
+
 // The standard an owner holds without effort. Weekly slippage stops here; going below
 // takes active neglect (see the overload penalty in advanceWeek).
 const HYGIENE_FLOOR = 40;
@@ -809,7 +837,7 @@ export function resolveNumberInput(state, input, value) {
   const effects = {};
   const responseDeltas = {};
   const startValue = input.start === 'current'
-    ? Number(state[input.field]) || 0
+    ? Number(readField(state, input.field)) || 0
     : Number(input.start);
 
   effects[input.field] = value;

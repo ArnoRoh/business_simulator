@@ -16,7 +16,7 @@ import { readFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import {
   createState, applyEffects, weeklyPnl, advanceWeeks, scheduleLater, bandFor, setBands,
-  resolveNumberInput, resolveAllocation, allocationTotal, bandForValue,
+  resolveNumberInput, resolveAllocation, allocationTotal, bandForValue, readField,
   predictionWindow, decisionOutcomes,
 } from '../app/js/engine.js';
 import { applyCarryIn, CARRY_FLAGS } from '../app/js/carry.js';
@@ -99,6 +99,25 @@ function pathNumberValue(values, pathIndex) {
 function validateNumberTurn(state, turn, pathIndex) {
   const decision = turn.decision;
   const values = numberValues(decision.input || {});
+
+  // The field a number decision writes must be a field that exists — a flat one, or a
+  // product line addressed as `lines.<id>.<field>`. Anything else is written into
+  // `flags` by `applyEffects`, so the control moves and the business does not.
+  //
+  // The anchor matters just as much. `start: "current"` used to be read with a plain
+  // index, which is `undefined` for a line, so the response curve was measured from
+  // zero: chapter 4's export price cost 34–50 reputation for any price at all, and
+  // chapter 3's loaf price wiped ~2,000 loaves of demand for holding steady. Both
+  // passed every check here, because a curve measured from the wrong anchor is still
+  // finite and still monotonic. This is the check that would have caught them.
+  const anchored = decision.input?.start !== 'current'
+    || Number.isFinite(Number(readField(state, decision.input.field)));
+  const addressable = readField(state, decision.input?.field) !== undefined;
+  if (!anchored || !addressable) {
+    console.log(`  FAIL ${turn.id} input field "${decision.input?.field}" `
+      + `${addressable ? 'has no current value to anchor "start": "current" on' : 'is not a state field'}`);
+    problems += 1;
+  }
   const outcomes = values.map((value) => {
     const after = applyEffects(state, resolveNumberInput(state, decision.input, value));
     return { value, state: after, profit: weeklyPnl(after).profit, band: bandForValue(decision.bands, value) };
@@ -109,7 +128,7 @@ function validateNumberTurn(state, turn, pathIndex) {
   let monotonic = true;
   for (const response of decision.input?.responses || []) {
     const change = Number(response.change);
-    const fieldValues = outcomes.map((outcome) => Number(outcome.state[response.field]));
+    const fieldValues = outcomes.map((outcome) => Number(readField(outcome.state, response.field)));
     if (!Number.isFinite(change) || fieldValues.some((value) => !Number.isFinite(value))) continue;
     for (let i = 1; i < fieldValues.length; i += 1) {
       const difference = fieldValues[i] - fieldValues[i - 1];
@@ -431,6 +450,77 @@ for (const turn of scenario.turns) {
   if (new Set(bands).size === 1) {
     console.log(`  weak  ${turn.id}: every option declares "${bands[0]}"`);
   }
+}
+
+// A wider sweep of the same question the three fixed paths ask.
+//
+// Three paths are "always the first option", "always the middle" and "always the last".
+// A learner does none of those, and an option's band depends on the state earlier
+// decisions left behind — so three walks can report a chapter stable that is not. This
+// found flips in three of the four chapters on the day it was written, in content the
+// three-path check had just passed.
+//
+// It **reports** rather than fails, deliberately. Chapter 1 is content the owner has
+// played and accepted and rebalancing it is their call (Q-021), so a check that turned
+// their accepted chapter red would be an integrator overruling them. See Q-022 — the
+// intention is that this becomes a FAIL once that ruling exists.
+//
+// The seed is fixed, so the same run gives the same answer and a fix can be verified.
+console.log('\nstability across many paths:');
+{
+  let seed = 20260808;
+  const rnd = () => (seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
+  const seen = new Map();
+  const RUNS = 400;
+
+  for (let run = 0; run < RUNS; run += 1) {
+    let state = createState(openingState);
+    for (const turn of scenario.turns) {
+      const decision = turn.decision;
+      const type = decision.type || 'choice';
+
+      if (type === 'number') {
+        const values = numberValues(decision.input || {});
+        const value = values[Math.floor(rnd() * values.length)];
+        const next = value === undefined
+          ? state
+          : applyEffects(state, resolveNumberInput(state, decision.input, value));
+        state = advanceWeeks(next, turn.advanceWeeks || 1).state;
+        continue;
+      }
+
+      if (type === 'allocate') {
+        const splits = allocationSplits(decision.allocate || {}, allocationTotal(state, decision.allocate || {}));
+        const chosen = splits[Math.floor(rnd() * splits.length)];
+        const next = chosen === undefined
+          ? state
+          : applyEffects(state, resolveAllocation(state, decision.allocate, chosen.split));
+        state = advanceWeeks(next, turn.advanceWeeks || 1).state;
+        continue;
+      }
+
+      const before = weeklyPnl(state).profit;
+      for (const opt of decision.options) {
+        const band = bandFor(weeklyPnl(applyEffects(state, opt.effects || {})).profit - before);
+        const key = `${turn.id}/${opt.id}`;
+        if (!seen.has(key)) seen.set(key, { declared: opt.predictAnswer, bands: new Set() });
+        seen.get(key).bands.add(band);
+      }
+
+      const chosen = decision.options[Math.floor(rnd() * decision.options.length)];
+      const afterChoice = scheduleLater(
+        applyEffects(state, chosen.effects || {}), chosen.later || [], chosen.label,
+      );
+      state = advanceWeeks(afterChoice, turn.advanceWeeks || 1).state;
+    }
+  }
+
+  const unstable = [...seen.entries()]
+    .filter(([, r]) => r.bands.size > 1 || !r.bands.has(r.declared));
+  for (const [key, r] of unstable) {
+    console.log(`  drift ${key.padEnd(38)} ${String(r.declared).padEnd(10)} ${[...r.bands].join('|')}`);
+  }
+  console.log(`  ${seen.size - unstable.length}/${seen.size} options hold their band across ${RUNS} random paths`);
 }
 
 console.log(`\n${checks - choiceProblems}/${checks} option predictions verified, ${problems} problem(s)`);

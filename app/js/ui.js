@@ -7,7 +7,7 @@
 import { money, moneyShort, moneySigned, count, proportion } from './format.js';
 import {
   weeklyPnl, ownerLoad, project, bandEdges, applyEffects, predictionWindow,
-  resolveNumberInput, resolveAllocation, allocationTotal, weeklyCashFlow,
+  resolveNumberInput, resolveAllocation, allocationTotal, weeklyCashFlow, readField,
 } from './engine.js';
 import { t, tCount, localised } from './i18n.js';
 import { drawScene, drawChart, animateNumber, pulse } from './scene.js';
@@ -93,7 +93,7 @@ function appendNumberFeedback(card, state, input, value) {
   for (const response of input.responses || []) {
     const delta = numberDelta(effects[response.field]);
     if (delta === 0) continue;
-    const current = Number(state[response.field]) || 0;
+    const current = Number(readField(state, response.field)) || 0;
     const label = t(feedbackFieldKey(response.field));
     const line = response.field === 'demand' && delta < 0
       ? t('num.customersLost', { n: count(Math.abs(delta)) })
@@ -111,11 +111,17 @@ function appendNumberFeedback(card, state, input, value) {
   // A price is two numbers multiplied, and the multiplication is the part that is hard
   // to hold in your head. Show it — but stop at the gross, before rent and wages, so
   // the profit prediction that follows is still the learner's own arithmetic.
-  if (input.field === 'price') {
+  //
+  // Matched by field name rather than by the exact string 'price', so a chapter that
+  // prices one product line (`lines.export.price`) gets the same help as chapter 1
+  // pricing its only product. Without that, the turns where the arithmetic is hardest
+  // were the ones showing none of it.
+  if (/(^|\.)price$/.test(String(input.field))) {
     const after = weeklyPnl(applyEffects(state, effects));
+    const unitCostField = String(input.field).replace(/price$/, 'unitCost');
     feedback.appendChild(el('p', 'number-feedback-line keep', t('num.grossPerWeek', {
       units: count(after.unitsSold),
-      kept: money(value - Number(state.unitCost || 0)),
+      kept: money(value - Number(readField(state, unitCostField) || 0)),
       gross: money(after.revenue - after.variableCost),
     })));
     hasFeedback = true;
@@ -531,7 +537,7 @@ export function renderNumberDecision(container, turn, state, onCommit) {
   const min = Number(input.min);
   const max = Number(input.max);
   const step = Math.max(1, Number(input.step) || 1);
-  const rawStart = input.start === 'current' ? state[input.field] : input.start;
+  const rawStart = input.start === 'current' ? readField(state, input.field) : input.start;
   // Inputs are authored on a step grid. If a saved state is between steps, keep it
   // until the learner touches the control; the next press still moves exactly one step.
   let value = clampNumber(Number(rawStart) || min, min, max);
