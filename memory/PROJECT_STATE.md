@@ -1,7 +1,7 @@
 # Project state
 
 **Snapshot as of:** 2026-08-08
-**Last session:** [`sessions/2026-08-08-011-chapters-3-4-and-the-anchor-bug.md`](./sessions/2026-08-08-011-chapters-3-4-and-the-anchor-bug.md)
+**Last session:** [`sessions/2026-08-08-012-playing-it-and-what-that-found.md`](./sessions/2026-08-08-012-playing-it-and-what-that-found.md)
 
 > This file is a **snapshot, not a history**. Overwrite it at the end of every session
 > so it always describes the present. History belongs in `sessions/` and
@@ -25,14 +25,20 @@ was written. It is now **contact with real people** — an owner playing it, a f
 Kiswahili reader, a phone, and Tanzanian figures somebody can vouch for. None of those can be
 produced from inside this repository.
 
-Eleven sessions: repository bootstrap (001), an ideation discussion on pedagogy and placement
+Twelve sessions: repository bootstrap (001), an ideation discussion on pedagogy and placement
 (002), the first build (003), a shareable single-file version (004), a rework for depth and
 Kiswahili (005), free-input decisions plus a campaign (006), a repair of two controls that
 could not reach their own answers (007), the four-chapter arc and the engine to carry it
 (008), an audit and a file with two owners (009), the bakery landing plus the service worker
-(010), and chapters 3 and 4 plus the anchor bug (011). Two of those — 006 and 007 — happened
-because the owner played the thing and found what no check could see. **That is still the
-highest-yield activity available.**
+(010), chapters 3 and 4 plus the anchor bug (011), and a playthrough check plus the six
+defects it found (012).
+
+**Sessions 006, 007, 011 and 012 all exist because somebody played it.** Four of the twelve.
+Every one of them found defects that the whole test suite had passed clean, and every one of
+them was a control lying to the learner rather than an engine getting a number wrong. Session
+012 finally turned that into a check — `playthrough.mjs` — but the pattern is old enough now
+to be a fact about this project: **the model is well tested and the screens are where the
+defects live.**
 
 The project rests on the owner's background note
 ([`docs/context/transformational-entrepreneurship.md`](../docs/context/transformational-entrepreneurship.md)) —
@@ -51,12 +57,12 @@ read it before anything else. The arc is in [`docs/arc.md`](../docs/arc.md) and
 | **The chapter layer** | Manifest, select screen, `carry.js`, per-chapter save. Nothing locked, nothing summed. |
 | **Offline** | `sw.js` — shell cache-first, content network-first with a cache fallback, `build-info.json` exempt. **Never tested on a device.** |
 | Operating guide (`AGENTS.md`, `CLAUDE.md`) | Written. Carries the thesis and memory protocol. |
-| Memory system | In use — this file, 22 decisions, 24 open questions (2 resolved), glossary, 11 session entries, 3 contracts. |
+| Memory system | In use — this file, 25 decisions, 26 open questions (2 resolved), glossary, 12 session entries, 3 contracts. |
 | Governance, licences | Written. MIT code + CC BY-SA 4.0 content. |
 | Design docs (`docs/`) | `arc.md` is current. `game-design.md`, `curriculum.md` and `assessment.md` are **behind the code**. |
 | Regional context (`docs/context/`) | Owner's note in place. Country detail still a **deliberate stub**. |
 | ADRs | Seven, all `Accepted`. |
-| Tests | 6 checks, all green. See below. |
+| Tests | 7 checks, all green. See below. |
 | Curriculum content | Four chapters. Far-transfer testing is now *possible* and still not implemented. |
 | Partners, pilot sites, funding | Still not recorded. See Q-002. |
 
@@ -66,14 +72,23 @@ read it before anything else. The arc is in [`docs/arc.md`](../docs/arc.md) and
 |---|---|
 | `test-engine.mjs` | 226 passed |
 | `validate-scenario.mjs` | 177/177 option predictions, 75/75 numeric turn paths, 0 problems, 4 chapters |
-| `validate-i18n.mjs` | 1,777 content strings × 2 languages; 103 literal + 6 built interface keys |
+| `validate-i18n.mjs` | 1,789 content strings × 2 languages; 109 literal + 7 built interface keys |
 | `simulate-runs.mjs` | no whole-business failures; `attentive` finishes all four chapters |
 | `smoke-app.mjs` | 29 passed |
-| `check-links.sh` | 296 relative links resolve |
+| **`playthrough.mjs`** | **1,372 passed** — 4 chapters × 2 languages, every turn, every screen |
+| `check-links.sh` | 321 relative links resolve |
 
 `validate-scenario.mjs` also prints `drift` lines from a 400-path random sweep. **Those are
 real findings that deliberately do not fail** — chapters 1, 2 and 3 have unstable options.
 See Q-022 before dismissing them.
+
+`playthrough.mjs` is the only check that reads a screen and asks whether what it says is
+true. The other six test the model. **Six of the six defects found in session 012 were
+invisible to all of them**, and every one was something a person would meet in the first five
+minutes: a crash on the language button, a work-it-out card pricing a bakery's bread at the
+mandazi stall's 500 shillings, a diagnose control showing raw keys with "TZS 0" beside them,
+the end-of-chapter record printing `indicator.diagnosis` as text, and a chapter list that
+threw a part-played run away.
 
 ## How to run it
 
@@ -144,6 +159,12 @@ The session 004 claude.ai artifact link is abandoned and stale.
 17. **The end of a chapter recaps the concepts, not the performance** (D-020).
 18. **An effect that must survive every path moves the whole constraint, and is signed**
     (D-022).
+19. **Every figure on screen is one the business actually has, and every column adds up**
+    (D-023), enforced by `playthrough.mjs`.
+20. **A diagnose step reads three kinds of evidence** — P&L rows, the cash statement, and
+    authored evidence with no figure at all (D-024).
+21. **A ledger line a stall does not have introduces itself, once** (D-025), and only on a
+    panel the learner has open.
 
 ## What the app now does that the docs do not describe
 
@@ -167,6 +188,9 @@ The session 004 claude.ai artifact link is abandoned and stale.
 - **Owner time as a real constraint** — scales with output, falls with staff, degrades quality
   when exceeded.
 - **Working capital and a cash conversion cycle** the learner can see move.
+- **Each new ledger line explaining itself**, once, the first time it appears — 1 line in
+  chapter 1, 3 in chapter 2, 3 in chapter 3, 5 in chapter 4 (D-025).
+- **A work-it-out card that adds up**, showing one row per product where there is a mix.
 - **Trajectory projection** twelve weeks ahead.
 - **Three-layer record** — observations, indicators with evidence, hedged profile. No score,
   no rank, no percentile, enforced by tests.
@@ -190,6 +214,10 @@ Blocking, in priority order — full list in [`OPEN_QUESTIONS.md`](./OPEN_QUESTI
 - **Q-022** — Should the 400-path stability sweep fail rather than report? Owner's call,
   because making it fail turns three of four chapters red.
 - **Q-023** — Is chapter 4 now too easy?
+- **Q-026** — Mechanical depth peaks in chapter 2 (26 engine fields, against 14 / 21 / 18),
+  and every structural measure is identical across all four chapters. The arc is a cliff and
+  then a plateau. Intended, or does it need restructuring? The owner's call.
+- **Q-025** — Chapter 4 now opens with five ledger lines explaining themselves at once.
 - **Q-004 / Q-013** — Playthrough length; whether 20 deeper turns is right.
 
 ## Immediate next steps
@@ -213,8 +241,17 @@ Blocking, in priority order — full list in [`OPEN_QUESTIONS.md`](./OPEN_QUESTI
 
 - Read `AGENTS.md` §2 first. A business-plan builder, pitch scoring and personality
   assessment are all ruled out by the thesis and will look like obvious wins.
-- **Run all six checks after any content edit**, and `validate-i18n.mjs` after touching any
+- **Run all seven checks after any content edit**, and `validate-i18n.mjs` after touching any
   string. Every new UI string needs both languages in `app/content/ui.json`.
+- **If you change anything a learner looks at, run `playthrough.mjs` and add an assertion to
+  it.** The model is well tested; the screens are where the defects live, four sessions
+  running. `-v` prints every assertion and how many ledger lines each chapter introduces.
+- **A card may only state a figure the business actually produces** (D-023). `state.price`
+  and `state.unitCost` are not that figure in a chapter with `lines` — they sit at the
+  engine's defaults of 500 and 300 and always will, because the engine has no use for them
+  there. Read `weeklyPnl(state).perLine`.
+- **The stub DOM is shared**, in `scripts/lib/stub-dom.mjs`. Add missing DOM methods there
+  once, rather than in a harness.
 - **Read the output, do not just check the exit code.** `simulate-runs.mjs` prints numbers a
   person is meant to read (D-019), and `validate-scenario.mjs` prints `drift` lines that are
   real findings which deliberately do not fail (Q-022). Both have caught what a green exit

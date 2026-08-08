@@ -1825,6 +1825,7 @@
           "step": 5,
           "start": 0,
           "valueAs": "count",
+          "unit": { "en": "hours a week", "sw": "saa kwa wiki" },
           "hint": {
             "en": "These hours are for planning, not for selling.",
             "sw": "Masaa haya ni ya kupanga, si ya kuuza."
@@ -1924,6 +1925,7 @@
           "step": 1,
           "start": "current",
           "valueAs": "count",
+          "unit": { "en": "people", "sw": "watu" },
           "hint": {
             "en": "Each person adds a weekly wage. Their extra output must pay for it.",
             "sw": "Kila mtu anaongeza mshahara wa wiki. Kazi yake ya ziada lazima ilipie."

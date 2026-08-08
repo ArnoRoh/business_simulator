@@ -118,6 +118,7 @@ node scripts/validate-scenario.mjs  # every option's declared prediction, on eve
 node scripts/validate-i18n.mjs      # no missing strings in either language, every chapter
 node scripts/simulate-runs.mjs      # plays every chapter five ways and prints the numbers
 node scripts/smoke-app.mjs          # drives the real app against a stub DOM
+node scripts/playthrough.mjs        # plays every chapter to the end, both languages, -v for detail
 bash  scripts/check-links.sh
 ```
 
@@ -131,6 +132,17 @@ layout, colour or whether a control is reachable with a thumb — nothing here c
 no browser in this environment. What it does catch is the class of failure that once
 rendered every scene as a solid black rectangle: wiring that type-checks and does not
 work.
+
+`playthrough.mjs` is the companion to it, and shares its stub DOM
+(`scripts/lib/stub-dom.mjs`). Where `smoke-app.mjs` checks the wiring at a few chosen
+points, this one opens every chapter, presses every control to the end, in English and in
+Kiswahili, and reads what the screens say: no broken value, no unfilled placeholder, no
+untranslated key, no dead button, no screen without a way forward, and every column of
+figures adding up to the total under it. It found six live defects on the day it was
+written, including a work-it-out card that priced a bakery's bread at the mandazi stall's
+500 shillings and a chapter list that threw a run away.
+
+It still cannot see layout, colour or a tap target. **Nothing here can.**
 
 `test-engine.mjs` covers the economics and — importantly — asserts that the generated
 profile contains no score, rank or percentile field, and that its statements stay

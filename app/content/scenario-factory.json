@@ -500,7 +500,28 @@
           "sw": "Ni hatua gani hasa inayozuia kiasi unachoweza kuuza?"
         },
         "answer": "packing",
-        "options": ["mixing", "baking", "packing", "delivery"],
+        "options": [
+          {
+            "id": "mixing",
+            "label": { "en": "Mixing", "sw": "Uchanganyaji" },
+            "detail": { "en": "Finishes early", "sw": "Inamaliza mapema" }
+          },
+          {
+            "id": "baking",
+            "label": { "en": "Baking", "sw": "Uokaji" },
+            "detail": { "en": "Runs steadily all day", "sw": "Inaendelea kwa utaratibu siku nzima" }
+          },
+          {
+            "id": "packing",
+            "label": { "en": "Packing", "sw": "Ufungashaji" },
+            "detail": { "en": "Pallets pile up waiting", "sw": "Marundo yanarundikana yakisubiri" }
+          },
+          {
+            "id": "delivery",
+            "label": { "en": "Delivery", "sw": "Usafirishaji" },
+            "detail": { "en": "Waits for packed pallets", "sw": "Inasubiri marundo yaliyofungashwa" }
+          }
+        ],
         "right": {
           "en": "Packing is the bottleneck. Mixing and baking finish with time to spare; extra output from either of them only grows the pile waiting at the packing table, it does not become a sale.",
           "sw": "Ufungashaji ndio kizuizi. Uchanganyaji na uokaji vinamalizika kabla ya muda; uzalishaji wa ziada kutoka kwa vyovyote kati yao unaongeza tu rundo linalosubiri kwenye meza ya ufungashaji, hakigeuki kuwa mauzo."
@@ -753,6 +774,7 @@
           "step": 1,
           "start": "current",
           "valueAs": "count",
+          "unit": { "en": "weeks", "sw": "wiki" },
           "hint": {
             "en": "This is how many weeks a distributor gets before they must pay you.",
             "sw": "Hii ni wiki ngapi msambazaji anapata kabla ya kulazimika kukulipa."
@@ -970,6 +992,7 @@
           "step": 1,
           "start": "current",
           "valueAs": "count",
+          "unit": { "en": "weeks of stock", "sw": "wiki za bidhaa" },
           "hint": {
             "en": "More weeks of stock means fewer stockouts and more cash tied up on the shelf.",
             "sw": "Wiki nyingi za stock inamaanisha uhaba mdogo lakini pesa nyingi zimefungwa kwenye rafu."
@@ -1477,7 +1500,12 @@
           "sw": "Ni mstari gani unaoeleza pengo kati ya gharama ya kawaida na gharama halisi?"
         },
         "answer": "wheat-price",
-        "options": ["wage-rate", "wheat-price", "packing-spoilage", "demand-shortfall"],
+        "options": [
+          { "id": "wage-rate", "label": { "en": "The wage rate", "sw": "Kiwango cha mshahara" } },
+          { "id": "wheat-price", "label": { "en": "The wheat price", "sw": "Bei ya ngano" } },
+          { "id": "packing-spoilage", "label": { "en": "Packing spoilage", "sw": "Uharibifu wa ufungashaji" } },
+          { "id": "demand-shortfall", "label": { "en": "A shortfall in demand", "sw": "Upungufu wa mahitaji" } }
+        ],
         "right": {
           "en": "The wheat price move is the variance. Wages, spoilage and demand are all where the costing sheet expected them; the flour cost per loaf is the one figure that has moved.",
           "sw": "Ongezeko la bei ya ngano ndio tofauti hiyo. Mishahara, uharibifu na mahitaji vyote viko mahali karatasi ya gharama ilivyotarajia; gharama ya unga kwa kila mkate ndiyo namba pekee iliyobadilika."

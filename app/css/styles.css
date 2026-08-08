@@ -301,6 +301,27 @@ ul { margin: 0; padding-left: 1.1em; }
   color: var(--text-muted);
 }
 
+/* A ledger line the learner has not met before, introducing itself. Accented rather
+   than muted like the notes above it: this is the one thing on the panel that is new,
+   and it is on screen for a single turn. */
+.pnl-new {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+}
+.pnl-new-title {
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+}
+.pnl-new-line {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
 /* ---------- cards ---------- */
 .card {
   background: var(--surface);
@@ -554,6 +575,13 @@ ul { margin: 0; padding-left: 1.1em; }
 .diagnose-option.selected { border-color: var(--accent); background: var(--surface); }
 .diagnose-label { overflow-wrap: anywhere; font-weight: 650; }
 .diagnose-value { white-space: nowrap; font-variant-numeric: tabular-nums; font-weight: 700; }
+/* Evidence with no money figure — a step of a process, a cost driver. It sits where the
+   amount would, so the options still read as one column of labels and one of evidence. */
+.diagnose-detail {
+  white-space: nowrap;
+  font-size: 0.83rem;
+  color: var(--text-muted);
+}
 
 /* ---------- goal context ---------- */
 .goal-panel {

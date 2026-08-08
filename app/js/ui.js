@@ -8,6 +8,7 @@ import { money, moneyShort, moneySigned, count, proportion } from './format.js';
 import {
   weeklyPnl, ownerLoad, project, bandEdges, applyEffects, predictionWindow,
   resolveNumberInput, resolveAllocation, allocationTotal, weeklyCashFlow, readField,
+  workingCapital,
 } from './engine.js';
 import { t, tCount, localised } from './i18n.js';
 import { drawScene, drawChart, animateNumber, pulse } from './scene.js';
@@ -41,8 +42,22 @@ function clampNumber(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
 
-function decisionValue(value, valueAs) {
-  return valueAs === 'money' ? money(value) : count(value);
+/**
+ * A number the learner picked, as they should read it back.
+ *
+ * `unit` is authored per input, because only content knows whether 150 is loaves, weeks
+ * or people. Without it a change input reads as a bare "-150" on the stepper and again
+ * on the work-it-out card — a number with no noun, which is the one thing a ledger is
+ * supposed to never be.
+ */
+function decisionValue(value, valueAs, unit) {
+  // Count is the exception and money is the default, matching decisionLabel() in
+  // main.js. The other way round, an unrecognised `valueAs` silently dropped the
+  // currency: chapter 4 authors "currency" on its two price steppers, so the control
+  // read "1,700" while the work-it-out card one screen later read "TZS 1,700".
+  const shown = valueAs === 'count' ? count(value) : money(value);
+  const noun = localised(unit);
+  return noun ? t('num.withUnit', { value: shown, unit: noun }) : shown;
 }
 
 function fieldValue(value, field) {
@@ -284,13 +299,30 @@ function ledgerRow(row, scale) {
   return node;
 }
 
+// The five lines every business in this game has from its first week: what it sold,
+// what the goods cost, rent, wages, licence fees. They are the ledger a mandazi stall
+// has, and they are not explained.
+//
+// Everything else is a line that arrives because the business changed — an oven that
+// wears out, a loan that charges interest, a container that pays duty. `arc.md` §3 says
+// the advanced concepts are taught "by cash and profit visibly diverging in the panel
+// the learner already reads, not by a working-capital slider". That only works if the
+// learner is told what the new line is the first time they meet it. Before this, a row
+// for depreciation simply appeared, in a chapter where nothing on screen used the word.
+const LEDGER_BASICS = ['pnl.sales', 'pnl.costOfSales', 'pnl.rent', 'pnl.wages', 'pnl.fees'];
+
 /**
  * The always-on money panel: what came in, what went out, what is left.
  *
  * Grouped and barred rather than listed, because magnitude has to be visible and not
  * just readable — docs/localization.md, "Numbers".
+ *
+ * `seen` is the lines this learner has already had explained. Pass `null` to explain
+ * nothing. Returns the advanced lines on screen now, so the caller can mark them seen
+ * once the turn is over — the explanation stays up for the whole turn it arrived in,
+ * including the reveal, and does not come back.
  */
-export function renderPnl(container, state) {
+export function renderPnl(container, state, seen = null) {
   clear(container);
   const pnl = weeklyPnl(state);
   const rows = ledgerRows(pnl);
@@ -384,6 +416,21 @@ export function renderPnl(container, state) {
         tCount('pnl.cashRunway', weeks, { n: count(weeks) })));
     }
   }
+
+  // What is new in this ledger, and what it means. One sentence each, once.
+  const advanced = rows.map((r) => r.key).filter((key) => !LEDGER_BASICS.includes(key));
+  if (seen) {
+    const arrivals = advanced.filter((key) => !seen.includes(key));
+    if (arrivals.length) {
+      const card = el('div', 'pnl-new');
+      card.appendChild(el('div', 'pnl-new-title', t('pnl.newTitle')));
+      for (const key of arrivals) {
+        card.appendChild(el('p', 'pnl-new-line', t(`pnl.new.${key.replace(/^pnl\./, '')}`)));
+      }
+      container.appendChild(card);
+    }
+  }
+  return advanced;
 }
 
 /**
@@ -467,7 +514,11 @@ export function renderChapterSelect(intro, container, chapters, carry, onOpen) {
     btn.appendChild(el('span', 'chapter-shift', localised(chapter.shift)));
     btn.appendChild(el('span', 'chapter-blurb', localised(chapter.blurb)));
     if (done) btn.appendChild(el('span', 'chapter-done', t('chapter.finished')));
-    btn.addEventListener('click', () => onOpen(chapter.id, true));
+    // Not `forceNew`. Leaving a chapter to look at the list is something a learner does
+    // by accident on a shared phone, and this threw the run away: fifteen turns of the
+    // bakery, gone, with no warning and no way back. `start()` decides — an unfinished
+    // run of this chapter resumes, anything else begins.
+    btn.addEventListener('click', () => onOpen(chapter.id));
     list.appendChild(btn);
   }
   container.appendChild(list);
@@ -541,7 +592,7 @@ export function renderNumberDecision(container, turn, state, onCommit) {
   // Inputs are authored on a step grid. If a saved state is between steps, keep it
   // until the learner touches the control; the next press still moves exactly one step.
   let value = clampNumber(Number(rawStart) || min, min, max);
-  const format = (number) => decisionValue(number, input.valueAs);
+  const format = (number) => decisionValue(number, input.valueAs, input.unit);
 
   const card = el('div', 'card number-decision fade-in');
   card.dataset.control = 'number';
@@ -549,8 +600,14 @@ export function renderNumberDecision(container, turn, state, onCommit) {
   card.appendChild(el('div', 'card-title', t('num.title')));
   card.appendChild(el('p', 'predict-question', localised(decision.prompt) || t('num.prompt')));
   if (input.hint) {
+    // `{cost}` means "what one of the things you are pricing costs to make". For a
+    // product line that is the line's own unit cost, not the flat field, which in a
+    // multi-product chapter is still sitting at the engine's default.
+    const unitCostField = String(input.field).startsWith('lines.')
+      ? `${String(input.field).split('.').slice(0, 2).join('.')}.unitCost`
+      : 'unitCost';
     card.appendChild(el('p', 'number-hint', localisedTemplate(input.hint, {
-      cost: money(state.unitCost),
+      cost: money(readField(state, unitCostField)),
       current: format(rawStart),
     })));
   }
@@ -618,6 +675,21 @@ export function renderAllocateDecision(container, turn, state, onCommit) {
 
   const rows = el('div', 'allocation-buckets');
   const valueNodes = new Map();
+  // Every stepper button in this control, so they can be greyed out when they cannot
+  // move. The number stepper has done this since it was written and this one never did:
+  // at zero, or with the whole amount already placed, half these buttons looked live and
+  // did nothing. "A learner who presses a live-looking button twice and sees no change
+  // concludes the control is broken, not that they are at the end of the range" —
+  // renderStepper, and it is no less true here.
+  const stepButtons = [];
+  const syncButtons = () => {
+    const used = Object.values(split).reduce((sum, amount) => sum + amount, 0);
+    for (const { button, bucket, amount } of stepButtons) {
+      const current = split[bucket];
+      const headroom = total - (used - current);
+      button.disabled = clampNumber(current + amount, 0, Math.max(0, headroom)) === current;
+    }
+  };
   const updateSummary = () => {
     const used = Object.values(split).reduce((sum, amount) => sum + amount, 0);
     const remaining = total - used;
@@ -664,6 +736,7 @@ export function renderAllocateDecision(container, turn, state, onCommit) {
       if (bounded === previous) return;
       split[bucket.id] = bounded;
       updateStepperValue(controls, valueNode, previous, bounded, money);
+      syncButtons();
       updateSummary();
     };
 
@@ -677,6 +750,7 @@ export function renderAllocateDecision(container, turn, state, onCommit) {
           : (coarse ? 'alloc.coarseIncreaseLabel' : 'alloc.increaseLabel'),
       );
       button.addEventListener('click', () => change(amount));
+      stepButtons.push({ button, bucket: bucket.id, amount });
       controlsInner.appendChild(button);
     }
   }
@@ -690,35 +764,78 @@ export function renderAllocateDecision(container, turn, state, onCommit) {
   commit.setAttribute('aria-label', t('alloc.commitLabel'));
   commit.addEventListener('click', () => onCommit({ ...split }, resolveAllocation(state, allocate, split)));
   card.appendChild(commit);
+  syncButtons();
   updateSummary();
   container.appendChild(card);
 }
 
-/** Choose the ledger line the learner thinks caused the loss. */
+/**
+ * The evidence a diagnose step is read against.
+ *
+ * Three kinds, because content has legitimately asked for three. Chapter 1 asks which
+ * P&L line caused a loss. Chapters 2 and 4 ask which line explains why the profit never
+ * reached the bank — which is not in the P&L at all. Chapter 3 asks which step of the
+ * process is capping output, which has no money figure and must not be given a fake one.
+ *
+ * Before this, all three went through one lookup of P&L rows: a key that was not a row
+ * rendered as the raw key with "TZS 0" beside it, and in two of the three chapters that
+ * included the correct answer. The learner was asked to read a line that said nothing.
+ */
+function diagnoseEvidence(state) {
+  const evidence = new Map();
+  for (const row of ledgerRows(weeklyPnl(state))) evidence.set(row.key, row.value);
+
+  // The cash statement. Signs follow the ledger's rule — what leaves the business is
+  // negative — so a row's sign still matches the direction it moves the money.
+  const flow = weeklyCashFlow(state, 0);
+  evidence.set('cash.profit', flow.profit);
+  evidence.set('cash.depreciation', flow.depreciation);
+  evidence.set('cash.repayment', -flow.repayment);
+  // The amount standing between profit and cash, not the week's movement in it: the
+  // movement is settled every week (advanceWeek), so at the moment this is asked it is
+  // zero, and zero is not what the learner is being asked to see.
+  evidence.set('cash.workingCapitalChange', -workingCapital(state));
+
+  return evidence;
+}
+
+/** Choose the line — of the ledger, of the cash statement, or of the process. */
 export function renderDiagnose(container, turn, state, onAnswer) {
   clear(container);
   const diagnose = turn.diagnose;
-  const pnl = weeklyPnl(state);
-  const rows = new Map(ledgerRows(pnl).map((row) => [row.key, row]));
+  const evidence = diagnoseEvidence(state);
   const card = el('div', 'card diagnose fade-in');
   card.dataset.control = 'diagnose';
   card.appendChild(el('div', 'card-title', t('diag.title')));
   card.appendChild(el('p', 'predict-question', localised(diagnose.prompt) || t('diag.prompt')));
 
   const list = el('div', 'diagnose-options');
-  for (const key of diagnose.options || []) {
-    const row = rows.get(key);
+  for (const option of diagnose.options || []) {
+    // A string is a line the engine can price. An object is evidence the engine has no
+    // line for — a production step, a cost driver — and carries its own words.
+    const authored = option !== null && typeof option === 'object';
+    const id = authored ? option.id : option;
+    const label = authored ? (localised(option.label) || id) : t(id);
+    const value = evidence.has(id) ? evidence.get(id) : null;
+
     const button = el('button', 'diagnose-option');
     button.type = 'button';
-    button.dataset.line = key;
-    button.setAttribute('aria-label', t('diag.choose', { line: t(key) }));
-    button.appendChild(el('span', 'diagnose-label', t(key)));
-    button.appendChild(el('span', `diagnose-value${row && row.value < 0 ? ' negative' : ''}`,
-      money(row ? row.value : 0)));
+    button.dataset.line = id;
+    button.setAttribute('aria-label', t('diag.choose', { line: label }));
+    button.appendChild(el('span', 'diagnose-label', label));
+
+    if (value !== null) {
+      button.appendChild(el('span', `diagnose-value${value < 0 ? ' negative' : ''}`, money(value)));
+    } else if (authored && option.detail) {
+      // No money figure exists for this one, so it says what it is instead of showing
+      // a zero that would read as "this line is fine".
+      button.appendChild(el('span', 'diagnose-detail', localised(option.detail)));
+    }
+
     button.addEventListener('click', () => {
       [...list.children].forEach((item) => { item.disabled = true; });
       button.classList.add('selected');
-      onAnswer(key, key === diagnose.answer);
+      onAnswer(id, id === diagnose.answer);
     });
     list.appendChild(button);
   }
@@ -745,9 +862,19 @@ export function renderPredictNumber(container, turn, state, onPredict) {
   // The two numbers the estimate is built from, kept on screen. They were shown on the
   // work-it-out card and then taken away, which turned an arithmetic step into a
   // memory test.
-  card.appendChild(el('p', 'number-hint', t('num.predictFixed', {
-    fixed: money(weeklyPnl(state).fixedCost),
-    kept: money(Number(state.price || 0) - Number(state.unitCost || 0)),
+  //
+  // "What one unit keeps" is not a number a business with three products has. Stating
+  // it anyway meant chapters 2 to 4 quoted the engine's default margin of 200 — true of
+  // a mandazi stall and of nothing else on the screen. With a mix, the honest figure is
+  // what the products together keep in a week, which is the same arithmetic one level up.
+  const pnl = weeklyPnl(state);
+  const mixed = pnl.perLine.length > 1;
+  const contribution = pnl.perLine.reduce((sum, line) => sum + line.contribution, 0);
+  card.appendChild(el('p', 'number-hint', t(mixed ? 'num.predictFixedMix' : 'num.predictFixed', {
+    fixed: money(pnl.fixedCost),
+    kept: money(mixed
+      ? contribution
+      : (pnl.unitsSold > 0 ? contribution / pnl.unitsSold : Number(state.price || 0) - Number(state.unitCost || 0))),
   })));
 
   const stepper = el('div', 'stepper');
@@ -854,6 +981,70 @@ export function renderOptions(container, turn, onChoose) {
  * allocation decision has no option to take a label from, and resolving that here
  * would mean this function knowing about all three decision types.
  */
+/**
+ * The rows of the work-it-out card, built so that they add up to the profit underneath
+ * them. That is the whole contract of this card, and it was broken two ways.
+ *
+ * A business with more than one product has no single price and no single unit cost —
+ * `state.price` and `state.unitCost` are left at the engine's defaults, so chapters 2
+ * to 4 were showing a bakery selling bread at chapter 1's mandazi price of 500 and
+ * keeping 200 on each one. The units and the revenue were right, so the card asked the
+ * learner to multiply two numbers and get a third that they do not make.
+ *
+ * And every chapter, including the first, dropped spoilage, freight, duty and currency
+ * from the sum while still printing the profit as the total, so the column did not add
+ * up whenever any of those was non-zero.
+ *
+ * Both are the same defect as D-021 in a different place: arithmetic put in front of a
+ * learner has to be arithmetic that works.
+ */
+function workoutLines(state, pnl) {
+  const rows = [];
+
+  if (pnl.perLine.length > 1) {
+    // Per product, as contribution: units sold times what each one keeps. It sums with
+    // the rest of the column, and "which product actually earns" is the thing chapter 2
+    // exists to teach.
+    for (const line of pnl.perLine) {
+      if (line.unitsSold === 0 && line.contribution === 0) continue;
+      const per = line.unitsSold > 0 ? line.contribution / line.unitsSold : 0;
+      rows.push({
+        label: t('workout.line', {
+          name: lineLabel(state, line.id),
+          units: count(line.unitsSold),
+          kept: money(per),
+        }),
+        value: line.contribution,
+      });
+    }
+  } else {
+    const only = pnl.perLine[0] || {};
+    rows.push({
+      label: t('workout.sell', {
+        units: count(pnl.unitsSold),
+        price: money(only.unitsSold > 0 ? only.revenue / only.unitsSold : state.price),
+      }),
+      value: pnl.revenue,
+    });
+    rows.push({
+      label: t('workout.cost', {
+        cost: money(only.unitsSold > 0 ? only.variableCost / only.unitsSold : state.unitCost),
+      }),
+      value: -pnl.variableCost,
+    });
+  }
+
+  // Everything else the engine charges before profit. Each appears only when it is not
+  // zero, which under chapter 1's opening state is all of them.
+  if (pnl.fxEffect) rows.push({ label: t(pnl.fxEffect >= 0 ? 'pnl.fxGain' : 'pnl.fxLoss'), value: pnl.fxEffect });
+  if (pnl.freight) rows.push({ label: t('pnl.freight'), value: -pnl.freight });
+  if (pnl.duty) rows.push({ label: t('pnl.duty'), value: -pnl.duty });
+  if (pnl.spoilage) rows.push({ label: t('pnl.spoilage'), value: -pnl.spoilage });
+
+  rows.push({ label: t('workout.fixed'), value: -pnl.fixedCost });
+  return rows;
+}
+
 export function renderWorkout(container, turn, choiceLabel, state, onReady) {
   clear(container);
   const pnl = weeklyPnl(state);
@@ -863,20 +1054,7 @@ export function renderWorkout(container, turn, choiceLabel, state, onReady) {
   card.appendChild(el('p', 'situation', t('predict.chose', { label: choiceLabel })));
   card.appendChild(el('p', 'workout-intro', t('workout.intro')));
 
-  const lines = [
-    {
-      label: t('workout.sell', { units: count(pnl.unitsSold), price: money(state.price) }),
-      value: pnl.revenue,
-    },
-    {
-      label: t('workout.cost', { cost: money(state.unitCost) }),
-      value: -pnl.variableCost,
-    },
-    {
-      label: t('workout.fixed'),
-      value: -pnl.fixedCost,
-    },
-  ];
+  const lines = workoutLines(state, pnl);
 
   const list = el('div', 'workout-lines');
   lines.forEach((line, i) => {

@@ -26,6 +26,27 @@ import { applyCarryIn, CARRY_FLAGS } from '../app/js/carry.js';
 const SCENES = [...readFileSync(new URL('../app/js/scene.js', import.meta.url), 'utf8')
   .matchAll(/^\s+'?([a-zA-Z-]+)'?:\s*(?:\(root|build)/gm)].map((m) => m[1]);
 
+// The lines a diagnose step can put a figure against, read out of the two functions in
+// ui.js that produce them rather than copied here, so the list cannot drift away from
+// what the app can actually render.
+const UI_SOURCE = readFileSync(new URL('../app/js/ui.js', import.meta.url), 'utf8');
+const between = (from, to) => UI_SOURCE.slice(UI_SOURCE.indexOf(from), UI_SOURCE.indexOf(to));
+const DIAGNOSABLE = [...new Set([
+  ...[...between('function ledgerRows(', 'function lineLabel(')
+    .matchAll(/'(pnl\.[a-zA-Z]+)'/g)].map((m) => m[1]),
+  ...[...between('function diagnoseEvidence(', 'export function renderDiagnose(')
+    .matchAll(/'(cash\.[a-zA-Z]+)'/g)].map((m) => m[1]),
+])];
+
+// If the extraction above ever stops finding them, every diagnose option starts looking
+// invalid — or, worse, valid. Say so rather than reporting nonsense about the content.
+for (const expected of ['pnl.sales', 'pnl.spoilage', 'cash.repayment', 'cash.workingCapitalChange']) {
+  if (!DIAGNOSABLE.includes(expected)) {
+    console.error(`validate-scenario: could not read the ledger lines out of ui.js — "${expected}" is missing. Fix the extraction, not the content.`);
+    process.exit(2);
+  }
+}
+
 if (!process.argv[2]) {
   // One child per chapter rather than a loop, because everything below is written
   // against a single scenario in module scope — and a chapter that leaves state behind
@@ -309,10 +330,30 @@ for (const turn of scenario.turns) {
   }
 
   // A diagnose step whose answer is not on offer can never be got right.
+  //
+  // An option is either a key the app can price — a P&L row or a line of the cash
+  // statement — or an object carrying its own words, for evidence the engine has no
+  // line for, such as a step of a production process. Anything else renders as the raw
+  // key with "TZS 0" beside it, which is what chapters 2, 3 and 4 all did, including
+  // for the correct answer.
   if (turn.diagnose) {
-    if (!turn.diagnose.options || !turn.diagnose.options.includes(turn.diagnose.answer)) {
+    const options = turn.diagnose.options || [];
+    const ids = options.map((o) => (o !== null && typeof o === 'object' ? o.id : o));
+    if (!ids.includes(turn.diagnose.answer)) {
       console.log(`  FAIL ${turn.id} diagnose answer "${turn.diagnose.answer}" is not among its options`);
       problems += 1;
+    }
+    for (const option of options) {
+      if (option !== null && typeof option === 'object') {
+        if (!option.id || !option.label || !option.label.en || !option.label.sw) {
+          console.log(`  FAIL ${turn.id} diagnose option "${option.id || '?'}" needs an id and a label in both languages`);
+          problems += 1;
+        }
+      } else if (!DIAGNOSABLE.includes(option)) {
+        console.log(`  FAIL ${turn.id} diagnose option "${option}" is not a line the app can show; `
+          + `use one of ${DIAGNOSABLE.join(', ')}, or give it a label of its own`);
+        problems += 1;
+      }
     }
   }
 

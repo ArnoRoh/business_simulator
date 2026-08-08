@@ -119,6 +119,50 @@ factory and export chapters in particular.
 
 ## Open
 
+### Q-025 — Is chapter 4's opening ledger too much to meet at once?  [open]
+**Raised:** 2026-08-08 (session 012) · **Owner:** Project owner / playtesting
+**Question:** [D-025](./DECISIONS.md) makes each ledger line beyond the basic five introduce
+itself once, in a sentence. That gives 1 line in chapter 1, 3 in chapter 2, 3 in chapter 3
+and **5 in chapter 4** — spoilage, freight, duty, depreciation and interest, all on the first
+turn, because chapter 4 opens with all of them already running. Five short paragraphs above
+the first decision, on a small screen.
+**Why it matters:** the alternative that was there before was silence, and silence is worse —
+but the point of the panel is that it can be read, and five explanations is close to the
+point where a learner scrolls past all of them.
+**What would answer it:** somebody playing chapter 4 on a phone. Not another opinion here.
+**Current assumption:** left at five. If it needs cutting, cut words rather than
+explanations: a learner who meets `duty` with no idea what it is has been handed a ledger
+they cannot read, which is the failure this fixes.
+
+### Q-026 — Mechanical depth peaks in chapter 2, not chapter 4. Is that the shape you want?  [open]
+**Raised:** 2026-08-08 (session 012) · **Owner:** Project owner
+**Question:** Counting the distinct engine fields each chapter's content actually moves:
+
+| Chapter | Engine fields touched | Delayed consequences | Diagnose steps |
+|---|---|---|---|
+| 1 — stall | 14 | 8 of 42 options | 1 |
+| 2 — bakery | **26** | 11 of 45 | 1 |
+| 3 — factory | 21 | 14 of 45 | 2 |
+| 4 — export | 18 | 13 of 45 | 1 |
+
+Chapter 2 introduces product mix, depreciation, debt, interest, repayment, working capital
+and spoilage — **twelve new fields at once**, immediately after a chapter with none of them.
+Chapters 3 and 4 are then mechanically *lighter* than chapter 2 while being conceptually
+harder (bottlenecks, standard costing, Incoterms, letters of credit, preferential access).
+The shape of the arc is a cliff and then a plateau, not a ramp.
+**The case that this is correct:** [`arc.md`](../docs/arc.md) §1 says the chapters progress by
+*what kind of thing you are running*, not by mechanic count, and the profit-versus-cash
+cluster genuinely all belongs in chapter 2 — that is what the bakery is for. On that reading
+the numbers above are the design working.
+**The case that it is not:** every structural measure is flat. All four chapters are 20 turns,
+15 choices, 4 numeric inputs, 1 allocation, information on every turn. A learner who finishes
+chapter 2 meets nothing structurally new again, and the hardest single step in the whole arc
+is the one from chapter 1 to chapter 2, where the most learners will be.
+**What was done about it in session 012:** nothing to the content, which is the owner's call.
+[D-025](./DECISIONS.md) softens the cliff at the point it is actually felt — the ledger — by
+having each new line explain itself. Whether the arc needs restructuring beyond that is this
+question.
+
 ### Q-022 — Should band stability be checked on more than three paths, and fail?  [open]
 **Raised:** 2026-08-08 (session 011) · **Owner:** Project owner, for the chapter 1 part
 **Question:** `validate-scenario.mjs` walks three fixed paths — always the first option,

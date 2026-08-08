@@ -112,6 +112,54 @@
     "en": "Loss this week",
     "sw": "Hasara ya wiki hii"
   },
+  "cash.profit": {
+    "en": "Profit this week",
+    "sw": "Faida ya wiki hii"
+  },
+  "cash.depreciation": {
+    "en": "Wear on equipment, which took no money",
+    "sw": "Uchakavu wa vifaa, ambao haukutoa pesa"
+  },
+  "cash.repayment": {
+    "en": "Loan repayment",
+    "sw": "Marejesho ya mkopo"
+  },
+  "cash.workingCapitalChange": {
+    "en": "Money tied up in stock and unpaid invoices",
+    "sw": "Pesa iliyofungwa kwenye bidhaa na madeni ya wateja"
+  },
+  "pnl.newTitle": {
+    "en": "New in your ledger this week",
+    "sw": "Mpya katika daftari lako wiki hii"
+  },
+  "pnl.new.spoilage": {
+    "en": "What you made and could not sell. It cost money to make and earned none.",
+    "sw": "Ulichotengeneza na usiweze kuuza. Kiligharimu pesa kutengeneza na hakikuleta kitu."
+  },
+  "pnl.new.depreciation": {
+    "en": "Your equipment wearing out, spread across its working life. It is a real cost, but no money leaves the bank this week.",
+    "sw": "Vifaa vyako vinavyochakaa, gharama ikigawanywa katika maisha yake ya kazi. Ni gharama halisi, lakini hakuna pesa inayotoka benki wiki hii."
+  },
+  "pnl.new.interest": {
+    "en": "Interest on what you owe. This is a cost. Repaying the loan itself is not a cost — that is cash leaving, shown further down.",
+    "sw": "Riba ya deni lako. Hii ni gharama. Kulipa mkopo wenyewe si gharama — hiyo ni pesa inayotoka, imeonyeshwa hapa chini."
+  },
+  "pnl.new.freight": {
+    "en": "Shipping what you send abroad. It is charged on exported units only.",
+    "sw": "Usafirishaji wa unachopeleka nje. Unatozwa kwa vipande vilivyosafirishwa nje pekee."
+  },
+  "pnl.new.duty": {
+    "en": "Duty on what you sell abroad. It is charged on the value you export.",
+    "sw": "Ushuru wa unachouza nje. Unatozwa kwa thamani unayosafirisha nje."
+  },
+  "pnl.new.fxGain": {
+    "en": "The exchange rate moved your way, so money earned abroad is worth more here.",
+    "sw": "Kiwango cha ubadilishaji kimekwenda upande wako, kwa hiyo pesa iliyopatikana nje ina thamani zaidi hapa."
+  },
+  "pnl.new.fxLoss": {
+    "en": "The exchange rate moved against you, so money earned abroad is worth less here.",
+    "sw": "Kiwango cha ubadilishaji kimekwenda kinyume nawe, kwa hiyo pesa iliyopatikana nje ina thamani ndogo hapa."
+  },
   "pnl.perUnit": {
     "en": "Each one you sell brings in {price} and costs you {cost}, so you keep {kept}.",
     "sw": "Kila kimoja unachouza kinaingiza {price} na kinakugharimu {cost}, kwa hiyo unabaki na {kept}."
@@ -187,6 +235,10 @@
   "workout.cost": {
     "en": "They cost you {cost} each",
     "sw": "Zinakugharimu {cost} kila kimoja"
+  },
+  "workout.line": {
+    "en": "{name}: {units} sold, keeping {kept} each",
+    "sw": "{name}: {units} zimeuzwa, ukibakiza {kept} kila kimoja"
   },
   "workout.fixed": {
     "en": "Rent, wages and fees",
@@ -408,6 +460,22 @@
     "en": "Made decisions across {n} business concepts.",
     "sw": "Alifanya maamuzi katika mada {n} za biashara."
   },
+  "indicator.diagnosis": {
+    "en": "Reading the evidence",
+    "sw": "Kusoma ushahidi"
+  },
+  "profile.stmt.diagnosis": {
+    "en": "Named the line that explained what happened correctly in {correct} of {total} checks.",
+    "sw": "Alitaja mstari uliofafanua kilichotokea kwa usahihi katika ukaguzi {correct} kati ya {total}."
+  },
+  "indicator.goal": {
+    "en": "Goal progress",
+    "sw": "Maendeleo ya lengo"
+  },
+  "profile.stmt.goal": {
+    "en": "Met {met} of {total} goal conditions in the simulation.",
+    "sw": "Alifikia masharti {met} kati ya {total} ya lengo katika kiigizo."
+  },
   "profile.limit.1": {
     "en": "This describes what happened inside a simulation. It is not a measure of how this person runs a real business.",
     "sw": "Haya yanaeleza yaliyotokea ndani ya kiigizo. Si kipimo cha jinsi mtu huyu anavyoendesha biashara halisi."
@@ -543,6 +611,14 @@
   "num.predictFixed": {
     "en": "You keep {kept} on each sale, and rent, wages and fees take {fixed} a week.",
     "sw": "Unabaki na {kept} kwa kila mauzo, na kodi, mishahara na ada vinachukua {fixed} kwa wiki."
+  },
+  "num.withUnit": {
+    "en": "{value} {unit}",
+    "sw": "{value} {unit}"
+  },
+  "num.predictFixedMix": {
+    "en": "Your products together keep {kept} a week after ingredients, and rent, wages and fees take {fixed}.",
+    "sw": "Bidhaa zako kwa pamoja zinabakiza {kept} kwa wiki baada ya viungo, na kodi, mishahara na ada vinachukua {fixed}."
   },
   "num.predicted": {
     "en": "Your estimate",

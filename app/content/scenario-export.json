@@ -1287,6 +1287,7 @@
           "step": 1,
           "start": "current",
           "valueAs": "count",
+          "unit": { "en": "weeks", "sw": "wiki" },
           "hint": {
             "en": "Zero is paid on shipping. Thirteen is a full ninety-day open account.",
             "sw": "Sifuri ni kulipwa wakati wa kusafirisha. Kumi na tatu ni akaunti wazi kamili ya siku tisini."
@@ -2045,6 +2046,7 @@
           "step": 100,
           "start": 0,
           "valueAs": "count",
+          "unit": { "en": "units a week", "sw": "vipande kwa wiki" },
           "hint": {
             "en": "A negative change scales back the export line. A positive change commits to more container volume.",
             "sw": "Mabadiliko hasi yanapunguza mstari wa nje. Mabadiliko chanya yanajitolea kwa kiasi kikubwa zaidi cha kontena."

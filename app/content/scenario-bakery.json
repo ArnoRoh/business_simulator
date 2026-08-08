@@ -399,6 +399,7 @@
           "step": 50,
           "start": 0,
           "valueAs": "count",
+          "unit": { "en": "items a week", "sw": "vipande kwa wiki" },
           "hint": {
             "en": "Choose a change from the current bake plan. A negative change makes less; a positive change makes more.",
             "sw": "Chagua mabadiliko kutoka mpango wa sasa wa uokaji. Mabadiliko hasi yanapunguza; chanya inaongeza."
@@ -617,6 +618,7 @@
           "step": 5,
           "start": 0,
           "valueAs": "count",
+          "unit": { "en": "cakes a week", "sw": "keki kwa wiki" },
           "hint": {
             "en": "This is the change from your current cake plan. More cake capacity moves time away from bread.",
             "sw": "Hili ni badiliko kutoka mpango wako wa sasa wa keki. Uwezo mkubwa wa keki unahamisha muda kutoka kwa mikate."
@@ -956,7 +958,7 @@
         },
         "answer": "cash.workingCapitalChange",
         "options": [
-          "pnl.revenue",
+          "pnl.sales",
           "pnl.costOfSales",
           "pnl.rent",
           "pnl.wages",

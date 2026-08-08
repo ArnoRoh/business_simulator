@@ -44,6 +44,11 @@ jobs:
       - name: App wiring
         run: node scripts/smoke-app.mjs
 
+      # Every chapter played to the end in both languages, reading what the screens
+      # actually say. This is the check that meets the defects a playthrough meets.
+      - name: Every chapter, every screen
+        run: node scripts/playthrough.mjs
+
   links:
     name: Internal links resolve
     runs-on: ubuntu-latest

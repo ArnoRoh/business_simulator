@@ -443,6 +443,87 @@ turns where the business is most exposed.
 thing in business, but it cannot be graded as a prediction — put the consequence in `later`,
 where it is attributed rather than scored.
 
+## D-023 — Every figure on screen is one the business has, and every column adds up
+**Date:** 2026-08-08 (session 012) · **Decided by:** Claude, from evidence
+**Decision:** Two rules, and a check that enforces them. A card may only state a figure the
+business actually produces — a price it charges, a cost it pays, a margin it earns — and any
+column of figures shown with a total under it must reach that total.
+`scripts/playthrough.mjs` plays every chapter to the end in both languages and asserts both,
+along with: no broken value, no unfilled placeholder, no untranslated key, no dead control
+and no screen without a way forward.
+**Why:** `createState` leaves the flat `price` and `unitCost` at the engine's defaults when a
+chapter authors product lines, because nothing in the engine reads them. The interface did.
+Every work-it-out card in chapters 2, 3 and 4 told the learner they were selling at **TZS 500
+and keeping 200** — chapter 1's mandazi, in a bakery selling bread at 1,200 — beside a
+revenue figure computed from the real lines. A learner following the instruction on the card
+and multiplying the two numbers got a third number that was not on the card. The numeric
+prediction card repeated the same fiction. Separately, spoilage, freight, duty and currency
+were left out of the workout column in every chapter including the first, so the rows did not
+reach the total whenever any of them was live.
+**Why the existing checks did not see it:** every one of them tests the model.
+`validate-scenario.mjs` reads content and the engine; `test-engine.mjs` reads the engine;
+`smoke-app.mjs` renders a handful of screens and checks the wiring holds. Nothing read a
+screen and asked whether what it said was true. This is [D-021](#d-021--a-control-anchors-on-a-value-that-exists-and-the-checks-prove-it)
+and [D-015](#d-015--every-control-must-be-able-to-reach-the-answer) for a third time — the
+controls keep being where the defects are, and the checks keep being somewhere else.
+**Also fixed under the same rule:** chapter 4 authors `valueAs: "currency"` on its two price
+steppers, which `decisionValue` did not recognise, so the control read "1,700" and the
+work-it-out card one screen later read "TZS 1,700" for the same number. Count is now the
+exception and money the default, matching `decisionLabel`.
+**Considered and rejected:** deriving `price` and `unitCost` from the lines inside
+`createState`, so the old code would have found something true there. A weighted average
+price is not a price anyone charges, and the card would have gone on claiming a unit
+economics that does not exist — a plausible wrong number is worse than an obvious one.
+**Revisit if:** a card needs to show a figure the engine cannot produce. That is the signal
+the engine is missing a concept, not that the rule is too strict.
+
+## D-024 — A diagnose step reads three kinds of evidence, and evidence with no figure says so
+**Date:** 2026-08-08 (session 012) · **Decided by:** Claude, from evidence
+**Decision:** `renderDiagnose` resolves an option against the P&L rows, the cash statement
+(`cash.profit`, `cash.depreciation`, `cash.repayment`, `cash.workingCapitalChange`), or an
+authored object carrying its own label — for evidence the engine has no line for, such as a
+step of a production process. An authored option shows its label and an optional detail
+string and **no money figure at all**. `validate-scenario.mjs` fails any option that is
+neither a line the app can price nor an object with a label in both languages, and reads the
+list of priceable lines out of `ui.js` so it cannot drift.
+**Why:** the control assumed every option was a P&L row, and three of the five diagnose steps
+in the four chapters are not. The bakery and the export chapter ask which line explains why
+profit did not reach the bank — a cash question — and the factory asks which step of the
+floor is capping output, which has no figure. An option the lookup missed rendered as the raw
+key with **"TZS 0"** beside it: `cash.workingCapitalChange` and `mixing` appeared on screen in
+those words, and in two of the three chapters that included the correct answer. The learner
+was asked to read the evidence and shown none.
+**Why this is the right shape and not three controls:** the skill is one skill — read what is
+in front of you and name the cause — and [ADR-0007](../docs/adr/0007-four-chapter-arc.md) and
+[D-017](#d-017--advanced-concepts-go-in-the-engine-not-in-new-controls) both say depth arrives
+without new widgets. Three authors reached past this control in three chapters, which says
+the abstraction was too narrow, not that they were wrong to reach.
+**Revisit if:** a fourth kind of evidence appears. Two engine-priced sources and one authored
+escape hatch is a control; four is a rendering language, and the honest response then is to
+let content supply the whole row.
+
+## D-025 — A ledger line a stall does not have introduces itself, once
+**Date:** 2026-08-08 (session 012) · **Decided by:** Claude, from the arc's own design
+**Decision:** The money panel names and explains, in one sentence, any line beyond the five
+every business here has from its first week (sales, cost of sales, rent, wages, licence fees).
+It does so on the turn the line first appears and not again. A line only counts as introduced
+if the panel was **open** when it was shown — the panel is collapsed until the learner asks
+for it, and spending the one explanation on a turn where nobody could read it would be worse
+than not having one.
+**Why:** [`arc.md`](../docs/arc.md) §3 says the advanced concepts are taught "by cash and
+profit visibly diverging in the panel the learner already reads, not by a working-capital
+slider". That only works if the learner can read the panel. A row for depreciation simply
+appeared, in a chapter where no text on screen used the word. Chapter 4 opens with five such
+lines at once.
+**What it produces:** 1 line introduced in chapter 1, 3 in chapter 2, 3 in chapter 3, 5 in
+chapter 4 — the first mechanism in the app whose depth actually scales with the arc rather
+than being flat across it.
+**Considered and rejected:** explaining every line on the first turn of every chapter. It
+puts five paragraphs above the first decision a learner ever makes, and it explains "rent" to
+someone who pays rent.
+**Revisit if:** the count on one chapter's opening turn gets much past five — see
+[Q-025](./OPEN_QUESTIONS.md). The fix then is fewer words, not fewer explanations.
+
 ---
 
 ## Pending — proposed, not decided

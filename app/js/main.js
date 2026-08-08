@@ -86,6 +86,8 @@ function newSession() {
 
     fired: [],
     weeksPassed: 0,
+    // Ledger lines beyond the basic five that have already introduced themselves.
+    seenLines: [],
     recoveriesUsed: 0,
     // Where recovery turns were spliced into the chapter. Saved, because the scenario
     // file is re-fetched clean on every load and the turn list has to be rebuilt to
@@ -199,7 +201,11 @@ function decisionLabel() {
 
   if (type === 'number') {
     const input = turn.decision.input;
-    return input.valueAs === 'count' ? count(session.inputValue) : money(session.inputValue);
+    const shown = input.valueAs === 'count' ? count(session.inputValue) : money(session.inputValue);
+    // The authored noun, so the record and the work-it-out card say "-150 loaves a week"
+    // rather than "-150". See decisionValue() in ui.js.
+    const unit = localised(input.unit);
+    return unit ? t('num.withUnit', { value: shown, unit }) : shown;
   }
 
   if (type === 'allocate') {
@@ -261,7 +267,10 @@ function renderAll(prevState) {
   ui.renderScene(dom.scene, turn.scene, session.state);
   ui.renderProgress(dom.progress, session.turnIndex, scenario.turns.length);
   ui.renderSituation(dom.situation, tinted(turn), carryIn.notes);
-  ui.renderPnl(dom.pnl, session.state);
+  // The advanced ledger lines on screen this turn. Marked seen when the turn ends, so a
+  // line that has just arrived explains itself for as long as the learner is looking at
+  // the turn that brought it, and never again.
+  session.shownLines = ui.renderPnl(dom.pnl, session.state, session.seenLines || []);
   ui.renderTrajectory(dom.trajectory, session.state);
   ui.renderConsequences(dom.consequence, session.fired, session.weeksPassed);
 
@@ -420,6 +429,13 @@ function onNext() {
 
   const advanced = advanceWeeks(next, turn.advanceWeeks || 1);
 
+  // Only count a line as introduced if the panel it appeared in was actually open. The
+  // money panel is collapsed until the learner asks for it, so marking these seen
+  // regardless would spend the one explanation each line gets on a turn where nobody
+  // could have read it.
+  if (!dom.pnlWrap.hasAttribute('hidden')) {
+    session.seenLines = [...new Set([...(session.seenLines || []), ...(session.shownLines || [])])];
+  }
   session.history.push(...advanced.weekly);
   session.state = advanced.state;
   session.fired = advanced.fired;
@@ -620,9 +636,15 @@ function renderChrome() {
 
   // Placeholder figures must be visibly labelled as placeholders until reviewed by
   // someone with local ground truth. AGENTS.md section 6.
+  //
+  // Hidden explicitly when they are not, rather than only when there is no chapter
+  // loaded: a warning that stays up over a chapter whose figures were checked is a
+  // false warning, and the whole value of this banner is that it is believed.
   if (scenario && scenario.unverified) {
     dom.banner.textContent = t('banner.unverified');
     dom.banner.hidden = false;
+  } else if (scenario) {
+    dom.banner.hidden = true;
   }
 
   // The same honesty applies to the translation: it is a first draft and has not been
@@ -652,7 +674,11 @@ function buildLanguageToggle() {
       setLanguage(lang.code);
       try { localStorage.setItem(LANGUAGE_KEY, lang.code); } catch { /* private mode */ }
       renderChrome();
-      renderAll();
+      // The chapter select is a screen too, and it is the first one a learner sees.
+      // renderAll() reads scenario.turns, so switching language there threw and left
+      // the chapter list sitting in the language the learner had just switched away
+      // from — the most visible possible place for this to be wrong.
+      if (scenario && session) renderAll(); else renderChapterSelect();
     });
     dom.lang.appendChild(btn);
   }
@@ -687,7 +713,18 @@ function restoreRecoveries() {
 
 async function start(forceNew) {
   const saved = forceNew ? null : store.load();
-  if (saved && saved.scenarioId === scenario.id && Array.isArray(saved.history)) {
+
+  // Resume a run of THIS chapter that has not already reached its end.
+  //
+  // A finished run stays in storage, so without the second half of this test tapping a
+  // chapter you have completed drops you straight back onto its results screen. Tapping
+  // a chapter means "play it". `turnIndex` counts the spliced list, so the end of the
+  // chapter is its authored length plus however many recovery turns were inserted.
+  const spliced = saved && Array.isArray(saved.recoveryAt) ? saved.recoveryAt.length : 0;
+  const unfinished = saved && saved.scenarioId === scenario.id && Array.isArray(saved.history)
+    && saved.turnIndex < scenario.turns.length + spliced;
+
+  if (unfinished) {
     session = saved;
     session.sought = session.sought || [];
     session.fired = session.fired || [];
