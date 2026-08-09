@@ -42,7 +42,7 @@
       "when": true,
       "startState": {
         "keepsRecords": true,
-        "ownerHoursFixed": -2
+        "ownerHoursFixed": 18
       },
       "note": {
         "en": "You arrive with a simple book of sales and spending. You do not have to start from memory.",
@@ -2071,6 +2071,7 @@
         "sw": "Kumbukumbu ambazo mkopeshaji anaweza kukubali"
       },
       "scene": "office",
+      "unverified": true,
       "carryVariant": {
         "flag": "keepsRecords",
         "when": true,
@@ -2140,26 +2141,28 @@
             }
           },
           {
-            "id": "rebuild-memory",
+            "id": "pay-bookkeeper",
             "label": {
-              "en": "Rebuild six months from memory and the receipt pile",
-              "sw": "Jenga upya miezi sita kutoka kumbukumbu na rundo la risiti"
+              "en": "Pay someone weekly to keep the book and rebuild the old months",
+              "sw": "Mlipe mtu kila wiki atunze daftari na ajenge upya miezi iliyopita"
             },
             "detail": {
-              "en": "No new daily routine, but many gaps in the old months.",
-              "sw": "Hakuna utaratibu mpya wa kila siku, lakini kuna mapengo mengi kwenye miezi iliyopita."
+              "en": "The work leaves your evenings. The fee is a new weekly cost.",
+              "sw": "Kazi inatoka kwenye jioni zako. Ada ni gharama mpya ya kila wiki."
             },
             "effects": {
-              "ownerHoursUsed": 6
+              "keepsRecords": true,
+              "licenceFees": 20000,
+              "ownerHoursUsed": 1
             },
-            "predictAnswer": "same",
+            "predictAnswer": "down",
             "outcome": {
-              "en": "You produce a rough story. Some sales and costs cannot be matched to a date or a customer, so the lender cannot use all of it.",
-              "sw": "Unatengeneza historia ya kukadiria. Baadhi ya mauzo na gharama haziwezi kuhusishwa na tarehe au mteja, kwa hiyo mkopeshaji hawezi kuitumia yote."
+              "en": "The book is kept without your evenings, and the receipt pile becomes a rough story of the old months — with gaps, because a sale nobody wrote down cannot be recovered. The fee comes out of this week's profit, and out of every week you keep paying it.",
+              "sw": "Daftari linatunzwa bila jioni zako, na rundo la risiti linakuwa historia ya kukadiria ya miezi iliyopita — yenye mapengo, kwa sababu mauzo ambayo hakuna aliyeyaandika hayawezi kurudishwa. Ada inatoka kwenye faida ya wiki hii, na kila wiki utakayoendelea kulipa."
             },
             "lesson": {
-              "en": "A record made after the fact is better than nothing, but it cannot recover every decision or unpaid invoice. Small regular records are stronger evidence.",
-              "sw": "Kumbukumbu iliyotengenezwa baadaye ni bora kuliko hakuna, lakini haiwezi kurudisha kila uamuzi au ankara isiyolipwa. Kumbukumbu ndogo za kawaida ni ushahidi wenye nguvu zaidi."
+              "en": "A record costs you time or it costs you money. Neither one raises this week's profit, and paying for it puts the cost on the ledger where you can see it every week.",
+              "sw": "Kumbukumbu inakugharimu muda au inakugharimu pesa. Hakuna kati ya hizo inayoongeza faida ya wiki hii, na kulipia kunaweka gharama kwenye daftari mahali unapoiona kila wiki."
             }
           },
           {

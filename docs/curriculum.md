@@ -1,13 +1,18 @@
 # Curriculum: capability map
 
-> **Status:** first draft, unreviewed, and **blocked on
+> **Status:** the map is a first draft, unreviewed, and still **blocked on
 > [Q-001](../memory/OPEN_QUESTIONS.md)** — the target learner segment. The shape below
 > serves an existing small firm with some traction. If the primary learner turns out to
 > be pre-revenue, much of this needs rewriting.
+>
+> **Coverage is now measured, not assumed.** The section "What the four chapters cover"
+> was written on 2026-08-09 (session 013) against the eighty turns that exist in
+> `app/content/`. It is the honest answer to "which capabilities does the first release
+> teach", and the answer includes several that it does not.
 
 This is a capability map, not a syllabus. It says what a learner should be able to *do*.
 How that is taught is [`game-design.md`](./game-design.md); what we observe is
-[`assessment.md`](./assessment.md).
+[`assessment.md`](./assessment.md); how the chapters relate is [`arc.md`](./arc.md).
 
 ## Organising principle
 
@@ -17,6 +22,61 @@ problem — they experience "nobody is buying at this price."
 
 Each capability names the failure it prevents. If we cannot state the failure, the
 capability does not belong.
+
+---
+
+## What the four chapters cover
+
+Eighty authored turns, four chapters, one concept named per turn. Mapped onto the tracks
+below, and counted rather than asserted. `ch1` is the stall, `ch2` the bakery, `ch3` the
+factory, `ch4` the export business.
+
+| Capability | Where it is taught | State |
+|---|---|---|
+| 0.1 Which trajectory am I on? | — | **not built** |
+| 0.2 What is my binding constraint? | ch3 t03 (recognition, not free text) | **partly** |
+| 1.1 Cash is not profit | ch1 t03 · ch2 t06, t07 · ch4 t07, t08 — and the money panel, every week | covered |
+| 1.2 Unit economics | ch1 t01, t08 · ch2 t03, t05 · ch3 t01, t02, t11 · ch4 t02 | covered |
+| 1.3 Pricing | ch1 t02, t19 · ch3 t18 · ch4 t04 | covered |
+| 1.4 Working capital vs. capability investment | ch1 t07 · ch2 t09, t10, t11 · ch3 t16 · every chapter's t20 | covered |
+| 1.5 Records that support decisions | ch1 t06, t17 · ch2 t16 | covered |
+| 2.1 Who actually pays, and why | ch1 t05 · ch4 t01, t15 | covered |
+| 2.2 Getting a paid trial | an *option* on ch2 t06; no turn is about it | **thin** |
+| 2.3 Selling to organisations | ch2 t06, t17 · ch3 t12, t13 · ch4 t07, t09, t10, t16 | covered |
+| 2.4 Keeping customers | ch1 t04, t18 · ch3 t12 · ch4 t17, t18 | covered |
+| 3.1 What formalisation costs | ch1 t15 · ch2 t17 · ch3 t14 | covered |
+| 3.2 When to formalise | the same turns — each is a timing choice, not an obligation | covered |
+| 3.3 Standards and certification | ch1 t10, t16 · ch3 t15, t17 · ch4 t11, t12 | covered |
+| 3.4 Tax and compliance in practice | ch1 t17 · ch3 t14 | **thin** — no threshold is modelled |
+| 3.5 Shared infrastructure | — | **not covered** |
+| 4.1 Hiring beyond family | ch1 t13 · ch2 t14 | covered |
+| 4.2 Delegation | ch1 t12, t14 · ch3 t10 | covered |
+| 4.3 Systems and standard work | ch1 t16 · ch2 t15 · ch3 t09 | covered |
+| 4.4 Specialist capability | nearest is ch3 t09 | **not covered** |
+| 4.5 Making yourself removable | carried by the owner-hours model, not by any turn | **thin** |
+| 5.1 Finding the binding constraint | ch3 t03 · the five diagnose steps | covered |
+| 5.2 Verifying it | ch3 t04 · information-seeking, on every turn | **partly** |
+| 5.3 Costing the jump | ch2 t09 · ch3 t16 | covered |
+| 5.4 Financing it | ch2 t09, t19 · ch4 t09 | covered |
+| 5.5 Sequencing | each chapter's closing split | **thin** |
+| 6 When assumptions break | ch1 t11 · ch2 t19 · ch3 t06, t19 · ch4 t05, t17, t19, and 46 delayed consequences | covered |
+
+**What this says.** Tracks 1 and 3 are well covered; track 2 is covered except for the
+paid trial, which is the capability the background note treats as the single strongest
+execution signal and which currently exists only as one option inside a wholesale
+decision. Track 4 loses its last two rungs — the learner never hires a specialist and
+never makes themselves removable — which is the failure mode `AGENTS.md` §2 calls
+central. Track 0 does not exist at all.
+
+Track 6's shocks that are authored: an infrastructure failure, a customer who stops
+paying, an input price move, a batch recall, a currency exposure, a container held at a
+border, and growth that consumes cash faster than it earns it. Not authored: a key
+employee leaving, a harvest failing, a competitor undercutting, a regulation changing.
+
+**None of this is a claim about depth.** A capability marked "covered" has at least one
+turn where the learner makes a real decision about it. Whether one turn teaches it is a
+different question, and it is [Q-011](../memory/OPEN_QUESTIONS.md) and
+[Q-026](../memory/OPEN_QUESTIONS.md), not this table.
 
 ---
 
@@ -178,18 +238,29 @@ changes; a key employee leaves; a harvest fails; a competitor undercuts.
 
 ## Sequencing
 
-Not linear. Track 0 first; Track 6 throughout. Tracks 1–5 are entered by scenario
-demand: the learner meets a cash problem and gets Track 1 content when it is the thing
-in front of them, not because it is week two.
+Not linear, and in the built content not sequenced by track at all. Tracks are entered
+by scenario demand: the learner meets a cash problem and gets Track 1 content when it is
+the thing in front of them, not because it is week two. Track 6 runs throughout.
 
-Depth depends on the chosen trajectory. Livelihood consolidation goes deep on Tracks 1
-and 2, lightly through 3, and barely into 4 and 5. Transformational growth needs all
-six.
+**What was designed and is not built:** Track 0 first, and depth varying by the
+trajectory the learner chose — livelihood consolidation going deep on Tracks 1 and 2 and
+barely into 4 and 5, transformational growth needing all six. There is no trajectory
+choice in the application, so every learner meets the same content in whichever chapters
+they play. See [`game-design.md`](./game-design.md), "Designed and not built".
+
+What sequences the content instead is the **chapter**: what kind of business the learner
+is running, and therefore what can kill it ([`arc.md`](./arc.md) §1). A learner who
+plays only the stall meets Tracks 1–4 at a stall's scale and never meets Track 5.
 
 ## Open
 
 - **[Q-001]** Learner segment — this whole map is provisional until it is settled.
 - **[Q-004]** Playthrough length — determines how much of this can exist at all.
-- **[Q-005]** First value chain — honey is the leading candidate.
-- Content depth per track, and which capabilities the first release covers, are
-  unassigned. Do not assume this map is the v1 scope.
+- **[Q-005]** First value chain — honey is the leading candidate, and none of the four
+  authored chapters uses it.
+- **2.2 (getting a paid trial) is the gap that matters most.** It is the capability the
+  background note treats as the strongest execution signal, and it currently exists as
+  one option inside one wholesale decision. Whether to author a turn for it — or a
+  chapter — is a content decision nobody has taken.
+- Depth per capability is unmeasured. The coverage table above says where a capability
+  is touched, not whether one turn is enough to teach it.

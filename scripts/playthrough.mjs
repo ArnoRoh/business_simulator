@@ -66,6 +66,23 @@ function liveState() {
 }
 
 /**
+ * The saved state, but only when it is this chapter's.
+ *
+ * A new session is not written to storage until the learner acts, so on the first screen
+ * of a chapter the save still describes the one before it — and the ledger is on screen
+ * from that very first render. Comparing the two then compares a bakery panel against a
+ * stall's state, which is a bug in the check and not in the app.
+ */
+function liveStateOf(chapterId) {
+  const raw = storeData.get('business-simulator:v1');
+  if (!raw) return null;
+  try {
+    const saved = JSON.parse(raw);
+    return saved.record && saved.record.scenarioId === chapterId ? saved.state : null;
+  } catch { return null; }
+}
+
+/**
  * Every currency amount in a string, as numbers.
  *
  * money() puts the sign in front of the currency code — "-TZS 54,000" — so a negative
@@ -176,6 +193,56 @@ function auditWorkout(where) {
         `card says ${amount}; the business trades at ${[...real].join('/')} (${where.turn})`);
     }
   }
+}
+
+/**
+ * The money panel is the one screen a learner is told to read, and D-023 asks the same
+ * of it as of the work-it-out card: every column adds up. Its rows are signed already —
+ * money in positive, money out negative — so they must come to the profit line printed
+ * under them, and to the profit the engine computed.
+ *
+ * The workout card was checked from the session it was written; this was not, and the
+ * two are not the same screen. A cost the engine charges and the panel has no row for
+ * would leave the learner an unexplained gap in the one place they are meant to look.
+ */
+function auditLedger(where) {
+  const card = dom.pnl.querySelector('.ledger');
+  if (!card) return;
+  const state = liveStateOf(where.chapter);
+  if (!state) return;
+
+  const rows = card.querySelectorAll('.ledger-row');
+  const parts = rows.filter((r) => !r.classList.contains('total'));
+  const totalRow = rows.find((r) => r.classList.contains('total')
+    && !r.classList.contains('cash-flow'));
+  if (!parts.length || !totalRow) return;
+
+  const valueOf = (row) => amountsIn(row.querySelector('.ledger-value')?.textContent || '')[0] ?? 0;
+  const sum = parts.reduce((acc, row) => acc + valueOf(row), 0);
+  const printed = valueOf(totalRow);
+  const profit = weeklyPnl(state).profit;
+
+  checkOnce(`ledger-sum:${where.chapter}`,
+    `${where.chapter}: the money panel's rows add up to the profit printed under them`,
+    sum === printed,
+    `rows come to ${sum}, the panel says ${printed} (${where.turn})`);
+
+  // A cost that pays you is how a broken opening figure surfaces on screen: the factory
+  // once printed "Interest on the loan" in the money-coming-in column, because a carry
+  // rule had opened it at a negative interest rate. The panel was internally consistent
+  // the whole time — the row summed into the profit correctly — so only the direction
+  // gives it away.
+  const backwards = parts.filter((r) => r.classList.contains('out') && valueOf(r) > 0);
+  checkOnce(`ledger-direction:${where.chapter}`,
+    `${where.chapter}: nothing in the money-going-out column is money coming in`,
+    backwards.length === 0,
+    backwards.map((r) => `"${r.querySelector('.ledger-label')?.textContent}" is ${valueOf(r)}`)
+      .join(', ') + ` (${where.turn})`);
+
+  checkOnce(`ledger-profit:${where.chapter}`,
+    `${where.chapter}: the profit the money panel prints is the profit the week made`,
+    printed === profit,
+    `panel says ${printed}, the week made ${profit} (${where.turn})`);
 }
 
 /**
@@ -390,6 +457,7 @@ async function playChapter(chapterIndex, lang) {
 
     auditScreen(where);
     auditWorkout(where);
+    auditLedger(where);
 
     // Keyed on the progress bar rather than the saved turn id: a new session is not
     // written to storage until the learner acts, so on the first screen of a chapter

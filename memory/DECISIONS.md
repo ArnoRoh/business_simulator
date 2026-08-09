@@ -524,6 +524,86 @@ someone who pays rent.
 **Revisit if:** the count on one chapter's opening turn gets much past five — see
 [Q-025](./OPEN_QUESTIONS.md). The fix then is fewer words, not fewer explanations.
 
+## D-026 — A carry override replaces the opening figure; it never subtracts from it
+**Date:** 2026-08-09 (session 013) · **Decided by:** Claude, from a live defect · **ADR:** —
+**Decision:** A `carryIn` rule's `startState` block is a set of **absolute opening values**.
+`applyCarryIn` merges them over the chapter's authored `startState`, so a number there is the
+value the chapter opens on, not a delta from it. `validate-scenario.mjs` now fails any
+override that is negative or signed, and `playthrough.mjs` fails any money-going-out row that
+is money coming in.
+**Why:** three of the eight carry rules were authored in the *effects* habit, where a signed
+`"-0.02"` subtracts (D-022). Merged rather than applied, they set the field outright:
+
+| Rule | Authored | Chapter opened on | Should have been |
+|---|---|---|---|
+| factory / `tookCredit` | `interestRate: -0.02` | **−2%** on a 30,000,000 loan | 0.20 |
+| factory / `builtTeam` | `ownerHoursFixed: -3` | **−3** fixed owner hours | 27 |
+| factory / `keepsRecords` | `cash: 800000` | 800,000, on a note promising *more* cash | 15,800,000 |
+| bakery / `keepsRecords` | `ownerHoursFixed: -2` | **−2** fixed owner hours | 18 |
+
+The interest one reached the screen: the factory's ledger printed "Interest on the loan" in
+the money-**coming-in** column, paying the learner 11,538 a week for holding a term loan. The
+cash one is worse in kind — a learner who kept proper books in the bakery started the factory
+with 5% of the cash the note told them their books had earned them, and was punished for the
+behaviour the whole project exists to reward.
+**Why nothing caught it:** every automated check starts a chapter from an **empty** carry.
+`validate-scenario.mjs` walks three paths from the authored `startState`; `simulate-runs.mjs`
+runs each chapter standalone; the one check that plays four chapters in sequence with the
+flags accumulating — `playthrough.mjs` — read what the panel said but never which direction
+it said it in. The defect was invisible to seven green checks and visible in five seconds to
+anyone who played two chapters in a row.
+**Considered and rejected:** making `carryIn` overrides deltas, to match effects. It would fix
+the three rules and break the four that are correctly absolute (chapter 4's whole carry
+block), and it would put the chapter's opening position out of the author's hands — which is
+what [ADR-0007](../docs/adr/0007-four-chapter-arc.md) chose an authored `startState` to
+prevent. One convention had to give, and the one written down in the schema wins.
+**What the check cannot see:** `cash: 800000` is a positive number and passes the new rule. A
+carry override that is the wrong absolute value in the right direction still needs a person
+to read the note against the number. The rule catches the sign error, not the intent error.
+**Revisit if:** a carry rule genuinely needs to move a field relative to an opening it does
+not know. That is an argument for authoring the two openings explicitly, not for a delta.
+
+## D-027 — The money panel is checked like the work-it-out card
+**Date:** 2026-08-09 (session 013) · **Decided by:** Claude · **ADR:** —
+**Decision:** `playthrough.mjs` now audits the money panel on every screen of every turn in
+both languages: its rows sum to the profit printed under them, that profit is the profit the
+engine computed, and nothing in the money-going-out column is money coming in. Assertions
+went from 1,372 to 3,646.
+**Why:** [D-023](#d-023--every-figure-on-screen-is-one-the-business-has-and-every-column-adds-up)
+made this rule for the work-it-out card, which is opt-in and appears on some turns. The money
+panel is the screen the learner is told to read, is on screen every turn of every chapter,
+and was checked by nothing but "it renders". The direction check is what turns a broken
+opening figure into a visible failure rather than an internally consistent lie — the panel
+summed the negative interest row correctly the whole time.
+**A trap this found:** a new session is not written to storage until the learner acts, so on
+the first screen of a chapter the save still describes the previous chapter. The ledger is on
+screen from that first render, so comparing it against the saved state compares a bakery's
+panel with a stall's state. The audit reads the state only when the save says it belongs to
+the chapter on screen. Any future check that pairs a screen with `liveState()` needs the same
+guard.
+**Revisit if:** the panel gains a row the engine does not compute. Then the sum check is
+asserting something content controls, and it should say which row it could not account for.
+
+## D-028 — `docs/` says which parts describe built behaviour and which are intent
+**Date:** 2026-08-09 (session 013) · **Decided by:** Claude · **ADR:** —
+**Decision:** `game-design.md`, `curriculum.md` and `assessment.md` are reconciled against the
+code, and each now separates what the application does from what was designed and not built.
+The unbuilt parts are **kept and labelled**, not deleted: the free-text bottleneck question,
+the trajectory choice, random shocks, replay detection, the facilitator mode, and the seven
+candidate indicators nothing computes.
+**Why:** the three docs were written before any code existed and went a chapter and a half out
+of date while four chapters were authored against them. `assessment.md` is the file that says
+what we may claim about a learner, and it listed eight candidate indicators as though they
+existed when the application computes five, only one of which is on that list. A document that
+overstates what is measured is the precise failure this project criticises other programmes
+for, and it was ours.
+**Considered and rejected:** deleting the unbuilt sections. The reasoning behind each is still
+good and the next contributor would re-derive it; "designed, not built, here is why" is worth
+more than silence. Also rejected: a separate `implemented.md`, which would go stale the same
+way and split the reader's attention.
+**Revisit if:** a section's "not built" note survives three more sessions. At that point it is
+not a gap, it is a decision, and it should be recorded as one.
+
 ---
 
 ## Pending — proposed, not decided

@@ -46,7 +46,7 @@
     {
       "flag": "builtTeam",
       "when": true,
-      "startState": { "ownerHoursFixed": -3 },
+      "startState": { "ownerHoursFixed": 27 },
       "note": {
         "en": "You have delegated real decisions before, at the bakery. Handing authority to a factory supervisor is not a new muscle.",
         "sw": "Umeshawahi kukabidhi maamuzi halisi hapo awali, kwenye bakery. Kumkabidhi mamlaka msimamizi wa kiwanda si kitu kipya kwako."
@@ -55,7 +55,7 @@
     {
       "flag": "tookCredit",
       "when": true,
-      "startState": { "interestRate": -0.02 },
+      "startState": { "interestRate": 0.2 },
       "note": {
         "en": "The bank saw you take a loan and repay it before. The factory's term loan carries a slightly better rate because of it.",
         "sw": "Benki iliona ulichukua mkopo na kuulipa hapo awali. Mkopo wa muda mrefu wa kiwanda una riba nafuu kidogo kwa sababu hiyo."
@@ -64,7 +64,7 @@
     {
       "flag": "keepsRecords",
       "when": true,
-      "startState": { "cash": 800000 },
+      "startState": { "cash": 15800000 },
       "note": {
         "en": "Clean books from the bakery made the lease and the loan easier to arrange. You start with a little more cash because of it.",
         "sw": "Vitabu safi kutoka bakery vilirahisisha mpangilio wa kukodi jengo na mkopo. Unaanza na pesa kidogo zaidi kwa sababu hiyo."

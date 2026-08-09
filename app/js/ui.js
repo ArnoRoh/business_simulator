@@ -300,8 +300,9 @@ function ledgerRow(row, scale) {
 }
 
 // The five lines every business in this game has from its first week: what it sold,
-// what the goods cost, rent, wages, licence fees. They are the ledger a mandazi stall
-// has, and they are not explained.
+// what the goods cost, rent, wages, and licences and fees — which also carries what a
+// business pays someone to keep its books. They are the ledger a mandazi stall has, and
+// they are not explained.
 //
 // Everything else is a line that arrives because the business changed — an oven that
 // wears out, a loan that charges interest, a container that pays duty. `arc.md` §3 says

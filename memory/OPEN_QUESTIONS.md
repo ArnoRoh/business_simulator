@@ -119,6 +119,25 @@ factory and export chapters in particular.
 
 ## Open
 
+### Q-027 — Nothing in the curriculum is about getting a paid trial  [open]
+**Raised:** 2026-08-09 (session 013) · **Owner:** Project owner
+**Question:** Capability 2.2 in [`curriculum.md`](../docs/curriculum.md) — *securing a real
+commitment, small, paid and specific, before committing capital* — has no turn anywhere in
+the eighty. It exists as one option inside the bakery's wholesale decision (`t06`,
+`trial-wholesale`). Should a turn, or a chapter, be authored for it?
+**Why it matters:** the background note treats securing a paid trial as the single strongest
+observable execution signal, and [ADR-0004](../docs/adr/0004-simulator-as-selection-instrument.md)
+makes observed execution the whole point of the tool. `assessment.md` lists **customer
+validation** as a candidate indicator that cannot be computed — and the reason it cannot be
+computed is that the content never puts the learner in that position. This is the one
+coverage gap where the missing content and the missing indicator are the same hole.
+**Found by:** counting the built content against the capability map for the first time
+(session 013). Three other gaps came out of the same count — 3.5 shared infrastructure, 4.4
+specialist capability, 4.5 making yourself removable — and none of them sits this close to
+the thesis.
+**Current assumption:** left as it is. Authoring content is not the bottleneck this project
+has; contact with real people is.
+
 ### Q-025 — Is chapter 4's opening ledger too much to meet at once?  [open]
 **Raised:** 2026-08-08 (session 012) · **Owner:** Project owner / playtesting
 **Question:** [D-025](./DECISIONS.md) makes each ledger line beyond the basic five introduce
@@ -211,19 +230,6 @@ is the *easiest* to finish well would be the arc arriving backwards.
 **Current assumption:** left as it is. It is no longer measuring a broken control as the
 learner's judgement, which was the thing that had to be true; whether it now has enough
 teeth is a playtesting question, not one more round of tuning by the author.
-
-### Q-024 — Bakery turn 16 is a prediction with only one answer  [open]
-**Raised:** 2026-08-08 (session 011) · **Owner:** whoever next edits chapter 2's content
-**Question:** All three options on the bakery's turn 16 (keeping books) declare `same`, so
-`validate-scenario.mjs` prints `weak t16`. The learner predicts, and every choice is the
-same prediction.
-**Why it matters:** small, and worth fixing when the file is next open. A turn that cannot
-discriminate teaches nothing at the moment of engagement, and it quietly dilutes the
-prediction signal. It is also a nag on every validation run, which is how real warnings
-come to be ignored.
-**Current assumption:** left alone. The turn's *content* is sound — record-keeping does not
-move this week's profit, which is exactly its lesson — so the honest fix is probably a
-delayed consequence rather than a same-week effect, and that is a content decision.
 
 ### Q-021 — "Up a lot" is unreachable in chapter 1, and only content can fix it  [open]
 **Raised:** 2026-08-08 (session 010) · **Owner:** Project owner
@@ -398,6 +404,29 @@ determines the sync architecture.
 opt-in before anything is shared with a programme. See `SECURITY.md`.
 
 ## Resolved
+
+### Q-024 — Bakery turn 16 is a prediction with only one answer  [RESOLVED 2026-08-09]
+**Raised:** 2026-08-08 (session 011) · **Answered by:** Claude, session 013
+**Question was:** all three options on the bakery's turn 16 (keeping books) declared `same`,
+so `validate-scenario.mjs` printed `weak t16`. The learner predicted, and every choice was
+the same prediction.
+**Answer: the middle option now costs money instead of only time.** "Rebuild six months from
+memory and the receipt pile" became "Pay someone weekly to keep the book and rebuild the old
+months" — a 20,000-a-week fee on the ledger, so the option declares `down` and the turn
+discriminates. The reconstruction lesson survives inside the new option's outcome: the
+receipts become a rough story with gaps, because a sale nobody wrote down cannot be
+recovered.
+**Why not the delayed consequence this question proposed:** the prediction is about *this
+week's* profit, so a consequence three weeks out leaves all three options declaring `same`
+and the turn still cannot discriminate. The trade-off the turn is actually about is that a
+record costs you time or it costs you money, and neither raises this week's profit — which is
+a better lesson than the one that was there and is visible in the week the learner predicts.
+**Cost:** the fee is an invented Tanzanian figure, so t16 now carries `unverified: true` and
+falls under [Q-018](#q-018--are-the-chapter-24-opening-states-realistic-for-tanzania--blocking-for-chapters-24--needs-local-review).
+The ledger row it lands in was relabelled from "Licence fees" to "Licences and fees", because
+chapter 1 already books a bookkeeper there and the old label was not true of it.
+**Verified:** -20,000 on all three walked paths, stable across the 400-path sweep, and `weak
+t16` no longer prints.
 
 ### Q-009 — Confirm or reject the stage-zero placement  [RESOLVED 2026-08-04]
 **Raised:** 2026-08-02 (session 002) · **Answered by:** Project owner

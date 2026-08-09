@@ -392,6 +392,30 @@ console.log('\ncarry:');
     }
   }
 
+  // A carryIn override REPLACES the authored opening field; it is not a delta.
+  //
+  // Turn effects are the other way round — a signed "-0.02" there subtracts (D-022) —
+  // and three rules were authored in that habit. The factory opened a learner who had
+  // taken credit in the bakery on an interest rate of -0.02, so a 30,000,000 loan paid
+  // them 11,538 a week and the ledger printed "Interest on the loan" as money coming
+  // in. Nothing could see it: the three walked paths all start from an empty carry, and
+  // a chapter opened this way still renders perfectly.
+  //
+  // No opening field this game has is legitimately negative — not cash, not hours, not
+  // a rate — so the rule is simply that an override must be a value the chapter could
+  // have been authored with in the first place.
+  for (const [where, rule] of rules) {
+    for (const [field, value] of Object.entries(rule.startState || {})) {
+      if (typeof value === 'string' && /^[+-]/.test(value)) {
+        console.log(`  FAIL ${where} sets ${field} to "${value}"; a carry override replaces the value, so it cannot be signed`);
+        problems += 1;
+      } else if (typeof value === 'number' && value < 0) {
+        console.log(`  FAIL ${where} opens ${field} at ${value}; a carry override replaces the authored ${field}, it does not subtract from it`);
+        problems += 1;
+      }
+    }
+  }
+
   // A rule that fires on an absent flag would change the opening for a learner who
   // brought nothing — which is the case the whole design rests on being safe.
   const empty = applyCarryIn(scenario, {});

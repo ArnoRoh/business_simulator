@@ -1,7 +1,7 @@
 # Project state
 
-**Snapshot as of:** 2026-08-08
-**Last session:** [`sessions/2026-08-08-012-playing-it-and-what-that-found.md`](./sessions/2026-08-08-012-playing-it-and-what-that-found.md)
+**Snapshot as of:** 2026-08-09
+**Last session:** [`sessions/2026-08-09-013-carry-defect-and-the-docs.md`](./sessions/2026-08-09-013-carry-defect-and-the-docs.md)
 
 > This file is a **snapshot, not a history**. Overwrite it at the end of every session
 > so it always describes the present. History belongs in `sessions/` and
@@ -25,20 +25,22 @@ was written. It is now **contact with real people** — an owner playing it, a f
 Kiswahili reader, a phone, and Tanzanian figures somebody can vouch for. None of those can be
 produced from inside this repository.
 
-Twelve sessions: repository bootstrap (001), an ideation discussion on pedagogy and placement
-(002), the first build (003), a shareable single-file version (004), a rework for depth and
-Kiswahili (005), free-input decisions plus a campaign (006), a repair of two controls that
-could not reach their own answers (007), the four-chapter arc and the engine to carry it
-(008), an audit and a file with two owners (009), the bakery landing plus the service worker
-(010), chapters 3 and 4 plus the anchor bug (011), and a playthrough check plus the six
-defects it found (012).
+Thirteen sessions: repository bootstrap (001), an ideation discussion on pedagogy and
+placement (002), the first build (003), a shareable single-file version (004), a rework for
+depth and Kiswahili (005), free-input decisions plus a campaign (006), a repair of two
+controls that could not reach their own answers (007), the four-chapter arc and the engine to
+carry it (008), an audit and a file with two owners (009), the bakery landing plus the service
+worker (010), chapters 3 and 4 plus the anchor bug (011), a playthrough check plus the six
+defects it found (012), and a carry rule that paid the learner interest plus three docs
+reconciled with the code (013).
 
-**Sessions 006, 007, 011 and 012 all exist because somebody played it.** Four of the twelve.
-Every one of them found defects that the whole test suite had passed clean, and every one of
-them was a control lying to the learner rather than an engine getting a number wrong. Session
-012 finally turned that into a check — `playthrough.mjs` — but the pattern is old enough now
-to be a fact about this project: **the model is well tested and the screens are where the
-defects live.**
+**Sessions 006, 007, 011 and 012 all exist because somebody played it.** Every one of them
+found defects that the whole test suite had passed clean, and every one was a control lying to
+the learner rather than an engine getting a number wrong. Session 012 turned that into a check
+— `playthrough.mjs` — and session 013 is the first time that check found something on its own:
+the factory's ledger had been printing "Interest on the loan" as money *coming in*, because a
+carry rule set the opening rate to −2% (D-026). The pattern is now a fact about this project:
+**the model is well tested and the screens are where the defects live.**
 
 The project rests on the owner's background note
 ([`docs/context/transformational-entrepreneurship.md`](../docs/context/transformational-entrepreneurship.md)) —
@@ -50,20 +52,20 @@ read it before anything else. The arc is in [`docs/arc.md`](../docs/arc.md) and
 | Area | State |
 |---|---|
 | **Chapter 1 — the stall** | **Playable**, and the only chapter the owner has played. 20 turns. |
-| **Chapter 2 — the bakery** | **Playable.** Own band edges (D-018), chosen from its own option deltas. |
+| **Chapter 2 — the bakery** | **Playable.** Own band edges (D-018), chosen from its own option deltas. t16 now discriminates (Q-024 resolved). |
 | **Chapter 3 — the factory** | **Playable.** `unverified: true` — figures not locally checked. |
 | **Chapter 4 — the export business** | **Playable.** `unverified: true`. Possibly too easy — Q-023. |
 | **The engine** | Product mix, depreciation, debt, working capital, FX, landed cost, and `readField` (D-021). Chapter 1's behaviour asserted unchanged throughout. |
-| **The chapter layer** | Manifest, select screen, `carry.js`, per-chapter save. Nothing locked, nothing summed. |
+| **The chapter layer** | Manifest, select screen, `carry.js`, per-chapter save. Nothing locked, nothing summed. Carry overrides are **absolute openings**, checked (D-026). |
 | **Offline** | `sw.js` — shell cache-first, content network-first with a cache fallback, `build-info.json` exempt. **Never tested on a device.** |
 | Operating guide (`AGENTS.md`, `CLAUDE.md`) | Written. Carries the thesis and memory protocol. |
-| Memory system | In use — this file, 25 decisions, 26 open questions (2 resolved), glossary, 12 session entries, 3 contracts. |
+| Memory system | In use — this file, 28 decisions, 27 open questions (3 resolved), glossary, 13 session entries, 3 contracts. |
 | Governance, licences | Written. MIT code + CC BY-SA 4.0 content. |
-| Design docs (`docs/`) | `arc.md` is current. `game-design.md`, `curriculum.md` and `assessment.md` are **behind the code**. |
+| Design docs (`docs/`) | **Current.** `arc.md`, and `game-design.md` / `curriculum.md` / `assessment.md` reconciled with the code in session 013, each separating built behaviour from intent (D-028). |
 | Regional context (`docs/context/`) | Owner's note in place. Country detail still a **deliberate stub**. |
 | ADRs | Seven, all `Accepted`. |
 | Tests | 7 checks, all green. See below. |
-| Curriculum content | Four chapters. Far-transfer testing is now *possible* and still not implemented. |
+| Curriculum content | Four chapters, 80 turns, now **mapped against the capability map** in `docs/curriculum.md`. Four capabilities have no turn at all; the one that matters is the paid trial (Q-027). Far-transfer testing is possible and still not implemented. |
 | Partners, pilot sites, funding | Still not recorded. See Q-002. |
 
 **What green means, as of this snapshot:**
@@ -75,8 +77,8 @@ read it before anything else. The arc is in [`docs/arc.md`](../docs/arc.md) and
 | `validate-i18n.mjs` | 1,789 content strings × 2 languages; 109 literal + 7 built interface keys |
 | `simulate-runs.mjs` | no whole-business failures; `attentive` finishes all four chapters |
 | `smoke-app.mjs` | 29 passed |
-| **`playthrough.mjs`** | **1,372 passed** — 4 chapters × 2 languages, every turn, every screen |
-| `check-links.sh` | 321 relative links resolve |
+| **`playthrough.mjs`** | **3,646 passed** — 4 chapters × 2 languages, every turn, every screen, and now the money panel on each one (D-027) |
+| `check-links.sh` | 358 relative links resolve |
 
 `validate-scenario.mjs` also prints `drift` lines from a 400-path random sweep. **Those are
 real findings that deliberately do not fail** — chapters 1, 2 and 3 have unstable options.
@@ -89,6 +91,12 @@ minutes: a crash on the language button, a work-it-out card pricing a bakery's b
 mandazi stall's 500 shillings, a diagnose control showing raw keys with "TZS 0" beside them,
 the end-of-chapter record printing `indicator.diagnosis` as text, and a chapter list that
 threw a part-played run away.
+
+It is also the only check that **plays the four chapters in sequence with the carried flags
+accumulating**. Everything else opens a chapter from an empty carry, which is why four
+mis-authored carry rules survived seven green checks — one of them opening the factory on a
+negative interest rate, another cutting a careful learner's opening cash to 5% of what the
+screen promised them (D-026).
 
 ## How to run it
 
@@ -165,8 +173,14 @@ The session 004 claude.ai artifact link is abandoned and stale.
     authored evidence with no figure at all (D-024).
 21. **A ledger line a stall does not have introduces itself, once** (D-025), and only on a
     panel the learner has open.
+22. **A carry override replaces the opening figure and never subtracts from it** (D-026),
+    enforced by a check — unlike an effect, where a signed value is a delta.
+23. **The money panel is checked like the work-it-out card** (D-027): the rows sum to the
+    profit printed under them, and no cost row is money coming in.
+24. **`docs/` says which parts describe built behaviour and which are intent** (D-028), and
+    keeps the unbuilt parts labelled rather than deleting them.
 
-## What the app now does that the docs do not describe
+## What the app does beyond the original design
 
 - **Free-input decisions** — turns that take a number on a stepper, with live feedback, now
   including a price on a single product line. One turn splits profit between business, home
@@ -196,8 +210,14 @@ The session 004 claude.ai artifact link is abandoned and stale.
   no rank, no percentile, enforced by tests.
 - **Offline play** after first load, via `sw.js`.
 
-Still unimplemented: far-transfer testing, pre/post, delayed retest. All four chapters now
-exist, so none of them is blocked on content any more.
+All of this is now described in `docs/game-design.md`, which was two sessions behind the code
+until 013.
+
+**Designed and not built**, each named and reasoned in `docs/game-design.md` rather than
+quietly missing: the free-text bottleneck question (`record.observeConstraint()` exists and is
+called by nothing), the livelihood/transformational trajectory choice, random shocks, replay
+detection, and a facilitator-assisted mode. Also still unimplemented: far-transfer testing,
+pre/post, delayed retest. None of these is blocked on content any more.
 
 ## What is not decided
 
@@ -218,6 +238,8 @@ Blocking, in priority order — full list in [`OPEN_QUESTIONS.md`](./OPEN_QUESTI
   and every structural measure is identical across all four chapters. The arc is a cliff and
   then a plateau. Intended, or does it need restructuring? The owner's call.
 - **Q-025** — Chapter 4 now opens with five ledger lines explaining themselves at once.
+- **Q-027** — Nothing in eighty turns is about **getting a paid trial**, which is both the
+  largest curriculum gap and the reason the customer-validation indicator cannot be computed.
 - **Q-004 / Q-013** — Playthrough length; whether 20 deeper turns is right.
 
 ## Immediate next steps
@@ -233,9 +255,11 @@ Blocking, in priority order — full list in [`OPEN_QUESTIONS.md`](./OPEN_QUESTI
    and the banner can come down.
 5. **Rule on Q-022 and Q-021**, which together decide whether the stability sweep becomes a
    FAIL and whether chapter 1 gets rebalanced.
-6. Fix bakery t16, where all three options declare the same prediction (Q-024) — small, and
-   worth doing when that file is next open.
-7. Reconcile `docs/` with the code: `game-design.md`, `curriculum.md`, `assessment.md`.
+6. **Rule on Q-027** — whether to author content for getting a paid trial, the one capability
+   gap that sits on the thesis rather than beside it.
+
+Items 6 and 7 from the previous snapshot are done: bakery t16 discriminates (Q-024), and
+`game-design.md`, `curriculum.md` and `assessment.md` are reconciled with the code.
 
 ## Notes for whoever picks this up next
 
@@ -244,8 +268,15 @@ Blocking, in priority order — full list in [`OPEN_QUESTIONS.md`](./OPEN_QUESTI
 - **Run all seven checks after any content edit**, and `validate-i18n.mjs` after touching any
   string. Every new UI string needs both languages in `app/content/ui.json`.
 - **If you change anything a learner looks at, run `playthrough.mjs` and add an assertion to
-  it.** The model is well tested; the screens are where the defects live, four sessions
+  it.** The model is well tested; the screens are where the defects live, five sessions
   running. `-v` prints every assertion and how many ledger lines each chapter introduces.
+- **A screen can be internally consistent and still lying.** The money panel summed a negative
+  interest row into its profit line perfectly correctly for two sessions; what gave it away
+  was direction, not arithmetic (D-027). When you check that a column adds up, check
+  separately that each row points the way it should.
+- **Pairing a screen with the saved state needs the chapter guard** (`liveStateOf` in
+  `playthrough.mjs`). A new session is not written to storage until the learner acts, so on a
+  chapter's first render the save still describes the chapter before it.
 - **A card may only state a figure the business actually produces** (D-023). `state.price`
   and `state.unitCost` are not that figure in a chapter with `lines` — they sit at the
   engine's defaults of 500 and 300 and always will, because the engine has no use for them
@@ -264,6 +295,14 @@ Blocking, in priority order — full list in [`OPEN_QUESTIONS.md`](./OPEN_QUESTI
 - **Author signed deltas** (`"+60"`, `"-0.045"`) for any field an earlier turn can also move;
   an unsigned number is an absolute set. And an option that changes the order book moves
   `demand` and `capacity` together (D-022).
+- **A `carryIn` override is not an effect.** It is merged over the authored `startState`, so
+  it is always the absolute opening value — a signed-looking number there sets the field to
+  that number. Four rules were written the other way and one of them opened the factory on a
+  −2% interest rate (D-026). The validator now rejects a negative override, but it cannot see
+  a wrong positive one: **read the rule's note against its number.**
+- **Every check but `playthrough.mjs` opens a chapter from an empty carry**, so none of them
+  can see a carry defect. If you touch `carryIn`, the check that matters is the one that plays
+  four chapters in a row.
 - **`spoilRate` charges unsold capacity only** — not transit damage, not anything that
   happens to goods that ship.
 - **`cash += cashFlow` is the line to be careful around** (D-017). Put anything that moves
