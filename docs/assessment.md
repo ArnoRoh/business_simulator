@@ -91,7 +91,7 @@ were available.
 | **Unit-economics realism** | The numeric decisions record the figure supplied, so the raw material exists. Nothing computes whether those figures survived contact with costs. |
 | **Record keeping** | Partly covered by information-seeking; the `keepsRecords` carried flag is a fact about the run, not an indicator. |
 | **Delegation** | The hiring and delegation turns are observed as decisions like any other. Nothing derives a pattern across them. |
-| **Capital discipline** | Would come from the closing split and the capability-jump turns. Not derived. |
+| **Capital discipline** | The observation now exists — the split is recorded as `input` entries, it happens with most of the chapter still to run, and what the business is worth is computable at any turn (D-030, D-032). Nobody has written the derivation. This is the closest of the seven to being real. |
 | **Customer validation** | Needs the paid-trial content that [`curriculum.md`](./curriculum.md) records as a gap (2.2). |
 
 **Explicitly excluded** — the weak predictors named in the background note. Do not build

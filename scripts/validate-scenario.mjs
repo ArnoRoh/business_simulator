@@ -94,6 +94,7 @@ let numericProblems = 0;
 const paths = [0, 1, 2];
 const results = new Map();
 const numericResults = [];
+const allocationTotals = [];
 
 function numberValues(input) {
   const min = Number(input.min);
@@ -193,6 +194,11 @@ function validateAllocationTurn(state, turn, pathIndex) {
   const finite = outcomes.every((outcome) => Number.isFinite(outcome.profit));
   const mapped = outcomes.every((outcome) => outcome.band !== null);
   numericResults.push({ turn: turn.id, type: 'allocate', path: pathIndex, finite, mapped, monotonic: true, values: splits.length });
+  // A split of nothing is a control the learner cannot move (D-015), and the situation
+  // above it usually claims there is money to divide. Reported per path rather than
+  // failed: a business that reaches this turn broke has nothing spare, which is a true
+  // thing about that path — but if it is true on EVERY path the turn cannot work at all.
+  allocationTotals.push({ turn: turn.id, path: pathIndex, total });
 
   let next = state;
   if (splits.length) {
@@ -586,6 +592,24 @@ console.log('\nstability across many paths:');
     console.log(`  drift ${key.padEnd(38)} ${String(r.declared).padEnd(10)} ${[...r.bands].join('|')}`);
   }
   console.log(`  ${seen.size - unstable.length}/${seen.size} options hold their band across ${RUNS} random paths`);
+}
+
+// What there was to allocate, on each path walked. See validateAllocationTurn.
+{
+  const byTurn = new Map();
+  for (const row of allocationTotals) {
+    if (!byTurn.has(row.turn)) byTurn.set(row.turn, []);
+    byTurn.get(row.turn).push(row.total);
+  }
+  for (const [turn, totals] of byTurn) {
+    const empty = totals.filter((t) => t <= 0).length;
+    if (empty === totals.length) {
+      console.log(`  FAIL ${turn} has nothing to allocate on any path walked`);
+      problems += 1;
+    } else if (empty > 0) {
+      console.log(`\nallocation:\n  empty ${turn}: nothing to split on ${empty} of ${totals.length} paths`);
+    }
+  }
 }
 
 console.log(`\n${checks - choiceProblems}/${checks} option predictions verified, ${problems} problem(s)`);

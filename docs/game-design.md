@@ -1,6 +1,6 @@
 # Game design
 
-> **Status:** describes the application as built, as of 2026-08-09 (session 013).
+> **Status:** describes the application as built, as of 2026-08-09 (sessions 013 and 015).
 > Everything under "The loop as built", "Structure of time", "Systems modelled",
 > "Failure", "Interface" and "Content model" is behaviour you can play. Everything
 > under "Designed and not built" is intent, and is marked as such.
@@ -58,7 +58,7 @@ evidence with no figure attached at all (D-024).
 |---|---|---|
 | **Choice** | Picks one of three options — always three | 14 turns in chapter 1, 15 in the rest |
 | **Number** | Names a figure on a stepper — a price, a batch size, a wage | 5 in chapter 1, 4 in the rest |
-| **Split** | Divides an amount between business, home and reserve | the last turn of every chapter |
+| **Split** | Divides an amount between repaying, reinvesting, home and reserve | one turn per chapter, with the rest of the chapter still to run |
 
 There is no undo. A number decision records the number itself, not which bracket it fell
 in: the value is the evidence (D-011).
@@ -151,14 +151,13 @@ exported unit, and duty on exported value.
 opening level, a member of staff, fees, and capacity down to a floor. It shrinks the
 business towards a stall and never to nothing.
 
-**Not modelled, and not deliberately: a balance sheet.** Every input for one is in state
-— cash, equipment at written-down value, debt, and stock and receivables less payables —
-and nothing adds them up. Every figure this game shows a learner is a *flow*: a week's
-profit, a week's cash, a chart of the last twelve weeks' profit. Nothing shows a *stock*,
-so nothing the learner does can be seen to accumulate, and neither the owner's stake, the
-gearing against it, nor the effect of drawing money out can be taught at all. Raised by
-the project owner and open as [Q-028](../memory/OPEN_QUESTIONS.md); the capabilities it
-blocks are 1.6–1.8 in [`curriculum.md`](./curriculum.md).
+**What the business is worth.** Cash, plus equipment at what it is worth now, plus stock
+and money customers owe less money owed to suppliers, less debt. It is the only figure in
+the game that is a *stock* rather than a week, and it sits under the weekly rows with the
+amount it moved by since last week. Once a chapter has a loan it is joined by what the
+lender is owed for every 100 that is the owner's, and by a warning when more is owed than
+held. It counts nothing content did not record, which is why an option that spends cash on
+something the business keeps has to say so (see "Content model").
 
 **Deliberately not modelled:** double-entry accounting, HR administration, tax computed
 to the shilling, market share dynamics. Compliance appears as its cash and fee cost and
@@ -190,7 +189,8 @@ From `AGENTS.md` §3, restated as rules and now as behaviour:
 - **Numbers shown as consequences, not tables** — with bars for magnitude, a cash runway
   in weeks rather than a ratio, and a twelve-week projection of where this is heading.
 - **Every new ledger line introduces itself, once**, the first time the learner meets it
-  on a panel they have open (D-025).
+  on a panel they have open (D-025) — including what the business is worth, and the
+  lender's claim on it.
 - **Every state is resumable.** The app is saved on every action and assumes it will be
   killed mid-decision.
 - **No timers, no real-time pressure.** Play happens in interrupted fragments.
@@ -230,6 +230,21 @@ cause it will name when it arrives. **Signed effects (`"+60"`, `"-0.045"`) are d
 unsigned numbers are absolute sets** (D-022). A `carryIn` override is not an effect and
 is always absolute — authoring one as a delta opened the factory on a negative interest
 rate, and `validate-scenario.mjs` now rejects it.
+
+Two rules follow from the worth figure, and neither can be fully checked by a script:
+
+- **An option that spends cash on something the business keeps records it** with
+  `assetValue` (D-031). Buying a fryer is not the same event as paying a licence fee, and
+  without the asset the panel reads a capability investment as money destroyed.
+- **Stock is not recorded twice.** In a chapter with `inventoryWeeks`, buying stock is
+  already carried by working capital; adding `assetValue` as well would count it in two
+  places.
+
+**Where the split sits matters.** Each chapter's allocation turn — repay, reinvest, take
+home, hold as reserve — is deliberately *not* the last turn. It is turn 17 in chapter 1
+and 14, 13 and 15 in the others, so that whatever leaves the business is money the
+business does not have for the weeks that follow (D-032). A split on the final turn costs
+nothing, because nothing follows it.
 
 Every scenario file is checked by `scripts/validate-scenario.mjs`: declared predictions
 against computed ones, band stability across 400 random paths, numeric controls that can

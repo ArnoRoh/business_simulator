@@ -363,6 +363,66 @@ export function workingCapital(state) {
 }
 
 /**
+ * What the business is worth: what it owns, less what it owes.
+ *
+ * Every figure this game showed a learner before this existed was a FLOW — a week's
+ * profit, a week's cash, twelve weeks of profit on a chart. Nothing showed a STOCK, so
+ * nothing a learner did could be seen to accumulate, and three things an owner of a real
+ * firm lives by could not be taught at all: what the business is worth, how much of it
+ * the lender has a claim on, and what their own drawings did to both (D-030).
+ *
+ * What it counts, and the limits of that:
+ *
+ *   + cash                what is in the box and the bank
+ *   + assetValue          equipment, at what it is worth NOW — it falls with depreciation
+ *   + working capital     stock on the shelf and money customers owe, less money owed
+ *                         to suppliers. Held in state, so it carries the learner's own
+ *                         swings and not a fresh derivation (see workingCapital)
+ *   − debt                what is owed to the lender
+ *
+ * It does NOT count anything content did not record. Capacity bought without an
+ * `assetValue` is, to this function, cash that left and nothing that arrived — which is
+ * why buying a fryer had to start recording the fryer (D-031). That is a content rule
+ * with a warning in validate-scenario.mjs, not something this can defend itself against.
+ */
+export function netWorth(state) {
+  const wc = state.wcHeld ?? workingCapital(state);
+  return Math.round(
+    (Number(state.cash) || 0)
+    + (Number(state.assetValue) || 0)
+    + wc
+    - (Number(state.debt) || 0),
+  );
+}
+
+/**
+ * How much of the business the lender has a claim on, against how much the owner does.
+ *
+ * Returned as a share of the owner's stake — `1` means the lender is owed exactly what
+ * the owner holds — plus the two figures it came from, so a caller can say it in words
+ * rather than as a ratio. `docs/localization.md` asks for a concrete comparison over an
+ * abstract ratio, and "for every 100 that is yours, 80 is owed" is one.
+ *
+ * `owned` is what is left after the debt, which is the same equity `netWorth` reports.
+ * When that is zero or less the ratio is meaningless rather than infinite, and the
+ * honest thing to say is that the business owes more than it owns — so `share` is null
+ * and the caller must handle it.
+ */
+export function gearing(state) {
+  const owed = Number(state.debt) || 0;
+  const owned = netWorth(state);
+  return {
+    owed,
+    owned,
+    share: owned > 0 ? owed / owned : null,
+    // More is owed than the owner holds. Not a failure — a highly geared business is a
+    // normal thing — but it is the point at which a bad quarter stops being survivable
+    // on the owner's own account.
+    outweighed: owed > 0 && owed > owned,
+  };
+}
+
+/**
  * What actually reaches the bank this week, as opposed to what the business earned.
  *
  * `profit` and `cashFlow` are equal by construction whenever the chapter-2-4 fields

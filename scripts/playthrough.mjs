@@ -14,7 +14,7 @@
 // Run: node scripts/playthrough.mjs [-v]
 
 import { installStubDom, settle, read } from './lib/stub-dom.mjs';
-import { weeklyPnl } from '../app/js/engine.js';
+import { weeklyPnl, netWorth } from '../app/js/engine.js';
 
 const verbose = process.argv.includes('-v');
 
@@ -246,6 +246,38 @@ function auditLedger(where) {
 }
 
 /**
+ * What the business is worth is the only figure on the panel that is a stock rather
+ * than a week, and it is the one a learner cannot check by adding up the rows above it.
+ * So it is checked against the engine directly, and the lender's sentence is checked to
+ * appear only when there is actually a lender.
+ */
+function auditWorth(where) {
+  // The panel is cleared on the end screen, where a week's ledger would be meaningless.
+  // Anywhere it is drawn at all, the worth block is part of it.
+  if (!dom.pnl.querySelector('.ledger')) return;
+  const card = dom.pnl.querySelector('.worth');
+  const state = liveStateOf(where.chapter);
+  if (!state) return;
+
+  checkOnce(`worth-shown:${where.chapter}`,
+    `${where.chapter}: the money panel says what the business is worth`,
+    Boolean(card), `no worth card on ${where.turn}`);
+  if (!card) return;
+
+  const shown = amountsIn(card.querySelector('.worth-value')?.textContent || '')[0];
+  checkOnce(`worth-figure:${where.chapter}`,
+    `${where.chapter}: what the panel says the business is worth is what it is worth`,
+    shown === netWorth(state),
+    `panel says ${shown}, the engine says ${netWorth(state)} (${where.turn})`);
+
+  const saysLender = card.querySelectorAll('.worth-note').length > 0;
+  checkOnce(`worth-lender:${where.chapter}`,
+    `${where.chapter}: the lender's claim is mentioned when there is a lender, and not otherwise`,
+    saysLender === ((Number(state.debt) || 0) > 0),
+    `debt is ${state.debt || 0} and the panel ${saysLender ? 'does' : 'does not'} mention a lender (${where.turn})`);
+}
+
+/**
  * The numeric prediction card restates the two figures the estimate is built from:
  * what the trade keeps, and what the week costs in rent, wages and fees. Same rule —
  * they have to be numbers this business actually produces.
@@ -458,6 +490,7 @@ async function playChapter(chapterIndex, lang) {
     auditScreen(where);
     auditWorkout(where);
     auditLedger(where);
+    auditWorth(where);
 
     // Keyed on the progress bar rather than the saved turn id: a new session is not
     // written to storage until the learner acts, so on the first screen of a chapter

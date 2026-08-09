@@ -132,6 +132,42 @@
     "en": "New in your ledger this week",
     "sw": "Mpya katika daftari lako wiki hii"
   },
+  "worth.title": {
+    "en": "What the business is worth",
+    "sw": "Biashara ina thamani gani"
+  },
+  "worth.owned": {
+    "en": "Yours, after what is owed",
+    "sw": "Chako, baada ya madeni"
+  },
+  "worth.grew": {
+    "en": "It grew by {amount} this week.",
+    "sw": "Imeongezeka kwa {amount} wiki hii."
+  },
+  "worth.fell": {
+    "en": "It fell by {amount} this week.",
+    "sw": "Imepungua kwa {amount} wiki hii."
+  },
+  "worth.lenderShare": {
+    "en": "For every 100 of this that is yours, the lender is owed {amount}.",
+    "sw": "Kwa kila 100 ya hii iliyo yako, mkopeshaji anadai {amount}."
+  },
+  "worth.outweighed": {
+    "en": "More is owed than you hold. The interest and the repayment carry on in a bad week too.",
+    "sw": "Kinachodaiwa ni zaidi ya unachoshikilia. Riba na marejesho vinaendelea hata wiki mbaya."
+  },
+  "worth.owesMoreThanOwns": {
+    "en": "The business owes more than it owns. Everything it holds is spoken for.",
+    "sw": "Biashara inadaiwa zaidi ya inavyomiliki. Kila kitu ilicho nacho kimeshadaiwa."
+  },
+  "pnl.new.worth": {
+    "en": "This is everything the business owns — cash, equipment at what it is worth now, stock and money customers owe — less what it owes. It is the one number here that adds up week after week. Money you spend or take home comes out of it; money you leave in stays in it.",
+    "sw": "Hii ni kila kitu biashara inamiliki — pesa, vifaa kwa thamani yake ya sasa, stock na pesa wateja wanazodaiwa — ukiondoa inachodaiwa. Ndilo namba pekee hapa inayojumlika wiki hadi wiki. Pesa unayotumia au kupeleka nyumbani inatoka humo; unayoacha ndani inabaki humo."
+  },
+  "pnl.new.gearing": {
+    "en": "A loan does not change what the business owns, only how much of it is yours. The more the lender is owed against your own stake, the less room a bad season leaves you.",
+    "sw": "Mkopo haubadilishi biashara inamiliki nini, unabadilisha ni kiasi gani ni chako. Kadri mkopeshaji anavyodaiwa zaidi ukilinganisha na fungu lako, ndivyo msimu mbaya unavyokuachia nafasi ndogo."
+  },
   "pnl.new.spoilage": {
     "en": "What you made and could not sell. It cost money to make and earned none.",
     "sw": "Ulichotengeneza na usiweze kuuza. Kiligharimu pesa kutengeneza na hakikuleta kitu."

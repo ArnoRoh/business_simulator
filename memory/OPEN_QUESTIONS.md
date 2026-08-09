@@ -119,58 +119,25 @@ factory and export chapters in particular.
 
 ## Open
 
-### Q-028 — The game teaches a week and never a stock. Does it need a balance sheet?  [open]
-**Raised:** 2026-08-09 (session 014) · **Owner:** Project owner
-**Raised by the project owner**, in these words: the curriculum "doesn't focus enough on how
-important your balance sheet and debt to equity ratios are… Also taking money out of the
-company or spending needlessly impacts your ability to increase the balance sheet as well."
-
-**The finding, checked against the code:** correct, and larger than a curriculum weighting.
-There is no balance sheet in the application. Every figure a learner sees is a **flow** — a
-week's profit, a week's cash, the last twelve weeks' profit as a chart, a twelve-week
-projection of a weekly number. Nothing shows a **stock**. The consequence is not that these
-ideas are under-taught; it is that they cannot be taught here at all:
-
-- **What the business is worth** — every input exists in state (`cash`, `assetValue` at
-  written-down value, `debt`, and `wcHeld`, which is stock and receivables less payables) and
-  nothing adds them up.
-- **Debt against the owner's stake** — there is no equity figure, so no ratio can exist.
-  Chapters 2 and 3 teach what debt *costs* (interest, repayment, cost of capital) and never
-  what it *owns*.
-- **Drawings** — the closing split is the only turn that takes money out of the business, and
-  it is the **twentieth of twenty**. Taking it home is free, because the chapter ends. A
-  learner cannot experience a withdrawal compounding, because nothing compounds on screen.
-
-**Why it matters more than the other coverage gaps:** `AGENTS.md` §2 makes the
-livelihood/transformational distinction the spine of the project — "a livelihood firm gives
-the owner a job; a transformational firm builds an organisation larger than the founder."
-The place that distinction becomes a *number* is the balance sheet: where the surplus went,
-week after week. Right now the game states the distinction in prose on the chapter select
-screen and cannot show it. It is also the missing observation behind **capital discipline**,
-one of the candidate indicators [`assessment.md`](../docs/assessment.md) records as
-uncomputable.
-
-**What answering it costs.** Roughly, and in order of increasing commitment:
-
-1. **A net-worth figure, shown.** `netWorth = cash + assetValue + wcHeld − debt`, computed in
-   the engine and shown as one line under the money panel, with the change since last week.
-   Small: one engine function, one panel row, two interface strings, one `playthrough.mjs`
-   assertion. Teaches 1.6 by exposure, the way profit-versus-cash is taught now (D-017 —
-   depth in the engine and the panel, not in new controls).
-2. **Gearing on top of it.** Debt as a share of the owner's stake, shown only once a chapter
-   has debt, plus a sentence when it crosses the level a lender would balk at. Teaches 1.7.
-3. **Drawings with consequences.** Move the closing split off the last turn, or add a
-   mid-chapter one, so the money taken out is money the business visibly does not have for
-   the fifteen turns that follow. Teaches 1.8, and it is the only one of the three that
-   requires re-authoring content in all four chapters.
-
-**What it trades away:** every figure added to the money panel is a figure a
-second-language reader on a small screen has to get past to reach the decision — the
-tension [Q-025](#q-025--is-chapter-4s-opening-ledger-too-much-to-meet-at-once--open) is
-already about. And item 3 changes chapters the owner has played and accepted.
-**Current assumption:** the capabilities are written into
-[`curriculum.md`](../docs/curriculum.md) as 1.6–1.8 and marked not covered. Nothing has been
-built, because what to build is the owner's call and item 3 is not reversible cheaply.
+### Q-029 — A split with nothing to split  [open]
+**Raised:** 2026-08-09 (session 015) · **Owner:** Project owner / playtesting
+**Question:** the allocation turn offers a share of cash — 60% in chapter 1, less elsewhere.
+On a path where the business arrives with no spare cash, there is nothing to divide, and the
+situation above it still says there is: chapter 1's reads "for the first time you have real
+money left over". `validate-scenario.mjs` now reports this (`empty t17: nothing to split on 4
+of 6 paths`, and the same for the factory's t13). What should the turn do when the answer is
+nothing?
+**Why it matters:** a control the learner cannot move is a data-integrity bug and not a
+cosmetic one — sessions 007 and 011 both shipped one. This one also puts a sentence on screen
+that is false for that learner.
+**Not caused by moving the split.** At the previous position — the last turn of the chapter —
+chapter 1 had nothing to allocate on two of the three walked paths as well, and only 10,000
+on the third. Moving it earlier made an existing hole visible rather than digging it.
+**Softer in the app than in the check.** The validator walks straight through; the app fires
+a recovery turn when cash goes below zero, which usually puts some back. How often a real
+learner meets an empty split is unknown, and it needs somebody playing badly on purpose.
+**Options, none taken:** author a "there is nothing spare this month" variant of the turn; put
+a floor under the amount; or accept it and change the wording so it is true either way.
 
 ### Q-027 — Nothing in the curriculum is about getting a paid trial  [open]
 **Raised:** 2026-08-09 (session 013) · **Owner:** Project owner
@@ -480,6 +447,33 @@ The ledger row it lands in was relabelled from "Licence fees" to "Licences and f
 chapter 1 already books a bookkeeper there and the old label was not true of it.
 **Verified:** -20,000 on all three walked paths, stable across the 400-path sweep, and `weak
 t16` no longer prints.
+
+### Q-028 — The game teaches a week and never a stock. Does it need a balance sheet?  [RESOLVED 2026-08-09]
+**Raised:** 2026-08-09 (session 014) · **Answered by:** Project owner
+**Question was:** the application showed a learner nothing but flows — a week's profit, a
+week's cash, twelve weeks of profit on a chart. No balance sheet, no equity figure and so no
+gearing ratio, and the only turn that took money out of the business was the last one, after
+which nothing happened. Three costed options were put to the owner: a net-worth line, gearing
+on top of it, and moving the split off the last turn.
+**Answer: "Do them all."** All three are built, in session 015:
+
+1. **What the business is worth**, under the weekly ledger, with the amount it moved by this
+   week — cash, equipment at written-down value, and stock and receivables less payables, less
+   debt ([D-030](./DECISIONS.md)).
+2. **The lender's claim**, once a chapter has a loan, as a comparison rather than a ratio, with
+   a warning when more is owed than held (D-030).
+3. **The split moved off turn 20** to turns 17, 14, 13 and 15, and chapters 3 and 4 gained a
+   "take some home" bucket they never had ([D-032](./DECISIONS.md)).
+
+**What it forced:** content that spends cash on something the business keeps now has to record
+it, or the panel reads every capability investment as destruction of worth
+([D-031](./DECISIONS.md)). Chapter 1's fryer, its generator and its whole reinvestment bucket
+were in that state, and chapter 2 was borrowing 1,200,000 for an oven it never recorded.
+**What it did not do:** compute an indicator. **Capital discipline** is still listed in
+`docs/assessment.md` as uncomputed — but the observation it needs now exists, so it is a
+derivation nobody has written rather than a hole in the content.
+**Left open by it:** [Q-029](#q-029--a-split-with-nothing-to-split--open), and chapter 1's
+split sits at turn 17 rather than 14 only because [Q-021](#q-021--up-a-lot-is-unreachable-in-chapter-1-and-only-content-can-fix-it) is unresolved.
 
 ### Q-009 — Confirm or reject the stage-zero placement  [RESOLVED 2026-08-04]
 **Raised:** 2026-08-02 (session 002) · **Answered by:** Project owner

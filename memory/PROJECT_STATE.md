@@ -1,7 +1,7 @@
 # Project state
 
 **Snapshot as of:** 2026-08-09
-**Last session:** [`sessions/2026-08-09-014-the-balance-sheet-that-is-not-there.md`](./sessions/2026-08-09-014-the-balance-sheet-that-is-not-there.md)
+**Last session:** [`sessions/2026-08-09-015-the-balance-sheet-built.md`](./sessions/2026-08-09-015-the-balance-sheet-built.md)
 
 > This file is a **snapshot, not a history**. Overwrite it at the end of every session
 > so it always describes the present. History belongs in `sessions/` and
@@ -25,14 +25,15 @@ was written. It is now **contact with real people** — an owner playing it, a f
 Kiswahili reader, a phone, and Tanzanian figures somebody can vouch for. None of those can be
 produced from inside this repository.
 
-Fourteen sessions: repository bootstrap (001), an ideation discussion on pedagogy and
+Fifteen sessions: repository bootstrap (001), an ideation discussion on pedagogy and
 placement (002), the first build (003), a shareable single-file version (004), a rework for
 depth and Kiswahili (005), free-input decisions plus a campaign (006), a repair of two
 controls that could not reach their own answers (007), the four-chapter arc and the engine to
 carry it (008), an audit and a file with two owners (009), the bakery landing plus the service
 worker (010), chapters 3 and 4 plus the anchor bug (011), a playthrough check plus the six
 defects it found (012), a carry rule that paid the learner interest plus three docs
-reconciled with the code (013), and the owner's balance-sheet question (014).
+reconciled with the code (013), the owner's balance-sheet question (014), and the balance
+sheet built (015).
 
 **Sessions 006, 007, 011 and 012 all exist because somebody played it.** Every one of them
 found defects that the whole test suite had passed clean, and every one was a control lying to
@@ -55,11 +56,11 @@ read it before anything else. The arc is in [`docs/arc.md`](../docs/arc.md) and
 | **Chapter 2 — the bakery** | **Playable.** Own band edges (D-018), chosen from its own option deltas. t16 now discriminates (Q-024 resolved). |
 | **Chapter 3 — the factory** | **Playable.** `unverified: true` — figures not locally checked. |
 | **Chapter 4 — the export business** | **Playable.** `unverified: true`. Possibly too easy — Q-023. |
-| **The engine** | Product mix, depreciation, debt, working capital, FX, landed cost, and `readField` (D-021). Chapter 1's behaviour asserted unchanged throughout. |
+| **The engine** | Product mix, depreciation, debt, working capital, FX, landed cost, `readField` (D-021), and **what the business is worth plus the lender's claim on it** (D-030). Chapter 1's behaviour asserted unchanged throughout. |
 | **The chapter layer** | Manifest, select screen, `carry.js`, per-chapter save. Nothing locked, nothing summed. Carry overrides are **absolute openings**, checked (D-026). |
 | **Offline** | `sw.js` — shell cache-first, content network-first with a cache fallback, `build-info.json` exempt. **Never tested on a device.** |
 | Operating guide (`AGENTS.md`, `CLAUDE.md`) | Written. Carries the thesis and memory protocol. |
-| Memory system | In use — this file, 29 decisions, 28 open questions (3 resolved), glossary, 14 session entries, 3 contracts. |
+| Memory system | In use — this file, 32 decisions, 29 open questions (4 resolved), glossary, 15 session entries, 3 contracts. |
 | Governance, licences | Written. MIT code + CC BY-SA 4.0 content. |
 | Design docs (`docs/`) | **Current.** `arc.md`, and `game-design.md` / `curriculum.md` / `assessment.md` reconciled with the code in session 013, each separating built behaviour from intent (D-028). |
 | Regional context (`docs/context/`) | Owner's note in place. Country detail still a **deliberate stub**. |
@@ -72,12 +73,12 @@ read it before anything else. The arc is in [`docs/arc.md`](../docs/arc.md) and
 
 | Check | Result |
 |---|---|
-| `test-engine.mjs` | 226 passed |
+| `test-engine.mjs` | 241 passed |
 | `validate-scenario.mjs` | 177/177 option predictions, 75/75 numeric turn paths, 0 problems, 4 chapters |
 | `validate-i18n.mjs` | 1,789 content strings × 2 languages; 109 literal + 7 built interface keys |
 | `simulate-runs.mjs` | no whole-business failures; `attentive` finishes all four chapters |
 | `smoke-app.mjs` | 29 passed |
-| **`playthrough.mjs`** | **3,646 passed** — 4 chapters × 2 languages, every turn, every screen, and now the money panel on each one (D-027) |
+| **`playthrough.mjs`** | **5,920 passed** — 4 chapters × 2 languages, every turn, every screen, the money panel and what the business is worth on each one (D-027, D-030) |
 | `check-links.sh` | 358 relative links resolve |
 
 `validate-scenario.mjs` also prints `drift` lines from a 400-path random sweep. **Those are
@@ -179,9 +180,21 @@ The session 004 claude.ai artifact link is abandoned and stale.
     profit printed under them, and no cost row is money coming in.
 24. **`docs/` says which parts describe built behaviour and which are intent** (D-028), and
     keeps the unbuilt parts labelled rather than deleting them.
+25. **The capability map covers the stock, not just the week** (D-029) — worth, gearing, and
+    what the owner takes out.
+26. **The money panel carries what the business is worth** (D-030) — the one figure that
+    accumulates — and **an option that spends cash on something the business keeps records
+    it** (D-031), or the panel reads investment as destruction.
+27. **The split that decides what leaves the business is not the last turn** (D-032).
 
 ## What the app does beyond the original design
 
+- **What the business is worth**, under the weekly ledger, with the amount it moved by this
+  week — and, once there is a loan, what the lender is owed for every 100 that is the owner's
+  (D-030). The only figure in the game that accumulates.
+- **A capital split that is not the last turn** — repay, reinvest, take home or hold, with six
+  to seven weeks of trading after it, so money taken out is money the business does not have
+  (D-032).
 - **Free-input decisions** — turns that take a number on a stepper, with live feedback, now
   including a price on a single product line. One turn splits profit between business, home
   and reserve.
@@ -238,9 +251,8 @@ Blocking, in priority order — full list in [`OPEN_QUESTIONS.md`](./OPEN_QUESTI
   and every structural measure is identical across all four chapters. The arc is a cliff and
   then a plateau. Intended, or does it need restructuring? The owner's call.
 - **Q-025** — Chapter 4 now opens with five ledger lines explaining themselves at once.
-- **Q-028** — **The game teaches a week and never a stock.** There is no balance sheet, no
-  equity figure and therefore no gearing ratio, and the only turn that takes money out of the
-  business is the last one. Raised by the owner; three costed options in `OPEN_QUESTIONS.md`.
+- **Q-029** — A split with nothing to split: on a bad path the allocation turn offers zero,
+  under a situation that says there is money left over. Pre-existing, now reported by a check.
 - **Q-027** — Nothing in eighty turns is about **getting a paid trial**, which is both the
   largest curriculum gap and the reason the customer-validation indicator cannot be computed.
 - **Q-004 / Q-013** — Playthrough length; whether 20 deeper turns is right.
@@ -258,10 +270,11 @@ Blocking, in priority order — full list in [`OPEN_QUESTIONS.md`](./OPEN_QUESTI
    and the banner can come down.
 5. **Rule on Q-022 and Q-021**, which together decide whether the stability sweep becomes a
    FAIL and whether chapter 1 gets rebalanced.
-6. **Rule on Q-028** — whether the game gains a balance sheet. The top item that would change
-   the product. Option 1 (a net-worth line under the money panel) is small, reversible and the
-   prerequisite for the other two.
-7. **Rule on Q-027** — whether to author content for getting a paid trial.
+6. **Rule on Q-027** — whether to author content for getting a paid trial, and on
+   **Q-029** — what a split should do when there is nothing to split.
+
+Q-028 is answered and built: the balance sheet, the lender's claim and a capital split that
+happens with most of the chapter still to run (D-030 to D-032).
 
 Items 6 and 7 from the previous snapshot are done: bakery t16 discriminates (Q-024), and
 `game-design.md`, `curriculum.md` and `assessment.md` are reconciled with the code.

@@ -8,7 +8,7 @@ import { money, moneyShort, moneySigned, count, proportion } from './format.js';
 import {
   weeklyPnl, ownerLoad, project, bandEdges, applyEffects, predictionWindow,
   resolveNumberInput, resolveAllocation, allocationTotal, weeklyCashFlow, readField,
-  workingCapital,
+  workingCapital, netWorth, gearing,
 } from './engine.js';
 import { t, tCount, localised } from './i18n.js';
 import { drawScene, drawChart, animateNumber, pulse } from './scene.js';
@@ -323,7 +323,7 @@ const LEDGER_BASICS = ['pnl.sales', 'pnl.costOfSales', 'pnl.rent', 'pnl.wages', 
  * once the turn is over — the explanation stays up for the whole turn it arrived in,
  * including the reveal, and does not come back.
  */
-export function renderPnl(container, state, seen = null) {
+export function renderPnl(container, state, seen = null, prevState = null) {
   clear(container);
   const pnl = weeklyPnl(state);
   const rows = ledgerRows(pnl);
@@ -418,8 +418,54 @@ export function renderPnl(container, state, seen = null) {
     }
   }
 
+  // What the business is WORTH, under everything the week did to it.
+  //
+  // The panel above is a week. This is the only figure in the game that accumulates,
+  // and it is the one an owner of a real firm lives by (D-030). It sits under the
+  // weekly rows rather than above them because the week is what the turn is about; the
+  // stock is what the week added to or took from.
+  const worth = netWorth(state);
+  const worthBefore = prevState ? netWorth(prevState) : null;
+  const card2 = el('div', 'worth');
+  card2.appendChild(el('div', 'ledger-group-title', t('worth.title')));
+
+  const worthRow = el('div', `worth-row${worth < 0 ? ' negative' : ''}`);
+  worthRow.appendChild(el('div', 'worth-label', t('worth.owned')));
+  worthRow.appendChild(el('div', `worth-value${worth < 0 ? ' negative' : ''}`, money(worth)));
+  card2.appendChild(worthRow);
+
+  // The change is the point, not the level. A learner cannot tell whether 3,450,000 is
+  // good; they can tell whether it went up while they were running the place.
+  if (worthBefore !== null && worthBefore !== worth) {
+    const moved = worth - worthBefore;
+    card2.appendChild(el('div', `worth-change${moved < 0 ? ' negative' : ''}`,
+      t(moved < 0 ? 'worth.fell' : 'worth.grew', { amount: money(Math.abs(moved)) })));
+  }
+
+  // Gearing, only once there is a lender to have a claim. Said as a comparison rather
+  // than as a ratio — docs/localization.md.
+  const geared = gearing(state);
+  if (geared.owed > 0) {
+    if (geared.share === null) {
+      card2.appendChild(el('div', 'worth-note warn', t('worth.owesMoreThanOwns')));
+    } else {
+      card2.appendChild(el('div', `worth-note${geared.outweighed ? ' warn' : ''}`,
+        t('worth.lenderShare', { amount: money(Math.round(geared.share * 100)) })));
+      if (geared.outweighed) {
+        card2.appendChild(el('div', 'worth-note warn', t('worth.outweighed')));
+      }
+    }
+  }
+  container.appendChild(card2);
+
   // What is new in this ledger, and what it means. One sentence each, once.
   const advanced = rows.map((r) => r.key).filter((key) => !LEDGER_BASICS.includes(key));
+
+  // The worth block introduces itself the same way a new ledger line does, and once.
+  // It is the largest new idea the panel has ever gained, and a figure a learner has
+  // not been shown before is exactly what D-025 exists for.
+  advanced.push('pnl.worth');
+  if (geared.owed > 0) advanced.push('pnl.gearing');
   if (seen) {
     const arrivals = advanced.filter((key) => !seen.includes(key));
     if (arrivals.length) {

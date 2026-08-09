@@ -637,6 +637,88 @@ three costed options, and the third re-authors content in all four chapters.
 capabilities should be struck from the map rather than left standing as permanent gaps — a
 capability map that lists what the tool has decided not to teach is a different document.
 
+## D-030 — The money panel carries what the business is worth, and the lender's claim on it
+**Date:** 2026-08-09 (session 015) · **Decided by:** Project owner ("do them all"), built by Claude · **ADR:** —
+**Decision:** `netWorth(state)` = cash + equipment at written-down value + working capital
+held − debt, shown as its own block under the weekly ledger with the amount it moved by
+since last week. Once a chapter has debt, `gearing(state)` adds one sentence — "for every
+100 of this that is yours, the lender is owed X" — and a warning when more is owed than
+held. Both introduce themselves once, through the same mechanism as a new ledger line
+(D-025). Checked by `playthrough.mjs` on every screen of every turn.
+**Why:** every figure in this game was a **flow** — a week's profit, a week's cash, a chart
+of twelve weeks of profit. Nothing was a **stock**, so nothing a learner did could be seen
+to accumulate, and three capabilities could not be taught at all: what the firm is worth,
+how much of it the bank has a claim on, and what the owner's own drawings did to both. The
+owner raised it as a curriculum weighting; it was a missing screen.
+**Why a stock matters here specifically:** `AGENTS.md` §2 makes the livelihood /
+transformational distinction the spine of the project. The place that distinction becomes
+a number rather than a sentence is the balance sheet — where the surplus went, week after
+week, across many individually reasonable decisions.
+**Said as a comparison, not a ratio.** `docs/localization.md` asks for a concrete
+comparison over an abstract ratio, so gearing is "for every 100 that is yours, the lender
+is owed 62" and never "0.62:1". A stake of zero or less returns `share: null` rather than
+infinity, and the panel says the business owes more than it owns.
+**Considered and rejected:** a fifth stat tile at the top. The tiles are a week's
+dashboard and the worth figure is not a week; putting it there would have made it look
+like another flow. Also rejected: showing it only at the end of a chapter, which is where
+a stock is least useful — it is the movement, turn by turn, that teaches.
+**Revisit if:** the panel gets long enough that the decision falls below the fold on a
+small screen. That is [Q-025](./OPEN_QUESTIONS.md)'s question, and the answer then is
+fewer words, not fewer figures.
+
+## D-031 — An option that spends cash on something the business keeps records it
+**Date:** 2026-08-09 (session 015) · **Decided by:** Claude, forced by D-030 · **ADR:** —
+**Decision:** Content that spends cash on a durable thing authors `assetValue` alongside
+the spend. A fee, a fitting, a licence or a wage records nothing, because nothing is held.
+Stock in a chapter with `inventoryWeeks` records nothing either — working capital already
+carries it, and recording both would count it twice.
+**Why:** `netWorth` counts what content recorded. Before this, chapter 1's fryer, its
+generator and its whole reinvestment bucket were cash that left and nothing that arrived,
+so the panel would have shown every capability investment as destruction of worth — the
+exact opposite of the lesson the owner asked for. Chapter 2's borrowed oven was worse: it
+raised debt by 1,200,000 and recorded no oven.
+**What changed:** chapter 1 t07 (both fryer options), t11's generator, the reinvestment
+bucket, and the recovery turn that sells equipment; chapter 2's `borrow-oven`. Chapters 3
+and 4 already did this where they meant to. The bakery's oven now also depreciates, which
+is what its own depreciation turn says should happen.
+**What a script cannot see:** whether a spend *should* have recorded an asset is a
+judgement about what the money bought. A check that flagged "spends cash and adds
+capacity" fires on chapter 1's "go and find a second buyer", which is a trip, not an
+asset. One false positive is how a warning becomes noise ([Q-024](./OPEN_QUESTIONS.md)'s
+lesson), so this is an authoring rule in `docs/game-design.md` and not a check.
+**Revisit if:** a chapter starts modelling stock explicitly rather than through
+`inventoryWeeks`. The double-counting rule changes then.
+
+## D-032 — The split that decides what leaves the business is not the last turn
+**Date:** 2026-08-09 (session 015) · **Decided by:** Project owner ("do them all"), built by Claude · **ADR:** —
+**Decision:** Each chapter's allocation turn — repay, reinvest, take home, hold as reserve
+— moved off turn 20. It is now turn 17 in chapter 1 and turns 14, 13 and 15 in chapters 2,
+3 and 4, so six, six, seven and five weeks of trading follow it. Chapters 3 and 4 gained a
+"take some home" bucket, which they did not have at all. Every other turn keeps its order
+and shifts by one; the ids are positional labels and were renumbered to match.
+**Why:** the owner's point was that taking money out of the company holds the balance sheet
+back. On the last turn of a chapter it does not: the money leaves and the chapter ends, so
+the choice costs nothing and teaches nothing. Now, all to home against all to reserve is a
+gap of the whole amount at the end of the bakery, and reinvesting ends 1.6m ahead of taking
+it home in the factory.
+**Considered and rejected:** swapping the split with a mid-chapter turn rather than
+rotating. Tried first, and it moved three capacity-scaled options to week 20, where the
+business is much larger and their effects straddle a band edge — the validator failed on
+all three. A rotation moves every turn by one position and broke exactly one option, which
+was fixed by putting the factory's split one turn later.
+**Considered and rejected:** an ongoing weekly `drawings` field, so a withdrawal became a
+standing commitment. It teaches the compounding better and it is a bigger change than the
+question needed, and a one-off "take some home" that becomes a permanent obligation is not
+what the words on the button say.
+**What this cost:** chapter 1's split had to sit at turn 17 rather than 14. Its greedy
+`attentive` run was already one nudge from loss-making before this session (it ended at
++9,590 with reputation 3), and moving the split earlier tipped it to −14,190, which
+[D-019](#d-019--a-chapter-must-be-finishable-by-a-learner-who-heeds-the-warnings) makes a
+FAIL. Rebalancing chapter 1 is [Q-021](./OPEN_QUESTIONS.md) and the owner's call, so the
+split moved to where the chapter still passes.
+**Revisit if:** chapter 1 is rebalanced. Turn 14 is the better position and it is available
+the moment the greedy path has any headroom.
+
 ---
 
 ## Pending — proposed, not decided

@@ -8,7 +8,7 @@ import {
   scheduleLater, project, baseOwnerHours, bandFor, setBands, bandEdges, BAND_DEFAULTS,
   resolveNumberInput, resolveAllocation, allocationTotal, bandForValue, gradePrediction,
   weeksOfCostsCovered, evaluateGoal, needsRecovery, predictionWindow, decisionOutcomes,
-  linesOf, workingCapital, weeklyCashFlow, cashCycleWeeks, readField,
+  linesOf, workingCapital, weeklyCashFlow, cashCycleWeeks, readField, netWorth, gearing,
 } from '../app/js/engine.js';
 import * as record from '../app/js/record.js';
 import { applyCarryIn, collectCarry, situationFor, CARRY_FLAGS } from '../app/js/carry.js';
@@ -682,6 +682,57 @@ console.log('\nengine: profitable and insolvent at the same time');
   check('health check names it', healthCheck(s).includes('profitable-but-cash-negative'));
   check('runway counts the loan repayment',
     weeksOfCostsCovered(s) < weeksOfCostsCovered(createState({ ...s, repayPerWeek: 0, debt: 0 })));
+}
+
+console.log('\nengine: what the business is worth');
+{
+  const s = createState({
+    price: 1000, unitCost: 600, demand: 300, capacity: 300, rent: 50000, spoilRate: 0,
+    cash: 500000, assetValue: 2000000, assetLifeWeeks: 200, debt: 800000, interestRate: 0.2,
+  });
+
+  eq('worth is what it owns less what it owes', netWorth(s), 500000 + 2000000 - 800000);
+
+  // The stock the whole idea rests on: money left in the business stays in it, money
+  // taken out leaves it, and the two are not the same decision.
+  const spent = applyEffects(s, { cash: -200000 });
+  eq('taking cash out reduces what the business is worth',
+    netWorth(spent), netWorth(s) - 200000);
+
+  const bought = applyEffects(s, { cash: -200000, assetValue: 200000 });
+  eq('spending cash on something the business keeps does not', netWorth(bought), netWorth(s));
+
+  const borrowed = applyEffects(s, { cash: 500000, debt: 500000 });
+  eq('borrowing changes what is owed, not what is owned', netWorth(borrowed), netWorth(s));
+
+  // Working capital is part of the stock, and it is read from the held balance so it
+  // carries the learner's own swings rather than a fresh derivation.
+  const trading = createState({ ...s, debtorWeeks: 4, wcHeld: 900000 });
+  eq('money owed to you counts towards worth', netWorth(trading), netWorth(s) + 900000);
+
+  // Depreciation is the one thing that reduces worth without anybody deciding anything.
+  const worn = advanceWeek(createState({ ...s, debtorWeeks: 0, wcHeld: 0 }));
+  check('equipment wearing out reduces it too', netWorth(worn.state) < netWorth(s) + weeklyPnl(s).profit + 1,
+    `${netWorth(worn.state)} against ${netWorth(s)}`);
+
+  const g = gearing(s);
+  eq('gearing reports what is owed', g.owed, 800000);
+  eq('and what is owned', g.owned, 1700000);
+  check('the lender is owed less than the owner holds', g.outweighed === false);
+  check('the share is a fraction of the owner stake', Math.abs(g.share - 800000 / 1700000) < 1e-9);
+
+  const heavy = gearing(createState({ ...s, debt: 2400000 }));
+  check('more owed than held is flagged', heavy.outweighed === true);
+
+  const sunk = gearing(createState({ ...s, cash: 0, assetValue: 0, debt: 800000 }));
+  check('a stake of nothing has no ratio, rather than an infinite one', sunk.share === null);
+  check('and it is still flagged', sunk.outweighed === true);
+
+  // Chapter 1 has no assets, no debt and no terms, so worth is simply the cash box —
+  // which is what a stall's owner would say if you asked them.
+  const stall = createState({ price: 500, unitCost: 300, demand: 200, capacity: 180, rent: 20000 });
+  eq('a stall is worth what is in the box', netWorth(stall), stall.cash);
+  eq('and has no lender', gearing(stall).owed, 0);
 }
 
 console.log('\nengine: exporting');

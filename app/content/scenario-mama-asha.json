@@ -195,6 +195,7 @@
           },
           "effects": {
             "cash": 80000,
+            "assetValue": "-80000",
             "capacity": "-80",
             "demand": "-20"
           },
@@ -1066,6 +1067,7 @@
             "effects": {
               "capacity": 90,
               "cash": -120000,
+              "assetValue": 120000,
               "rent": 12000,
               "ownerHoursUsed": -6
             },
@@ -1105,6 +1107,7 @@
               "capacity": 220,
               "demand": 220,
               "cash": -120000,
+              "assetValue": 120000,
               "rent": 12000,
               "ownerHoursUsed": -3
             },
@@ -1745,6 +1748,7 @@
             "effects": {
               "unitCost": "-8",
               "cash": -180000,
+              "assetValue": 180000,
               "rent": 16000
             },
             "predictAnswer": "down",
@@ -2437,6 +2441,113 @@
     },
     {
       "id": "t17",
+      "concept": "reinvestment",
+      "conceptLabel": {
+        "en": "What to do with profit",
+        "sw": "Nini cha kufanya na faida"
+      },
+      "scene": "stall-busy",
+      "situation": {
+        "en": "For the first time you have real money left over at the end of the month, after everything is paid. Your family knows it. There are things at home that need doing. Whatever you take out now, the stall trades the next six weeks without it.",
+        "sw": "Kwa mara ya kwanza una pesa halisi iliyobaki mwisho wa mwezi, baada ya kila kitu kulipwa. Familia yako inajua. Kuna mambo nyumbani yanayohitaji kufanyika. Chochote utakachotoa sasa, kibanda kitafanya biashara wiki sita zijazo bila hicho."
+      },
+      "info": [
+        {
+          "id": "list-options",
+          "label": {
+            "en": "Write down what the money could do",
+            "sw": "Andika pesa ingeweza kufanya nini"
+          },
+          "costHours": 1,
+          "costCash": 0,
+          "reveals": {
+            "en": "The roof at home needs repair. A second fryer would let you take the order you turned down last week. Some of it should probably just sit in the box for emergencies.",
+            "sw": "Paa la nyumbani linahitaji matengenezo. Mashine ya pili ya kukaanga ingekuwezesha kuchukua oda uliyoikataa wiki iliyopita. Sehemu yake pengine inapaswa kubaki tu sandukuni kwa dharura."
+          }
+        }
+      ],
+      "decision": {
+        "type": "allocate",
+        "prompt": {
+          "en": "How will you split this profit?",
+          "sw": "Utagawanya vipi faida hii?"
+        },
+        "predict": "number",
+        "allocate": {
+          "amountFrom": "cash",
+          "fraction": 0.6,
+          "step": 10000,
+          "buckets": [
+            {
+              "id": "business",
+              "label": {
+                "en": "Business",
+                "sw": "Biashara"
+              },
+              "perStep": {
+                "capacity": 6,
+                "demand": 6,
+                "assetValue": 10000,
+                "rent": 1200
+              }
+            },
+            {
+              "id": "home",
+              "label": {
+                "en": "Home",
+                "sw": "Nyumbani"
+              },
+              "perStep": {}
+            },
+            {
+              "id": "reserve",
+              "label": {
+                "en": "Keep as reserve",
+                "sw": "Weka kama akiba"
+              },
+              "perStep": {},
+              "keepsCash": true
+            }
+          ]
+        },
+        "bands": [
+          {
+            "outcome": {
+              "en": "You protect most of the money for home and emergencies. The business gets only a small push, so growth is slower.",
+              "sw": "Unalinda pesa nyingi kwa nyumbani na dharura. Biashara inapata msukumo mdogo, kwa hiyo ukuaji ni wa polepole."
+            },
+            "lesson": {
+              "en": "A reserve can keep one bad week from becoming a crisis. It also means slower business growth.",
+              "sw": "Akiba inaweza kuzuia wiki moja mbaya kuwa tatizo kubwa. Pia inamaanisha biashara ikue polepole."
+            },
+            "upTo": 0.3
+          },
+          {
+            "outcome": {
+              "en": "You divide the money between business, home and a reserve. No part gets everything, but the business grows without using every coin.",
+              "sw": "Unagawa pesa kati ya biashara, nyumbani na akiba. Sehemu hakuna inayopata kila kitu, lakini biashara inakua bila kutumia kila senti."
+            },
+            "lesson": {
+              "en": "Profit has more than one job. A split can keep the household, business and next bad week in view. New capacity also brings a weekly cost.",
+              "sw": "Faida ina kazi zaidi ya moja. Mgawanyo unaweza kuangalia kaya, biashara na wiki mbaya inayofuata. Uwezo mpya pia huleta gharama ya wiki."
+            },
+            "upTo": 0.7
+          },
+          {
+            "outcome": {
+              "en": "You put most of the money into the business. More customers can be served, but little is left for home or a surprise cost.",
+              "sw": "Unaweka pesa nyingi kwenye biashara. Wateja zaidi wanaweza kuhudumiwa, lakini kidogo kinabaki nyumbani au kwa gharama ya ghafla."
+            },
+            "lesson": {
+              "en": "Reinvestment can build capacity, but new capacity brings a weekly cost and a business without a reserve is exposed. Growth and safety are both real needs.",
+              "sw": "Kurudisha faida kunaweza kujenga uwezo, lakini uwezo mpya huleta gharama ya wiki na biashara bila akiba iko wazi kwa hatari. Ukuaji na usalama vyote ni mahitaji halisi."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "t18",
       "concept": "compliance-cost",
       "conceptLabel": {
         "en": "Staying official",
@@ -2587,7 +2698,7 @@
       }
     },
     {
-      "id": "t18",
+      "id": "t19",
       "concept": "concentration-risk",
       "conceptLabel": {
         "en": "Depending on one customer",
@@ -2731,7 +2842,7 @@
       "advanceWeeks": 3
     },
     {
-      "id": "t19",
+      "id": "t20",
       "concept": "negotiation",
       "conceptLabel": {
         "en": "Holding your price",
@@ -2814,112 +2925,6 @@
             "lesson": {
               "en": "Ask what volume or certainty comes with a discount before you give one.",
               "sw": "Uliza ni wingi au uhakika gani unaokuja na punguzo kabla hujatoa."
-            }
-          }
-        ]
-      }
-    },
-    {
-      "id": "t20",
-      "concept": "reinvestment",
-      "conceptLabel": {
-        "en": "What to do with profit",
-        "sw": "Nini cha kufanya na faida"
-      },
-      "scene": "stall-busy",
-      "situation": {
-        "en": "For the first time you have real money left over at the end of the month, after everything is paid. Your family knows it. There are things at home that need doing.",
-        "sw": "Kwa mara ya kwanza una pesa halisi iliyobaki mwisho wa mwezi, baada ya kila kitu kulipwa. Familia yako inajua. Kuna mambo nyumbani yanayohitaji kufanyika."
-      },
-      "info": [
-        {
-          "id": "list-options",
-          "label": {
-            "en": "Write down what the money could do",
-            "sw": "Andika pesa ingeweza kufanya nini"
-          },
-          "costHours": 1,
-          "costCash": 0,
-          "reveals": {
-            "en": "The roof at home needs repair. A second fryer would let you take the order you turned down last week. Some of it should probably just sit in the box for emergencies.",
-            "sw": "Paa la nyumbani linahitaji matengenezo. Mashine ya pili ya kukaanga ingekuwezesha kuchukua oda uliyoikataa wiki iliyopita. Sehemu yake pengine inapaswa kubaki tu sandukuni kwa dharura."
-          }
-        }
-      ],
-      "decision": {
-        "type": "allocate",
-        "prompt": {
-          "en": "How will you split this profit?",
-          "sw": "Utagawanya vipi faida hii?"
-        },
-        "predict": "number",
-        "allocate": {
-          "amountFrom": "cash",
-          "fraction": 0.6,
-          "step": 10000,
-          "buckets": [
-            {
-              "id": "business",
-              "label": {
-                "en": "Business",
-                "sw": "Biashara"
-              },
-              "perStep": {
-                "capacity": 8,
-                "demand": 5,
-                "rent": 1200
-              }
-            },
-            {
-              "id": "home",
-              "label": {
-                "en": "Home",
-                "sw": "Nyumbani"
-              },
-              "perStep": {}
-            },
-            {
-              "id": "reserve",
-              "label": {
-                "en": "Keep as reserve",
-                "sw": "Weka kama akiba"
-              },
-              "perStep": {},
-              "keepsCash": true
-            }
-          ]
-        },
-        "bands": [
-          {
-            "outcome": {
-              "en": "You protect most of the money for home and emergencies. The business gets only a small push, so growth is slower.",
-              "sw": "Unalinda pesa nyingi kwa nyumbani na dharura. Biashara inapata msukumo mdogo, kwa hiyo ukuaji ni wa polepole."
-            },
-            "lesson": {
-              "en": "A reserve can keep one bad week from becoming a crisis. It also means slower business growth.",
-              "sw": "Akiba inaweza kuzuia wiki moja mbaya kuwa tatizo kubwa. Pia inamaanisha biashara ikue polepole."
-            },
-            "upTo": 0.3
-          },
-          {
-            "outcome": {
-              "en": "You divide the money between business, home and a reserve. No part gets everything, but the business grows without using every coin.",
-              "sw": "Unagawa pesa kati ya biashara, nyumbani na akiba. Sehemu hakuna inayopata kila kitu, lakini biashara inakua bila kutumia kila senti."
-            },
-            "lesson": {
-              "en": "Profit has more than one job. A split can keep the household, business and next bad week in view. New capacity also brings a weekly cost.",
-              "sw": "Faida ina kazi zaidi ya moja. Mgawanyo unaweza kuangalia kaya, biashara na wiki mbaya inayofuata. Uwezo mpya pia huleta gharama ya wiki."
-            },
-            "upTo": 0.7
-          },
-          {
-            "outcome": {
-              "en": "You put most of the money into the business. More customers can be served, but little is left for home or a surprise cost.",
-              "sw": "Unaweka pesa nyingi kwenye biashara. Wateja zaidi wanaweza kuhudumiwa, lakini kidogo kinabaki nyumbani au kwa gharama ya ghafla."
-            },
-            "lesson": {
-              "en": "Reinvestment can build capacity, but new capacity brings a weekly cost and a business without a reserve is exposed. Growth and safety are both real needs.",
-              "sw": "Kurudisha faida kunaweza kujenga uwezo, lakini uwezo mpya huleta gharama ya wiki na biashara bila akiba iko wazi kwa hatari. Ukuaji na usalama vyote ni mahitaji halisi."
             }
           }
         ]

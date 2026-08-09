@@ -1278,6 +1278,7 @@
             },
             "effects": {
               "debt": 1200000,
+              "assetValue": 1200000,
               "interestRate": 0.18,
               "repayPerWeek": 60000,
               "lines.bread.capacity": "+80",
@@ -1799,6 +1800,124 @@
     },
     {
       "id": "t14",
+      "concept": "capital-allocation",
+      "conceptLabel": {
+        "en": "Allocating capital",
+        "sw": "Kugawa mtaji"
+      },
+      "scene": "office",
+      "situation": {
+        "en": "The bakery has money in hand that could go in several directions. The loan needs servicing, the ovens need stock, the household needs income, and a reserve could protect a bad week. There is no one correct use for every coin — and whatever leaves the bakery now, the bakery runs the next six weeks without it.",
+        "sw": "Bakery ina pesa mkononi inayoweza kwenda kwenye matumizi kadhaa. Mkopo unahitaji kuhudumiwa, oveni zinahitaji stock, kaya inahitaji kipato, na akiba inaweza kulinda wiki mbaya. Hakuna matumizi moja sahihi kwa kila senti — na chochote kinachotoka kwenye bakery sasa, bakery itaendesha wiki sita zijazo bila hicho."
+      },
+      "info": [
+        {
+          "id": "list-capital-uses",
+          "label": {
+            "en": "Write what each use would change next week",
+            "sw": "Andika kila matumizi yangebadilisha nini wiki ijayo"
+          },
+          "costHours": 1,
+          "costCash": 0,
+          "reveals": {
+            "en": "Repaying debt lowers future cash pressure. Stock can support sales only when customers are there. Money taken home meets a real household need. A reserve stays available when an oven, supplier or customer creates a surprise.",
+          "sw": "Kulipa deni kunapunguza shinikizo la pesa baadaye. Stock inaweza kusaidia mauzo tu wateja wakiwa wapo. Pesa inayokwenda nyumbani inakidhi hitaji halisi la kaya. Akiba inabaki tayari oveni, msambazaji au mteja anapotoa mshangao."
+          }
+        }
+      ],
+      "workout": true,
+      "decision": {
+        "type": "allocate",
+        "prompt": {
+          "en": "How will you split the available capital?",
+          "sw": "Utagawanya vipi mtaji uliopo?"
+        },
+        "predict": "number",
+        "allocate": {
+          "amountFrom": "cash",
+          "fraction": 0.4,
+          "step": 50000,
+          "buckets": [
+            {
+              "id": "repay-loan",
+              "label": {
+                "en": "Repay the loan",
+                "sw": "Lipa deni"
+              },
+              "perStep": {
+                "debt": -50000
+              }
+            },
+            {
+              "id": "buy-stock",
+              "label": {
+                "en": "Buy stock for confirmed orders",
+                "sw": "Nunua stock kwa oda zilizothibitishwa"
+              },
+              "perStep": {
+                "lines.bread.capacity": 20,
+                "lines.bread.demand": 15,
+                "lines.cake.capacity": 1,
+                "lines.cake.demand": 1
+              }
+            },
+            {
+              "id": "home",
+              "label": {
+                "en": "Take some home",
+                "sw": "Peleka sehemu nyumbani"
+              },
+              "perStep": {}
+            },
+            {
+              "id": "reserve",
+              "label": {
+                "en": "Keep it as a reserve",
+                "sw": "Weka kama akiba"
+              },
+              "perStep": {},
+              "keepsCash": true
+            }
+          ]
+        },
+        "bands": [
+          {
+            "outcome": {
+              "en": "You keep most of the available money for the household and reserve. The bakery changes little, but the next surprise has more protection.",
+              "sw": "Unaweka pesa nyingi kwa kaya na akiba. Bakery inabadilika kidogo, lakini mshangao unaofuata una ulinzi zaidi."
+            },
+            "lesson": {
+              "en": "A reserve is capital too. It does not increase today's capacity, but it can keep one setback from forcing a rushed sale.",
+              "sw": "Akiba pia ni mtaji. Haiongezi uwezo wa leo, lakini inaweza kuzuia setback moja kulazimisha uuzaji wa haraka."
+            },
+            "upTo": 0.25
+          },
+          {
+            "outcome": {
+              "en": "You split the capital between debt, confirmed stock, home and reserve. No use gets everything, but the business and household both remain in view.",
+              "sw": "Unagawa mtaji kati ya deni, stock iliyothibitishwa, nyumbani na akiba. Hakuna matumizi yanayopata yote, lakini biashara na kaya zote zinaonekana."
+            },
+            "lesson": {
+              "en": "Capital allocation is a choice among real needs. A balanced split can protect the business without pretending the household has no needs.",
+              "sw": "Ugawaji wa mtaji ni uchaguzi kati ya mahitaji halisi. Mgawanyo wenye mizani unaweza kulinda biashara bila kujifanya kaya haina mahitaji."
+            },
+            "upTo": 0.65
+          },
+          {
+            "outcome": {
+              "en": "You put most of the available capital into the bakery. Capacity and sales may grow, but little remains for home or a cash shock.",
+              "sw": "Unaweka sehemu kubwa ya mtaji uliopo kwenye bakery. Uwezo na mauzo vinaweza kukua, lakini kidogo kinabaki nyumbani au kwa mshtuko wa pesa."
+            },
+            "lesson": {
+              "en": "Reinvestment can build a larger operation, while a reserve can protect a smaller one. Both are legitimate uses; the trade-off is yours to see.",
+              "sw": "Kurudisha mtaji kunaweza kujenga uendeshaji mkubwa, huku akiba ikilinda uendeshaji mdogo. Yote ni matumizi halali; uamuzi ni kuona tofauti yake."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "t15",
       "concept": "hiring",
       "conceptLabel": {
         "en": "Hiring past the first employee",
@@ -1932,7 +2051,7 @@
       }
     },
     {
-      "id": "t15",
+      "id": "t16",
       "concept": "standard-procedure",
       "conceptLabel": {
         "en": "A standard procedure",
@@ -2064,7 +2183,7 @@
       }
     },
     {
-      "id": "t16",
+      "id": "t17",
       "concept": "record-keeping",
       "conceptLabel": {
         "en": "Records a lender can accept",
@@ -2190,7 +2309,7 @@
       }
     },
     {
-      "id": "t17",
+      "id": "t18",
       "concept": "formalisation",
       "conceptLabel": {
         "en": "Formalisation",
@@ -2341,7 +2460,7 @@
       }
     },
     {
-      "id": "t18",
+      "id": "t19",
       "concept": "seasonality",
       "conceptLabel": {
         "en": "Seasonality",
@@ -2474,7 +2593,7 @@
       }
     },
     {
-      "id": "t19",
+      "id": "t20",
       "concept": "setback",
       "conceptLabel": {
         "en": "A large unpaid shop order",
@@ -2619,124 +2738,6 @@
                 }
               }
             ]
-          }
-        ]
-      }
-    },
-    {
-      "id": "t20",
-      "concept": "capital-allocation",
-      "conceptLabel": {
-        "en": "Allocating capital",
-        "sw": "Kugawa mtaji"
-      },
-      "scene": "office",
-      "situation": {
-        "en": "You reach the end of the chapter with some money that could go in several directions. The loan needs servicing, the ovens need stock, the household needs income, and a reserve could protect the next bad week. There is no one correct use for every coin.",
-        "sw": "Unafika mwisho wa sura ukiwa na pesa ambayo inaweza kwenda kwenye matumizi kadhaa. Mkopo unahitaji kuhudumiwa, oveni zinahitaji stock, kaya inahitaji kipato, na akiba inaweza kulinda wiki mbaya inayofuata. Hakuna matumizi moja sahihi kwa kila senti."
-      },
-      "info": [
-        {
-          "id": "list-capital-uses",
-          "label": {
-            "en": "Write what each use would change next week",
-            "sw": "Andika kila matumizi yangebadilisha nini wiki ijayo"
-          },
-          "costHours": 1,
-          "costCash": 0,
-          "reveals": {
-            "en": "Repaying debt lowers future cash pressure. Stock can support sales only when customers are there. Money taken home meets a real household need. A reserve stays available when an oven, supplier or customer creates a surprise.",
-          "sw": "Kulipa deni kunapunguza shinikizo la pesa baadaye. Stock inaweza kusaidia mauzo tu wateja wakiwa wapo. Pesa inayokwenda nyumbani inakidhi hitaji halisi la kaya. Akiba inabaki tayari oveni, msambazaji au mteja anapotoa mshangao."
-          }
-        }
-      ],
-      "workout": true,
-      "decision": {
-        "type": "allocate",
-        "prompt": {
-          "en": "How will you split the available capital?",
-          "sw": "Utagawanya vipi mtaji uliopo?"
-        },
-        "predict": "number",
-        "allocate": {
-          "amountFrom": "cash",
-          "fraction": 0.4,
-          "step": 50000,
-          "buckets": [
-            {
-              "id": "repay-loan",
-              "label": {
-                "en": "Repay the loan",
-                "sw": "Lipa deni"
-              },
-              "perStep": {
-                "debt": -50000
-              }
-            },
-            {
-              "id": "buy-stock",
-              "label": {
-                "en": "Buy stock for confirmed orders",
-                "sw": "Nunua stock kwa oda zilizothibitishwa"
-              },
-              "perStep": {
-                "lines.bread.capacity": 20,
-                "lines.bread.demand": 15,
-                "lines.cake.capacity": 1,
-                "lines.cake.demand": 1
-              }
-            },
-            {
-              "id": "home",
-              "label": {
-                "en": "Take some home",
-                "sw": "Peleka sehemu nyumbani"
-              },
-              "perStep": {}
-            },
-            {
-              "id": "reserve",
-              "label": {
-                "en": "Keep it as a reserve",
-                "sw": "Weka kama akiba"
-              },
-              "perStep": {},
-              "keepsCash": true
-            }
-          ]
-        },
-        "bands": [
-          {
-            "outcome": {
-              "en": "You keep most of the available money for the household and reserve. The bakery changes little, but the next surprise has more protection.",
-              "sw": "Unaweka pesa nyingi kwa kaya na akiba. Bakery inabadilika kidogo, lakini mshangao unaofuata una ulinzi zaidi."
-            },
-            "lesson": {
-              "en": "A reserve is capital too. It does not increase today's capacity, but it can keep one setback from forcing a rushed sale.",
-              "sw": "Akiba pia ni mtaji. Haiongezi uwezo wa leo, lakini inaweza kuzuia setback moja kulazimisha uuzaji wa haraka."
-            },
-            "upTo": 0.25
-          },
-          {
-            "outcome": {
-              "en": "You split the capital between debt, confirmed stock, home and reserve. No use gets everything, but the business and household both remain in view.",
-              "sw": "Unagawa mtaji kati ya deni, stock iliyothibitishwa, nyumbani na akiba. Hakuna matumizi yanayopata yote, lakini biashara na kaya zote zinaonekana."
-            },
-            "lesson": {
-              "en": "Capital allocation is a choice among real needs. A balanced split can protect the business without pretending the household has no needs.",
-              "sw": "Ugawaji wa mtaji ni uchaguzi kati ya mahitaji halisi. Mgawanyo wenye mizani unaweza kulinda biashara bila kujifanya kaya haina mahitaji."
-            },
-            "upTo": 0.65
-          },
-          {
-            "outcome": {
-              "en": "You put most of the available capital into the bakery. Capacity and sales may grow, but little remains for home or a cash shock.",
-              "sw": "Unaweka sehemu kubwa ya mtaji uliopo kwenye bakery. Uwezo na mauzo vinaweza kukua, lakini kidogo kinabaki nyumbani au kwa mshtuko wa pesa."
-            },
-            "lesson": {
-              "en": "Reinvestment can build a larger operation, while a reserve can protect a smaller one. Both are legitimate uses; the trade-off is yours to see.",
-              "sw": "Kurudisha mtaji kunaweza kujenga uendeshaji mkubwa, huku akiba ikilinda uendeshaji mdogo. Yote ni matumizi halali; uamuzi ni kuona tofauti yake."
-            }
           }
         ]
       }

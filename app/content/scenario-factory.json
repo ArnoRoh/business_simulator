@@ -1735,6 +1735,134 @@
     },
     {
       "id": "t13",
+      "concept": "capital-allocation",
+      "conceptLabel": {
+        "en": "Allocating capital",
+        "sw": "Kugawa mtaji"
+      },
+      "scene": "office",
+      "situation": {
+        "en": "The factory has cash that could go in several directions. The loan needs servicing, a second line could expand what you sell, a new region could open more distributors, the household has been waiting, and a reserve could protect a bad month. There is no one correct use for every shilling — and the factory runs the next seven weeks on whatever you leave in it.",
+        "sw": "Kiwanda kina pesa inayoweza kwenda pande kadhaa. Mkopo unahitaji kuhudumiwa, mstari wa pili unaweza kupanua unachouza, eneo jipya linaweza kufungua wasambazaji zaidi, kaya imekuwa ikisubiri, na akiba inaweza kulinda mwezi mbaya. Hakuna matumizi moja sahihi kwa kila shilingi — na kiwanda kitaendesha wiki saba zijazo kwa kile utakachoacha ndani."
+      },
+      "info": [
+        {
+          "id": "list-capital-uses",
+          "label": {
+            "en": "Write what each use would change over the next few months",
+            "sw": "Andika kila matumizi yangebadilisha nini kwa miezi michache ijayo"
+          },
+          "costHours": 1,
+          "costCash": 0,
+          "reveals": {
+            "en": "Repaying debt lowers future interest and repayment pressure. A second line only pays off if the volume behind it is real. A new region can grow sales but adds distance and risk. A reserve protects against the next surprise, but it grows nothing on its own.",
+            "sw": "Kulipa mkopo kunapunguza riba ya baadaye na shinikizo la marejesho. Mstari wa pili unajilipa tu kama wingi nyuma yake ni halisi. Eneo jipya linaweza kukuza mauzo lakini linaongeza umbali na hatari. Akiba inalinda dhidi ya mshangao unaofuata, lakini haikuzi chochote yenyewe."
+          }
+        }
+      ],
+      "workout": true,
+      "decision": {
+        "type": "allocate",
+        "prompt": {
+          "en": "How will you split the available capital?",
+          "sw": "Utagawanya vipi mtaji uliopo?"
+        },
+        "predict": "number",
+        "allocate": {
+          "amountFrom": "cash",
+          "fraction": 0.4,
+          "step": 500000,
+          "buckets": [
+            {
+              "id": "repay-loan",
+              "label": {
+                "en": "Repay the loan",
+                "sw": "Lipa mkopo"
+              },
+              "perStep": {
+                "debt": -500000
+              }
+            },
+            {
+              "id": "second-line",
+              "label": {
+                "en": "Expand the premium line's capacity",
+                "sw": "Panua uwezo wa mstari wa hali ya juu"
+              },
+              "perStep": {
+                "assetValue": 500000,
+                "lines.premium.capacity": 40,
+                "lines.premium.demand": 32
+              }
+            },
+            {
+              "id": "new-region",
+              "label": {
+                "en": "Open a new region for buns",
+                "sw": "Fungua eneo jipya kwa maandazi"
+              },
+              "perStep": {
+                "lines.buns.capacity": 100,
+                "lines.buns.demand": 80
+              }
+            },
+            {
+              "id": "home",
+              "label": {
+                "en": "Take some home",
+                "sw": "Peleka sehemu nyumbani"
+              },
+              "perStep": {}
+            },
+            {
+              "id": "reserve",
+              "label": {
+                "en": "Keep it as a reserve",
+                "sw": "Weka kama akiba"
+              },
+              "perStep": {},
+              "keepsCash": true
+            }
+          ]
+        },
+        "bands": [
+          {
+            "outcome": {
+              "en": "You keep most of the available capital as a reserve and against the loan. The factory changes little, but the next surprise has more protection and the debt is a little lighter.",
+              "sw": "Unaweka mtaji mwingi uliopo kama akiba na dhidi ya mkopo. Kiwanda kinabadilika kidogo, lakini mshangao unaofuata una ulinzi zaidi na deni ni jepesi kidogo."
+            },
+            "lesson": {
+              "en": "A reserve and a lighter loan are capital too. They do not grow this week's sales, but they can keep one setback from forcing a rushed decision.",
+              "sw": "Akiba na mkopo mwepesi pia ni mtaji. Havikuzi mauzo ya wiki hii, lakini vinaweza kuzuia tatizo moja kulazimisha uamuzi wa haraka."
+            },
+            "upTo": 0.25
+          },
+          {
+            "outcome": {
+              "en": "You split the capital across debt, the second line, a new region and a reserve. No single use gets everything, but the factory's growth and its protection both stay in view.",
+              "sw": "Unagawa mtaji kati ya mkopo, mstari wa pili, eneo jipya na akiba. Hakuna matumizi yanayopata yote, lakini ukuaji wa kiwanda na ulinzi wake vyote vinabaki kuonekana."
+            },
+            "lesson": {
+              "en": "Capital allocation is a choice among real, competing uses. A balanced split can grow the factory without leaving it exposed to the next setback.",
+              "sw": "Ugawaji wa mtaji ni uchaguzi kati ya matumizi halisi, yanayoshindana. Mgawanyo wenye mizani unaweza kukuza kiwanda bila kukiacha wazi kwa tatizo linalofuata."
+            },
+            "upTo": 0.65
+          },
+          {
+            "outcome": {
+              "en": "You put most of the available capital into growth, the second line and the new region. Capacity and reach may expand quickly, but little is left as protection if a month goes badly.",
+              "sw": "Unaweka mtaji mwingi uliopo kwenye ukuaji, mstari wa pili na eneo jipya. Uwezo na wigo vinaweza kupanuka haraka, lakini kidogo kimebaki kama ulinzi mwezi ukienda vibaya."
+            },
+            "lesson": {
+              "en": "Reinvesting heavily can build a larger factory faster. It also means the next setback has less reserve standing between it and the cash you need.",
+              "sw": "Kurudisha mtaji kwa nguvu kunaweza kujenga kiwanda kikubwa haraka. Pia kunamaanisha tatizo linalofuata lina akiba kidogo kati yake na pesa unayohitaji."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "t14",
       "concept": "shelf-space",
       "conceptLabel": {
         "en": "Paying for shelf space",
@@ -1853,7 +1981,7 @@
       }
     },
     {
-      "id": "t14",
+      "id": "t15",
       "concept": "payroll-formality",
       "conceptLabel": {
         "en": "What an employee really costs",
@@ -1970,7 +2098,7 @@
       }
     },
     {
-      "id": "t15",
+      "id": "t16",
       "concept": "safety-and-labour-law",
       "conceptLabel": {
         "en": "Safety and labour law",
@@ -2099,7 +2227,7 @@
       }
     },
     {
-      "id": "t16",
+      "id": "t17",
       "concept": "capex-appraisal",
       "conceptLabel": {
         "en": "Appraising a capital purchase",
@@ -2205,7 +2333,7 @@
       }
     },
     {
-      "id": "t17",
+      "id": "t18",
       "concept": "certification",
       "conceptLabel": {
         "en": "Certification and traceability",
@@ -2341,7 +2469,7 @@
       }
     },
     {
-      "id": "t18",
+      "id": "t19",
       "concept": "competitive-pricing",
       "conceptLabel": {
         "en": "A competitor undercuts you",
@@ -2437,7 +2565,7 @@
       }
     },
     {
-      "id": "t19",
+      "id": "t20",
       "concept": "setback",
       "conceptLabel": {
         "en": "A batch fails at a distributor",
@@ -2566,126 +2694,6 @@
             "lesson": {
               "en": "Sharing the cost of a setback is a real middle ground. It protects your own cash more than owning it fully, at some cost to trust.",
               "sw": "Kushiriki gharama ya tatizo ni njia halisi ya kati. Inalinda pesa yako mwenyewe zaidi kuliko kumiliki kikamilifu, kwa gharama fulani ya imani."
-            }
-          }
-        ]
-      }
-    },
-    {
-      "id": "t20",
-      "concept": "capital-allocation",
-      "conceptLabel": {
-        "en": "Allocating capital",
-        "sw": "Kugawa mtaji"
-      },
-      "scene": "office",
-      "situation": {
-        "en": "You reach the end of the chapter with cash that could go in several directions. The loan needs servicing, a second line could expand what you sell, a new region could open more distributors, and a reserve could protect the next bad month. There is no one correct use for every shilling.",
-        "sw": "Unafika mwisho wa sura ukiwa na pesa inayoweza kwenda pande kadhaa. Mkopo unahitaji kuhudumiwa, mstari wa pili unaweza kupanua unachouza, eneo jipya linaweza kufungua wasambazaji zaidi, na akiba inaweza kulinda mwezi mbaya unaofuata. Hakuna matumizi moja sahihi kwa kila shilingi."
-      },
-      "info": [
-        {
-          "id": "list-capital-uses",
-          "label": {
-            "en": "Write what each use would change over the next few months",
-            "sw": "Andika kila matumizi yangebadilisha nini kwa miezi michache ijayo"
-          },
-          "costHours": 1,
-          "costCash": 0,
-          "reveals": {
-            "en": "Repaying debt lowers future interest and repayment pressure. A second line only pays off if the volume behind it is real. A new region can grow sales but adds distance and risk. A reserve protects against the next surprise, but it grows nothing on its own.",
-            "sw": "Kulipa mkopo kunapunguza riba ya baadaye na shinikizo la marejesho. Mstari wa pili unajilipa tu kama wingi nyuma yake ni halisi. Eneo jipya linaweza kukuza mauzo lakini linaongeza umbali na hatari. Akiba inalinda dhidi ya mshangao unaofuata, lakini haikuzi chochote yenyewe."
-          }
-        }
-      ],
-      "workout": true,
-      "decision": {
-        "type": "allocate",
-        "prompt": {
-          "en": "How will you split the available capital?",
-          "sw": "Utagawanya vipi mtaji uliopo?"
-        },
-        "predict": "number",
-        "allocate": {
-          "amountFrom": "cash",
-          "fraction": 0.4,
-          "step": 500000,
-          "buckets": [
-            {
-              "id": "repay-loan",
-              "label": {
-                "en": "Repay the loan",
-                "sw": "Lipa mkopo"
-              },
-              "perStep": {
-                "debt": -500000
-              }
-            },
-            {
-              "id": "second-line",
-              "label": {
-                "en": "Expand the premium line's capacity",
-                "sw": "Panua uwezo wa mstari wa hali ya juu"
-              },
-              "perStep": {
-                "assetValue": 500000,
-                "lines.premium.capacity": 40,
-                "lines.premium.demand": 32
-              }
-            },
-            {
-              "id": "new-region",
-              "label": {
-                "en": "Open a new region for buns",
-                "sw": "Fungua eneo jipya kwa maandazi"
-              },
-              "perStep": {
-                "lines.buns.capacity": 100,
-                "lines.buns.demand": 80
-              }
-            },
-            {
-              "id": "reserve",
-              "label": {
-                "en": "Keep it as a reserve",
-                "sw": "Weka kama akiba"
-              },
-              "perStep": {},
-              "keepsCash": true
-            }
-          ]
-        },
-        "bands": [
-          {
-            "outcome": {
-              "en": "You keep most of the available capital as a reserve and against the loan. The factory changes little, but the next surprise has more protection and the debt is a little lighter.",
-              "sw": "Unaweka mtaji mwingi uliopo kama akiba na dhidi ya mkopo. Kiwanda kinabadilika kidogo, lakini mshangao unaofuata una ulinzi zaidi na deni ni jepesi kidogo."
-            },
-            "lesson": {
-              "en": "A reserve and a lighter loan are capital too. They do not grow this week's sales, but they can keep one setback from forcing a rushed decision.",
-              "sw": "Akiba na mkopo mwepesi pia ni mtaji. Havikuzi mauzo ya wiki hii, lakini vinaweza kuzuia tatizo moja kulazimisha uamuzi wa haraka."
-            },
-            "upTo": 0.25
-          },
-          {
-            "outcome": {
-              "en": "You split the capital across debt, the second line, a new region and a reserve. No single use gets everything, but the factory's growth and its protection both stay in view.",
-              "sw": "Unagawa mtaji kati ya mkopo, mstari wa pili, eneo jipya na akiba. Hakuna matumizi yanayopata yote, lakini ukuaji wa kiwanda na ulinzi wake vyote vinabaki kuonekana."
-            },
-            "lesson": {
-              "en": "Capital allocation is a choice among real, competing uses. A balanced split can grow the factory without leaving it exposed to the next setback.",
-              "sw": "Ugawaji wa mtaji ni uchaguzi kati ya matumizi halisi, yanayoshindana. Mgawanyo wenye mizani unaweza kukuza kiwanda bila kukiacha wazi kwa tatizo linalofuata."
-            },
-            "upTo": 0.65
-          },
-          {
-            "outcome": {
-              "en": "You put most of the available capital into growth, the second line and the new region. Capacity and reach may expand quickly, but little is left as protection if a month goes badly.",
-              "sw": "Unaweka mtaji mwingi uliopo kwenye ukuaji, mstari wa pili na eneo jipya. Uwezo na wigo vinaweza kupanuka haraka, lakini kidogo kimebaki kama ulinzi mwezi ukienda vibaya."
-            },
-            "lesson": {
-              "en": "Reinvesting heavily can build a larger factory faster. It also means the next setback has less reserve standing between it and the cash you need.",
-              "sw": "Kurudisha mtaji kwa nguvu kunaweza kujenga kiwanda kikubwa haraka. Pia kunamaanisha tatizo linalofuata lina akiba kidogo kati yake na pesa unayohitaji."
             }
           }
         ]

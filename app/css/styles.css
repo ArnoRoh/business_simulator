@@ -969,6 +969,43 @@ ul { margin: 0; padding-left: 1.1em; }
 
 .pnl-note.warn { color: var(--danger); }
 
+/* ---------- what the business is worth ----------
+   The only figure in the game that accumulates, so it is given its own card under the
+   week rather than another row inside it. */
+.worth {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.worth-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+.worth-label { color: var(--text-muted); font-size: 0.9rem; }
+.worth-value {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  font-weight: 800;
+  font-size: 1.05rem;
+}
+.worth-value.negative, .worth-change.negative { color: var(--danger); }
+.worth-change {
+  margin-top: 4px;
+  font-size: 0.83rem;
+  color: var(--accent-2);
+  font-weight: 600;
+}
+.worth-note {
+  margin-top: 6px;
+  font-size: 0.83rem;
+  color: var(--text-muted);
+}
+.worth-note.warn { color: var(--danger); }
+
 /* ---------- trajectory ---------- */
 .trajectory {
   margin-top: 10px;

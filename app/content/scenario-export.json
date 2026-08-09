@@ -2248,6 +2248,134 @@
     },
     {
       "id": "t15",
+      "concept": "capital-allocation",
+      "conceptLabel": {
+        "en": "Capital allocation",
+        "sw": "Ugawaji wa mtaji"
+      },
+      "scene": "office",
+      "workout": true,
+      "situation": {
+        "en": "The plant has cash it does not need this week. Domestic, regional and export each have a case for more of it, the household has a case, and a reserve has a case too. Nothing forces you to put it all in one place — and what leaves the plant now is not there for the five weeks after it.",
+        "sw": "Kiwanda kina pesa ambayo hakiihitaji wiki hii. Soko la ndani, la kikanda na la nje kila moja lina hoja ya kupata zaidi yake, kaya ina hoja, na akiba nayo ina hoja. Hakuna kinachokulazimisha kuweka yote mahali pamoja — na kinachotoka kiwandani sasa hakitakuwepo kwa wiki tano zinazofuata."
+      },
+      "info": [
+        {
+          "id": "compare-uses",
+          "label": {
+            "en": "Compare what a shilling earns in each market",
+            "sw": "Linganisha shilingi moja inapata nini kwenye kila soko"
+          },
+          "costHours": 1,
+          "costCash": 0,
+          "reveals": {
+            "en": "Domestic sells reliably at a thin margin. Regional sells well at a wider one. Export earns the most per unit and carries the most risk — the currency, the cycle, and one buyer's decisions.",
+            "sw": "Soko la ndani linauza kwa uhakika kwa margin nyembamba. La kikanda linauza vizuri kwa margin pana zaidi. La nje linapata zaidi kwa kila kitengo na linabeba hatari zaidi — fedha za kigeni, mzunguko, na maamuzi ya mnunuzi mmoja."
+          }
+        }
+      ],
+      "decision": {
+        "type": "allocate",
+        "prompt": {
+          "en": "How will you split the available capital?",
+          "sw": "Utagawanya vipi mtaji uliopo?"
+        },
+        "predict": "number",
+        "allocate": {
+          "amountFrom": "cash",
+          "fraction": 0.05,
+          "step": 100000,
+          "buckets": [
+            {
+              "id": "domestic",
+              "label": {
+                "en": "Grow domestic capacity",
+                "sw": "Kuza uwezo wa soko la ndani"
+              },
+              "perStep": {
+                "lines.domestic.capacity": 30,
+                "lines.domestic.demand": 25
+              }
+            },
+            {
+              "id": "regional",
+              "label": {
+                "en": "Grow regional capacity",
+                "sw": "Kuza uwezo wa soko la kikanda"
+              },
+              "perStep": {
+                "lines.regional.capacity": 20,
+                "lines.regional.demand": 15
+              }
+            },
+            {
+              "id": "export",
+              "label": {
+                "en": "Grow export capacity",
+                "sw": "Kuza uwezo wa soko la nje"
+              },
+              "perStep": {
+                "lines.export.capacity": 10,
+                "lines.export.demand": 8
+              }
+            },
+            {
+              "id": "home",
+              "label": {
+                "en": "Take some home",
+                "sw": "Peleka sehemu nyumbani"
+              },
+              "perStep": {}
+            },
+            {
+              "id": "reserve",
+              "label": {
+                "en": "Keep it as a reserve",
+                "sw": "Weka kama akiba"
+              },
+              "perStep": {},
+              "keepsCash": true
+            }
+          ]
+        },
+        "bands": [
+          {
+            "outcome": {
+              "en": "Most of the available cash stays as a reserve. The business changes little this week, and the next shock has more room to be absorbed.",
+              "sw": "Pesa nyingi zilizopo zinabaki kama akiba. Biashara inabadilika kidogo wiki hii, na mshtuko unaofuata una nafasi zaidi ya kufyonzwa."
+            },
+            "lesson": {
+              "en": "A reserve does not grow anything today. In a business with a long export cash cycle, it can be what survives the next slow payment.",
+              "sw": "Akiba haikuzi chochote leo. Katika biashara yenye mzunguko mrefu wa pesa wa nje, inaweza kuwa kinachosalia wakati wa malipo ya polepole yajayo."
+            },
+            "upTo": 0.2
+          },
+          {
+            "outcome": {
+              "en": "The capital is split across markets and a reserve. No single line gets everything, and the plant grows a little on several fronts at once.",
+              "sw": "Mtaji umegawanywa kwenye masoko na akiba. Hakuna mstari mmoja unaopata yote, na kiwanda linakua kidogo kwenye pande kadhaa kwa wakati mmoja."
+            },
+            "lesson": {
+              "en": "Spreading capital across markets with different risk is itself a form of protection, even when no single choice looks the boldest.",
+              "sw": "Kueneza mtaji kwenye masoko yenye hatari tofauti wenyewe ni aina ya kinga, hata wakati hakuna uamuzi mmoja unaoonekana wa ujasiri zaidi."
+            },
+            "upTo": 0.6
+          },
+          {
+            "outcome": {
+              "en": "Most of the capital goes into the higher-margin regional and export lines. Growth is real, and so is the exposure that comes with it.",
+              "sw": "Mtaji mwingi unaingia kwenye mistari ya margin kubwa zaidi ya kikanda na nje. Ukuaji ni halisi, na hivyo hivyo hatari inayokuja nayo."
+            },
+            "lesson": {
+              "en": "Chasing the widest margin with most of your capital can be the right call. It leaves less behind if the export cycle or a buyer turns against you.",
+              "sw": "Kufukuzia margin pana zaidi kwa mtaji wako mwingi kunaweza kuwa uamuzi sahihi. Kunaacha kidogo nyuma ikiwa mzunguko wa nje au mnunuzi atageuka dhidi yako."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "t16",
       "concept": "choosing-buyer",
       "conceptLabel": {
         "en": "Choosing a buyer",
@@ -2388,7 +2516,7 @@
       }
     },
     {
-      "id": "t16",
+      "id": "t17",
       "concept": "minimum-order-quantity",
       "conceptLabel": {
         "en": "Minimum order quantity",
@@ -2550,7 +2678,7 @@
       }
     },
     {
-      "id": "t17",
+      "id": "t18",
       "concept": "quality-failure-abroad",
       "conceptLabel": {
         "en": "Quality failure abroad",
@@ -2722,7 +2850,7 @@
       }
     },
     {
-      "id": "t18",
+      "id": "t19",
       "concept": "brand-or-private-label",
       "conceptLabel": {
         "en": "Brand or private label",
@@ -2863,7 +2991,7 @@
       }
     },
     {
-      "id": "t19",
+      "id": "t20",
       "concept": "setback",
       "conceptLabel": {
         "en": "Record sales, worse cash",
@@ -3021,126 +3149,6 @@
             "lesson": {
               "en": "Pausing growth to collect what is already earned is a real cost today, in exchange for a cash position that matches the profit line again.",
               "sw": "Kusitisha ukuaji ili kukusanya kile ambacho tayari kimepatikana ni gharama halisi leo, badala ya hali ya pesa inayolingana na mstari wa faida tena."
-            }
-          }
-        ]
-      }
-    },
-    {
-      "id": "t20",
-      "concept": "capital-allocation",
-      "conceptLabel": {
-        "en": "Capital allocation",
-        "sw": "Ugawaji wa mtaji"
-      },
-      "scene": "office",
-      "workout": true,
-      "situation": {
-        "en": "The plant has cash it does not need this week. Domestic, regional and export each have a case for more of it, and a reserve has a case too. Nothing forces you to put it all in one place.",
-        "sw": "Kiwanda kina pesa ambayo hakiihitaji wiki hii. Soko la ndani, la kikanda na la nje kila moja lina hoja ya kupata zaidi yake, na akiba nayo ina hoja. Hakuna kinachokulazimisha kuweka yote mahali pamoja."
-      },
-      "info": [
-        {
-          "id": "compare-uses",
-          "label": {
-            "en": "Compare what a shilling earns in each market",
-            "sw": "Linganisha shilingi moja inapata nini kwenye kila soko"
-          },
-          "costHours": 1,
-          "costCash": 0,
-          "reveals": {
-            "en": "Domestic sells reliably at a thin margin. Regional sells well at a wider one. Export earns the most per unit and carries the most risk — the currency, the cycle, and one buyer's decisions.",
-            "sw": "Soko la ndani linauza kwa uhakika kwa margin nyembamba. La kikanda linauza vizuri kwa margin pana zaidi. La nje linapata zaidi kwa kila kitengo na linabeba hatari zaidi — fedha za kigeni, mzunguko, na maamuzi ya mnunuzi mmoja."
-          }
-        }
-      ],
-      "decision": {
-        "type": "allocate",
-        "prompt": {
-          "en": "How will you split the available capital?",
-          "sw": "Utagawanya vipi mtaji uliopo?"
-        },
-        "predict": "number",
-        "allocate": {
-          "amountFrom": "cash",
-          "fraction": 0.05,
-          "step": 100000,
-          "buckets": [
-            {
-              "id": "domestic",
-              "label": {
-                "en": "Grow domestic capacity",
-                "sw": "Kuza uwezo wa soko la ndani"
-              },
-              "perStep": {
-                "lines.domestic.capacity": 30,
-                "lines.domestic.demand": 25
-              }
-            },
-            {
-              "id": "regional",
-              "label": {
-                "en": "Grow regional capacity",
-                "sw": "Kuza uwezo wa soko la kikanda"
-              },
-              "perStep": {
-                "lines.regional.capacity": 20,
-                "lines.regional.demand": 15
-              }
-            },
-            {
-              "id": "export",
-              "label": {
-                "en": "Grow export capacity",
-                "sw": "Kuza uwezo wa soko la nje"
-              },
-              "perStep": {
-                "lines.export.capacity": 10,
-                "lines.export.demand": 8
-              }
-            },
-            {
-              "id": "reserve",
-              "label": {
-                "en": "Keep it as a reserve",
-                "sw": "Weka kama akiba"
-              },
-              "perStep": {},
-              "keepsCash": true
-            }
-          ]
-        },
-        "bands": [
-          {
-            "outcome": {
-              "en": "Most of the available cash stays as a reserve. The business changes little this week, and the next shock has more room to be absorbed.",
-              "sw": "Pesa nyingi zilizopo zinabaki kama akiba. Biashara inabadilika kidogo wiki hii, na mshtuko unaofuata una nafasi zaidi ya kufyonzwa."
-            },
-            "lesson": {
-              "en": "A reserve does not grow anything today. In a business with a long export cash cycle, it can be what survives the next slow payment.",
-              "sw": "Akiba haikuzi chochote leo. Katika biashara yenye mzunguko mrefu wa pesa wa nje, inaweza kuwa kinachosalia wakati wa malipo ya polepole yajayo."
-            },
-            "upTo": 0.2
-          },
-          {
-            "outcome": {
-              "en": "The capital is split across markets and a reserve. No single line gets everything, and the plant grows a little on several fronts at once.",
-              "sw": "Mtaji umegawanywa kwenye masoko na akiba. Hakuna mstari mmoja unaopata yote, na kiwanda linakua kidogo kwenye pande kadhaa kwa wakati mmoja."
-            },
-            "lesson": {
-              "en": "Spreading capital across markets with different risk is itself a form of protection, even when no single choice looks the boldest.",
-              "sw": "Kueneza mtaji kwenye masoko yenye hatari tofauti wenyewe ni aina ya kinga, hata wakati hakuna uamuzi mmoja unaoonekana wa ujasiri zaidi."
-            },
-            "upTo": 0.6
-          },
-          {
-            "outcome": {
-              "en": "Most of the capital goes into the higher-margin regional and export lines. Growth is real, and so is the exposure that comes with it.",
-              "sw": "Mtaji mwingi unaingia kwenye mistari ya margin kubwa zaidi ya kikanda na nje. Ukuaji ni halisi, na hivyo hivyo hatari inayokuja nayo."
-            },
-            "lesson": {
-              "en": "Chasing the widest margin with most of your capital can be the right call. It leaves less behind if the export cycle or a buyer turns against you.",
-              "sw": "Kufukuzia margin pana zaidi kwa mtaji wako mwingi kunaweza kuwa uamuzi sahihi. Kunaacha kidogo nyuma ikiwa mzunguko wa nje au mnunuzi atageuka dhidi yako."
             }
           }
         ]

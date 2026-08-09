@@ -5,10 +5,11 @@
 > serves an existing small firm with some traction. If the primary learner turns out to
 > be pre-revenue, much of this needs rewriting.
 >
-> **Coverage is now measured, not assumed.** The section "What the four chapters cover"
-> was written on 2026-08-09 (session 013) against the eighty turns that exist in
-> `app/content/`. It is the honest answer to "which capabilities does the first release
-> teach", and the answer includes several that it does not.
+> **Coverage is measured, not assumed.** The section "What the four chapters cover" is
+> counted against the eighty turns that exist in `app/content/` — first on 2026-08-09
+> (session 013), and again after sessions 014 and 015 added 1.6–1.8 and built them. It is
+> the honest answer to "which capabilities does the first release teach", and the answer
+> still includes several that it does not.
 
 This is a capability map, not a syllabus. It says what a learner should be able to *do*.
 How that is taught is [`game-design.md`](./game-design.md); what we observe is
@@ -37,32 +38,32 @@ factory, `ch4` the export business.
 | 0.2 What is my binding constraint? | ch3 t03 (recognition, not free text) | **partly** |
 | 1.1 Cash is not profit | ch1 t03 · ch2 t06, t07 · ch4 t07, t08 — and the money panel, every week | covered |
 | 1.2 Unit economics | ch1 t01, t08 · ch2 t03, t05 · ch3 t01, t02, t11 · ch4 t02 | covered |
-| 1.3 Pricing | ch1 t02, t19 · ch3 t18 · ch4 t04 | covered |
-| 1.4 Working capital vs. capability investment | ch1 t07 · ch2 t09, t10, t11 · ch3 t16 · every chapter's t20 | covered |
-| 1.5 Records that support decisions | ch1 t06, t17 · ch2 t16 | covered |
-| 1.6 What the business is worth | — | **not covered** — no balance sheet exists |
-| 1.7 How much of it is the lender's | ch2 t09, t10 teach what debt *costs*, never what it *owns* | **not covered** |
-| 1.8 What leaves the business, and what stays in | each chapter's closing split — which is the last turn, so nothing follows it | **thin to the point of not counting** |
-| 2.1 Who actually pays, and why | ch1 t05 · ch4 t01, t15 | covered |
+| 1.3 Pricing | ch1 t02, t20 · ch3 t19 · ch4 t04 | covered |
+| 1.4 Working capital vs. capability investment | ch1 t07 · ch2 t09, t10, t11 · ch3 t17 · every chapter's split | covered |
+| 1.5 Records that support decisions | ch1 t06, t18 · ch2 t17 | covered |
+| 1.6 What the business is worth | the money panel, every turn of every chapter | covered |
+| 1.7 How much of it is the lender's | the money panel, once a chapter has a loan · ch2 t09, t10 · ch4 t09 | covered |
+| 1.8 What leaves the business, and what stays in | ch1 t17 · ch2 t14 · ch3 t13 · ch4 t15 — each with the rest of the chapter still to run | covered |
+| 2.1 Who actually pays, and why | ch1 t05 · ch4 t01, t16 | covered |
 | 2.2 Getting a paid trial | an *option* on ch2 t06; no turn is about it | **thin** |
-| 2.3 Selling to organisations | ch2 t06, t17 · ch3 t12, t13 · ch4 t07, t09, t10, t16 | covered |
-| 2.4 Keeping customers | ch1 t04, t18 · ch3 t12 · ch4 t17, t18 | covered |
-| 3.1 What formalisation costs | ch1 t15 · ch2 t17 · ch3 t14 | covered |
+| 2.3 Selling to organisations | ch2 t06, t18 · ch3 t12, t14 · ch4 t07, t09, t10, t17 | covered |
+| 2.4 Keeping customers | ch1 t04, t19 · ch3 t12 · ch4 t18, t19 | covered |
+| 3.1 What formalisation costs | ch1 t15 · ch2 t18 · ch3 t15 | covered |
 | 3.2 When to formalise | the same turns — each is a timing choice, not an obligation | covered |
-| 3.3 Standards and certification | ch1 t10, t16 · ch3 t15, t17 · ch4 t11, t12 | covered |
-| 3.4 Tax and compliance in practice | ch1 t17 · ch3 t14 | **thin** — no threshold is modelled |
+| 3.3 Standards and certification | ch1 t10, t16 · ch3 t16, t18 · ch4 t11, t12 | covered |
+| 3.4 Tax and compliance in practice | ch1 t18 · ch3 t15 | **thin** — no threshold is modelled |
 | 3.5 Shared infrastructure | — | **not covered** |
-| 4.1 Hiring beyond family | ch1 t13 · ch2 t14 | covered |
+| 4.1 Hiring beyond family | ch1 t13 · ch2 t15 | covered |
 | 4.2 Delegation | ch1 t12, t14 · ch3 t10 | covered |
-| 4.3 Systems and standard work | ch1 t16 · ch2 t15 · ch3 t09 | covered |
+| 4.3 Systems and standard work | ch1 t16 · ch2 t16 · ch3 t09 | covered |
 | 4.4 Specialist capability | nearest is ch3 t09 | **not covered** |
 | 4.5 Making yourself removable | carried by the owner-hours model, not by any turn | **thin** |
 | 5.1 Finding the binding constraint | ch3 t03 · the five diagnose steps | covered |
 | 5.2 Verifying it | ch3 t04 · information-seeking, on every turn | **partly** |
-| 5.3 Costing the jump | ch2 t09 · ch3 t16 | covered |
-| 5.4 Financing it | ch2 t09, t19 · ch4 t09 | covered |
-| 5.5 Sequencing | each chapter's closing split | **thin** |
-| 6 When assumptions break | ch1 t11 · ch2 t19 · ch3 t06, t19 · ch4 t05, t17, t19, and 46 delayed consequences | covered |
+| 5.3 Costing the jump | ch2 t09 · ch3 t17 | covered |
+| 5.4 Financing it | ch2 t09, t20 · ch4 t09 | covered |
+| 5.5 Sequencing | each chapter's split, and what is left after it | covered |
+| 6 When assumptions break | ch1 t11 · ch2 t20 · ch3 t06, t20 · ch4 t05, t18, t20, and 46 delayed consequences | covered |
 
 **What this says.** Track 3 is well covered, and so is track 1 *as far as the week
 goes*. Track 2 is covered except for the paid trial, which is the capability the
@@ -71,19 +72,18 @@ exists only as one option inside a wholesale decision. Track 4 loses its last tw
 the learner never hires a specialist and never makes themselves removable — which is the
 failure mode `AGENTS.md` §2 calls central. Track 0 does not exist at all.
 
-**The largest gap is 1.6–1.8, and it is one gap.** Everything this game shows a learner
-is a flow: a week's profit, a week's cash, a chart of the last twelve weeks' profit. No
-screen shows a stock — not what the business owns, not what it owes, not what the owner's
-stake in it is. So three things the owner of a real firm lives by cannot be taught here
-at all: what the business is worth, how much of it the bank has a claim on, and what
-their own drawings did to both. The closing split is the only turn that touches it, and
-it is the twentieth of twenty, after which nothing happens — taking the money home costs
-nothing because the chapter ends.
+**1.6–1.8 were the largest gap in this map and they were one gap.** Until session 015
+every figure this game showed a learner was a flow — a week's profit, a week's cash, a
+chart of the last twelve weeks' profit — and no screen showed a stock. The money panel
+now carries what the business is worth, what it moved by this week, and how much of it
+the lender has a claim on, and the split that decides what leaves the business happens
+with most of the chapter still to run. See [D-030 to D-032](../memory/DECISIONS.md).
 
-This also explains a gap recorded separately in
-[`assessment.md`](./assessment.md): **capital discipline** is listed there as a candidate
-indicator that cannot be computed. It cannot be computed because the observation it needs
-is the one described here. Same hole, two documents.
+What that does **not** yet do is compute an indicator from it: **capital discipline** is
+still listed in [`assessment.md`](./assessment.md) as a candidate the record does not
+derive. The observation it needs now exists — the split is recorded, and net worth is
+computable at every turn — so this is now a derivation nobody has written rather than a
+hole in the content.
 
 Track 6's shocks that are authored: an infrastructure failure, a customer who stops
 paying, an input price move, a batch recall, a currency exposure, a container held at a
@@ -173,12 +173,16 @@ looks like the moment it was decided.
 *Prevents:* a firm that never grows for a reason nobody can point at, because every
 individual withdrawal was reasonable.
 
-> **None of 1.6–1.8 is in the application.** The engine holds every input a balance sheet
-> needs — cash, equipment at written-down value, debt, and stock and receivables less
-> payables — and nothing adds them up. The learner is shown a week's profit, a week's
-> cash, and a twelve-week projection of a weekly figure. No screen in the game shows a
-> stock of anything, so nothing the learner does can be seen to accumulate. See
-> [Q-028](../memory/OPEN_QUESTIONS.md).
+> **All three are now in the application** ([Q-028](../memory/OPEN_QUESTIONS.md), answered
+> by the project owner on 2026-08-09). The money panel carries what the business is worth
+> — cash, equipment at written-down value, and stock and receivables less payables, less
+> what is owed — with the amount it moved by this week under it, and, once a chapter has a
+> loan, what the lender is owed for every 100 that is the owner's. The split that decides
+> what leaves the business moved off the last turn of each chapter to turns 17, 14, 13 and
+> 15, so money taken home is money the business does not have for the weeks that follow.
+>
+> They are taught the way the rest of this game teaches: by a figure on the panel the
+> learner already reads, moving when they move it. No turn lectures about a balance sheet.
 
 ---
 

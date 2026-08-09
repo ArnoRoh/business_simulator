@@ -270,7 +270,7 @@ function renderAll(prevState) {
   // The advanced ledger lines on screen this turn. Marked seen when the turn ends, so a
   // line that has just arrived explains itself for as long as the learner is looking at
   // the turn that brought it, and never again.
-  session.shownLines = ui.renderPnl(dom.pnl, session.state, session.seenLines || []);
+  session.shownLines = ui.renderPnl(dom.pnl, session.state, session.seenLines || [], prevState);
   ui.renderTrajectory(dom.trajectory, session.state);
   ui.renderConsequences(dom.consequence, session.fired, session.weeksPassed);
 
