@@ -119,6 +119,59 @@ factory and export chapters in particular.
 
 ## Open
 
+### Q-028 — The game teaches a week and never a stock. Does it need a balance sheet?  [open]
+**Raised:** 2026-08-09 (session 014) · **Owner:** Project owner
+**Raised by the project owner**, in these words: the curriculum "doesn't focus enough on how
+important your balance sheet and debt to equity ratios are… Also taking money out of the
+company or spending needlessly impacts your ability to increase the balance sheet as well."
+
+**The finding, checked against the code:** correct, and larger than a curriculum weighting.
+There is no balance sheet in the application. Every figure a learner sees is a **flow** — a
+week's profit, a week's cash, the last twelve weeks' profit as a chart, a twelve-week
+projection of a weekly number. Nothing shows a **stock**. The consequence is not that these
+ideas are under-taught; it is that they cannot be taught here at all:
+
+- **What the business is worth** — every input exists in state (`cash`, `assetValue` at
+  written-down value, `debt`, and `wcHeld`, which is stock and receivables less payables) and
+  nothing adds them up.
+- **Debt against the owner's stake** — there is no equity figure, so no ratio can exist.
+  Chapters 2 and 3 teach what debt *costs* (interest, repayment, cost of capital) and never
+  what it *owns*.
+- **Drawings** — the closing split is the only turn that takes money out of the business, and
+  it is the **twentieth of twenty**. Taking it home is free, because the chapter ends. A
+  learner cannot experience a withdrawal compounding, because nothing compounds on screen.
+
+**Why it matters more than the other coverage gaps:** `AGENTS.md` §2 makes the
+livelihood/transformational distinction the spine of the project — "a livelihood firm gives
+the owner a job; a transformational firm builds an organisation larger than the founder."
+The place that distinction becomes a *number* is the balance sheet: where the surplus went,
+week after week. Right now the game states the distinction in prose on the chapter select
+screen and cannot show it. It is also the missing observation behind **capital discipline**,
+one of the candidate indicators [`assessment.md`](../docs/assessment.md) records as
+uncomputable.
+
+**What answering it costs.** Roughly, and in order of increasing commitment:
+
+1. **A net-worth figure, shown.** `netWorth = cash + assetValue + wcHeld − debt`, computed in
+   the engine and shown as one line under the money panel, with the change since last week.
+   Small: one engine function, one panel row, two interface strings, one `playthrough.mjs`
+   assertion. Teaches 1.6 by exposure, the way profit-versus-cash is taught now (D-017 —
+   depth in the engine and the panel, not in new controls).
+2. **Gearing on top of it.** Debt as a share of the owner's stake, shown only once a chapter
+   has debt, plus a sentence when it crosses the level a lender would balk at. Teaches 1.7.
+3. **Drawings with consequences.** Move the closing split off the last turn, or add a
+   mid-chapter one, so the money taken out is money the business visibly does not have for
+   the fifteen turns that follow. Teaches 1.8, and it is the only one of the three that
+   requires re-authoring content in all four chapters.
+
+**What it trades away:** every figure added to the money panel is a figure a
+second-language reader on a small screen has to get past to reach the decision — the
+tension [Q-025](#q-025--is-chapter-4s-opening-ledger-too-much-to-meet-at-once--open) is
+already about. And item 3 changes chapters the owner has played and accepted.
+**Current assumption:** the capabilities are written into
+[`curriculum.md`](../docs/curriculum.md) as 1.6–1.8 and marked not covered. Nothing has been
+built, because what to build is the owner's call and item 3 is not reversible cheaply.
+
 ### Q-027 — Nothing in the curriculum is about getting a paid trial  [open]
 **Raised:** 2026-08-09 (session 013) · **Owner:** Project owner
 **Question:** Capability 2.2 in [`curriculum.md`](../docs/curriculum.md) — *securing a real

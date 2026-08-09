@@ -604,6 +604,39 @@ way and split the reader's attention.
 **Revisit if:** a section's "not built" note survives three more sessions. At that point it is
 not a gap, it is a decision, and it should be recorded as one.
 
+## D-029 — The capability map gains a stock strand: worth, gearing, and what leaves
+**Date:** 2026-08-09 (session 014) · **Decided by:** Project owner, recorded by Claude · **ADR:** —
+**Decision:** Track 1 of [`curriculum.md`](../docs/curriculum.md) gains three capabilities —
+**1.6** what the business is worth, **1.7** how much of it is the lender's, **1.8** what leaves
+the business against what stays in — grouped under a heading that names what they have in
+common: they are about the **stock**, where 1.1–1.5 are about the week's **flow**. All three
+are marked not covered, because none of them is in the application.
+**Why:** the owner said the map "doesn't focus enough on how important your balance sheet and
+debt to equity ratios are", and that "taking money out of the company or spending needlessly
+impacts your ability to increase the balance sheet". Checked against the code, the concern
+understates itself: there is no balance sheet at all, no equity figure and therefore no ratio
+that could exist, and the one turn that takes money out of the business is the last turn of
+the chapter, after which nothing happens. Every figure in the game is a flow.
+**Why this belongs in Track 1 and not a track of its own:** Track 1 is "money that is actually
+there", and the owner's stake is money that is actually there — it is simply money that
+accumulated rather than money that arrived this week. A separate track would also imply a
+separate teaching occasion, and the design position (D-017) is that this kind of depth arrives
+in the panel the learner already reads.
+**Why it matters beyond coverage:** the livelihood/transformational distinction is the spine of
+`AGENTS.md` §2, and the balance sheet is where that distinction becomes a number instead of a
+sentence. It is also the missing observation behind **capital discipline**, one of the
+indicators [`assessment.md`](../docs/assessment.md) records as uncomputable — the same hole
+seen from the assessment side.
+**Considered and rejected:** re-weighting the existing entries instead of adding new ones —
+1.4 already mentions durable capacity, so the balance sheet could be read into it. Rejected
+because the gap is not emphasis, it is a missing screen, and burying that inside an existing
+line would hide exactly the thing the owner spotted.
+**What was NOT decided here:** whether to build it. That is [Q-028](./OPEN_QUESTIONS.md), with
+three costed options, and the third re-authors content in all four chapters.
+**Revisit if:** the owner rules on Q-028. If the answer is "no balance sheet", these three
+capabilities should be struck from the map rather than left standing as permanent gaps — a
+capability map that lists what the tool has decided not to teach is a different document.
+
 ---
 
 ## Pending — proposed, not decided

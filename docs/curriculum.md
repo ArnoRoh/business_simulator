@@ -40,6 +40,9 @@ factory, `ch4` the export business.
 | 1.3 Pricing | ch1 t02, t19 · ch3 t18 · ch4 t04 | covered |
 | 1.4 Working capital vs. capability investment | ch1 t07 · ch2 t09, t10, t11 · ch3 t16 · every chapter's t20 | covered |
 | 1.5 Records that support decisions | ch1 t06, t17 · ch2 t16 | covered |
+| 1.6 What the business is worth | — | **not covered** — no balance sheet exists |
+| 1.7 How much of it is the lender's | ch2 t09, t10 teach what debt *costs*, never what it *owns* | **not covered** |
+| 1.8 What leaves the business, and what stays in | each chapter's closing split — which is the last turn, so nothing follows it | **thin to the point of not counting** |
 | 2.1 Who actually pays, and why | ch1 t05 · ch4 t01, t15 | covered |
 | 2.2 Getting a paid trial | an *option* on ch2 t06; no turn is about it | **thin** |
 | 2.3 Selling to organisations | ch2 t06, t17 · ch3 t12, t13 · ch4 t07, t09, t10, t16 | covered |
@@ -61,12 +64,26 @@ factory, `ch4` the export business.
 | 5.5 Sequencing | each chapter's closing split | **thin** |
 | 6 When assumptions break | ch1 t11 · ch2 t19 · ch3 t06, t19 · ch4 t05, t17, t19, and 46 delayed consequences | covered |
 
-**What this says.** Tracks 1 and 3 are well covered; track 2 is covered except for the
-paid trial, which is the capability the background note treats as the single strongest
-execution signal and which currently exists only as one option inside a wholesale
-decision. Track 4 loses its last two rungs — the learner never hires a specialist and
-never makes themselves removable — which is the failure mode `AGENTS.md` §2 calls
-central. Track 0 does not exist at all.
+**What this says.** Track 3 is well covered, and so is track 1 *as far as the week
+goes*. Track 2 is covered except for the paid trial, which is the capability the
+background note treats as the single strongest execution signal and which currently
+exists only as one option inside a wholesale decision. Track 4 loses its last two rungs —
+the learner never hires a specialist and never makes themselves removable — which is the
+failure mode `AGENTS.md` §2 calls central. Track 0 does not exist at all.
+
+**The largest gap is 1.6–1.8, and it is one gap.** Everything this game shows a learner
+is a flow: a week's profit, a week's cash, a chart of the last twelve weeks' profit. No
+screen shows a stock — not what the business owns, not what it owes, not what the owner's
+stake in it is. So three things the owner of a real firm lives by cannot be taught here
+at all: what the business is worth, how much of it the bank has a claim on, and what
+their own drawings did to both. The closing split is the only turn that touches it, and
+it is the twentieth of twenty, after which nothing happens — taking the money home costs
+nothing because the chapter ends.
+
+This also explains a gap recorded separately in
+[`assessment.md`](./assessment.md): **capital discipline** is listed there as a candidate
+indicator that cannot be computed. It cannot be computed because the observation it needs
+is the one described here. Same hole, two documents.
 
 Track 6's shocks that are authored: an infrastructure failure, a customer who stops
 paying, an input price move, a batch recall, a currency exposure, a container held at a
@@ -122,6 +139,46 @@ hire, spend, contract when the subsidy runs out.
 **1.5 Records that support decisions.** Enough bookkeeping to answer real questions;
 not accounting for its own sake.
 *Prevents:* deciding blind, and being unfundable because nothing can be verified.
+
+### The stock, not the flow
+
+Capabilities 1.1–1.5 are all about a week: what came in, what went out, what one unit
+costs. **1.6–1.8 are about what accumulates**, and they were missing from this map until
+the project owner named the gap on 2026-08-09. They are grouped here because a learner
+meets them as one idea — the business is worth something, and every decision either adds
+to that or takes from it — and because the failure they prevent is a single failure with
+three doors into it.
+
+**1.6 What the business is worth, not what it earned.** The balance sheet: what the firm
+owns — equipment at what it is now worth, stock on the shelf, money customers still owe
+— less what it owes: the loan, the suppliers. The difference is the owner's stake, and
+it is the only number in the business that accumulates.
+*Prevents:* judging a firm by its cash box or its best week, and reaching year three
+worth no more than in year one without ever seeing it happen.
+
+**1.7 How much of it is the lender's.** Debt measured against the owner's stake, not
+against profit. What a geared business does in a bad quarter, when interest and
+repayment carry on and sales do not. Why a lender asks this before they ask what you
+earn, and why the answer decides whether you are offered money at all.
+*Prevents:* financing growth to the point where one bad season transfers the business to
+the lender — and being refused credit for a reason the owner cannot see and so cannot
+fix.
+
+**1.8 What leaves the business, and what stays in it.** Money the owner draws out, and
+money spent on things the firm did not need, set against the surplus left in to build
+it. Drawing an income is legitimate and necessary; the point is that only what stays in
+compounds. This is where the livelihood and transformational paths actually separate —
+not in ambition, but in where the surplus goes, decision by decision, none of which
+looks like the moment it was decided.
+*Prevents:* a firm that never grows for a reason nobody can point at, because every
+individual withdrawal was reasonable.
+
+> **None of 1.6–1.8 is in the application.** The engine holds every input a balance sheet
+> needs — cash, equipment at written-down value, debt, and stock and receivables less
+> payables — and nothing adds them up. The learner is shown a week's profit, a week's
+> cash, and a twelve-week projection of a weekly figure. No screen in the game shows a
+> stock of anything, so nothing the learner does can be seen to accumulate. See
+> [Q-028](../memory/OPEN_QUESTIONS.md).
 
 ---
 
@@ -258,7 +315,12 @@ plays only the stall meets Tracks 1–4 at a stall's scale and never meets Track
 - **[Q-004]** Playthrough length — determines how much of this can exist at all.
 - **[Q-005]** First value chain — honey is the leading candidate, and none of the four
   authored chapters uses it.
-- **2.2 (getting a paid trial) is the gap that matters most.** It is the capability the
+- **[Q-028]** The balance sheet, gearing and drawings (1.6–1.8). Raised by the project
+  owner and the largest gap in this map: the game teaches a week and never a stock.
+  Deciding this is deciding whether the engine gains a net-worth figure and the chapters
+  gain turns that use it.
+- **2.2 (getting a paid trial) is the gap that matters most** among the capabilities that
+  are at least *representable* today. It is the capability the
   background note treats as the strongest execution signal, and it currently exists as
   one option inside one wholesale decision. Whether to author a turn for it — or a
   chapter — is a content decision nobody has taken.

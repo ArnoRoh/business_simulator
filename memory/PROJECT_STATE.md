@@ -1,7 +1,7 @@
 # Project state
 
 **Snapshot as of:** 2026-08-09
-**Last session:** [`sessions/2026-08-09-013-carry-defect-and-the-docs.md`](./sessions/2026-08-09-013-carry-defect-and-the-docs.md)
+**Last session:** [`sessions/2026-08-09-014-the-balance-sheet-that-is-not-there.md`](./sessions/2026-08-09-014-the-balance-sheet-that-is-not-there.md)
 
 > This file is a **snapshot, not a history**. Overwrite it at the end of every session
 > so it always describes the present. History belongs in `sessions/` and
@@ -15,7 +15,7 @@
 any of them.** That sentence is the whole state of the project.
 
 The stall, the bakery, the factory and the export business are twenty turns each, in English
-and Kiswahili, each graded against its own prediction bands. Six checks are green. Chapters 3
+and Kiswahili, each graded against its own prediction bands. Seven checks are green. Chapters 3
 and 4 carry `unverified: true`, which puts a banner on screen, because their opening balance
 sheets and their payroll, duty and freight figures have not been seen by anyone with local
 ground truth.
@@ -25,14 +25,14 @@ was written. It is now **contact with real people** — an owner playing it, a f
 Kiswahili reader, a phone, and Tanzanian figures somebody can vouch for. None of those can be
 produced from inside this repository.
 
-Thirteen sessions: repository bootstrap (001), an ideation discussion on pedagogy and
+Fourteen sessions: repository bootstrap (001), an ideation discussion on pedagogy and
 placement (002), the first build (003), a shareable single-file version (004), a rework for
 depth and Kiswahili (005), free-input decisions plus a campaign (006), a repair of two
 controls that could not reach their own answers (007), the four-chapter arc and the engine to
 carry it (008), an audit and a file with two owners (009), the bakery landing plus the service
 worker (010), chapters 3 and 4 plus the anchor bug (011), a playthrough check plus the six
-defects it found (012), and a carry rule that paid the learner interest plus three docs
-reconciled with the code (013).
+defects it found (012), a carry rule that paid the learner interest plus three docs
+reconciled with the code (013), and the owner's balance-sheet question (014).
 
 **Sessions 006, 007, 011 and 012 all exist because somebody played it.** Every one of them
 found defects that the whole test suite had passed clean, and every one was a control lying to
@@ -59,13 +59,13 @@ read it before anything else. The arc is in [`docs/arc.md`](../docs/arc.md) and
 | **The chapter layer** | Manifest, select screen, `carry.js`, per-chapter save. Nothing locked, nothing summed. Carry overrides are **absolute openings**, checked (D-026). |
 | **Offline** | `sw.js` — shell cache-first, content network-first with a cache fallback, `build-info.json` exempt. **Never tested on a device.** |
 | Operating guide (`AGENTS.md`, `CLAUDE.md`) | Written. Carries the thesis and memory protocol. |
-| Memory system | In use — this file, 28 decisions, 27 open questions (3 resolved), glossary, 13 session entries, 3 contracts. |
+| Memory system | In use — this file, 29 decisions, 28 open questions (3 resolved), glossary, 14 session entries, 3 contracts. |
 | Governance, licences | Written. MIT code + CC BY-SA 4.0 content. |
 | Design docs (`docs/`) | **Current.** `arc.md`, and `game-design.md` / `curriculum.md` / `assessment.md` reconciled with the code in session 013, each separating built behaviour from intent (D-028). |
 | Regional context (`docs/context/`) | Owner's note in place. Country detail still a **deliberate stub**. |
 | ADRs | Seven, all `Accepted`. |
 | Tests | 7 checks, all green. See below. |
-| Curriculum content | Four chapters, 80 turns, now **mapped against the capability map** in `docs/curriculum.md`. Four capabilities have no turn at all; the one that matters is the paid trial (Q-027). Far-transfer testing is possible and still not implemented. |
+| Curriculum content | Four chapters, 80 turns, now **mapped against the capability map** in `docs/curriculum.md`. Four capabilities have no turn at all, and the map gained three more in session 014 — worth, gearing, and what the owner takes out (D-029), none of them buildable without a balance sheet (Q-028). The paid trial is the other one that matters (Q-027). Far-transfer testing is possible and still not implemented. |
 | Partners, pilot sites, funding | Still not recorded. See Q-002. |
 
 **What green means, as of this snapshot:**
@@ -238,6 +238,9 @@ Blocking, in priority order — full list in [`OPEN_QUESTIONS.md`](./OPEN_QUESTI
   and every structural measure is identical across all four chapters. The arc is a cliff and
   then a plateau. Intended, or does it need restructuring? The owner's call.
 - **Q-025** — Chapter 4 now opens with five ledger lines explaining themselves at once.
+- **Q-028** — **The game teaches a week and never a stock.** There is no balance sheet, no
+  equity figure and therefore no gearing ratio, and the only turn that takes money out of the
+  business is the last one. Raised by the owner; three costed options in `OPEN_QUESTIONS.md`.
 - **Q-027** — Nothing in eighty turns is about **getting a paid trial**, which is both the
   largest curriculum gap and the reason the customer-validation indicator cannot be computed.
 - **Q-004 / Q-013** — Playthrough length; whether 20 deeper turns is right.
@@ -255,8 +258,10 @@ Blocking, in priority order — full list in [`OPEN_QUESTIONS.md`](./OPEN_QUESTI
    and the banner can come down.
 5. **Rule on Q-022 and Q-021**, which together decide whether the stability sweep becomes a
    FAIL and whether chapter 1 gets rebalanced.
-6. **Rule on Q-027** — whether to author content for getting a paid trial, the one capability
-   gap that sits on the thesis rather than beside it.
+6. **Rule on Q-028** — whether the game gains a balance sheet. The top item that would change
+   the product. Option 1 (a net-worth line under the money panel) is small, reversible and the
+   prerequisite for the other two.
+7. **Rule on Q-027** — whether to author content for getting a paid trial.
 
 Items 6 and 7 from the previous snapshot are done: bakery t16 discriminates (Q-024), and
 `game-design.md`, `curriculum.md` and `assessment.md` are reconciled with the code.

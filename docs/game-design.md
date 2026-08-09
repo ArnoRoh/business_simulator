@@ -151,6 +151,15 @@ exported unit, and duty on exported value.
 opening level, a member of staff, fees, and capacity down to a floor. It shrinks the
 business towards a stall and never to nothing.
 
+**Not modelled, and not deliberately: a balance sheet.** Every input for one is in state
+— cash, equipment at written-down value, debt, and stock and receivables less payables —
+and nothing adds them up. Every figure this game shows a learner is a *flow*: a week's
+profit, a week's cash, a chart of the last twelve weeks' profit. Nothing shows a *stock*,
+so nothing the learner does can be seen to accumulate, and neither the owner's stake, the
+gearing against it, nor the effect of drawing money out can be taught at all. Raised by
+the project owner and open as [Q-028](../memory/OPEN_QUESTIONS.md); the capabilities it
+blocks are 1.6–1.8 in [`curriculum.md`](./curriculum.md).
+
 **Deliberately not modelled:** double-entry accounting, HR administration, tax computed
 to the shilling, market share dynamics. Compliance appears as its cash and fee cost and
 as access it opens or closes, not as a tax engine.
