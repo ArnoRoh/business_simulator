@@ -85,6 +85,18 @@ The record carries **per-decision entries with timestamps**, not just a summary.
 cannot answer questions nobody has thought of yet, and this dataset gets one chance to be
 collected.
 
+**Submission must exist mid-chapter, not only at the end** *(added 2026-08-21, session 019,
+before acceptance)*. As first written, the one explicit submit sat at the end of a chapter —
+which meant a learner who stopped at turn eleven never submitted, and **drop-off was
+invisible by construction**. Completion rate is the load-bearing assumption in the cost
+model (`ch1_completion` in `scripts/lib/cea_model.py`, labelled *untested*): USD 22 per
+finisher and the 2.67× multiple scale directly off it, and nothing else in the funnel
+measures it. Under local-first rules we cannot observe drop-off remotely, so the only way
+to see it is to let partial records be submitted under the same anonymity as complete ones.
+Concretely: the submit affordance appears at every chapter boundary reached, and a record
+submitted mid-way is stored and retained exactly like any other. It never blocks play and
+is still one deliberate act per submission, not sync.
+
 ### 4. The recruitment channel is one field, captured at first load.
 
 A `?src=` parameter on the entry URL, stored with the install identifier and carried
