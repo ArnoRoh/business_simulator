@@ -130,6 +130,15 @@ export function installStubDom(ids = [
   };
 
   globalThis.window = { scrollTo() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) };
+  // Headless runs have no share targets, so renderEnd's canShare guard is false and the
+  // share button never renders. printRecord is only reachable from a click, but a no-op
+  // costs nothing and keeps a stray call from killing a run. Node >= 21 exposes a real
+  // global navigator with a getter only, so define rather than assign.
+  Object.defineProperty(globalThis, 'navigator', {
+    value: { canShare: () => false, share: async () => {} },
+    configurable: true,
+  });
+  globalThis.print = () => {};
   // Deferred, not immediate. A synchronous stub turns every animation loop in scene.js
   // into unbounded recursion, which says nothing about the app and blows the stack.
   globalThis.requestAnimationFrame = (fn) => setTimeout(() => fn(Date.now()), 0);

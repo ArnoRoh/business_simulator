@@ -829,6 +829,36 @@ ul { margin: 0; padding-left: 1.1em; }
   margin-top: 6px;
 }
 
+/* ---------- printable record ----------
+   Populated on demand from the end-of-chapter screen (main.js printRecord). Hidden
+   on screen; the @media print block below swaps the running app for it. Print to
+   PDF is how a record leaves a phone with no connection and no share sheet, and it
+   needs no network, no backend and no permission. */
+.print-record { display: none; }
+
+@media print {
+  body { background: #fff; }
+  .app { display: none !important; }
+  .print-record {
+    display: block;
+    color: #000;
+    font-size: 11pt;
+    line-height: 1.45;
+  }
+  .print-record h1 { font-size: 15pt; margin: 0 0 2pt; }
+  .print-record .print-meta { color: #444; font-size: 9.5pt; margin: 0 0 10pt; }
+  .print-record h2 {
+    font-size: 11.5pt;
+    margin: 12pt 0 4pt;
+    border-bottom: 1px solid #999;
+    padding-bottom: 2pt;
+  }
+  .print-record .print-statement { margin: 0 0 7pt; }
+  .print-record .print-indicator { font-weight: 700; }
+  .print-record ul { margin: 4pt 0 0 14pt; padding: 0; }
+  .print-record li { margin-bottom: 3pt; }
+}
+
 /* ---------- buttons ---------- */
 .btn {
   min-height: var(--tap);
@@ -1421,6 +1451,12 @@ ul { margin: 0; padding-left: 1.1em; }
     </footer>
   </div>
 
+  <!-- The printable record, populated only when the learner asks to print. It sits
+       outside .app so the print stylesheet can hide the running app entirely; on
+       screen it stays hidden. Print-to-PDF is how a record leaves a phone that has
+       no share sheet and no connection — see main.js printRecord(). -->
+  <div id="print-record" class="print-record" hidden></div>
+
   <!-- Registered after load, and failing silently on purpose. Offline support is a
        requirement (ADR-0002) but it is not a precondition for playing: a browser that
        refuses the worker, or a page opened over file://, must still get a working app
@@ -1519,6 +1555,22 @@ ul { margin: 0; padding-left: 1.1em; }
   "btn.saveRecord": {
     "en": "Save my record",
     "sw": "Hifadhi kumbukumbu yangu"
+  },
+  "btn.shareRecord": {
+    "en": "Share my record",
+    "sw": "Sambaza kumbukumbu yangu"
+  },
+  "btn.printRecord": {
+    "en": "Print my record",
+    "sw": "Chapisha kumbukumbu yangu"
+  },
+  "record.printMeta": {
+    "en": "Chapter: {chapter} · played {date}",
+    "sw": "Sura: {chapter} · ilichezwa {date}"
+  },
+  "record.canonicalNote": {
+    "en": "The saved file is the full record.",
+    "sw": "Faili ulilohifadhi ni kumbukumbu kamili."
   },
   "btn.showNumbers": {
     "en": "Show the numbers",
@@ -2554,7 +2606,14 @@ function percent(fraction) {
   return `${Math.round((Number(fraction) || 0) * 100)}%`;
 }
 
-  return { setCurrency, money, moneyShort, compact, moneySigned, count, proportion, percent };
+/** Long-form date for the printed record — "21 August 2026" / "21 Agosti 2026". */
+function dateLong(iso) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleDateString(localeTag(), { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+  return { setCurrency, money, moneyShort, compact, moneySigned, count, proportion, percent, dateLong };
 })();
 
 /* ---- engine ---- */
@@ -4072,9 +4131,28 @@ const NS_storage = (function () {
 
 const KEY = 'business-simulator:v1';
 
+// Versioning for the saved session itself (the record inside it has its own, in
+// record.js). The shape is about to grow — ADR-0008 proposes an install identifier
+// and a recruitment channel — and a save written by an older build must survive the
+// update rather than be discarded, because the app updates itself under the learner's
+// feet: sw.js swaps in a new shell mid-run. Stamp on write, migrate on read.
+const SESSION_SCHEMA_VERSION = 1;
+
+/** Bring a session from whatever version wrote it up to the current one. */
+function migrate(parsed) {
+  // Sessions written before versioning existed are version 1 by definition.
+  if (typeof parsed.schemaVersion !== 'number') parsed.schemaVersion = 1;
+  // Future migrations chain here:
+  //   if (parsed.schemaVersion < 2) { ...transform...; parsed.schemaVersion = 2; }
+  return parsed;
+}
+
 function save(session) {
   try {
-    localStorage.setItem(KEY, JSON.stringify(session));
+    localStorage.setItem(
+      KEY,
+      JSON.stringify({ schemaVersion: SESSION_SCHEMA_VERSION, ...session }),
+    );
     return true;
   } catch (err) {
     // Private browsing or a full quota. Play continues in memory rather than dying.
@@ -4089,7 +4167,7 @@ function load() {
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== 'object') return null;
-    return parsed;
+    return migrate(parsed);
   } catch (err) {
     console.warn('Could not load saved progress:', err);
     return null;
@@ -6287,6 +6365,17 @@ function renderConceptRecap(container, turns, decisions) {
   container.appendChild(card);
 }
 
+/**
+ * The learner-facing text of one profile statement, however it is keyed. Shared with
+ * the printable record (main.js printRecord) so the two can never disagree — the
+ * printed page is the same statements, not a second rendering of them.
+ */
+function statementText(s) {
+  return s.countKey ? tCount(s.countKey, s.count, { n: count(s.count) })
+    : s.key ? t(s.key, s.params)
+      : s.text;
+}
+
 function renderProfile(container, profile, tally, state, history, turns = [], decisions = []) {
   clear(container);
 
@@ -6314,9 +6403,7 @@ function renderProfile(container, profile, tally, state, history, turns = [], de
     const item = el('div', 'indicator');
     item.appendChild(el('div', 'indicator-label', s.indicatorKey ? t(s.indicatorKey) : s.indicator));
 
-    const text = s.countKey ? tCount(s.countKey, s.count, { n: count(s.count) })
-      : s.key ? t(s.key, s.params)
-        : s.text;
+    const text = statementText(s);
     item.appendChild(el('div', 'indicator-text', text));
 
     if (s.detailKey || s.detail) {
@@ -6343,13 +6430,13 @@ function renderProfile(container, profile, tally, state, history, turns = [], de
   container.appendChild(limits);
 }
 
-  return { el, clear, renderStats, renderPnl, renderTrajectory, renderSituation, renderChapterSelect, renderInfo, renderNumberDecision, renderAllocateDecision, renderDiagnose, renderPredictNumber, renderGoal, renderOptions, renderWorkout, renderPredict, predictionSummaryText, renderReveal, renderConsequences, renderScene, renderProgress, renderProfile };
+  return { el, clear, renderStats, renderPnl, renderTrajectory, renderSituation, renderChapterSelect, renderInfo, renderNumberDecision, renderAllocateDecision, renderDiagnose, renderPredictNumber, renderGoal, renderOptions, renderWorkout, renderPredict, predictionSummaryText, renderReveal, renderConsequences, renderScene, renderProgress, statementText, renderProfile };
 })();
 
 /* ---- main ---- */
 const NS_main = (function () {
 const { createState, applyEffects, weeklyPnl, advanceWeeks, scheduleLater, resolveNumberInput, resolveAllocation, bandForValue, gradePrediction, evaluateGoal, needsRecovery, predictionWindow, setBands } = NS_engine;
-const { setCurrency, money, count } = NS_format;
+const { setCurrency, money, count, dateLong, proportion } = NS_format;
 const { loadStrings, setLanguage, getLanguage, LANGUAGES, t, localised } = NS_i18n;
 const { applyCarryIn, collectCarry, situationFor } = NS_carry;
 const record = NS_record;
@@ -6415,6 +6502,7 @@ function cacheDom() {
   dom.pnlWrap = q('pnl-wrap');
   dom.goal = q('goal');
   dom.footPrivacy = q('foot-privacy');
+  dom.printRecord = q('print-record');
 }
 
 function newSession() {
@@ -6931,34 +7019,128 @@ function renderEnd() {
   again.addEventListener('click', () => { store.clear(); start(true); });
   actions.appendChild(again);
 
+  // Three ways for the record to leave the phone, in descending order of reach on
+  // the target devices: the native share sheet (WhatsApp and similar are how
+  // documents actually move), print-to-PDF or paper, and a plain file download.
+  // All three are local acts — nothing is transmitted anywhere by this app itself.
+  const payload = buildRecordPayload(profile);
+
+  if (navigator.canShare && navigator.canShare({ files: [recordFile(payload)] })) {
+    const share = ui.el('button', 'btn btn-ghost', t('btn.shareRecord'));
+    share.type = 'button';
+    share.addEventListener('click', () => shareRecord(payload));
+    actions.appendChild(share);
+  }
+
+  const print = ui.el('button', 'btn btn-ghost', t('btn.printRecord'));
+  print.type = 'button';
+  print.addEventListener('click', () => printRecord(profile));
+  actions.appendChild(print);
+
   const download = ui.el('button', 'btn btn-ghost', t('btn.saveRecord'));
   download.type = 'button';
-  download.addEventListener('click', () => downloadRecord(profile));
+  download.addEventListener('click', () => downloadRecord(payload));
   actions.appendChild(download);
 
   dom.decision.appendChild(actions);
 }
 
 /** The learner holds their own record — SECURITY.md. Nothing is transmitted. */
-function downloadRecord(profile) {
+function buildRecordPayload(profile) {
   // `carriedFlags` travels with the record because it is part of what was observed —
   // a learner arrived at this chapter having kept books, or not. It is a fact, listed
   // alongside the observations and never rolled into anything (ADR-0004).
-  const blob = new Blob([store.exportJson({
+  return {
     profile,
     scenarioId: session.record.scenarioId,
     carriedFlags: session.record.carriedFlags || {},
     observations: session.record.observations,
-  })],
-    { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
+  };
+}
+
+/**
+ * A file name a judge can tell apart in an inbox. The old name was
+ * `record-<milliseconds>`, which made every submission look identical until opened.
+ */
+function recordFile(payload) {
+  const day = new Date().toISOString().slice(0, 10);
+  return new File(
+    [JSON.stringify(payload, null, 2)],
+    `business-simulator-record-${session.record.scenarioId}-${day}.json`,
+    { type: 'application/json' },
+  );
+}
+
+function downloadBlob(file) {
+  const url = URL.createObjectURL(file);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `business-simulator-record-${Date.now()}.json`;
+  a.download = file.name;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+function downloadRecord(payload) {
+  downloadBlob(recordFile(payload));
+}
+
+/** Hand the record to whatever share targets the phone offers. */
+async function shareRecord(payload) {
+  try {
+    await navigator.share({ files: [recordFile(payload)], title: t('app.title') });
+  } catch (err) {
+    if (err && err.name === 'AbortError') return; // the learner closed the share sheet
+    console.warn('Sharing failed; saving instead:', err);
+    downloadBlob(recordFile(payload));
+  }
+}
+
+/**
+ * The record as a printable page — paper or print-to-PDF is the one way a record
+ * leaves a phone that has no share sheet, no connection and no other app. Localised
+ * like the screen (it is read by someone the learner shows it to); the downloaded
+ * JSON remains the canonical English artefact (record.js). The statements are the
+ * same objects renderProfile shows, through ui.statementText, so the two cannot
+ * drift apart.
+ */
+function printRecord(profile) {
+  const root = dom.printRecord;
+  ui.clear(root);
+
+  root.appendChild(ui.el('h1', null, t('app.title')));
+  root.appendChild(ui.el('p', 'print-meta', t('record.printMeta', {
+    chapter: localised(scenario.title),
+    date: dateLong(session.record.startedAt),
+  })));
+
+  const tally = record.predictionTally(session.record);
+  if (tally.total > 0) {
+    root.appendChild(ui.el('p', 'print-meta',
+      `${t('profile.tallyLabel')}: ${proportion(tally.correct, tally.total)}`));
+  }
+
+  root.appendChild(ui.el('h2', null, t('profile.title')));
+  for (const s of profile.statements) {
+    const item = ui.el('div', 'print-statement');
+    item.appendChild(ui.el('div', 'print-indicator',
+      s.indicatorKey ? t(s.indicatorKey) : s.indicator));
+    item.appendChild(ui.el('div', null, ui.statementText(s)));
+    if (s.detailKey || s.detail) {
+      item.appendChild(ui.el('div', null, s.detailKey ? t(s.detailKey) : s.detail));
+    }
+    root.appendChild(item);
+  }
+
+  root.appendChild(ui.el('h2', null, t('profile.limitationsTitle')));
+  const ul = ui.el('ul', null);
+  for (const key of profile.limitationKeys) ul.appendChild(ui.el('li', null, t(key)));
+  root.appendChild(ul);
+
+  root.appendChild(ui.el('p', 'print-meta', t('record.canonicalNote')));
+
+  window.print();
 }
 
 // --- chrome --------------------------------------------------------------

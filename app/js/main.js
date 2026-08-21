@@ -21,7 +21,7 @@ import {
 import * as record from './record.js';
 import * as store from './storage.js';
 import * as ui from './ui.js';
-import { setCurrency, money, count } from './format.js';
+import { setCurrency, money, count, dateLong, proportion } from './format.js';
 import { loadStrings, setLanguage, getLanguage, LANGUAGES, t, localised } from './i18n.js';
 import { applyCarryIn, collectCarry, situationFor } from './carry.js';
 
@@ -63,6 +63,7 @@ function cacheDom() {
   dom.pnlWrap = q('pnl-wrap');
   dom.goal = q('goal');
   dom.footPrivacy = q('foot-privacy');
+  dom.printRecord = q('print-record');
 }
 
 function newSession() {
@@ -585,34 +586,128 @@ function renderEnd() {
   again.addEventListener('click', () => { store.clear(); start(true); });
   actions.appendChild(again);
 
+  // Three ways for the record to leave the phone, in descending order of reach on
+  // the target devices: the native share sheet (WhatsApp and similar are how
+  // documents actually move), print-to-PDF or paper, and a plain file download.
+  // All three are local acts — nothing is transmitted anywhere by this app itself.
+  const payload = buildRecordPayload(profile);
+
+  if (navigator.canShare && navigator.canShare({ files: [recordFile(payload)] })) {
+    const share = ui.el('button', 'btn btn-ghost', t('btn.shareRecord'));
+    share.type = 'button';
+    share.addEventListener('click', () => shareRecord(payload));
+    actions.appendChild(share);
+  }
+
+  const print = ui.el('button', 'btn btn-ghost', t('btn.printRecord'));
+  print.type = 'button';
+  print.addEventListener('click', () => printRecord(profile));
+  actions.appendChild(print);
+
   const download = ui.el('button', 'btn btn-ghost', t('btn.saveRecord'));
   download.type = 'button';
-  download.addEventListener('click', () => downloadRecord(profile));
+  download.addEventListener('click', () => downloadRecord(payload));
   actions.appendChild(download);
 
   dom.decision.appendChild(actions);
 }
 
 /** The learner holds their own record — SECURITY.md. Nothing is transmitted. */
-function downloadRecord(profile) {
+function buildRecordPayload(profile) {
   // `carriedFlags` travels with the record because it is part of what was observed —
   // a learner arrived at this chapter having kept books, or not. It is a fact, listed
   // alongside the observations and never rolled into anything (ADR-0004).
-  const blob = new Blob([store.exportJson({
+  return {
     profile,
     scenarioId: session.record.scenarioId,
     carriedFlags: session.record.carriedFlags || {},
     observations: session.record.observations,
-  })],
-    { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
+  };
+}
+
+/**
+ * A file name a judge can tell apart in an inbox. The old name was
+ * `record-<milliseconds>`, which made every submission look identical until opened.
+ */
+function recordFile(payload) {
+  const day = new Date().toISOString().slice(0, 10);
+  return new File(
+    [JSON.stringify(payload, null, 2)],
+    `business-simulator-record-${session.record.scenarioId}-${day}.json`,
+    { type: 'application/json' },
+  );
+}
+
+function downloadBlob(file) {
+  const url = URL.createObjectURL(file);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `business-simulator-record-${Date.now()}.json`;
+  a.download = file.name;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+function downloadRecord(payload) {
+  downloadBlob(recordFile(payload));
+}
+
+/** Hand the record to whatever share targets the phone offers. */
+async function shareRecord(payload) {
+  try {
+    await navigator.share({ files: [recordFile(payload)], title: t('app.title') });
+  } catch (err) {
+    if (err && err.name === 'AbortError') return; // the learner closed the share sheet
+    console.warn('Sharing failed; saving instead:', err);
+    downloadBlob(recordFile(payload));
+  }
+}
+
+/**
+ * The record as a printable page — paper or print-to-PDF is the one way a record
+ * leaves a phone that has no share sheet, no connection and no other app. Localised
+ * like the screen (it is read by someone the learner shows it to); the downloaded
+ * JSON remains the canonical English artefact (record.js). The statements are the
+ * same objects renderProfile shows, through ui.statementText, so the two cannot
+ * drift apart.
+ */
+function printRecord(profile) {
+  const root = dom.printRecord;
+  ui.clear(root);
+
+  root.appendChild(ui.el('h1', null, t('app.title')));
+  root.appendChild(ui.el('p', 'print-meta', t('record.printMeta', {
+    chapter: localised(scenario.title),
+    date: dateLong(session.record.startedAt),
+  })));
+
+  const tally = record.predictionTally(session.record);
+  if (tally.total > 0) {
+    root.appendChild(ui.el('p', 'print-meta',
+      `${t('profile.tallyLabel')}: ${proportion(tally.correct, tally.total)}`));
+  }
+
+  root.appendChild(ui.el('h2', null, t('profile.title')));
+  for (const s of profile.statements) {
+    const item = ui.el('div', 'print-statement');
+    item.appendChild(ui.el('div', 'print-indicator',
+      s.indicatorKey ? t(s.indicatorKey) : s.indicator));
+    item.appendChild(ui.el('div', null, ui.statementText(s)));
+    if (s.detailKey || s.detail) {
+      item.appendChild(ui.el('div', null, s.detailKey ? t(s.detailKey) : s.detail));
+    }
+    root.appendChild(item);
+  }
+
+  root.appendChild(ui.el('h2', null, t('profile.limitationsTitle')));
+  const ul = ui.el('ul', null);
+  for (const key of profile.limitationKeys) ul.appendChild(ui.el('li', null, t(key)));
+  root.appendChild(ul);
+
+  root.appendChild(ui.el('p', 'print-meta', t('record.canonicalNote')));
+
+  window.print();
 }
 
 // --- chrome --------------------------------------------------------------

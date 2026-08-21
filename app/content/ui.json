@@ -24,6 +24,22 @@
     "en": "Save my record",
     "sw": "Hifadhi kumbukumbu yangu"
   },
+  "btn.shareRecord": {
+    "en": "Share my record",
+    "sw": "Sambaza kumbukumbu yangu"
+  },
+  "btn.printRecord": {
+    "en": "Print my record",
+    "sw": "Chapisha kumbukumbu yangu"
+  },
+  "record.printMeta": {
+    "en": "Chapter: {chapter} · played {date}",
+    "sw": "Sura: {chapter} · ilichezwa {date}"
+  },
+  "record.canonicalNote": {
+    "en": "The saved file is the full record.",
+    "sw": "Faili ulilohifadhi ni kumbukumbu kamili."
+  },
   "btn.showNumbers": {
     "en": "Show the numbers",
     "sw": "Onyesha namba"

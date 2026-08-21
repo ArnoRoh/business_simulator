@@ -52,6 +52,12 @@
     </footer>
   </div>
 
+  <!-- The printable record, populated only when the learner asks to print. It sits
+       outside .app so the print stylesheet can hide the running app entirely; on
+       screen it stays hidden. Print-to-PDF is how a record leaves a phone that has
+       no share sheet and no connection — see main.js printRecord(). -->
+  <div id="print-record" class="print-record" hidden></div>
+
   <script type="module" src="./js/main.js"></script>
 
   <!-- Registered after load, and failing silently on purpose. Offline support is a

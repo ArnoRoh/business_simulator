@@ -76,3 +76,10 @@ export function proportion(part, whole) {
 export function percent(fraction) {
   return `${Math.round((Number(fraction) || 0) * 100)}%`;
 }
+
+/** Long-form date for the printed record — "21 August 2026" / "21 Agosti 2026". */
+export function dateLong(iso) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleDateString(localeTag(), { year: 'numeric', month: 'long', day: 'numeric' });
+}

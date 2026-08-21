@@ -1405,6 +1405,17 @@ function renderConceptRecap(container, turns, decisions) {
   container.appendChild(card);
 }
 
+/**
+ * The learner-facing text of one profile statement, however it is keyed. Shared with
+ * the printable record (main.js printRecord) so the two can never disagree — the
+ * printed page is the same statements, not a second rendering of them.
+ */
+export function statementText(s) {
+  return s.countKey ? tCount(s.countKey, s.count, { n: count(s.count) })
+    : s.key ? t(s.key, s.params)
+      : s.text;
+}
+
 export function renderProfile(container, profile, tally, state, history, turns = [], decisions = []) {
   clear(container);
 
@@ -1432,9 +1443,7 @@ export function renderProfile(container, profile, tally, state, history, turns =
     const item = el('div', 'indicator');
     item.appendChild(el('div', 'indicator-label', s.indicatorKey ? t(s.indicatorKey) : s.indicator));
 
-    const text = s.countKey ? tCount(s.countKey, s.count, { n: count(s.count) })
-      : s.key ? t(s.key, s.params)
-        : s.text;
+    const text = statementText(s);
     item.appendChild(el('div', 'indicator-text', text));
 
     if (s.detailKey || s.detail) {

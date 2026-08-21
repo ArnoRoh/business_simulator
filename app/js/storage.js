@@ -8,9 +8,28 @@
 
 const KEY = 'business-simulator:v1';
 
+// Versioning for the saved session itself (the record inside it has its own, in
+// record.js). The shape is about to grow — ADR-0008 proposes an install identifier
+// and a recruitment channel — and a save written by an older build must survive the
+// update rather than be discarded, because the app updates itself under the learner's
+// feet: sw.js swaps in a new shell mid-run. Stamp on write, migrate on read.
+const SESSION_SCHEMA_VERSION = 1;
+
+/** Bring a session from whatever version wrote it up to the current one. */
+function migrate(parsed) {
+  // Sessions written before versioning existed are version 1 by definition.
+  if (typeof parsed.schemaVersion !== 'number') parsed.schemaVersion = 1;
+  // Future migrations chain here:
+  //   if (parsed.schemaVersion < 2) { ...transform...; parsed.schemaVersion = 2; }
+  return parsed;
+}
+
 export function save(session) {
   try {
-    localStorage.setItem(KEY, JSON.stringify(session));
+    localStorage.setItem(
+      KEY,
+      JSON.stringify({ schemaVersion: SESSION_SCHEMA_VERSION, ...session }),
+    );
     return true;
   } catch (err) {
     // Private browsing or a full quota. Play continues in memory rather than dying.
@@ -25,7 +44,7 @@ export function load() {
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== 'object') return null;
-    return parsed;
+    return migrate(parsed);
   } catch (err) {
     console.warn('Could not load saved progress:', err);
     return null;
