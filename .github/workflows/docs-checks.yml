@@ -49,6 +49,19 @@ jobs:
       - name: Every chapter, every screen
         run: node scripts/playthrough.mjs
 
+      # The committed single-file build must match what its sources produce. The Pages
+      # workflow rebuilds standalone.html before deploying, so a learner always gets a
+      # current copy — this step is what tells the contributor their checkout has drifted
+      # and needs `node scripts/build-single-file.mjs` run and committed. It went stale
+      # for a whole chapter once (sessions 008-011) with nothing noticing.
+      - name: standalone.html is fresh
+        run: |
+          node scripts/build-single-file.mjs
+          if ! git diff --exit-code --stat app/standalone.html; then
+            echo "::error::app/standalone.html is out of date. Run: node scripts/build-single-file.mjs"
+            exit 1
+          fi
+
   links:
     name: Internal links resolve
     runs-on: ubuntu-latest

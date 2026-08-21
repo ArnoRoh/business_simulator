@@ -48,13 +48,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # The checks are cheap and there is no toolchain to install, so run them rather
-      # than publish something broken.
+      # The checks are cheap (the slowest, playthrough.mjs, takes seconds) and there is
+      # no toolchain to install, so run ALL of them rather than publish something broken.
+      #
+      # This used to run three of the six. The three it skipped are the ones that have
+      # caught real defects — smoke-app.mjs guards the service-worker shell list,
+      # simulate-runs.mjs asserts an attentive player can finish, and playthrough.mjs
+      # reads what the screens actually say. Five sessions of shipped control bugs lived
+      # exactly there, so a green trio said nothing worth having. scripts/check-links.sh
+      # and scripts/check-model.py stay out: they cannot fail on app/ content alone.
       - name: Verify before publishing
         run: |
           node scripts/test-engine.mjs
           node scripts/validate-scenario.mjs
           node scripts/validate-i18n.mjs
+          node scripts/simulate-runs.mjs
+          node scripts/smoke-app.mjs
+          node scripts/playthrough.mjs
 
       - uses: actions/configure-pages@v5
 
@@ -79,6 +89,14 @@ jobs:
           # once — a deployed CSS fix never reached any returning learner.
           sed -i "s/const CACHE = '[^']*'/const CACHE = 'business-simulator-${GITHUB_SHA::8}'/" app/sw.js
           grep "const CACHE" app/sw.js
+
+      # Rebuild the single-file version from the sources being deployed, so it can never
+      # ship stale. It went a whole chapter stale once (between sessions 008 and 011) and
+      # nothing noticed, because nothing rebuilt it automatically. The committed copy is
+      # kept honest separately — docs-checks.yml fails when it drifts — but a learner
+      # downloading this file gets the current app either way.
+      - name: Rebuild standalone.html
+        run: node scripts/build-single-file.mjs
 
       - uses: actions/upload-pages-artifact@v3
         with:
