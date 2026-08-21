@@ -1,0 +1,88 @@
+# Publish the simulator to GitHub Pages.
+#
+# This uploads `app/` and nothing else, so the app is served at the site root and the
+# published site tracks `main` on every push. No republish step, and no second copy of
+# the app living on another branch.
+#
+# Two earlier approaches failed and are worth not repeating:
+#
+#   1. A hand-built `gh-pages` branch holding a copy of `app/`. It tracked nothing, needed
+#      a manual rebuild after every change, and once published a build two versions old
+#      while reporting success.
+#   2. Pages serving the `main` branch root through the legacy Jekyll builder. That build
+#      failed outright — the repository root carries documentation, memory and licences
+#      that the builder chokes on, and it reports only "Page build failed" with no detail.
+#
+# This is a deployment step, not an application build step: nothing is compiled, bundled
+# or transformed, and `app/` is still served exactly as written (ADR-0006).
+
+name: Publish to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time. `cancel-in-progress` must stay FALSE: a Pages deployment
+# reports its progress back through this step, so cancelling the run mid-flight cancels
+# the deployment itself. Setting it true produced "Deployment cancelled" on three
+# consecutive runs while every other step passed.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # The checks are cheap and there is no toolchain to install, so run them rather
+      # than publish something broken.
+      - name: Verify before publishing
+        run: |
+          node scripts/test-engine.mjs
+          node scripts/validate-scenario.mjs
+          node scripts/validate-i18n.mjs
+
+      - uses: actions/configure-pages@v5
+
+      # Stamp the commit into the published site.
+      #
+      # Publishing has silently served a stale build twice, and both times the content
+      # alone could not prove which deploy produced it — the old build happened to carry
+      # the same scenario. Fetching /build-info.json and comparing the SHA to `main` is
+      # the only check that actually distinguishes them.
+      - name: Stamp the build
+        run: |
+          printf '{"commit":"%s","ref":"%s","builtAt":"%s"}\n' \
+            "$GITHUB_SHA" "$GITHUB_REF_NAME" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            > app/build-info.json
+          cat app/build-info.json
+
+          # Stamp the commit into the service worker's cache name too. The shell is
+          # served cache-first (app/sw.js), so sw.js changing is the only thing that
+          # makes a returning phone fetch the new shell: new worker bytes trigger the
+          # browser's update check, install fills a cache under the new name, and
+          # activate deletes the old one. Hand-bumping the name was already forgotten
+          # once — a deployed CSS fix never reached any returning learner.
+          sed -i "s/const CACHE = '[^']*'/const CACHE = 'business-simulator-${GITHUB_SHA::8}'/" app/sw.js
+          grep "const CACHE" app/sw.js
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: app
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

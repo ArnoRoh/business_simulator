@@ -1,0 +1,859 @@
+{
+  "_comment": "Interface strings. Key-major so the two languages sit side by side for review. Swahili is a DRAFT pending review by a first-language speaker with business exposure (docs/localization.md). Placeholders in {braces} must survive translation; whole sentences only, never assembled from fragments.",
+  "app.title": {
+    "en": "Business Simulator",
+    "sw": "Kiigizo cha Biashara"
+  },
+  "lang.label": {
+    "en": "Language",
+    "sw": "Lugha"
+  },
+  "btn.startAgain": {
+    "en": "Start again",
+    "sw": "Anza upya"
+  },
+  "btn.continue": {
+    "en": "Continue",
+    "sw": "Endelea"
+  },
+  "btn.playAgain": {
+    "en": "Play again",
+    "sw": "Cheza tena"
+  },
+  "btn.saveRecord": {
+    "en": "Save my record",
+    "sw": "Hifadhi kumbukumbu yangu"
+  },
+  "btn.showNumbers": {
+    "en": "Show the numbers",
+    "sw": "Onyesha namba"
+  },
+  "btn.hideNumbers": {
+    "en": "Hide the numbers",
+    "sw": "Ficha namba"
+  },
+  "foot.privacy": {
+    "en": "Your progress stays on this phone. Nothing is sent anywhere.",
+    "sw": "Maendeleo yako yanabaki kwenye simu hii. Hakuna kinachotumwa popote."
+  },
+  "banner.unverified": {
+    "en": "Practice figures — the money amounts here are made up for teaching, not real local prices.",
+    "sw": "Namba za mazoezi — kiasi cha pesa hapa kimetungwa kwa ajili ya kufundisha, si bei halisi za hapa."
+  },
+  "banner.draftLanguage": {
+    "en": "The Kiswahili here is a first draft and has not yet been checked by a first-language speaker.",
+    "sw": "Kiswahili hiki ni rasimu ya kwanza, bado hakijapitiwa na mzungumzaji wa lugha ya kwanza."
+  },
+  "stat.week": {
+    "en": "Week",
+    "sw": "Wiki"
+  },
+  "stat.cash": {
+    "en": "Cash",
+    "sw": "Pesa"
+  },
+  "stat.profit": {
+    "en": "Profit",
+    "sw": "Faida"
+  },
+  "stat.sold": {
+    "en": "Sold",
+    "sw": "Umeuza"
+  },
+  "stat.time": {
+    "en": "Your time",
+    "sw": "Muda wako"
+  },
+  "stat.timeOver": {
+    "en": "Too much",
+    "sw": "Ni mwingi mno"
+  },
+  "stat.timeOf": {
+    "en": "{used}h of {total}h",
+    "sw": "saa {used} kati ya {total}"
+  },
+  "pnl.moneyIn": {
+    "en": "Money coming in",
+    "sw": "Pesa inayoingia"
+  },
+  "pnl.moneyOut": {
+    "en": "Money going out",
+    "sw": "Pesa inayotoka"
+  },
+  "pnl.sales": {
+    "en": "Sales",
+    "sw": "Mauzo"
+  },
+  "pnl.costOfSales": {
+    "en": "What the goods cost you",
+    "sw": "Gharama ya bidhaa ulizouza"
+  },
+  "pnl.rent": {
+    "en": "Rent",
+    "sw": "Kodi ya pango"
+  },
+  "pnl.wages": {
+    "en": "Wages",
+    "sw": "Mishahara"
+  },
+  "pnl.fees": {
+    "en": "Licences and fees",
+    "sw": "Leseni na ada"
+  },
+  "pnl.spoilage": {
+    "en": "Food thrown away",
+    "sw": "Chakula kilichotupwa"
+  },
+  "pnl.profitThisWeek": {
+    "en": "Profit this week",
+    "sw": "Faida ya wiki hii"
+  },
+  "pnl.lossThisWeek": {
+    "en": "Loss this week",
+    "sw": "Hasara ya wiki hii"
+  },
+  "cash.profit": {
+    "en": "Profit this week",
+    "sw": "Faida ya wiki hii"
+  },
+  "cash.depreciation": {
+    "en": "Wear on equipment, which took no money",
+    "sw": "Uchakavu wa vifaa, ambao haukutoa pesa"
+  },
+  "cash.repayment": {
+    "en": "Loan repayment",
+    "sw": "Marejesho ya mkopo"
+  },
+  "cash.workingCapitalChange": {
+    "en": "Money tied up in stock and unpaid invoices",
+    "sw": "Pesa iliyofungwa kwenye bidhaa na madeni ya wateja"
+  },
+  "pnl.newTitle": {
+    "en": "New in your ledger this week",
+    "sw": "Mpya katika daftari lako wiki hii"
+  },
+  "worth.title": {
+    "en": "What the business is worth",
+    "sw": "Biashara ina thamani gani"
+  },
+  "worth.owned": {
+    "en": "Yours, after what is owed",
+    "sw": "Chako, baada ya madeni"
+  },
+  "worth.grew": {
+    "en": "It grew by {amount} this week.",
+    "sw": "Imeongezeka kwa {amount} wiki hii."
+  },
+  "worth.fell": {
+    "en": "It fell by {amount} this week.",
+    "sw": "Imepungua kwa {amount} wiki hii."
+  },
+  "worth.lenderShare": {
+    "en": "For every 100 of this that is yours, the lender is owed {amount}.",
+    "sw": "Kwa kila 100 ya hii iliyo yako, mkopeshaji anadai {amount}."
+  },
+  "worth.outweighed": {
+    "en": "More is owed than you hold. The interest and the repayment carry on in a bad week too.",
+    "sw": "Kinachodaiwa ni zaidi ya unachoshikilia. Riba na marejesho vinaendelea hata wiki mbaya."
+  },
+  "worth.owesMoreThanOwns": {
+    "en": "The business owes more than it owns. Everything it holds is spoken for.",
+    "sw": "Biashara inadaiwa zaidi ya inavyomiliki. Kila kitu ilicho nacho kimeshadaiwa."
+  },
+  "pnl.new.worth": {
+    "en": "This is everything the business owns — cash, equipment at what it is worth now, stock and money customers owe — less what it owes. It is the one number here that adds up week after week. Money you spend or take home comes out of it; money you leave in stays in it.",
+    "sw": "Hii ni kila kitu biashara inamiliki — pesa, vifaa kwa thamani yake ya sasa, stock na pesa wateja wanazodaiwa — ukiondoa inachodaiwa. Ndilo namba pekee hapa inayojumlika wiki hadi wiki. Pesa unayotumia au kupeleka nyumbani inatoka humo; unayoacha ndani inabaki humo."
+  },
+  "pnl.new.gearing": {
+    "en": "A loan does not change what the business owns, only how much of it is yours. The more the lender is owed against your own stake, the less room a bad season leaves you.",
+    "sw": "Mkopo haubadilishi biashara inamiliki nini, unabadilisha ni kiasi gani ni chako. Kadri mkopeshaji anavyodaiwa zaidi ukilinganisha na fungu lako, ndivyo msimu mbaya unavyokuachia nafasi ndogo."
+  },
+  "pnl.new.spoilage": {
+    "en": "What you made and could not sell. It cost money to make and earned none.",
+    "sw": "Ulichotengeneza na usiweze kuuza. Kiligharimu pesa kutengeneza na hakikuleta kitu."
+  },
+  "pnl.new.depreciation": {
+    "en": "Your equipment wearing out, spread across its working life. It is a real cost, but no money leaves the bank this week.",
+    "sw": "Vifaa vyako vinavyochakaa, gharama ikigawanywa katika maisha yake ya kazi. Ni gharama halisi, lakini hakuna pesa inayotoka benki wiki hii."
+  },
+  "pnl.new.interest": {
+    "en": "Interest on what you owe. This is a cost. Repaying the loan itself is not a cost — that is cash leaving, shown further down.",
+    "sw": "Riba ya deni lako. Hii ni gharama. Kulipa mkopo wenyewe si gharama — hiyo ni pesa inayotoka, imeonyeshwa hapa chini."
+  },
+  "pnl.new.freight": {
+    "en": "Shipping what you send abroad. It is charged on exported units only.",
+    "sw": "Usafirishaji wa unachopeleka nje. Unatozwa kwa vipande vilivyosafirishwa nje pekee."
+  },
+  "pnl.new.duty": {
+    "en": "Duty on what you sell abroad. It is charged on the value you export.",
+    "sw": "Ushuru wa unachouza nje. Unatozwa kwa thamani unayosafirisha nje."
+  },
+  "pnl.new.fxGain": {
+    "en": "The exchange rate moved your way, so money earned abroad is worth more here.",
+    "sw": "Kiwango cha ubadilishaji kimekwenda upande wako, kwa hiyo pesa iliyopatikana nje ina thamani zaidi hapa."
+  },
+  "pnl.new.fxLoss": {
+    "en": "The exchange rate moved against you, so money earned abroad is worth less here.",
+    "sw": "Kiwango cha ubadilishaji kimekwenda kinyume nawe, kwa hiyo pesa iliyopatikana nje ina thamani ndogo hapa."
+  },
+  "pnl.perUnit": {
+    "en": "Each one you sell brings in {price} and costs you {cost}, so you keep {kept}.",
+    "sw": "Kila kimoja unachouza kinaingiza {price} na kinakugharimu {cost}, kwa hiyo unabaki na {kept}."
+  },
+  "pnl.unmet.one": {
+    "en": "{n} customer wanted to buy and you had nothing left.",
+    "sw": "Mteja {n} alitaka kununua lakini hukuwa na kitu."
+  },
+  "pnl.unmet.other": {
+    "en": "{n} customers wanted to buy and you had nothing left.",
+    "sw": "Wateja {n} walitaka kununua lakini hukuwa na kitu."
+  },
+  "pnl.cashRunway.one": {
+    "en": "Your cash covers about {n} more week of rent and wages.",
+    "sw": "Pesa yako inatosha kulipa kodi na mishahara kwa wiki {n} zaidi."
+  },
+  "pnl.cashRunway.other": {
+    "en": "Your cash covers about {n} more weeks of rent and wages.",
+    "sw": "Pesa yako inatosha kulipa kodi na mishahara kwa wiki {n} zaidi."
+  },
+  "info.title": {
+    "en": "Before you decide",
+    "sw": "Kabla ya kuamua"
+  },
+  "info.costHours": {
+    "en": "{n}h of your time",
+    "sw": "saa {n} za muda wako"
+  },
+  "decision.prompt": {
+    "en": "What do you do?",
+    "sw": "Utafanya nini?"
+  },
+  "decision.touches": {
+    "en": "This choice touches:",
+    "sw": "Uamuzi huu unagusa:"
+  },
+  "touch.cash": {
+    "en": "your cash",
+    "sw": "pesa yako"
+  },
+  "touch.time": {
+    "en": "your time",
+    "sw": "muda wako"
+  },
+  "touch.quality": {
+    "en": "your quality",
+    "sw": "ubora wako"
+  },
+  "touch.reputation": {
+    "en": "your good name",
+    "sw": "jina lako jema"
+  },
+  "touch.capacity": {
+    "en": "how much you can make",
+    "sw": "kiasi unachoweza kutengeneza"
+  },
+  "touch.customers": {
+    "en": "your customers",
+    "sw": "wateja wako"
+  },
+  "workout.title": {
+    "en": "Work it out first",
+    "sw": "Kwanza hesabu"
+  },
+  "workout.intro": {
+    "en": "This is where you stand right now, before your choice takes effect.",
+    "sw": "Hapa ndipo ulipo sasa, kabla uamuzi wako haujaanza kufanya kazi."
+  },
+  "workout.sell": {
+    "en": "You sell {units} at {price} each",
+    "sw": "Unauza {units} kwa {price} kila kimoja"
+  },
+  "workout.cost": {
+    "en": "They cost you {cost} each",
+    "sw": "Zinakugharimu {cost} kila kimoja"
+  },
+  "workout.line": {
+    "en": "{name}: {units} sold, keeping {kept} each",
+    "sw": "{name}: {units} zimeuzwa, ukibakiza {kept} kila kimoja"
+  },
+  "workout.fixed": {
+    "en": "Rent, wages and fees",
+    "sw": "Kodi, mishahara na ada"
+  },
+  "workout.leaves": {
+    "en": "Which leaves you",
+    "sw": "Ambayo inakubakizia"
+  },
+  "workout.ready": {
+    "en": "Now say what your choice will do to that.",
+    "sw": "Sasa sema uamuzi wako utaifanyaje."
+  },
+  "predict.title": {
+    "en": "Your call",
+    "sw": "Uamuzi wako"
+  },
+  "predict.chose": {
+    "en": "You chose: {label}",
+    "sw": "Umechagua: {label}"
+  },
+  "predict.question": {
+    "en": "What happens to your weekly profit?",
+    "sw": "Faida yako ya wiki itakuwaje?"
+  },
+  "predict.up_lot": {
+    "en": "Up a lot",
+    "sw": "Inapanda sana"
+  },
+  "predict.up_bit": {
+    "en": "Up a little",
+    "sw": "Inapanda kidogo"
+  },
+  "predict.same": {
+    "en": "About the same",
+    "sw": "Inabaki vilevile"
+  },
+  "predict.down": {
+    "en": "Goes down",
+    "sw": "Inashuka"
+  },
+  "predict.band.up_lot": {
+    "en": "more than {high}",
+    "sw": "zaidi ya {high}"
+  },
+  "predict.band.up_bit": {
+    "en": "{low} to {high} more",
+    "sw": "kuongezeka {low} hadi {high}"
+  },
+  "predict.band.same": {
+    "en": "within {high} either way",
+    "sw": "ndani ya {high} juu au chini"
+  },
+  "predict.band.down": {
+    "en": "down by more than {low}",
+    "sw": "kushuka zaidi ya {low}"
+  },
+  "reveal.right": {
+    "en": "You called it right.",
+    "sw": "Ulitabiri sawa."
+  },
+  "reveal.wrong": {
+    "en": "Not what you expected.",
+    "sw": "Si ulivyotegemea."
+  },
+  "reveal.weeklyProfit": {
+    "en": "Weekly profit",
+    "sw": "Faida ya wiki"
+  },
+  "reveal.before": {
+    "en": "Before",
+    "sw": "Kabla"
+  },
+  "reveal.after": {
+    "en": "After",
+    "sw": "Baada"
+  },
+  "secondLook.title": {
+    "en": "Look again",
+    "sw": "Angalia tena"
+  },
+  "secondLook.moved": {
+    "en": "The line that moved was {label} — {change}.",
+    "sw": "Kipengele kilichobadilika ni {label} — {change}."
+  },
+  "secondLook.nothing": {
+    "en": "None of the lines moved much. That is why the profit barely changed.",
+    "sw": "Hakuna kipengele kilichobadilika sana. Ndiyo maana faida haikubadilika sana."
+  },
+  "later.title": {
+    "en": "This came from an earlier choice",
+    "sw": "Hii imetokana na uamuzi wa awali"
+  },
+  "later.attribution": {
+    "en": "Week {week}: {cause}",
+    "sw": "Wiki {week}: {cause}"
+  },
+  "trajectory.title": {
+    "en": "If nothing changes",
+    "sw": "Kama hakuna kinachobadilika"
+  },
+  "trajectory.cash": {
+    "en": "In {weeks} weeks your cash would be about {amount}.",
+    "sw": "Baada ya wiki {weeks} pesa yako itakuwa karibu {amount}."
+  },
+  "trajectory.rising": {
+    "en": "It is going up.",
+    "sw": "Inapanda."
+  },
+  "trajectory.falling": {
+    "en": "It is going down. Something has to change.",
+    "sw": "Inashuka. Kuna kitu lazima kibadilike."
+  },
+  "trajectory.flat": {
+    "en": "It is holding steady.",
+    "sw": "Inabaki palepale."
+  },
+  "weeksPass.one": {
+    "en": "A week passes",
+    "sw": "Wiki moja inapita"
+  },
+  "weeksPass.other": {
+    "en": "{n} weeks pass",
+    "sw": "Wiki {n} zinapita"
+  },
+  "progress.label": {
+    "en": "Question {n} of {total}",
+    "sw": "Swali {n} kati ya {total}"
+  },
+  "profile.title": {
+    "en": "What you did",
+    "sw": "Ulichofanya"
+  },
+  "profile.tallyLabel": {
+    "en": "predictions correct",
+    "sw": "utabiri sahihi"
+  },
+  "profile.tally": {
+    "en": "{part} of {whole}",
+    "sw": "{part} kati ya {whole}"
+  },
+  "profile.improved": {
+    "en": "You got better as you went on.",
+    "sw": "Ulizidi kuwa bora ulipoendelea."
+  },
+  "profile.limitationsTitle": {
+    "en": "What this does not tell you",
+    "sw": "Mambo ambayo haya hayakuambii"
+  },
+  "profile.recapTitle": {
+    "en": "What this chapter was about",
+    "sw": "Sura hii ilihusu nini"
+  },
+  "profile.recapIntro": {
+    "en": "One idea per week, and what you did about it.",
+    "sw": "Wazo moja kila wiki, na ulichofanya kuhusu hilo."
+  },
+  "profile.finished.title": {
+    "en": "You finished.",
+    "sw": "Umemaliza."
+  },
+  "profile.finished.body": {
+    "en": "Finishing is what carries you forward — not how many predictions you got right. Your record goes with you, and what it shows is used at the next stage, not to score you here.",
+    "sw": "Kumaliza ndiko kunakupeleka mbele — si idadi ya utabiri uliopata sahihi. Kumbukumbu yako inaenda nawe, na inachoonyesha kinatumika hatua inayofuata, si kukupa alama hapa."
+  },
+  "indicator.calibration": {
+    "en": "Anticipating consequences",
+    "sw": "Kutabiri matokeo"
+  },
+  "indicator.information": {
+    "en": "Checking before deciding",
+    "sw": "Kuhakiki kabla ya kuamua"
+  },
+  "indicator.recovery": {
+    "en": "After a setback",
+    "sw": "Baada ya pigo"
+  },
+  "indicator.coverage": {
+    "en": "Concepts encountered",
+    "sw": "Mada ulizokutana nazo"
+  },
+  "profile.stmt.calibration": {
+    "en": "Correctly anticipated the effect of their own decision in {correct} of {total} predictions.",
+    "sw": "Alitabiri kwa usahihi matokeo ya uamuzi wake katika utabiri {correct} kati ya {total}."
+  },
+  "profile.detail.improved": {
+    "en": "Accuracy was higher in the second half of the playthrough than the first.",
+    "sw": "Usahihi ulikuwa juu zaidi katika nusu ya pili kuliko ya kwanza."
+  },
+  "profile.detail.declined": {
+    "en": "Accuracy was lower in the second half than the first.",
+    "sw": "Usahihi ulikuwa chini katika nusu ya pili kuliko ya kwanza."
+  },
+  "profile.detail.steady": {
+    "en": "Accuracy was broadly steady across the playthrough.",
+    "sw": "Usahihi ulikuwa sawa kwa kiasi kikubwa katika mchezo mzima."
+  },
+  "profile.stmt.information": {
+    "en": "Sought information before deciding in {withInfo} of {total} decisions.",
+    "sw": "Alitafuta taarifa kabla ya kuamua katika maamuzi {withInfo} kati ya {total}."
+  },
+  "profile.stmt.recovery.one": {
+    "en": "Faced {n} decision that reduced weekly profit, and continued afterwards.",
+    "sw": "Alikutana na uamuzi {n} uliopunguza faida ya wiki, na akaendelea baadaye."
+  },
+  "profile.stmt.recovery.other": {
+    "en": "Faced {n} decisions that reduced weekly profit, and continued afterwards.",
+    "sw": "Alikutana na maamuzi {n} yaliyopunguza faida ya wiki, na akaendelea baadaye."
+  },
+  "profile.detail.recovery": {
+    "en": "What they chose next is listed in the evidence below.",
+    "sw": "Alichochagua baadaye kimeorodheshwa katika ushahidi hapa chini."
+  },
+  "profile.stmt.coverage.one": {
+    "en": "Made decisions across {n} business concept.",
+    "sw": "Alifanya maamuzi katika mada {n} ya biashara."
+  },
+  "profile.stmt.coverage.other": {
+    "en": "Made decisions across {n} business concepts.",
+    "sw": "Alifanya maamuzi katika mada {n} za biashara."
+  },
+  "indicator.diagnosis": {
+    "en": "Reading the evidence",
+    "sw": "Kusoma ushahidi"
+  },
+  "profile.stmt.diagnosis": {
+    "en": "Named the line that explained what happened correctly in {correct} of {total} checks.",
+    "sw": "Alitaja mstari uliofafanua kilichotokea kwa usahihi katika ukaguzi {correct} kati ya {total}."
+  },
+  "indicator.goal": {
+    "en": "Goal progress",
+    "sw": "Maendeleo ya lengo"
+  },
+  "profile.stmt.goal": {
+    "en": "Met {met} of {total} goal conditions in the simulation.",
+    "sw": "Alifikia masharti {met} kati ya {total} ya lengo katika kiigizo."
+  },
+  "profile.limit.1": {
+    "en": "This describes what happened inside a simulation. It is not a measure of how this person runs a real business.",
+    "sw": "Haya yanaeleza yaliyotokea ndani ya kiigizo. Si kipimo cha jinsi mtu huyu anavyoendesha biashara halisi."
+  },
+  "profile.limit.2": {
+    "en": "It has not been validated against real business outcomes. No such study exists yet.",
+    "sw": "Hayajathibitishwa dhidi ya matokeo halisi ya biashara. Hakuna utafiti wa aina hiyo bado."
+  },
+  "profile.limit.3": {
+    "en": "It should not be used as an automatic cut-off, or to rank one person against another.",
+    "sw": "Hayapaswi kutumika kama kigezo cha kukata mtu moja kwa moja, wala kupanga mtu mmoja dhidi ya mwingine."
+  },
+  "profile.limit.4": {
+    "en": "Figures in the simulation are illustrative placeholders, not researched local data.",
+    "sw": "Namba zilizomo katika kiigizo ni za mfano tu, si takwimu za hapa zilizofanyiwa utafiti."
+  },
+  "num.title": {
+    "en": "Set the number",
+    "sw": "Weka namba"
+  },
+  "num.prompt": {
+    "en": "Choose the number you will use.",
+    "sw": "Chagua namba utakayotumia."
+  },
+  "num.selected": {
+    "en": "Your choice",
+    "sw": "Uchaguzi wako"
+  },
+  "num.decrease": {
+    "en": "−",
+    "sw": "−"
+  },
+  "num.increase": {
+    "en": "+",
+    "sw": "+"
+  },
+  "num.coarseDecrease": {
+    "en": "−−",
+    "sw": "−−"
+  },
+  "num.coarseIncrease": {
+    "en": "++",
+    "sw": "++"
+  },
+  "num.decreaseLabel": {
+    "en": "Decrease by one step",
+    "sw": "Punguza kwa hatua moja"
+  },
+  "num.increaseLabel": {
+    "en": "Increase by one step",
+    "sw": "Ongeza kwa hatua moja"
+  },
+  "num.coarseDecreaseLabel": {
+    "en": "Decrease by five steps",
+    "sw": "Punguza kwa hatua tano"
+  },
+  "num.coarseIncreaseLabel": {
+    "en": "Increase by five steps",
+    "sw": "Ongeza kwa hatua tano"
+  },
+  "num.commit": {
+    "en": "Use this number",
+    "sw": "Tumia namba hii"
+  },
+  "num.commitLabel": {
+    "en": "Use this number and continue",
+    "sw": "Tumia namba hii na uendelee"
+  },
+  "num.grossPerWeek": {
+    "en": "You keep {kept} on each one. About {units} sales a week, so {gross} before rent and wages.",
+    "sw": "Unabaki na {kept} kwa kila kimoja. Takriban mauzo {units} kwa wiki, kwa hiyo {gross} kabla ya kodi na mishahara."
+  },
+  "num.customersLost": {
+    "en": "At this price, you expect to lose {n} customers.",
+    "sw": "Kwa bei hii, unatarajia kupoteza wateja {n}."
+  },
+  "num.customersGained": {
+    "en": "At this price, you expect {n} more customers.",
+    "sw": "Kwa bei hii, unatarajia wateja {n} zaidi."
+  },
+  "num.response": {
+    "en": "{field} changes by {change}; it will be {value}.",
+    "sw": "{field} inabadilika kwa {change}; itakuwa {value}."
+  },
+  "num.noChange": {
+    "en": "No linked number changes at this value.",
+    "sw": "Hakuna namba inayohusiana inayobadilika kwa namba hii."
+  },
+  "num.field.demand": {
+    "en": "Customers",
+    "sw": "Wateja"
+  },
+  "num.field.capacity": {
+    "en": "Capacity",
+    "sw": "Uwezo wa uzalishaji"
+  },
+  "num.field.staff": {
+    "en": "Staff",
+    "sw": "Wafanyakazi"
+  },
+  "num.field.cash": {
+    "en": "Cash",
+    "sw": "Pesa"
+  },
+  "num.field.reputation": {
+    "en": "Reputation",
+    "sw": "Sifa"
+  },
+  "num.field.hygiene": {
+    "en": "Hygiene",
+    "sw": "Usafi"
+  },
+  "num.field.ownerHours": {
+    "en": "Your hours",
+    "sw": "Saa zako"
+  },
+  "num.field.other": {
+    "en": "The linked number",
+    "sw": "Namba inayohusiana"
+  },
+  "num.predictTitle": {
+    "en": "Predict the weekly profit",
+    "sw": "Tabiri faida ya wiki"
+  },
+  "num.predictPrompt": {
+    "en": "What do you think the weekly profit will be?",
+    "sw": "Unafikiri faida ya wiki itakuwa kiasi gani?"
+  },
+  "num.predictCurrent": {
+    "en": "Right now it is {amount}.",
+    "sw": "Kwa sasa ni {amount}."
+  },
+  "num.predictFixed": {
+    "en": "You keep {kept} on each sale, and rent, wages and fees take {fixed} a week.",
+    "sw": "Unabaki na {kept} kwa kila mauzo, na kodi, mishahara na ada vinachukua {fixed} kwa wiki."
+  },
+  "num.withUnit": {
+    "en": "{value} {unit}",
+    "sw": "{value} {unit}"
+  },
+  "num.predictFixedMix": {
+    "en": "Your products together keep {kept} a week after ingredients, and rent, wages and fees take {fixed}.",
+    "sw": "Bidhaa zako kwa pamoja zinabakiza {kept} kwa wiki baada ya viungo, na kodi, mishahara na ada vinachukua {fixed}."
+  },
+  "num.predicted": {
+    "en": "Your estimate",
+    "sw": "Makadirio yako"
+  },
+  "num.predictCommit": {
+    "en": "Use this prediction",
+    "sw": "Tumia utabiri huu"
+  },
+  "num.predictCommitLabel": {
+    "en": "Use this prediction and continue",
+    "sw": "Tumia utabiri huu na uendelee"
+  },
+  "num.numberSummary": {
+    "en": "You said {predicted}. It was {actual}.",
+    "sw": "Ulisema {predicted}. Ilikuwa {actual}."
+  },
+  "num.bandSummary": {
+    "en": "You said {predicted}. It was {actual}.",
+    "sw": "Ulisema {predicted}. Ilikuwa {actual}."
+  },
+  "num.grade.close": {
+    "en": "Close — you called it right.",
+    "sw": "Karibu kabisa — ulitabiri sawa."
+  },
+  "num.grade.near": {
+    "en": "Near — you were nearly right.",
+    "sw": "Karibu — ulikuwa karibu kutabiri sawa."
+  },
+  "num.grade.off": {
+    "en": "Off — this was a miss.",
+    "sw": "Mbali — utabiri haukuwa sahihi."
+  },
+  "alloc.title": {
+    "en": "Split the amount",
+    "sw": "Gawanya kiasi"
+  },
+  "alloc.prompt": {
+    "en": "Where will this money go?",
+    "sw": "Pesa hii itaenda wapi?"
+  },
+  "alloc.amount": {
+    "en": "Amount to split: {amount}",
+    "sw": "Kiasi cha kugawanya: {amount}"
+  },
+  "alloc.remaining": {
+    "en": "Still to allocate: {amount}",
+    "sw": "Bado cha kugawa: {amount}"
+  },
+  "alloc.allAllocated": {
+    "en": "All of the amount is allocated.",
+    "sw": "Kiasi chote kimegawanywa."
+  },
+  "alloc.cashAfter": {
+    "en": "Cash after this choice: {amount}.",
+    "sw": "Pesa baada ya uchaguzi huu: {amount}."
+  },
+  "alloc.decrease": {
+    "en": "−",
+    "sw": "−"
+  },
+  "alloc.increase": {
+    "en": "+",
+    "sw": "+"
+  },
+  "alloc.coarseDecrease": {
+    "en": "−−",
+    "sw": "−−"
+  },
+  "alloc.coarseIncrease": {
+    "en": "++",
+    "sw": "++"
+  },
+  "alloc.decreaseLabel": {
+    "en": "Move one step out of this bucket",
+    "sw": "Toa hatua moja kwenye kikapu hiki"
+  },
+  "alloc.increaseLabel": {
+    "en": "Move one step into this bucket",
+    "sw": "Ongeza hatua moja kwenye kikapu hiki"
+  },
+  "alloc.coarseDecreaseLabel": {
+    "en": "Move five steps out of this bucket",
+    "sw": "Toa hatua tano kwenye kikapu hiki"
+  },
+  "alloc.coarseIncreaseLabel": {
+    "en": "Move five steps into this bucket",
+    "sw": "Ongeza hatua tano kwenye kikapu hiki"
+  },
+  "alloc.commit": {
+    "en": "Use this split",
+    "sw": "Tumia mgawanyo huu"
+  },
+  "alloc.commitLabel": {
+    "en": "Use this split and continue",
+    "sw": "Tumia mgawanyo huu na uendelee"
+  },
+  "diag.title": {
+    "en": "Find the problem",
+    "sw": "Tafuta tatizo"
+  },
+  "diag.prompt": {
+    "en": "Which line caused the loss?",
+    "sw": "Ni kipengele gani kilisababisha hasara?"
+  },
+  "diag.choose": {
+    "en": "Choose {line}",
+    "sw": "Chagua {line}"
+  },
+  "goal.title": {
+    "en": "Where you are heading",
+    "sw": "Unapoelekea"
+  },
+  "goal.condition": {
+    "en": "Campaign condition",
+    "sw": "Sharti la kampeni"
+  },
+  "goal.met": {
+    "en": "Met",
+    "sw": "Limetimia"
+  },
+  "goal.notYet": {
+    "en": "Not yet",
+    "sw": "Bado"
+  },
+  "goal.conditionValue": {
+    "en": "Now {current}; need {target}.",
+    "sw": "Sasa {current}; inahitajika {target}."
+  },
+  "btn.nextChapter": {
+    "en": "Next chapter",
+    "sw": "Sura inayofuata"
+  },
+  "btn.chooseChapter": {
+    "en": "Choose a chapter",
+    "sw": "Chagua sura"
+  },
+  "chapter.selectTitle": {
+    "en": "Choose where to start",
+    "sw": "Chagua pa kuanzia"
+  },
+  "chapter.selectIntro": {
+    "en": "Four businesses, one owner. Each one takes about half an hour and stands on its own.",
+    "sw": "Biashara nne, mmiliki mmoja. Kila moja inachukua takribani nusu saa na inajitegemea."
+  },
+  "chapter.notALadder": {
+    "en": "This is not a ladder. A stall run well is a real business, not a step towards a bigger one. Start with whichever is closest to yours.",
+    "sw": "Hii si ngazi. Kibanda kinachoendeshwa vizuri ni biashara halisi, si hatua kuelekea kubwa zaidi. Anza na ile inayofanana zaidi na yako."
+  },
+  "chapter.finished": {
+    "en": "Finished",
+    "sw": "Umemaliza"
+  },
+  "chapter.unavailable": {
+    "en": "This chapter is not ready yet. Choose another one.",
+    "sw": "Sura hii bado haijakamilika. Chagua nyingine."
+  },
+  "pnl.depreciation": {
+    "en": "Wear on equipment",
+    "sw": "Uchakavu wa vifaa"
+  },
+  "pnl.interest": {
+    "en": "Interest on the loan",
+    "sw": "Riba ya mkopo"
+  },
+  "pnl.freight": {
+    "en": "Shipping",
+    "sw": "Usafirishaji"
+  },
+  "pnl.duty": {
+    "en": "Duty at the border",
+    "sw": "Ushuru wa mpakani"
+  },
+  "pnl.fxGain": {
+    "en": "Gained on the exchange rate",
+    "sw": "Faida ya kiwango cha ubadilishaji"
+  },
+  "pnl.fxLoss": {
+    "en": "Lost on the exchange rate",
+    "sw": "Hasara ya kiwango cha ubadilishaji"
+  },
+  "pnl.byProduct": {
+    "en": "What each product earns",
+    "sw": "Kila bidhaa inaingiza kiasi gani"
+  },
+  "pnl.reachesTheBank": {
+    "en": "Reaches your hand this week",
+    "sw": "Inayofika mkononi wiki hii"
+  },
+  "pnl.why.depreciation": {
+    "en": "The wear on your equipment was counted as a cost, but no money left your hand for it — so {amount} of this week's profit is still with you.",
+    "sw": "Uchakavu wa vifaa vyako ulihesabiwa kama gharama, lakini hakuna pesa iliyotoka mkononi mwako — hivyo {amount} ya faida ya wiki hii bado iko nawe."
+  },
+  "pnl.why.repayment": {
+    "en": "{amount} went to the loan. That is money leaving your hand, and it is not counted as a cost.",
+    "sw": "{amount} ilikwenda kwenye mkopo. Hiyo ni pesa inayotoka mkononi mwako, na haihesabiwi kama gharama."
+  },
+  "pnl.why.workingCapital": {
+    "en": "You have earned this money but not yet received it. It is sitting with your customers, or on your shelf as stock.",
+    "sw": "Umeipata pesa hii lakini bado hujaipokea. Iko kwa wateja wako, au rafuni kama bidhaa."
+  }
+}

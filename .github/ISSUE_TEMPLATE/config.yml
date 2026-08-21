@@ -1,0 +1,18 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Read the operating guide first
+    url: https://github.com/ArnoRoh/business_simulator/blob/main/AGENTS.md
+    about: >-
+      Especially §2. The project's thesis rules out several features that look
+      like obvious wins — business-plan builders, pitch scoring, predictive
+      assessment. Worth five minutes before opening an issue.
+
+  - name: Check what is already open or decided
+    url: https://github.com/ArnoRoh/business_simulator/blob/main/memory/OPEN_QUESTIONS.md
+    about: >-
+      Open questions and the decision log. Several areas are blocked on
+      decisions not yet made — building there now means doing it twice.
+
+  - name: Report a security or learner-data concern privately
+    url: https://github.com/ArnoRoh/business_simulator/blob/main/SECURITY.md
+    about: Email the maintainer instead of opening a public issue.

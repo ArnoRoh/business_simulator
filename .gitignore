@@ -1,0 +1,68 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment and secrets — never commit these
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets.*
+credentials.*
+
+# Learner data — never commit, in any form, including test fixtures.
+# See SECURITY.md. Synthetic data only, and name it clearly as synthetic.
+/learner-data/
+*.learner-record
+*.behavioural-record
+
+# Node / web (for when implementation starts)
+node_modules/
+dist/
+build/
+.cache/
+coverage/
+*.tsbuildinfo
+.eslintcache
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# PWA build output
+sw.js.map
+workbox-*.js
+
+# Python (tooling, content pipelines)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# Project memory — kept on the VPS, not published.
+# `memory/` is the working log: sessions, decisions, open questions, contracts. It
+# records private conversations with the project owner and with partners, and it is
+# deliberately candid, so it is not part of the public repository. It is still
+# load-bearing — read AGENTS.md section 5 — it just lives only on the machine the work
+# happens on. Back it up separately; git is not backing it up any more.
+memory/
+
+# Local scratch — keep working notes out of the repo.
+# Anything worth keeping belongs in memory/ instead.
+scratch/
+tmp/
+*.local.md

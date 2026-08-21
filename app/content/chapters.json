@@ -1,0 +1,57 @@
+{
+  "_comment": "Chapter manifest (ADR-0007). Titles and blurbs live here so the select screen costs one small fetch rather than four scenario files — learners pay per megabyte (AGENTS.md section 3). Chapters are never locked: order is a suggestion, not a gate (ADR-0005, D-008).",
+  "chapters": [
+    {
+      "id": "mama-asha",
+      "file": "scenario-mama-asha.json",
+      "title": { "en": "The mandazi stall", "sw": "Kibanda cha mandazi" },
+      "shift": {
+        "en": "Can you see your own numbers?",
+        "sw": "Je, unaweza kuona namba zako mwenyewe?"
+      },
+      "blurb": {
+        "en": "Asha sells mandazi by the bus stand. Twenty weeks of decisions about price, cost, customers and time.",
+        "sw": "Asha anauza mandazi karibu na kituo cha basi. Wiki ishirini za maamuzi kuhusu bei, gharama, wateja na muda."
+      }
+    },
+    {
+      "id": "bakery",
+      "file": "scenario-bakery.json",
+      "title": { "en": "The bakery", "sw": "Mkate wa Asha" },
+      "shift": {
+        "en": "From a person who sells to a business that runs",
+        "sw": "Kutoka mtu anayeuza hadi biashara inayojiendesha"
+      },
+      "blurb": {
+        "en": "A premises, an oven and two shops that want to buy wholesale. Money now arrives on a different schedule from the work that earned it.",
+        "sw": "Jengo, oveni na maduka mawili yanayotaka kununua kwa jumla. Sasa pesa inafika kwa ratiba tofauti na kazi iliyoiingiza."
+      }
+    },
+    {
+      "id": "factory",
+      "file": "scenario-factory.json",
+      "title": { "en": "The factory", "sw": "Kiwanda" },
+      "shift": {
+        "en": "From a business that runs to an organisation",
+        "sw": "Kutoka biashara inayojiendesha hadi shirika"
+      },
+      "blurb": {
+        "en": "A leased unit, staff, a van and a loan. Decisions stop being about what to do and start being about who decides.",
+        "sw": "Jengo la kupanga, wafanyakazi, gari na mkopo. Maamuzi hayahusu tena nini cha kufanya, bali nani anaamua."
+      }
+    },
+    {
+      "id": "export",
+      "file": "scenario-export.json",
+      "title": { "en": "Exporting", "sw": "Kuuza nje" },
+      "shift": {
+        "en": "Competing on someone else's terms",
+        "sw": "Kushindana kwa masharti ya mtu mwingine"
+      },
+      "blurb": {
+        "en": "A buyer abroad, a currency you do not control, and ninety days between shipping and being paid.",
+        "sw": "Mnunuzi nje ya nchi, sarafu usiyoidhibiti, na siku tisini kati ya kusafirisha na kulipwa."
+      }
+    }
+  ]
+}

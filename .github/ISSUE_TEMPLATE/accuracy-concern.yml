@@ -1,0 +1,68 @@
+name: Accuracy or credibility concern
+description: Something in the project is factually wrong, unrealistic, or would not ring true to a local reader
+title: "[accuracy] "
+labels: ["accuracy", "priority"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        These are treated as high priority.
+
+        A learner who spots a wrong cost, an implausible scenario, or language that
+        signals "written by outsiders" stops trusting everything else in the tool — and
+        correcting it afterwards does not repair that. It is cheaper to be told now.
+
+        Concerns about tone, register and cultural fit belong here too, not just
+        factual errors.
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of problem
+      options:
+        - Factual error — a cost, timeline, process or regulation is wrong
+        - Unrealistic — technically accurate but not how it works in practice
+        - Language or register — reads as foreign, stilted, or translated
+        - Tone — condescending, or treats learners as beneficiaries
+        - Missing context — omits something that changes the picture entirely
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: where
+    attributes:
+      label: Where
+      description: File path, section, or scenario name.
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong
+    validations:
+      required: true
+
+  - type: textarea
+    id: correct
+    attributes:
+      label: What would be right
+      description: If you know. Partial answers are welcome — "the fee is wrong but I'm not sure of the current figure" is still useful.
+
+  - type: textarea
+    id: basis
+    attributes:
+      label: How you know
+      description: Direct experience, local knowledge, a source. Helps us judge how quickly to act.
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: How damaging is this
+      options:
+        - A local reader would immediately know this is wrong
+        - Noticeable, would reduce trust
+        - Minor — inaccurate but wouldn't undermine anything
+    validations:
+      required: true

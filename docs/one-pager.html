@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Finding export entrepreneurs who would otherwise be missed</title>
+<meta name="description" content="A staged funnel for finding and funding export
+ entrepreneurs who would otherwise be missed.">
+<style>
+:root{color-scheme:light dark}
+body{
+  --surface-1:#fcfcfb; --page:#f9f9f7;
+  --text-primary:#0b0b0b; --text-secondary:#3f3e3b; --muted:#898781;
+  --border:rgba(11,11,11,.12); --accent:#2a78d6;
+}
+@media (prefers-color-scheme:dark){
+  :root:where(:not([data-theme=light])) body{
+    --surface-1:#1a1a19; --page:#0d0d0d;
+    --text-primary:#fff; --text-secondary:#d2d1c8; --muted:#898781;
+    --border:rgba(255,255,255,.12); --accent:#3987e5;
+  }
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--page); color:var(--text-primary);
+  font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+main{max-width:820px;margin:0 auto;padding:44px 24px 72px}
+h1{font-size:29px;line-height:1.2;margin:0 0 6px;letter-spacing:-.02em}
+h2{font-size:16px;margin:26px 0 8px;letter-spacing:.02em;text-transform:uppercase;
+   color:var(--accent);font-weight:600}
+p{margin:0 0 11px;color:var(--text-secondary)}
+li{color:var(--text-secondary);margin-bottom:4px}
+strong{color:var(--text-primary);font-weight:600}
+em{color:var(--text-primary)}
+a{color:inherit;text-decoration:underline;text-decoration-color:var(--border)}
+hr{border:0;border-top:1px solid var(--border);margin:18px 0 4px}
+code{font-size:.9em;background:var(--surface-1);border:1px solid var(--border);
+     border-radius:4px;padding:0 4px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;margin:12px 0 14px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--border);
+      vertical-align:top;color:var(--text-secondary)}
+th{color:var(--text-primary);font-weight:600;font-size:12px;
+   text-transform:uppercase;letter-spacing:.03em}
+tbody tr:last-child td{border-bottom:0}
+td:first-child{white-space:nowrap}
+.foot{margin-top:34px;padding-top:12px;border-top:1px solid var(--border);
+      font-size:12px;color:var(--muted)}
+@media print{
+  @page{size:A4;margin:14mm}
+  body{background:#fff;color:#000;font-size:10pt;line-height:1.42}
+  main{max-width:none;padding:0}
+  h1{font-size:19pt}
+  h2{font-size:10pt;margin:14pt 0 5pt;color:#000;
+     border-bottom:.5pt solid #bbb;padding-bottom:2pt}
+  p,li{color:#1a1a1a}
+  table{font-size:8.5pt;page-break-inside:avoid}
+  th,td{padding:4pt 6pt;border-bottom:.5pt solid #ccc}
+  a{text-decoration:none}
+  .foot{color:#555}
+}
+</style>
+</head>
+<body>
+<main>
+<h1>Finding export entrepreneurs who would otherwise be missed</h1>
+<hr>
+<h2>The claim</h2>
+<p>One of the binding constraints on export manufacturing in Tanzania, Ethiopia and countries like them is <strong>finding the people who can found and run the companies</strong>. That ability is rare, but it is not distributed the way capital and contacts are. People who have it never get near the starting line, because the ways founders are normally found — who you know, who can afford to stop earning, who can write a fundable-looking plan — select for wealth and connection first and ability second.</p>
+<p><strong>If those people can be found cheaply and at volume, funding them is the cheapest economic growth available.</strong> The question the design answers is narrow: <em>how do you take someone driving a taxi or running a shop and get them to a company a commercial bank will lend millions in working capital to?</em></p>
+<h2>Why the usual filters do not work</h2>
+<p>Business plans and pitch scores predict later performance poorly. So do degrees, charisma and hardship stories. Any filter built on how well someone <em>describes</em> a business rewards those who already had the education and the coaching — the exact filter we are trying to get around. What predicts better is <strong>observed execution</strong>: what someone actually did, repeatedly, under constraint. So we watch behaviour instead of reading proposals.</p>
+<h2>The funnel</h2>
+<table><thead><tr><th>Stage</th><th>What happens</th><th>Gate</th><th>Money</th></tr></thead><tbody><tr><td><strong>0</strong></td><td>A free phone game: run a stall, a bakery, a factory, an export business — eighty decisions with real consequences</td><td>Finished it, and the record shows how they decided</td><td>—</td></tr><tr><td><strong>1</strong></td><td>A short plan submitted through a portal, written as <strong>dated numeric predictions</strong> about their own real firm. AI-graded</td><td>The plan applies what the game taught, and its claims are specific enough to be wrong</td><td><strong>~USD 1,000</strong></td></tr><tr><td><strong>2</strong></td><td>Six to twelve months later: what actually happened, next to what they predicted</td><td>What did they spend it on, can they explain the gap, do they keep records</td><td>~USD 10,000</td></tr><tr><td><strong>3</strong></td><td>A last tranche, plus back-office and management support</td><td>Same test, bigger numbers</td><td>Larger again</td></tr></tbody></table>
+<p>Stage 1 is not really a competition. It is <strong>friction</strong> — something that costs effort to get through. The real test is stage 2: <em>why did my plan not work?</em></p>
+<p><strong>Exit: a bankable firm.</strong> Credit is not scarce in these markets; being creditworthy is. The programme carries a firm across that threshold and hands it to commercial lenders, which gives a success measure nobody can talk their way past.</p>
+<h2>The one idea that holds it together</h2>
+<p><strong>A plan is a forecast, not a proposal.</strong> We do not grade the writing. We record what the applicant says will happen, with dates and numbers, and we come back. A language model can write a fluent plan; it cannot make the numbers come true. And the best signal is not whether they hit the forecast — it is whether they can say precisely why they missed it. Grading accuracy alone would reward sandbagging and luck.</p>
+<p>The game teaches exactly this: predict, reveal, diagnose, eighty times. Stages 1 and 2 are the same move performed on a real business.</p>
+<h2>Small money first, on purpose</h2>
+<p>Money given too early and too generously makes founders believe capital is cheap: they stop being hungry and over-value businesses with no traction. Some capable people will also just take it and meet a more urgent need — rational, and informative. So the first tranche is small, roughly a few months of living costs, and every step up is earned by demonstrated traction at a <strong>fixed amount per stage</strong>, so founders are compared with each other rather than with their own ask.</p>
+<h2>What it costs</h2>
+<p>The pilot is <strong>USD 50,000 in grants — 50 grants of 1,000</strong> — with roughly the same again in running costs. Stage 0 costs nothing per extra learner: a static offline-capable web app, plans judged by an AI. Reaching one finisher costs about <strong>USD 22</strong>, and the model puts the pilot at <strong>2.7× the benefit of giving the same money away as cash</strong> on an assumed 6% rate of transformational firms among those funded. <em>Modelled figures on stated assumptions, not results — nothing here has been measured yet.</em></p>
+<h2>The hard part, named</h2>
+<p><strong>Filling the top of the funnel.</strong> The design only works at volume, and the channels that are easiest to reach — professional networks, programme alumni — select for the same people the usual filters already find. Reaching taxi drivers and shopkeepers needs in-country partners with existing audiences, online learning platforms that can hand the game to their users as a free extra, and social media not aimed at career professionals. This is the largest uncontrolled filter in the system and the least solved.</p>
+<h2>What the pilot is really buying</h2>
+<p>Not 50 firms. <strong>Evidence about whether the filter works</strong> — and, if it does, a <strong>playbook other funders can copy</strong>, because the money that runs competitions like this already exists and is mostly spent badly. Six months after stage 0 watched people decide in a simulation, stage 2 watches the same people run real businesses: the first honest test of whether observed play predicts observed execution.</p>
+<p>The risk we take seriously: a pilot that only funds people the filter liked cannot tell you whether the filter was right. Part of the grant budget has to go to applicants the filter did not pick.</p>
+<h2>Where it stands</h2>
+<p>The game is built, playable in English and Kiswahili, and live. The portal, the AI judge and the record that carries an applicant from stage 0 to stage 2 are designed and not yet built.</p>
+<p class="foot">Business Simulator &middot; concept summary. Figures marked as
+modelled come from a published cost-effectiveness model and are assumptions, not
+results. The long version, with the model and its sensitivity analysis, is
+available on request.</p>
+</main>
+</body>
+</html>

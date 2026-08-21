@@ -1,0 +1,83 @@
+name: Design proposal
+description: Propose a feature, mechanic, curriculum change or design direction
+title: "[design] "
+labels: ["design"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before writing: please read [`AGENTS.md` §2](https://github.com/ArnoRoh/business_simulator/blob/main/AGENTS.md). The project's
+        thesis explicitly rules out business-plan builders, pitch scoring, personality
+        assessment, and any claim that the tool predicts real-world success. These look
+        like obvious wins and are not — the reasoning is in
+        [ADR-0004](https://github.com/ArnoRoh/business_simulator/blob/main/docs/adr/0004-simulator-as-selection-instrument.md).
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve
+      description: The problem, not the solution. Whose problem is it — which persona, or which part of the project?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+    validations:
+      required: true
+
+  - type: textarea
+    id: teaches
+    attributes:
+      label: What does a learner get from this
+      description: >-
+        Which capability does it build, or which failure does it prevent? See
+        `docs/curriculum.md`. If it teaches nothing, say so — some things are
+        infrastructure, and that's fine.
+
+  - type: textarea
+    id: signal
+    attributes:
+      label: What does it add to the behavioural record
+      description: >-
+        Does it produce an observation worth having? Could it be gamed? See
+        `docs/assessment.md`. Optional if not applicable.
+
+  - type: checkboxes
+    id: thesis
+    attributes:
+      label: Consistency with the project thesis
+      options:
+        - label: This does not move the product toward being a business-plan or pitch tool
+          required: true
+        - label: This does not require claiming predictive validity we have not established
+          required: true
+        - label: This does not rank learners by ambition or treat livelihood businesses as failed growth businesses
+          required: true
+
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Operating constraints
+      description: From `AGENTS.md` §3. Tick what you have thought about.
+      options:
+        - label: Works on a low-end Android phone, small screen
+        - label: Works offline; state survives the app being killed mid-decision
+        - label: Data cost is justifiable — the learner pays for it
+        - label: Works for a second-language reader with varied literacy and numeracy
+        - label: No hardcoded currency; localisable
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What else could solve this
+      description: >-
+        And why this instead. An alternative dismissed in one line will be re-proposed by
+        the next person.
+
+  - type: textarea
+    id: unsure
+    attributes:
+      label: What you are unsure about
+      description: Genuinely useful. Say where you think this might be wrong.

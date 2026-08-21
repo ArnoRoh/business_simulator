@@ -1,0 +1,50 @@
+name: Bug
+description: Something is broken
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Note: there is no application code yet, so this is most likely a problem with
+        documentation, links or repository tooling. Once the simulator exists, the device
+        and connection fields below matter a great deal — most real bugs in this project
+        will be conditions that never appear on a developer's machine.
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+
+  - type: input
+    id: device
+    attributes:
+      label: Device
+      description: Model and Android version, if applicable. Low-end devices are the design target — a bug that only appears on one is more important, not less.
+
+  - type: dropdown
+    id: connection
+    attributes:
+      label: Connection at the time
+      options:
+        - Good
+        - Weak or intermittent
+        - Offline
+        - Went offline partway through
+        - Not applicable

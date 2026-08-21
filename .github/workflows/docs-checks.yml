@@ -1,0 +1,113 @@
+name: Checks
+
+# The documentation and memory checks, plus the application ones.
+#
+# This file used to say "there is no application code yet" and run only the link and
+# memory checks. That stopped being true at session 003, and the five checks that guard
+# the engine, the content and the app wiring ran on contributors' machines and nowhere
+# else — which is how a smoke test came to be broken on `main` without anything saying
+# so. They are cheap: no dependencies, no build step (ADR-0006).
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  app:
+    name: Engine, content and app
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Engine
+        run: node scripts/test-engine.mjs
+
+      - name: Scenarios
+        run: node scripts/validate-scenario.mjs
+
+      - name: Both languages
+        run: node scripts/validate-i18n.mjs
+
+      # This one prints numbers a person is meant to read; CI can only tell you it did
+      # not find a whole-business failure. See its header comment.
+      - name: Full playthroughs
+        run: node scripts/simulate-runs.mjs
+
+      - name: App wiring
+        run: node scripts/smoke-app.mjs
+
+      # Every chapter played to the end in both languages, reading what the screens
+      # actually say. This is the check that meets the defects a playthrough meets.
+      - name: Every chapter, every screen
+        run: node scripts/playthrough.mjs
+
+  links:
+    name: Internal links resolve
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check relative Markdown links
+        run: bash scripts/check-links.sh
+
+  # `memory/` is not published — it holds private conversation records, so it lives on
+  # the machine the work happens on and nowhere else (see .gitignore). This job
+  # therefore checks what it can here and skips the rest; it still does the full check
+  # when run locally, which is where it matters.
+  memory:
+    name: Memory system intact
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check required memory files exist
+        run: |
+          set -euo pipefail
+          if [ ! -d memory ]; then
+            echo "::notice::memory/ is not published on this checkout — skipping."
+            echo "It is kept privately on the working machine. See AGENTS.md section 5."
+            exit 0
+          fi
+          missing=0
+          for f in \
+            AGENTS.md \
+            CLAUDE.md \
+            memory/PROJECT_STATE.md \
+            memory/DECISIONS.md \
+            memory/OPEN_QUESTIONS.md \
+            memory/GLOSSARY.md \
+            memory/sessions/TEMPLATE.md \
+            docs/adr/template.md
+          do
+            if [ ! -f "$f" ]; then
+              echo "::error file=$f::Required file is missing: $f"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            echo "The memory system is load-bearing here — see AGENTS.md section 5."
+            exit 1
+          fi
+          echo "All required files present."
+
+      - name: Warn if no session entry exists
+        run: |
+          set -euo pipefail
+          if [ ! -d memory/sessions ]; then
+            echo "memory/ is not published on this checkout — nothing to count."
+            exit 0
+          fi
+          count=$(find memory/sessions -name '*.md' ! -name 'TEMPLATE.md' | wc -l)
+          if [ "$count" -eq 0 ]; then
+            echo "::warning::No session entries in memory/sessions/. See AGENTS.md section 5."
+          else
+            echo "$count session entr(y/ies) recorded."
+          fi
