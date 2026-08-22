@@ -4149,9 +4149,12 @@ function migrate(parsed) {
 
 function save(session) {
   try {
+    // The version goes on AFTER the spread. A loaded session carries whatever version
+    // migrate() left on it, and spreading that over the constant would re-stamp an
+    // already-migrated save with its old version — it would then migrate forever.
     localStorage.setItem(
       KEY,
-      JSON.stringify({ schemaVersion: SESSION_SCHEMA_VERSION, ...session }),
+      JSON.stringify({ ...session, schemaVersion: SESSION_SCHEMA_VERSION }),
     );
     return true;
   } catch (err) {
