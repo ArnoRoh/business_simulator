@@ -16,11 +16,15 @@
 #   MEMORY_BACKUP_PASSPHRASE  passphrase; if unset, MEMORY_BACKUP_PASSPHRASE_FILE is read;
 #                             if both unset, gpg will prompt
 #
-# The archive is verified by decrypting it back before the script reports success —
-# a backup that cannot be restored is a wish, not a backup.
+# The archive is verified by extracting it to a temporary directory and diffing the
+# result against memory/ before the script reports success — a backup that cannot be
+# restored is a wish, not a backup, and listing an archive's table of contents does not
+# prove its members are intact.
 #
-# Suggested cron (once a day at 07:20, when the machine is usually on):
-#   20 7 * * * MEMORY_BACKUP_PASSPHRASE_FILE=$HOME/.config/business-simulator/memory-backup-passphrase $HOME/srv/repos/business_simulator/scripts/backup-memory.sh >> $HOME/.cache/business-simulator-backup.log 2>&1
+# Suggested cron (once a day at 07:20, when the machine is usually on). Note the repo
+# path is absolute and not under $HOME — an earlier version of this comment had
+# $HOME/srv/... , which pasted into crontab and silently never ran:
+#   20 7 * * * MEMORY_BACKUP_PASSPHRASE_FILE=$HOME/.config/business-simulator/memory-backup-passphrase /srv/repos/business_simulator/scripts/backup-memory.sh >> $HOME/.cache/business-simulator-backup.log 2>&1
 
 set -euo pipefail
 
@@ -48,9 +52,24 @@ fi
 
 tar -C "$REPO" -czf - memory | gpg "${GPG_ARGS[@]}" --output "$ARCHIVE" --symmetric
 
-# Verify: decrypt and list the contents. Fails here rather than at restore time.
-if ! gpg "${GPG_ARGS[@]}" --decrypt "$ARCHIVE" 2>/dev/null | tar -tzf - >/dev/null; then
-  echo "FAIL: $ARCHIVE did not verify — removing it." >&2
+# Verify by actually restoring: decrypt, extract to a temporary directory, and diff the
+# result against the source. Listing the table of contents (tar -t) proves only that the
+# header is readable — it will happily pass a truncated or corrupted member. Fails here
+# rather than at restore time, which is the only time it would otherwise be discovered.
+TMP="$(mktemp -d)"
+trap 'rm -rf "$TMP"' EXIT
+
+if ! gpg "${GPG_ARGS[@]}" --decrypt "$ARCHIVE" 2>/dev/null | tar -C "$TMP" -xzf -; then
+  echo "FAIL: $ARCHIVE could not be decrypted and extracted — removing it." >&2
+  rm -f "$ARCHIVE"
+  exit 1
+fi
+
+# diff -r compares every file's contents, not just the names. --no-dereference so a
+# symlink is compared as a symlink rather than followed out of the tree.
+if ! diff -r --no-dereference "$SRC" "$TMP/memory" >/dev/null; then
+  echo "FAIL: restored copy of $ARCHIVE differs from $SRC — removing it." >&2
+  diff -r --no-dereference "$SRC" "$TMP/memory" | head -20 >&2
   rm -f "$ARCHIVE"
   exit 1
 fi
