@@ -48,8 +48,10 @@ vulnerable, under Tanzania's Personal Data Protection Act
 ### 1. The app stays local-first and fully offline. Submission is one explicit act.
 
 We will **not** build sync, accounts, or login. The simulator continues to work with no
-network, no server and no identity. At the end of a chapter the learner is offered **one
-explicit opt-in submit**, which posts their record and then gets out of the way.
+network, no server and no identity. The learner is offered **one explicit opt-in submit**,
+which posts their record and then gets out of the way. That offer is reachable at any turn
+and is put in front of the learner at every chapter boundary — see (3), which explains why
+end-of-chapter alone is not enough.
 
 Submission queues offline and sends when connectivity allows. **It never blocks play**, and
 a learner who declines, or whose upload never succeeds, loses nothing — the app must
@@ -85,17 +87,33 @@ The record carries **per-decision entries with timestamps**, not just a summary.
 cannot answer questions nobody has thought of yet, and this dataset gets one chance to be
 collected.
 
-**Submission must exist mid-chapter, not only at the end** *(added 2026-08-21, session 019,
-before acceptance)*. As first written, the one explicit submit sat at the end of a chapter —
-which meant a learner who stopped at turn eleven never submitted, and **drop-off was
-invisible by construction**. Completion rate is the load-bearing assumption in the cost
-model (`ch1_completion` in `scripts/lib/cea_model.py`, labelled *untested*): USD 22 per
-finisher and the 2.67× multiple scale directly off it, and nothing else in the funnel
-measures it. Under local-first rules we cannot observe drop-off remotely, so the only way
-to see it is to let partial records be submitted under the same anonymity as complete ones.
-Concretely: the submit affordance appears at every chapter boundary reached, and a record
-submitted mid-way is stored and retained exactly like any other. It never blocks play and
-is still one deliberate act per submission, not sync.
+**Submission must be reachable mid-chapter, not only at the end** *(added 2026-08-21,
+session 019; mechanism corrected 2026-08-22, session 020 — both before acceptance)*. As
+first written, the one explicit submit sat at the end of a chapter, which meant a learner
+who stopped at turn eleven never submitted and **drop-off was invisible by construction**.
+Completion rate is the load-bearing assumption in the cost model (`ch1_completion` in
+`scripts/lib/cea_model.py`, labelled *untested*): non-grant cost per finisher runs USD 39
+to USD 16 across its plausible 0.20–0.50 band, the headline multiple 2.57× to 2.76×, and
+nothing else in the funnel measures it. Under local-first rules we cannot observe drop-off
+remotely, so the only way to see it is to let partial records be submitted under the same
+anonymity as complete ones.
+
+Concretely, and this is the part the first version of this paragraph got wrong — offering
+the submit at every *chapter boundary* is where it already was, and a chapter is twenty
+turns, so it would still miss the learner who stops at turn eleven:
+
+- The learner can see **their own record so far at any turn**, not only at the end. The app
+  today builds the profile only in `renderEnd` (`app/js/main.js`), so this is real work:
+  a record view reachable from the running game.
+- **The submit affordance lives with that view**, so it is reachable at any turn, and is
+  additionally offered at every chapter boundary reached — where a learner who is stopping
+  is most likely to be looking.
+- A record submitted mid-chapter is stored and retained exactly like a complete one, under
+  the same anonymity, and carries how far the learner got.
+- Re-submitting later replaces the earlier record for the same install identifier, so a
+  learner who submits at turn eleven and then finishes is not counted twice.
+
+It never blocks play and is still one deliberate act per submission, not sync.
 
 ### 4. The recruitment channel is one field, captured at first load.
 
