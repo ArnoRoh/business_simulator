@@ -14,15 +14,17 @@ programmes and training providers.
 > so on screen. See `memory/PROJECT_STATE.md` (kept privately — see below) for where
 > things actually stand.
 
-## Try it
+## Play the game
 
-```bash
-cd app && python3 -m http.server 8000
-```
+**[Open the Business Simulator](https://arnoroh.github.io/business_simulator/)**
 
-Open `http://localhost:8000` — on a phone, use your computer's LAN address with both
-devices on the same network. It needs a web server; opening the file directly will not
-work. More in [`app/README.md`](./app/README.md).
+You do not need to download the repository, copy files or run a local server. Open the
+link in a browser on a phone or computer. The game is free to use and does not require
+an account.
+
+This is a rough proof of concept, not a finished course. You can choose English or
+Kiswahili and start with any of the four chapters. It is designed to work offline after
+the first load, although offline play on a real device is still being tested.
 
 Each turn: a situation, information you can buy with time or money, a decision — and then
 **you predict what will happen before you find out.** That prediction step is the whole
@@ -35,6 +37,49 @@ then building capacity you cannot fill or supervise, then meeting someone else's
 in someone else's currency. They are **not a ladder** — a stall run well is a real
 business, not a step towards a bigger one — and none is locked behind another. See
 [`docs/arc.md`](./docs/arc.md).
+
+## Explore it with an AI agent
+
+You can ask an AI agent to inspect the idea, documentation and code without setting up
+the game yourself.
+
+### If the agent can open public links
+
+Give it this repository URL:
+
+`https://github.com/ArnoRoh/business_simulator`
+
+Then paste this prompt:
+
+> Explore this repository without changing it. Read `AGENTS.md` first, especially
+> sections 1–6, and then read `docs/context/transformational-entrepreneurship.md`.
+> Play or inspect the app if your tools allow it. Explain what the project is trying to
+> do, how the four chapters work, what is already built, and the most important open
+> risks or questions. Distinguish measured facts from assumptions. The public repository
+> does not include the private `memory/` directory, so flag missing context instead of
+> inventing it.
+
+### If the agent works with local files
+
+Clone the repository instead of copying its files one by one:
+
+```bash
+git clone https://github.com/ArnoRoh/business_simulator.git
+cd business_simulator
+```
+
+Open that folder in the coding-agent tool, then use the prompt above. An agent that wants
+to run the served app locally can use:
+
+```bash
+cd app
+python3 -m http.server 8000
+```
+
+Then open `http://localhost:8000`. The generated
+[`app/standalone.html`](./app/standalone.html) can also be opened directly without a
+server. More technical detail is in [`app/README.md`](./app/README.md). If the agent will
+make changes rather than only explore, also read [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
 ---
 
