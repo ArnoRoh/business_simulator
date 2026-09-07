@@ -11,7 +11,6 @@ Read the source tag on a parameter before quoting it. Most say `assumption`.
 from __future__ import annotations
 
 import html
-import math
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -80,8 +79,8 @@ PARAMS: dict[str, P] = {
     "p_transform": P(0.06, "Share of funded firms that become transformational", "assumption",
                      "THE critical unknown. The pilot exists to measure it (Q-034).", fmt="pct"),
     # A transformational firm is defined by growing an organisation, so it is modelled as
-    # a growing, surviving firm — not a fixed wage bill that stops on a chosen year. The
-    # non-wage components are expressed as ratios to the wage bill rather than as invented
+    # a growing, surviving firm — not a fixed worker income-gain base that stops on a chosen year. The
+    # non-wage components are expressed as ratios to the worker income-gain base rather than as invented
     # absolute figures: easier to argue with, and harder to inflate quietly.
     "jobs_initial": P(5, "Jobs at the point of the grant", "assumption",
                       "Where the firm starts, not where it ends.", fmt="num"),
@@ -96,17 +95,17 @@ PARAMS: dict[str, P] = {
                    fmt="years"),
     "income_per_job": P(600, "Annual income gain per job, USD", "assumption",
                         "Gain over the counterfactual occupation, not the wage.", fmt="usd"),
-    "owner_ratio": P(0.35, "Owner's own net income gain, as a share of the wage bill",
+    "owner_ratio": P(0.35, "Owner's own net income gain, as a share of the worker income-gain base",
                      "assumption",
                      "Net of tax, so it does not double-count the tax line.", fmt="pct"),
-    "tax_ratio": P(0.25, "Tax paid, as a share of the wage bill", "assumption",
+    "tax_ratio": P(0.25, "Tax paid, as a share of the worker income-gain base", "assumption",
                    "Formalisation is what chapters 3–4 teach. Paid out of profit, so no "
                    "double count with owner income.", fmt="pct"),
     "public_value": P(1.0, "Value of $1 of public revenue vs $1 of private income",
                       "assumption",
                       "1.0 treats tax as neutral. Argue up for public goods, down for "
                       "leakage. Set to 0 to exclude tax entirely.", fmt="num"),
-    "supplier_ratio": P(0.30, "Local supplier income gain, as a share of the wage bill",
+    "supplier_ratio": P(0.30, "Local supplier income gain, as a share of the worker income-gain base",
                         "assumption",
                         "Backward linkages — the firm buys inputs from local suppliers and "
                         "develops them.", fmt="pct"),
@@ -224,14 +223,14 @@ def model(over: dict[str, float] | None = None) -> dict[str, float]:
 
     # benefits — stream 1: transformational firms
     #
-    # A wage bill alone is the wrong measure of what a firm contributes. Four components,
+    # A worker income-gain base alone is the wrong measure of what a firm contributes. Four components,
     # each separately arguable and each individually removable by zeroing its parameter:
     # the wages it pays, the owner's own income, the tax it pays once formal, and the
-    # income its local suppliers earn. The last three are ratios to the wage bill.
+    # income its local suppliers earn. The last three are ratios to the worker income-gain base.
     n_transform = funded * g["p_transform"]
     pvf_t = pv_stream(g["horizon_t"], d, g["job_growth"], g["survival_t"])
-    wage_bill_y1 = g["jobs_initial"] * g["income_per_job"]
-    pv_wages = wage_bill_y1 * pvf_t
+    income_gain_y1 = g["jobs_initial"] * g["income_per_job"]
+    pv_wages = income_gain_y1 * pvf_t
     pv_owner = pv_wages * g["owner_ratio"]
     pv_tax = pv_wages * g["tax_ratio"] * g["public_value"]
     pv_supplier = pv_wages * g["supplier_ratio"]
@@ -267,7 +266,7 @@ def model(over: dict[str, float] | None = None) -> dict[str, float]:
         "hosting": g["hosting_per_cohort"], "admin": admin,
         "cost_total": cost_total, "cost_marginal": cost_marginal,
         "n_transform": n_transform, "pv_per_transform": pv_per_transform,
-        "pvf_t": pvf_t, "pvf_o": pvf_o, "wage_bill_y1": wage_bill_y1,
+        "pvf_t": pvf_t, "pvf_o": pvf_o, "income_gain_y1": income_gain_y1,
         "pv_wages": pv_wages, "pv_owner": pv_owner, "pv_tax": pv_tax,
         "pv_supplier": pv_supplier, "pv_gross_t": pv_gross_t,
         "b_wages": n_transform * pv_wages * adj_t,
@@ -288,10 +287,14 @@ def model(over: dict[str, float] | None = None) -> dict[str, float]:
 def breakeven_p(cost_key: str = "cost_total", multiple: float = 1.0) -> float:
     """Transformational rate needed to reach `multiple` × the cash benchmark."""
     base = model()
-    target_benefit = base["cash_pv_per_dollar"] * multiple * base[cost_key]
-    floor = base["benefit_other"] + base["benefit_learning"]
-    needed = (target_benefit - floor) / base["pv_per_transform"]
-    return max(needed / base["funded"], 0)
+    zero = model({"p_transform": 0})["benefit_total"]
+    one = model({"p_transform": 1})["benefit_total"]
+    target = base["cash_pv_per_dollar"] * multiple * base[cost_key]
+    if target <= zero:
+        return 0.0
+    if one <= zero:
+        return float("inf")
+    return (target - zero) / (one - zero)
 
 
 # ---------------------------------------------------------------------------
@@ -345,12 +348,12 @@ def derivation() -> list[tuple[str, str, str, str]]:
       f"{num(m['funded'])} × {pct(v('p_transform'), 0)}", num(m["n_transform"], 1))
     r(s, "Jobs at the grant", "input", num(v("jobs_initial")))
     r(s, "Annual income gain per job", "input", usd(v("income_per_job")))
-    r(s, "Wage bill, year 1",
-      f"{num(v('jobs_initial'))} × {usd(v('income_per_job'))}", usd(m["wage_bill_y1"]))
+    r(s, "Worker income gain, year 1",
+      f"{num(v('jobs_initial'))} × {usd(v('income_per_job'))}", usd(m["income_gain_y1"]))
     r(s, f"PV factor — grows {pct(v('job_growth'), 0)}, survives "
          f"{pct(v('survival_t'), 0)}, {v('horizon_t'):g}y",
       "sum of ((1+g)·s/(1+d))^t", f"{m['pvf_t']:.4f}")
-    r(s, "PV of wages", "wage bill × PV factor", usd(m["pv_wages"]))
+    r(s, "PV of worker income gains", "worker income-gain base × PV factor", usd(m["pv_wages"]))
     r(s, f"+ owner's own income ({pct(v('owner_ratio'), 0)} of wages)",
       f"× {v('owner_ratio'):.2f}", usd(m["pv_owner"]))
     r(s, f"+ tax paid ({pct(v('tax_ratio'), 0)} of wages, valued at {v('public_value'):g})",
@@ -419,7 +422,7 @@ def write_csv() -> Path:
     import csv
     path = DOCS / "concept-note-model.csv"
     with path.open("w", newline="", encoding="utf-8") as fh:
-        w = csv.writer(fh)
+        w = csv.writer(fh, lineterminator="\n")
         w.writerow(["Business Simulator — cost-effectiveness model"])
         w.writerow(["Generated by scripts/build-concept-note.py. Do not edit by hand."])
         w.writerow([])
@@ -457,7 +460,7 @@ def scenarios() -> list[tuple[str, float, float, str]]:
     }
     rungs: list[tuple[str, dict, str]] = [
         ("Wages only, and they stop after 6 years", {},
-         "The original reading. A fixed wage bill for a fixed period, nothing else."),
+         "The original reading. A fixed worker income-gain base for a fixed period, nothing else."),
         ("+ the firm survives and grows",
          {"job_growth": v("job_growth"), "survival_t": v("survival_t"),
           "horizon_t": v("horizon_t")},
@@ -505,13 +508,12 @@ RANGES: dict[str, tuple[float, float]] = {
     "ch1_completion": (0.20, 0.50),
     "application_rate": (0.10, 0.35),
     "recruit_per_start": (5.00, 0.50),
-    "platform_build": (40000, 15000),
+    "platform_build": (40000, 100),
     "gain_per_learner": (0, 30),
 }
 
 
 def tornado() -> list[tuple[str, float, float, float]]:
-    base = model()["ratio"]
     rows = []
     for key, (lo, hi) in RANGES.items():
         r_lo = model({key: lo})["ratio"]

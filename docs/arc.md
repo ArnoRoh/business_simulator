@@ -1,5 +1,7 @@
 # The four-chapter arc
 
+> **Current update:** [ADR-0009](./adr/0009-learner-episodes-and-local-attempts.md) adds five-decision episodes, cash-book practice and live forecasts. The tables below describe the concept map; stable turn IDs remain, but late setbacks now occur before the final decisions.
+
 > **Status:** design, written 2026-08-08. Governs the content built in chapters 2–4.
 > Ratified by [ADR-0007](./adr/0007-four-chapter-arc.md). Chapter 1 already exists as
 > `app/content/scenario-mama-asha.json`.

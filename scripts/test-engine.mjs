@@ -475,7 +475,7 @@ console.log('\nrecord: numeric inputs and diagnosis evidence');
   const r = record.createRecord('test');
   record.observePrediction(r, 't01', 11000, 10000, true, 'profit', { error: 0.1, grade: 'close' });
   record.observeDiagnosis(r, 't11', 'pnl.sales', 'pnl.spoilage', false);
-  record.observeInput(r, 't01', 'price', 300);
+  record.observe(r, { kind: 'input', turnId: 't01', key: 'price', value: 300 });
   const json = JSON.stringify(r);
   check('numeric prediction stores error and grade', json.includes('"error":0.1') && json.includes('"grade":"close"'));
   check('diagnosis observation is recorded', r.observations.some((o) => o.kind === 'diagnosis'));
@@ -943,7 +943,9 @@ console.log('\ncontent: chapter 1 trades on working capital');
       const decision = turn.decision;
       const type = decision.type || 'choice';
       let next = state;
-      if (type === 'number') {
+      if (type === 'cashbook') {
+        next = applyEffects(state, { keepsRecords: true });
+      } else if (type === 'number') {
         next = applyEffects(state, resolveNumberInput(state, decision.input, decision.input.min));
       } else if (type === 'allocate') {
         const total = allocationTotal(state, decision.allocate);

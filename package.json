@@ -1,0 +1,10 @@
+{
+  "devDependencies": {
+    "playwright": "1.63.0"
+  },
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node scripts/test-engine.mjs && node scripts/test-corrections.mjs && node scripts/validate-scenario.mjs && node scripts/validate-i18n.mjs && node scripts/simulate-runs.mjs && node scripts/smoke-app.mjs && node scripts/playthrough.mjs && node scripts/browser-checks.mjs && bash scripts/check-links.sh && python3 scripts/check-model.py"
+  }
+}

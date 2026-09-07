@@ -27,7 +27,7 @@ from xml.etree import ElementTree as ET
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts" / "lib"))
 
-from cea_model import model, v  # noqa: E402
+from cea_model import model, v, breakeven_p  # noqa: E402
 
 BOOK = ROOT / "docs" / "concept-note-model.xlsx"
 M = "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}"
@@ -48,7 +48,6 @@ def check(label: str, ok: bool, detail: str = "") -> None:
 class Book:
     """Just enough of a spreadsheet engine to evaluate what this workbook contains."""
 
-    FUNCS = {"SUM": "(", "MIN": "min("}
 
     def __init__(self, path: Path):
         self.z = zipfile.ZipFile(path)
@@ -106,6 +105,8 @@ def main() -> int:
               "run scripts/build-model-xlsx.py first")
         return 1
 
+    p = breakeven_p(multiple=6)
+    check("break-even reproduces the complete model", abs(model({"p_transform": p})["cash_multiple"] - 6) < 1e-9)
     print(f"workbook: {BOOK.relative_to(ROOT)}\n")
     z = zipfile.ZipFile(BOOK)
 

@@ -263,8 +263,7 @@ Smaller decisions go straight to `memory/DECISIONS.md` with no ADR.
 
 ## 9. Current stage
 
-**Documentation and design.** There is no application code yet, deliberately: ADR-0002
-fixes the delivery target, but the curriculum, simulation model and — critically — the
-assessment model are specified before implementation begins.
-
-`memory/PROJECT_STATE.md` holds the live picture; this section will go stale.
+A vanilla JavaScript PWA implements four chapters. The approved next version adds
+short episodes, practical tasks and durable local attempts. The programme portal and
+AI judge remain proposed. `memory/PROJECT_STATE.md` holds verification and deployment
+state; passing software checks is not learner or commercial acceptance.

@@ -8,6 +8,8 @@
 //
 // See docs/game-design.md ("Systems modelled").
 
+export const CALCULATION_VERSION = 2;
+
 export const DEFAULT_STATE = {
   week: 1,
   cash: 150000,
@@ -85,6 +87,7 @@ export const DEFAULT_STATE = {
   // `fxRate`; `fxBase` is the rate that revenue was quoted against, so a move in
   // `fxRate` is a gain or a loss on exactly that share.
   fxShare: 0,
+  fxCovered: 0,
   fxRate: 1,
   fxBase: 1,
 
@@ -147,13 +150,6 @@ const ADDITIVE = new Set([
   'debt', 'assetValue',
 ]);
 
-// Fields where a plain number REPLACES the current value.
-const ABSOLUTE = new Set([
-  'price', 'unitCost', 'staff', 'formality', 'wagePerStaff', 'spoilRate', 'week',
-  'assetLifeWeeks', 'interestRate', 'repayPerWeek', 'hoursPerCapacity', 'hoursPerStaff',
-  'debtorWeeks', 'inventoryWeeks', 'creditorWeeks', 'payrollOnCost',
-  'fxShare', 'fxRate', 'fxBase', 'exportShare', 'dutyRate', 'freightPerUnit',
-]);
 
 const CLAMPED = {
   reputation: [0, 100],
@@ -166,6 +162,7 @@ const CLAMPED = {
   inventoryWeeks: [0, 26],
   creditorWeeks: [0, 26],
   fxShare: [0, 1],
+  fxCovered: [0, 1],
   exportShare: [0, 1],
   dutyRate: [0, 1],
   payrollOnCost: [0, 1],
@@ -299,13 +296,15 @@ export function weeklyPnl(state) {
   const fxShare = state.fxShare || 0;
   const fxBase = state.fxBase || 1;
   const fxEffect = fxBase > 0
-    ? Math.round(revenue * fxShare * (((state.fxRate || 1) / fxBase) - 1))
+    ? Math.round(revenue * fxShare * (1 - (state.fxCovered || 0)) * (((state.fxRate || 1) / fxBase) - 1))
     : 0;
 
   // Landed cost applies only to what is actually exported.
-  const exportUnits = Math.round(unitsSold * (state.exportShare || 0));
+  const traded = perLine.filter((line) => lines.find((item) => item.id === line.id)?.exported);
+  const exportUnits = traded.length ? traded.reduce((n, line) => n + line.unitsSold, 0) : Math.round(unitsSold * (state.exportShare || 0));
+  const exportRevenue = traded.length ? traded.reduce((n, line) => n + line.revenue, 0) : revenue * (state.exportShare || 0);
   const freight = Math.round(exportUnits * (state.freightPerUnit || 0));
-  const duty = Math.round(revenue * (state.exportShare || 0) * (state.dutyRate || 0));
+  const duty = Math.round(exportRevenue * (state.dutyRate || 0));
 
   const grossProfit = revenue + fxEffect - variableCost - freight - duty;
 
@@ -432,7 +431,7 @@ export function gearing(state) {
  * `wcChange` is supplied by advanceWeek, which knows the position at both ends of the
  * week. On its own this function reports the movement excluding working capital.
  */
-export function weeklyCashFlow(state, wcChange = 0) {
+export function weeklyCashFlow(state, wcChange = workingCapital(state) - (state.wcHeld ?? workingCapital(state))) {
   const pnl = weeklyPnl(state);
   const repayment = Math.min(Number(state.repayPerWeek) || 0, Number(state.debt) || 0);
   return {
@@ -503,8 +502,7 @@ export function applyEffects(state, effects = {}) {
 
     if (forcedAdditive || ADDITIVE.has(key)) {
       next[key] = (Number(next[key]) || 0) + value;
-    } else if (ABSOLUTE.has(key)) {
-      next[key] = value;
+
     } else {
       next[key] = value;
     }
@@ -598,6 +596,7 @@ export function scheduleLater(state, later = [], cause = '') {
       effects: item.effects || {},
       cause: item.cause || cause,
       causeWeek: state.week,
+      originTurnId: item.originTurnId ?? null,
     });
   }
   return next;
@@ -614,8 +613,6 @@ export function scheduleLater(state, later = [], cause = '') {
  * Returns `fired` so the UI can show what arrived and why.
  */
 export function advanceWeek(state) {
-  const pnl = weeklyPnl(state);
-
   // What was already tied up in the trading cycle, carried in state rather than
   // recomputed from `state` here.
   //
@@ -640,6 +637,9 @@ export function advanceWeek(state) {
   }
   next.pending = stillPending;
   for (const item of fired) next = applyEffects(next, item.effects);
+
+  const pnl = weeklyPnl(next);
+  const settled = { ...next };
 
   // 2. Running past your own hours is not free. You cut corners: the cleaning slips
   //    and service gets worse. This is what makes hiring and delegation matter rather
@@ -704,13 +704,14 @@ export function advanceWeek(state) {
   // scheduled consequence so that when it arrives the learner is told what caused it,
   // like every other delayed effect in this engine.
   const wcAfter = workingCapital(next);
-  const flow = weeklyCashFlow(state, wcAfter - wcBefore);
+  const flow = weeklyCashFlow(settled, wcAfter - wcBefore);
+  flow.directCash = settled.cash - state.cash;
 
-  next.cash = state.cash + flow.cashFlow;
+  next.cash = settled.cash + flow.cashFlow;
   next.wcHeld = wcAfter;
   next.debt = Math.max(0, (next.debt || 0) - flow.repayment);
-  // The asset wears down by exactly what was charged for it, so depreciation stops
-  // when the machine is written off instead of running forever.
+  // Declining-balance approximation: each week charges a fraction of remaining value.
+  // assetLifeWeeks is the legacy divisor name, not a promised disposal date.
   next.assetValue = Math.max(0, (next.assetValue || 0) - pnl.depreciation);
   if (next.assetValue === 0) next.assetLifeWeeks = 0;
 
@@ -793,7 +794,7 @@ export function advanceWeeks(state, weeks = 1) {
     const step = advanceWeek(current);
     if (i === 0) firstPnl = step.pnl;
     fired.push(...step.fired);
-    weekly.push({ week: current.week, profit: step.pnl.profit, cash: step.state.cash });
+    weekly.push({ week: current.week, profit: step.pnl.profit, cash: step.state.cash, pnl: step.pnl, flow: step.flow });
     current = step.state;
   }
 
@@ -864,7 +865,7 @@ export function healthCheck(state) {
 
   // The chapter 2 and 3 killer, and the one an owner reading only the profit line
   // never sees coming: trading profitably straight into an empty account.
-  const flow = weeklyCashFlow(state, 0);
+  const flow = weeklyCashFlow(state);
   if (pnl.profit > 0 && flow.cashFlow < 0) problems.push('profitable-but-cash-negative');
   if ((state.debt || 0) > 0 && pnl.profit > 0 && pnl.profit < flow.repayment) {
     problems.push('debt-service-strain');
@@ -958,6 +959,11 @@ export function resolveAllocation(state, allocate, split) {
     }
   }
 
+  // A payment cannot repay more principal than remains; keep the excess in cash.
+  if (deltas.debt < -(state.debt || 0)) {
+    keptCash += -deltas.debt - (state.debt || 0);
+    deltas.debt = -(state.debt || 0);
+  }
   const total = allocationTotal(state, allocate);
   deltas.cash = (deltas.cash || 0) - (total - keptCash);
 
@@ -994,7 +1000,10 @@ export function bandForValue(bands, value) {
 export function decisionOutcomes(state, turn) {
   const decision = (turn && turn.decision) || {};
   const type = decision.type || 'choice';
-  const profitOf = (effects) => weeklyPnl(applyEffects(state, effects)).profit;
+  const profitOf = (effects, later = []) => {
+    const result = resolveTurn(state, turn, effects, later);
+    return decision.predictMetric === 'cash' ? result.state.cash : result.profit;
+  };
   const profits = [];
 
   if (type === 'number' && decision.input) {
@@ -1018,7 +1027,7 @@ export function decisionOutcomes(state, turn) {
       profits.push(profitOf(resolveAllocation(state, decision.allocate, { [bucket.id]: total })));
     }
   } else {
-    for (const option of decision.options || []) profits.push(profitOf(option.effects || {}));
+    for (const option of decision.options || []) profits.push(profitOf(option.effects || {}, option.later || []));
   }
 
   return profits.filter((profit) => Number.isFinite(profit));
@@ -1040,7 +1049,7 @@ function niceStep(span) {
  * is a handful of presses on a phone.
  */
 export function predictionWindow(state, turn) {
-  const current = weeklyPnl(state).profit;
+  const current = turn?.decision?.predictMetric === 'cash' ? state.cash : weeklyPnl(state).profit * (turn?.advanceWeeks || 1);
   const profits = [current, ...decisionOutcomes(state, turn)];
   const floor = Math.max(1, Number(turn?.decision?.predictStep) || 1000) * 5;
 
@@ -1093,7 +1102,7 @@ export function evaluateGoal(state, goal) {
     let current = 0;
     if (condition.metric === 'weeksOfCostsCovered') current = weeksOfCostsCovered(state);
     else if (condition.metric === 'weeklyProfit') current = weeklyPnl(state).profit;
-    else if (condition.metric === 'weeklyCashFlow') current = weeklyCashFlow(state, 0).cashFlow;
+    else if (condition.metric === 'weeklyCashFlow') current = weeklyCashFlow(state).cashFlow;
     else if (condition.metric === 'contributionMargin') current = weeklyPnl(state).margin;
     else if (condition.metric === 'cashCycleWeeks') current = cashCycleWeeks(state);
     else if (condition.field) current = Number(state[condition.field]) || 0;
@@ -1122,4 +1131,30 @@ export function evaluateGoal(state, goal) {
 /** True when the business needs the recovery chapter. */
 export function needsRecovery(state) {
   return state.cash < 0;
+}
+
+/** One immutable result for prediction, reveal, history and settlement. */
+export function resolveTurn(state, turn, effects = {}, later = [], cause = '') {
+  const changed = scheduleLater(applyEffects(state, effects), later.map(item => ({ ...item, originTurnId: turn.id ?? null })), cause);
+  const result = advanceWeeks(changed, turn.advanceWeeks || 1);
+  const sum = (key) => result.weekly.reduce((n, week) => n + (week.flow[key] || 0), 0);
+  result.cash = {
+    opening: state.cash,
+    direct: changed.cash - state.cash + sum('directCash'),
+    profit: sum('profit'), depreciation: sum('depreciation'),
+    repayment: sum('repayment'), workingCapitalChange: sum('workingCapitalChange'),
+    closing: result.state.cash,
+  };
+  result.profit = sum('profit');
+  result.calculationVersion = CALCULATION_VERSION;
+  return result;
+}
+
+/** A small cash book, generated from this business, never from an answer choice. */
+export function cashBook(state) {
+  const pnl = weeklyPnl(state);
+  const receipts = Math.round(pnl.revenue / (1 + state.debtorWeeks));
+  const payments = Math.round(pnl.variableCost + pnl.fixedCost - pnl.depreciation);
+  return { opening: Math.round(state.cash), receipts, payments,
+    closing: Math.round(state.cash) + receipts - payments };
 }

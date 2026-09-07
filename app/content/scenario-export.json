@@ -1,6 +1,6 @@
 {
   "id": "export",
-  "version": 1,
+  "version": 2,
   "unverified": true,
   "title": {
     "en": "Beyond the Border",
@@ -55,7 +55,8 @@
         "price": 900,
         "unitCost": 600,
         "demand": 9000,
-        "capacity": 9000
+        "capacity": 9000,
+        "exported": false
       },
       {
         "id": "regional",
@@ -66,7 +67,8 @@
         "price": 1100,
         "unitCost": 620,
         "demand": 3000,
-        "capacity": 3200
+        "capacity": 3200,
+        "exported": true
       },
       {
         "id": "export",
@@ -77,7 +79,8 @@
         "price": 2000,
         "unitCost": 700,
         "demand": 1200,
-        "capacity": 1600
+        "capacity": 1600,
+        "exported": true
       }
     ]
   },
@@ -249,7 +252,6 @@
             "debt": 4000000,
             "licenceFees": 6000
           },
-          "predictAnswer": "same",
           "outcome": {
             "en": "A financier advances most of the invoice's value today, for a fee. The plant keeps running while the buyer's payment is still on its way.",
             "sw": "Mfadhili anakupa mapema thamani kubwa ya ankara leo, kwa ada. Kiwanda kinaendelea kufanya kazi wakati malipo ya mnunuzi bado yanaelekea."
@@ -273,7 +275,6 @@
             "lines.export.capacity": "-300",
             "lines.export.demand": "-300"
           },
-          "predictAnswer": "down",
           "outcome": {
             "en": "You give up part of this week's export sales. The plant sells less, but it stops adding new money to a cycle that is already stretched.",
             "sw": "Unaacha sehemu ya mauzo ya nje ya wiki hii. Kiwanda kinauza kidogo, lakini kinaacha kuongeza pesa kwenye mzunguko ambao tayari umenyoosha."
@@ -296,7 +297,6 @@
           "effects": {
             "lines.domestic.price": "820"
           },
-          "predictAnswer": "down",
           "outcome": {
             "en": "Domestic buyers move faster at the lower price. Cash comes in quickly, and every domestic unit now earns less than before.",
             "sw": "Wanunuzi wa ndani wananunua haraka zaidi kwa bei ya chini. Pesa inaingia haraka, na kila kitengo cha ndani sasa kinapata kidogo kuliko awali."
@@ -319,8 +319,8 @@
       },
       "scene": "market",
       "situation": {
-        "en": "The Nairobi buyer has become a regular order. This week an email arrives from a distributor in the Gulf, who saw your product at a trade fair and wants a quote for a container. Nothing about your costs or your capacity has changed yet — only the attention.",
-        "sw": "Mnunuzi wa Nairobi amekuwa akiagiza mara kwa mara. Wiki hii barua pepe inafika kutoka kwa msambazaji wa Ghuba, aliyeona bidhaa yako kwenye maonesho ya biashara na anataka bei ya kontena. Hakuna kilichobadilika kwenye gharama au uwezo wako bado — ni umakini tu ulioongezeka."
+        "en": "The Nairobi buyer has become a regular order. This week an email arrives from a distributor in the Gulf, who saw your product at a trade fair and wants a quote for a container.",
+        "sw": "Mnunuzi wa Nairobi amekuwa akiagiza mara kwa mara. Wiki hii barua pepe inafika kutoka kwa msambazaji wa Ghuba, aliyeona bidhaa yako kwenye maonesho ya biashara na anataka bei ya kontena."
       },
       "info": [
         {
@@ -391,7 +391,6 @@
               "lines.export.demand": "300",
               "ownerHoursUsed": 2
             },
-            "predictAnswer": "up_lot",
             "outcome": {
               "en": "The spare capacity finds a real buyer instead of sitting idle. The trial shipment goes out and the Gulf distributor gets real evidence to decide from.",
               "sw": "Uwezo wa ziada unapata mnunuzi halisi badala ya kukaa bure. Usafirishaji wa majaribio unatoka na msambazaji wa Ghuba anapata ushahidi halisi wa kuamulia."
@@ -412,7 +411,6 @@
               "sw": "Hakuna kinachobadilika kiwandani wiki hii. Ahadi inafanywa kwenye karatasi."
             },
             "effects": {},
-            "predictAnswer": "same",
             "outcome": {
               "en": "The email goes out promising the volume. The plant makes the same things it made yesterday — the promise is ahead of the operation.",
               "sw": "Barua pepe inatumwa ikiahidi kiasi hicho. Kiwanda kinatengeneza vilevile kama jana — ahadi iko mbele ya uendeshaji."
@@ -450,7 +448,6 @@
               "lines.domestic.demand": "120",
               "ownerHoursUsed": 1
             },
-            "predictAnswer": "up_bit",
             "outcome": {
               "en": "You reply politely and keep the hours at home. The domestic queue moves a little faster, and the Gulf door is not closed, only not opened yet.",
               "sw": "Unajibu kwa heshima na kubaki na muda nyumbani. Foleni ya ndani inasogea kidogo kwa haraka, na mlango wa Ghuba haujafungwa, bado haujafunguliwa tu."
@@ -461,6 +458,10 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "Nothing about your costs or your capacity has changed yet — only the attention.",
+        "sw": "Hakuna kilichobadilika kwenye gharama au uwezo wako bado — ni umakini tu ulioongezeka."
       }
     },
     {
@@ -473,8 +474,8 @@
       "scene": "office",
       "workout": true,
       "situation": {
-        "en": "The Gulf distributor wants a delivered price, not your factory price — and they will set whatever you quote next to what an established supplier already charges them, landed. Before you quote anything, work out what the buyer actually pays once your goods clear their port: your price plus shipping plus duty.",
-        "sw": "Msambazaji wa Ghuba anataka bei ya kufikishwa, si bei ya kiwandani — na atailinganisha bei yoyote utakayotoa na kile msambazaji aliye imara anachomtoza tayari, baada ya kufikishwa. Kabla ya kutoa bei yoyote, hesabu mnunuzi analipa nini hasa bidhaa zako zikishavuka bandari yao: bei yako pamoja na usafirishaji pamoja na ushuru."
+        "en": "A buyer wants the price at their port. Add your price, shipping and duty before quoting.",
+        "sw": "Mnunuzi anataka bei ya bidhaa ikifika bandarini kwake. Jumlisha bei yako, usafiri na ushuru kabla ya kutoa bei."
       },
       "info": [
         {
@@ -562,6 +563,10 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "The Gulf distributor wants a delivered price, not your factory price — and they will set whatever you quote next to what an established supplier already charges them, landed. Before you quote anything, work out what the buyer actually pays once your goods clear their port: your price plus shipping plus duty. ",
+        "sw": "Msambazaji wa Ghuba anataka bei ya kufikishwa, si bei ya kiwandani — na atailinganisha bei yoyote utakayotoa na kile msambazaji aliye imara anachomtoza tayari, baada ya kufikishwa. Kabla ya kutoa bei yoyote, hesabu mnunuzi analipa nini hasa bidhaa zako zikishavuka bandari yao: bei yako pamoja na usafirishaji pamoja na ushuru. "
       }
     },
     {
@@ -573,8 +578,8 @@
       },
       "scene": "truck",
       "situation": {
-        "en": "The Gulf distributor asks which terms you will sell on: Ex Works, where they collect at your gate and carry the risk from there; FOB, where you get the goods to the port; or CIF, where you pay freight and insurance all the way to their port. The same order can be priced three different ways.",
-        "sw": "Msambazaji wa Ghuba anauliza utauza kwa masharti gani: Ex Works, ambapo wanachukua langoni kwako na kubeba hatari kutoka hapo; FOB, ambapo unafikisha bidhaa bandarini; au CIF, ambapo unalipa usafirishaji na bima hadi bandari yao. Oda ileile inaweza kupangwa bei kwa njia tatu tofauti."
+        "en": "Who will pay for transport, and where will risk pass to the buyer? Choose delivery terms.",
+        "sw": "Nani atalipia usafiri, na hatari itahamia kwa mnunuzi wapi? Chagua masharti ya usafirishaji."
       },
       "info": [
         {
@@ -645,7 +650,6 @@
               "freightPerUnit": 0,
               "lines.export.price": 1650
             },
-            "predictAnswer": "down",
             "outcome": {
               "en": "The freight leaves your books entirely. The quoted price falls much further than the freight you saved, because the buyer is now paying for the whole journey and carrying the risk of it.",
               "sw": "Usafirishaji unaondoka kabisa kwenye vitabu vyako. Bei iliyotolewa inashuka zaidi ya usafirishaji ulioukwepa, kwa sababu mnunuzi sasa analipa safari nzima na anabeba hatari yake."
@@ -669,7 +673,6 @@
               "freightPerUnit": "-110",
               "lines.export.price": 1950
             },
-            "predictAnswer": "up_bit",
             "outcome": {
               "en": "The ocean leg comes off your freight bill and you keep the local transport and port charges. The buyer asks for only a small price concession for the leg they now carry, so more of the sale stays with you.",
               "sw": "Safari ya baharini inatoka kwenye bili yako ya usafirishaji na unabaki na usafiri wa ndani na gharama za bandarini. Mnunuzi anaomba punguzo dogo tu la bei kwa safari anayoibeba sasa, hivyo sehemu kubwa zaidi ya mauzo inabaki kwako."
@@ -690,7 +693,6 @@
               "sw": "Masharti unayotoa tayari. Hakuna kinachobadilika wiki hii."
             },
             "effects": {},
-            "predictAnswer": "same",
             "outcome": {
               "en": "You keep quoting the way you already do: full freight and insurance included, priced accordingly.",
               "sw": "Unaendelea kutoa bei kama ulivyokuwa: usafirishaji kamili na bima vikiwa vimejumuishwa, bei ikiwekwa ipasavyo."
@@ -701,6 +703,10 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "The Gulf distributor asks which terms you will sell on: Ex Works, where they collect at your gate and carry the risk from there; FOB, where you get the goods to the port; or CIF, where you pay freight and insurance all the way to their port. The same order can be priced three different ways. ",
+        "sw": "Msambazaji wa Ghuba anauliza utauza kwa masharti gani: Ex Works, ambapo wanachukua langoni kwako na kubeba hatari kutoka hapo; FOB, ambapo unafikisha bidhaa bandarini; au CIF, ambapo unalipa usafirishaji na bima hadi bandari yao. Oda ileile inaweza kupangwa bei kwa njia tatu tofauti. "
       }
     },
     {
@@ -713,8 +719,8 @@
       "scene": "office",
       "workout": true,
       "situation": {
-        "en": "It would be easy to quote the Gulf distributor your domestic price with a little added on. That price was set for a different market, a different buyer, and none of the freight, duty or currency risk you now carry. Set the export price on its own terms.",
-        "sw": "Ingekuwa rahisi kumtolea msambazaji wa Ghuba bei yako ya ndani na kuongeza kidogo. Bei hiyo iliwekwa kwa soko tofauti, mnunuzi tofauti, na haikuhusisha usafirishaji, ushuru au hatari ya fedha za kigeni unayobeba sasa. Weka bei ya nje kwa masharti yake yenyewe."
+        "en": "Your local price does not cover every export cost. Set a price for the overseas buyer.",
+        "sw": "Bei ya ndani haijumuishi kila gharama ya kuuza nje. Weka bei kwa mnunuzi wa nje."
       },
       "info": [
         {
@@ -802,6 +808,10 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "It would be easy to quote the Gulf distributor your domestic price with a little added on. That price was set for a different market, a different buyer, and none of the freight, duty or currency risk you now carry. Set the export price on its own terms.",
+        "sw": "Ingekuwa rahisi kumtolea msambazaji wa Ghuba bei yako ya ndani na kuongeza kidogo. Bei hiyo iliwekwa kwa soko tofauti, mnunuzi tofauti, na haikuhusisha usafirishaji, ushuru au hatari ya fedha za kigeni unayobeba sasa. Weka bei ya nje kwa masharti yake yenyewe."
       }
     },
     {
@@ -813,8 +823,8 @@
       },
       "scene": "office",
       "situation": {
-        "en": "The Gulf buyer wants to pay in US dollars. Your wages, rent and licence fees are all paid in shillings. However you invoice, the gap between the two currencies is a risk that belongs to somebody — you or the buyer.",
-        "sw": "Mnunuzi wa Ghuba anataka kulipa kwa dola za Marekani. Mishahara yako, kodi na ada za leseni zote zinalipwa kwa shilingi. Utakavyotoa ankara, pengo kati ya fedha hizo mbili ni hatari inayomhusu mtu — wewe au mnunuzi."
+        "en": "The Gulf buyer wants to pay in US dollars. Your wages, rent and licence fees are all paid in shillings.",
+        "sw": "Mnunuzi wa Ghuba anataka kulipa kwa dola za Marekani. Mishahara yako, kodi na ada za leseni zote zinalipwa kwa shilingi."
       },
       "info": [
         {
@@ -885,7 +895,6 @@
               "fxShare": 0.35,
               "ownerHoursUsed": 1
             },
-            "predictAnswer": "same",
             "outcome": {
               "en": "You agree to invoice more of the order in dollars. Nothing moves in this week's profit — the exchange rate has not changed yet.",
               "sw": "Unakubali kutoa ankara ya sehemu kubwa ya oda kwa dola. Hakuna kinachobadilika kwenye faida ya wiki hii — kiwango cha ubadilishaji bado hakijabadilika."
@@ -920,7 +929,6 @@
             "effects": {
               "lines.export.price": "+60"
             },
-            "predictAnswer": "up_bit",
             "outcome": {
               "en": "The buyer accepts a small premium in exchange for a currency you are both more comfortable with. This week's sale earns a little more.",
               "sw": "Mnunuzi anakubali ongezeko dogo badala ya fedha ambayo nyote wawili mnaridhika nayo zaidi. Mauzo ya wiki hii yanapata kidogo zaidi."
@@ -944,7 +952,6 @@
               "fxShare": 0,
               "lines.export.price": "-40"
             },
-            "predictAnswer": "down",
             "outcome": {
               "en": "The buyer agrees, but only after a small price concession for taking on a currency risk they did not ask for.",
               "sw": "Mnunuzi anakubali, lakini baada tu ya punguzo dogo la bei kwa kubeba hatari ya fedha za kigeni ambayo hakuiomba."
@@ -955,6 +962,10 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "However you invoice, the gap between the two currencies is a risk that belongs to somebody — you or the buyer.",
+        "sw": "Utakavyotoa ankara, pengo kati ya fedha hizo mbili ni hatari inayomhusu mtu — wewe au mnunuzi."
       }
     },
     {
@@ -966,8 +977,8 @@
       },
       "scene": "office",
       "situation": {
-        "en": "A bank offers to lock in today's exchange rate for the dollar sales you have coming, for a fee. It removes the currency risk you took on. It also costs money whether the rate moves against you or not.",
-        "sw": "Benki inatoa kufunga kiwango cha leo cha ubadilishaji kwa mauzo ya dola yanayokuja, kwa ada. Inaondoa hatari ya fedha za kigeni uliyoichukua. Pia inagharimu pesa iwe kiwango kitabadilika dhidi yako au la."
+        "en": "A bank offers to lock in today's exchange rate for the dollar sales you have coming, for a fee. It removes the currency risk you took on.",
+        "sw": "Benki inatoa kufunga kiwango cha leo cha ubadilishaji kwa mauzo ya dola yanayokuja, kwa ada. Inaondoa hatari ya fedha za kigeni uliyoichukua."
       },
       "info": [
         {
@@ -1035,9 +1046,9 @@
               "sw": "Ada ya wiki inayojulikana. Kiwango kitakavyofanya baadaye, hatari hii imetatuliwa."
             },
             "effects": {
-              "licenceFees": 42000
+              "licenceFees": 42000,
+              "fxCovered": 1
             },
-            "predictAnswer": "down",
             "outcome": {
               "en": "The bank locks in a rate for the dollar sales. The fee is real and it is charged this week, whether or not the rate ever moves.",
               "sw": "Benki inafunga kiwango kwa mauzo ya dola. Ada ni halisi na inatozwa wiki hii, kiwango kikibadilika au la."
@@ -1061,7 +1072,6 @@
               "fxShare": 0.08,
               "lines.export.price": "-35"
             },
-            "predictAnswer": "down",
             "outcome": {
               "en": "The buyer agrees to shift part of the order to shillings, for a small price concession. Your exposure shrinks without paying a bank.",
               "sw": "Mnunuzi anakubali kuhamisha sehemu ya oda kwenda shilingi, kwa punguzo dogo la bei. Hatari yako inapungua bila kulipa benki."
@@ -1082,7 +1092,6 @@
               "sw": "Hakuna ada sasa. Kiwango kitakavyofanya baadaye kitakugusa wewe kikamilifu."
             },
             "effects": {},
-            "predictAnswer": "same",
             "outcome": {
               "en": "You decline the offer. Nothing changes this week, and the exposure from your invoicing choice is still yours to carry.",
               "sw": "Unakataa ofa hiyo. Hakuna kinachobadilika wiki hii, na hatari kutoka uamuzi wako wa ankara bado ni yako kubeba."
@@ -1105,6 +1114,10 @@
             ]
           }
         ]
+      },
+      "situationDetails": {
+        "en": "It also costs money whether the rate moves against you or not.",
+        "sw": "Pia inagharimu pesa iwe kiwango kitabadilika dhidi yako au la."
       }
     },
     {
@@ -1116,8 +1129,8 @@
       },
       "scene": "office",
       "situation": {
-        "en": "The Gulf distributor's finance team sends three options: pay a third in advance, open a letter of credit, or trade on a ninety-day open account like their other suppliers. Each protects a different amount of your money for a different price.",
-        "sw": "Timu ya fedha ya msambazaji wa Ghuba inatuma chaguzi tatu: kulipa theluthi mapema, kufungua letter of credit, au kufanya biashara kwa akaunti wazi ya siku tisini kama wasambazaji wao wengine. Kila moja inalinda kiasi tofauti cha pesa yako kwa bei tofauti."
+        "en": "The buyer offers three payment arrangements. Compare when cash arrives and what each arrangement costs.",
+        "sw": "Mnunuzi anatoa mipango mitatu ya malipo. Linganisha muda wa kupata pesa na gharama za kila mpango."
       },
       "info": [
         {
@@ -1188,7 +1201,6 @@
               "debtorWeeks": 2,
               "reputation": -2
             },
-            "predictAnswer": "same",
             "outcome": {
               "en": "The buyer agrees, a little reluctantly. Far less of your money sits with them between shipping and being paid.",
               "sw": "Mnunuzi anakubali, kwa kusita kidogo. Pesa kidogo zaidi yako inakaa kwao kati ya kusafirisha na kulipwa."
@@ -1212,7 +1224,6 @@
               "debtorWeeks": 4,
               "licenceFees": 8000
             },
-            "predictAnswer": "same",
             "outcome": {
               "en": "The letter of credit is opened. Payment is now guaranteed once your paperwork matches exactly, for a small ongoing bank charge.",
               "sw": "Letter of credit imefunguliwa. Sasa malipo yamehakikishwa hati zako zikilingana kikamilifu, kwa gharama ndogo inayoendelea ya benki."
@@ -1236,7 +1247,6 @@
               "debtorWeeks": 13,
               "lines.export.price": "-30"
             },
-            "predictAnswer": "down",
             "outcome": {
               "en": "The buyer is glad to keep their usual terms, and asks for a small price reduction in exchange for the easy relationship. Your money is now tied up for three months at a time.",
               "sw": "Mnunuzi anafurahi kubaki na masharti yao ya kawaida, na anaomba punguzo dogo la bei badala ya uhusiano rahisi. Pesa yako sasa imefungwa kwa miezi mitatu kwa wakati mmoja."
@@ -1247,6 +1257,10 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "The Gulf distributor's finance team sends three options: pay a third in advance, open a letter of credit, or trade on a ninety-day open account like their other suppliers. Each protects a different amount of your money for a different price. ",
+        "sw": "Timu ya fedha ya msambazaji wa Ghuba inatuma chaguzi tatu: kulipa theluthi mapema, kufungua letter of credit, au kufanya biashara kwa akaunti wazi ya siku tisini kama wasambazaji wao wengine. Kila moja inalinda kiasi tofauti cha pesa yako kwa bei tofauti. "
       }
     },
     {
@@ -1259,8 +1273,8 @@
       "scene": "office",
       "workout": true,
       "situation": {
-        "en": "The buyer's finance team comes back with room to negotiate the exact number of weeks before payment. Before you answer, work out what each extra week actually costs you in cash tied up, not in profit — the ledger already shows profit and cash moving apart.",
-        "sw": "Timu ya fedha ya mnunuzi inarudi na nafasi ya kujadili idadi kamili ya wiki kabla ya malipo. Kabla ya kujibu, hesabu kila wiki ya ziada inakugharimu nini hasa kwa pesa iliyofungwa, si kwa faida — daftari tayari linaonyesha faida na pesa vikitengana."
+        "en": "The buyer will negotiate the payment date. How many weeks can your cash wait?",
+        "sw": "Mnunuzi yuko tayari kujadiliana tarehe ya malipo. Pesa yako inaweza kusubiri wiki ngapi?"
       },
       "info": [
         {
@@ -1291,7 +1305,10 @@
           "step": 1,
           "start": "current",
           "valueAs": "count",
-          "unit": { "en": "weeks", "sw": "wiki" },
+          "unit": {
+            "en": "weeks",
+            "sw": "wiki"
+          },
           "hint": {
             "en": "Zero is paid on shipping. Thirteen is a full ninety-day open account.",
             "sw": "Sifuri ni kulipwa wakati wa kusafirisha. Kumi na tatu ni akaunti wazi kamili ya siku tisini."
@@ -1349,6 +1366,10 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "The buyer's finance team comes back with room to negotiate the exact number of weeks before payment. Before you answer, work out what each extra week actually costs you in cash tied up, not in profit — the ledger already shows profit and cash moving apart. ",
+        "sw": "Timu ya fedha ya mnunuzi inarudi na nafasi ya kujadili idadi kamili ya wiki kabla ya malipo. Kabla ya kujibu, hesabu kila wiki ya ziada inakugharimu nini hasa kwa pesa iliyofungwa, si kwa faida — daftari tayari linaonyesha faida na pesa vikitengana. "
       }
     },
     {
@@ -1368,8 +1389,8 @@
         }
       },
       "situation": {
-        "en": "A shipment has gone out and the invoice will not be paid for weeks. A lender offers to advance most of its value now, against the paper, for a fee — borrowing against money you have already earned but do not yet hold.",
-        "sw": "Shehena imesha safirishwa na ankara haitalipwa kwa wiki kadhaa. Mkopeshaji anatoa kuendeleza thamani kubwa yake sasa, dhidi ya karatasi hiyo, kwa ada — kukopa dhidi ya pesa ambayo tayari umeipata lakini bado hujaishika."
+        "en": "A lender offers 1,800,000 against unpaid invoices. Compare borrowing, waiting, and selling the invoices.",
+        "sw": "Mkopeshaji anatoa 1,800,000 kwa dhamana ya ankara zisizolipwa. Linganisha kukopa, kusubiri na kuuza ankara."
       },
       "info": [
         {
@@ -1433,19 +1454,19 @@
               "sw": "Chukua thamani kubwa ya ankara sasa, kwa ada"
             },
             "detail": {
-              "en": "Cash today, at a small ongoing cost.",
-              "sw": "Pesa leo, kwa gharama ndogo inayoendelea."
+              "en": "Borrow 1,800,000 now. Repay 300,000 each week, plus the existing interest and a weekly 5,000 fee.",
+              "sw": "Kopa 1,800,000 sasa. Rejesha 300,000 kila wiki, pamoja na riba iliyopo na ada ya wiki ya 5,000."
             },
             "effects": {
               "cash": 1800000,
               "debt": 1800000,
               "licenceFees": 5000,
-              "tookCredit": true
+              "tookCredit": true,
+              "repayPerWeek": "+300000"
             },
-            "predictAnswer": "same",
             "outcome": {
-              "en": "The lender releases most of the invoice's value today. The buyer's eventual payment will settle the advance; the fee is charged whether or not you needed the cash urgently.",
-              "sw": "Mkopeshaji anatoa thamani kubwa ya ankara leo. Malipo ya baadaye ya mnunuzi yatalipa mkopo huo; ada inatozwa hata kama hukuihitaji pesa hiyo kwa dharura."
+              "en": "Cash and debt both rise. The advance is repaid through weekly principal payments in this model; the customer balance stays outstanding until collected.",
+              "sw": "Pesa na deni vyote vinaongezeka. Katika mfano huu mkopo hulipwa kwa marejesho ya kila wiki; deni la mteja linabaki mpaka likusanywe."
             },
             "lesson": {
               "en": "Trade finance turns a wait into cash now, at a price. It is most useful when the wait itself is the thing threatening the plant, not a source of extra profit.",
@@ -1465,7 +1486,6 @@
             "effects": {
               "ownerHoursUsed": 2
             },
-            "predictAnswer": "same",
             "outcome": {
               "en": "You wait it out, checking in on the payment as the date approaches. No fee is paid, and no cash arrives early either.",
               "sw": "Unasubiri, ukifuatilia malipo tarehe inapokaribia. Hakuna ada inayolipwa, na hakuna pesa inayofika mapema pia."
@@ -1487,9 +1507,9 @@
             },
             "effects": {
               "licenceFees": 20000,
-              "reputation": -3
+              "reputation": -3,
+              "debtorWeeks": 0
             },
-            "predictAnswer": "down",
             "outcome": {
               "en": "Every invoice now goes through the factor first. Cash is faster and more predictable, and a standing fee eats into every sale, including ones you did not need financed.",
               "sw": "Kila ankara sasa inapita kwa factor kwanza. Pesa ni ya haraka na inayotabirika zaidi, na ada ya kudumu inakula kila mauzo, hata yale usiyoyahitaji kufadhiliwa."
@@ -1499,7 +1519,12 @@
               "sw": "Kufadhili kila ankara, si zile tu zenye shinikizo, kunageuza chombo cha tatizo maalum kuwa gharama ya kudumu kwa biashara nzima."
             }
           }
-        ]
+        ],
+        "predictMetric": "cash"
+      },
+      "situationDetails": {
+        "en": "A shipment has gone out and the invoice will not be paid for weeks. A lender offers to advance most of its value now, against the paper, for a fee — borrowing against money you have already earned but do not yet hold. ",
+        "sw": "Shehena imesha safirishwa na ankara haitalipwa kwa wiki kadhaa. Mkopeshaji anatoa kuendeleza thamani kubwa yake sasa, dhidi ya karatasi hiyo, kwa ada — kukopa dhidi ya pesa ambayo tayari umeipata lakini bado hujaishika. "
       }
     },
     {
@@ -1512,8 +1537,8 @@
       "scene": "office",
       "unverified": true,
       "situation": {
-        "en": "Every shipment now needs a certificate of origin, a phytosanitary certificate and a customs entry filed correctly, or it does not clear the destination port. None of this existed when you only sold at home.",
-        "sw": "Kila shehena sasa inahitaji certificate of origin, cheti cha phytosanitary na taarifa ya forodha iliyojazwa vizuri, au haitapita bandari ya mwisho. Hakuna kati ya hivi kilichokuwepo ulipokuwa unauza nyumbani tu."
+        "en": "A shipment needs documents checked before it leaves. Choose who prepares and checks them.",
+        "sw": "Shehena inahitaji nyaraka kukaguliwa kabla haijaondoka. Chagua anayeziandaa na kuzikagua."
       },
       "info": [
         {
@@ -1585,7 +1610,6 @@
               "ownerHoursUsed": -4,
               "reputation": 3
             },
-            "predictAnswer": "down",
             "outcome": {
               "en": "The agent takes over the paperwork. Shipments clear more smoothly, at a steady fee that shows up every week.",
               "sw": "Wakala anachukua nyaraka. Shehena zinapita kwa urahisi zaidi, kwa ada thabiti inayoonekana kila wiki."
@@ -1608,7 +1632,6 @@
             "effects": {
               "ownerHoursUsed": 6
             },
-            "predictAnswer": "same",
             "outcome": {
               "en": "You take the paperwork on yourself. It costs hours, not shillings, and this week's ledger does not show what it cost you elsewhere.",
               "sw": "Unachukua nyaraka mwenyewe. Zinagharimu masaa, si shilingi, na daftari la wiki hii haionyeshi kilichokugharimu mahali pengine."
@@ -1629,7 +1652,6 @@
               "sw": "Inaweka ratiba. Kunapunguzwa umakini kwenye undani."
             },
             "effects": {},
-            "predictAnswer": "same",
             "outcome": {
               "en": "The container ships on time. The paperwork behind it was filed quickly, and whether it was filed correctly will only be known at the destination port.",
               "sw": "Kontena linasafirishwa kwa wakati. Nyaraka nyuma yake zilijazwa haraka, na kama zilijazwa sahihi itajulikana tu bandarini mwisho."
@@ -1653,6 +1675,10 @@
             ]
           }
         ]
+      },
+      "situationDetails": {
+        "en": "Required documents depend on the goods and destination. The names and costs in this sample need local review.",
+        "sw": "Nyaraka zinazohitajika hutegemea bidhaa na zinakoenda. Majina na gharama katika mfano huu zinahitaji ukaguzi wa eneo."
       }
     },
     {
@@ -1673,8 +1699,8 @@
         }
       },
       "situation": {
-        "en": "The Gulf buyer's distributor asks for HACCP, ISO 22000 and halal certification before they will list you as a regular supplier, not just a one-off. Each certificate has an assessment cost, an ongoing audit cost, and opens a different set of doors.",
-        "sw": "Msambazaji wa mnunuzi wa Ghuba anaomba vyeti vya HACCP, ISO 22000 na halal kabla ya kukuorodhesha kama msambazaji wa kawaida, si wa mara moja tu. Kila cheti kina gharama ya tathmini, gharama ya ukaguzi inayoendelea, na kinafungua milango tofauti."
+        "en": "A buyer asks for certificates about food safety and production. Check which they need before paying for an assessment.",
+        "sw": "Mnunuzi anaomba vyeti vya usalama wa chakula na uzalishaji. Kagua anavyohitaji kabla ya kulipia tathmini."
       },
       "info": [
         {
@@ -1747,7 +1773,6 @@
               "reputation": 5,
               "heldStandard": true
             },
-            "predictAnswer": "down",
             "outcome": {
               "en": "Assessors visit, processes are documented, and the audit cost lands on the books every week from now on. The plant now holds a standard several distributors require before they will even talk terms.",
               "sw": "Wakaguzi wanatembelea, taratibu zinaandikwa, na gharama ya ukaguzi inaingia kwenye vitabu kila wiki kuanzia sasa. Kiwanda sasa kinashikilia kiwango ambacho wasambazaji kadhaa wanahitaji kabla hata hawajazungumzia masharti."
@@ -1783,7 +1808,6 @@
               "licenceFees": 12000,
               "hygiene": 3
             },
-            "predictAnswer": "same",
             "outcome": {
               "en": "The halal certificate is granted after an inspection focused on this one requirement. It is cheaper than the full standard, and it opens exactly one door.",
               "sw": "Cheti cha halal kinatolewa baada ya ukaguzi uliojikita kwenye hitaji hili moja. Ni nafuu kuliko kiwango kamili, na kinafungua mlango mmoja hasa."
@@ -1816,7 +1840,6 @@
               "sw": "Hakuna gharama mpya leo. Msambazaji alisema hii ni sharti, si upendeleo."
             },
             "effects": {},
-            "predictAnswer": "same",
             "outcome": {
               "en": "Nothing changes on the ledger this week. The distributor's requirement is still open, unanswered.",
               "sw": "Hakuna kinachobadilika kwenye daftari wiki hii. Hitaji la msambazaji bado liko wazi, halijajibiwa."
@@ -1840,6 +1863,10 @@
             ]
           }
         ]
+      },
+      "situationDetails": {
+        "en": "The Gulf buyer's distributor asks for HACCP, ISO 22000 and halal certification before they will list you as a regular supplier, not just a one-off. Each certificate has an assessment cost, an ongoing audit cost, and opens a different set of doors. ",
+        "sw": "Msambazaji wa mnunuzi wa Ghuba anaomba vyeti vya HACCP, ISO 22000 na halal kabla ya kukuorodhesha kama msambazaji wa kawaida, si wa mara moja tu. Kila cheti kina gharama ya tathmini, gharama ya ukaguzi inayoendelea, na kinafungua milango tofauti. "
       }
     },
     {
@@ -1851,8 +1878,8 @@
       },
       "scene": "kitchen",
       "situation": {
-        "en": "A domestic bag of goods does not need to survive six weeks at sea. Heat, damp and handling at three ports do more damage than a shelf in a local shop ever would. Whatever you decide, it changes what every exported unit costs you to make and pack — and what the buyer finds in the box when it arrives.",
-        "sw": "Mfuko wa bidhaa za ndani hauhitaji kuvumilia wiki sita baharini. Joto, unyevu na ushughulikiaji katika bandari tatu vinaharibu zaidi kuliko rafu ya duka la ndani ingeweza kamwe. Utakachoamua kinabadilisha gharama ya kutengeneza na kufungasha kila kitengo kinachosafirishwa nje — na kile mnunuzi atakachokuta ndani ya boksi kinapofika."
+        "en": "A domestic bag of goods does not need to survive six weeks at sea. Heat, damp and handling at three ports do more damage than a shelf in a local shop ever would.",
+        "sw": "Mfuko wa bidhaa za ndani hauhitaji kuvumilia wiki sita baharini. Joto, unyevu na ushughulikiaji katika bandari tatu vinaharibu zaidi kuliko rafu ya duka la ndani ingeweza kamwe."
       },
       "info": [
         {
@@ -1921,9 +1948,9 @@
             },
             "effects": {
               "assetValue": 1200000,
-              "lines.export.unitCost": "+50"
+              "lines.export.unitCost": "+50",
+              "cash": -1200000
             },
-            "predictAnswer": "down",
             "outcome": {
               "en": "The sealing line costs its weekly share of depreciation, and every exported unit now carries a heavier, more expensive pack. Profit falls this week and nothing visible comes back yet.",
               "sw": "Mstari wa kufunga unagharimu sehemu yake ya wiki ya uchakavu, na kila kitengo kinachosafirishwa nje sasa kina ufungashaji mzito na wa gharama zaidi. Faida inashuka wiki hii na hakuna kinachorudi bado."
@@ -1954,16 +1981,15 @@
               "sw": "Tumia ufungashaji wa nafuu wa ndani kwa sasa"
             },
             "detail": {
-              "en": "Cheaper than what you pack with now. It was not built for six weeks at sea.",
-              "sw": "Nafuu kuliko unachofungashia sasa. Haikutengenezwa kwa wiki sita baharini."
+              "en": "Cheaper than what you pack with now. It was not built for four weeks at sea.",
+              "sw": "Nafuu kuliko unachofungashia sasa. Haikutengenezwa kwa wiki nne baharini."
             },
             "effects": {
               "lines.export.unitCost": "-35"
             },
-            "predictAnswer": "up_bit",
             "outcome": {
-              "en": "The thinner domestic packaging travels with the export order and every unit costs less to pack. This week's profit goes up, and the container is at sea for six weeks before anyone opens it.",
-              "sw": "Ufungashaji mwembamba wa ndani unasafiri na oda ya nje na kila kitengo kinagharimu kidogo kufungasha. Faida ya wiki hii inapanda, na kontena liko baharini kwa wiki sita kabla mtu hajalifungua."
+              "en": "The thinner domestic packaging travels with the export order and every unit costs less to pack. This week's profit goes up, and the container is at sea for four weeks before anyone opens it.",
+              "sw": "Ufungashaji mwembamba wa ndani unasafiri na oda ya nje na kila kitengo kinagharimu kidogo kufungasha. Faida ya wiki hii inapanda, na kontena liko baharini kwa wiki nne kabla mtu hajalifungua."
             },
             "lesson": {
               "en": "A packaging cost you avoided at home does not disappear on a longer route. It shows up later, as damaged goods and a buyer who no longer trusts the shipment.",
@@ -1995,7 +2021,6 @@
               "sw": "Hakuna uamuzi uliofanywa bado kwa upande wowote."
             },
             "effects": {},
-            "predictAnswer": "same",
             "outcome": {
               "en": "Nothing changes this week. The packaging question is still open for the next shipment.",
               "sw": "Hakuna kinachobadilika wiki hii. Swali la ufungashaji bado liko wazi kwa shehena inayofuata."
@@ -2006,6 +2031,10 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "Whatever you decide, it changes what every exported unit costs you to make and pack — and what the buyer finds in the box when it arrives.",
+        "sw": "Utakachoamua kinabadilisha gharama ya kutengeneza na kufungasha kila kitengo kinachosafirishwa nje — na kile mnunuzi atakachokuta ndani ya boksi kinapofika."
       }
     },
     {
@@ -2018,8 +2047,8 @@
       "scene": "truck",
       "workout": true,
       "situation": {
-        "en": "The shipping line has now priced the whole container for you. Part-loads cost you 180 a unit. A full container — 6,000 units — booked outright costs 900,000, which is 150 a unit, and they will move your rate toward it as you commit more weekly volume. Your export line ships about 1,200 a week. Decide how much export capacity to commit toward filling containers.",
-        "sw": "Kampuni ya usafirishaji sasa imekupimia bei ya kontena zima. Sehemu za kontena zinakutozia 180 kwa kitengo. Kontena zima — vipande 6,000 — likiwa limeagizwa lote ni 900,000, yaani 150 kwa kitengo, na wataisogeza bei yako kuelekea hapo unapojitolea kiasi kikubwa zaidi kwa wiki. Mstari wako wa nje unasafirisha takribani 1,200 kwa wiki. Amua ni uwezo kiasi gani wa nje wa kujitolea kuelekea kujaza kontena."
+        "en": "The shipping line has now priced the whole container for you. Part-loads cost you 180 a unit.",
+        "sw": "Kampuni ya usafirishaji sasa imekupimia bei ya kontena zima. Sehemu za kontena zinakutozia 180 kwa kitengo."
       },
       "info": [
         {
@@ -2050,7 +2079,10 @@
           "step": 100,
           "start": 0,
           "valueAs": "count",
-          "unit": { "en": "units a week", "sw": "vipande kwa wiki" },
+          "unit": {
+            "en": "units a week",
+            "sw": "vipande kwa wiki"
+          },
           "hint": {
             "en": "A full container is 6,000 units at 150 each; you ship about 1,200 a week at 180. Committing volume moves your rate toward 150 — and your unsold capacity up.",
             "sw": "Kontena zima ni vipande 6,000 kwa 150 kila kimoja; wewe unasafirisha takribani 1,200 kwa wiki kwa 180. Kujitolea kiasi kunaisogeza bei yako kuelekea 150 — na uwezo usiouza unaongezeka."
@@ -2108,6 +2140,10 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "A full container — 6,000 units — booked outright costs 900,000, which is 150 a unit, and they will move your rate toward it as you commit more weekly volume. Your export line ships about 1,200 a week. Decide how much export capacity to commit toward filling containers.",
+        "sw": "Kontena zima — vipande 6,000 — likiwa limeagizwa lote ni 900,000, yaani 150 kwa kitengo, na wataisogeza bei yako kuelekea hapo unapojitolea kiasi kikubwa zaidi kwa wiki. Mstari wako wa nje unasafirisha takribani 1,200 kwa wiki. Amua ni uwezo kiasi gani wa nje wa kujitolea kuelekea kujaza kontena."
       }
     },
     {
@@ -2120,8 +2156,8 @@
       "scene": "truck",
       "unverified": true,
       "situation": {
-        "en": "Your customs broker mentions that goods qualifying for regional or preferential trade arrangements can clear at a lower duty rate than the standard schedule. Qualifying takes paperwork proving where your inputs actually came from.",
-        "sw": "Wakala wako wa forodha anataja kwamba bidhaa zinazokidhi masharti ya kikanda au ya upendeleo wa kibiashara zinaweza kupita kwa kiwango cha ushuru cha chini kuliko ratiba ya kawaida. Kukidhi masharti kunahitaji nyaraka zinazothibitisha malighafi yako ilitoka wapi hasa."
+        "en": "Proof of where goods come from may reduce duty. Compare the paperwork cost with the saving.",
+        "sw": "Uthibitisho wa asili ya bidhaa unaweza kupunguza ushuru. Linganisha gharama ya nyaraka na akiba."
       },
       "info": [
         {
@@ -2192,7 +2228,6 @@
               "dutyRate": "-0.045",
               "licenceFees": 7000
             },
-            "predictAnswer": "up_bit",
             "outcome": {
               "en": "The certificate is approved and qualifying shipments clear at the lower rate. Maintaining the proof of origin is a small, steady cost against a larger, steady saving.",
               "sw": "Cheti kinaidhinishwa na shehena zinazokidhi masharti zinapita kwa kiwango cha chini. Kudumisha ushahidi wa chanzo ni gharama ndogo, thabiti dhidi ya akiba kubwa, thabiti."
@@ -2213,7 +2248,6 @@
               "sw": "Hakuna nyaraka mpya. Hakuna akiba mpya pia."
             },
             "effects": {},
-            "predictAnswer": "same",
             "outcome": {
               "en": "Nothing changes. Shipments keep clearing at the standard duty rate, as they always have.",
               "sw": "Hakuna kinachobadilika. Shehena zinaendelea kupita kwa kiwango cha kawaida cha ushuru, kama zilivyokuwa daima."
@@ -2237,7 +2271,6 @@
               "dutyRate": "+0.03",
               "ownerHoursUsed": -3
             },
-            "predictAnswer": "down",
             "outcome": {
               "en": "The consolidator handles customs entirely, for a fee folded into a higher effective duty on every shipment. It is less work for you and a worse rate on everything you send.",
               "sw": "Consolidator anashughulikia forodha kikamilifu, kwa ada iliyoingizwa kwenye ushuru wa juu zaidi halisi kwa kila shehena. Ni kazi kidogo kwako na kiwango kibaya zaidi kwa kila unachotuma."
@@ -2248,6 +2281,10 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "Your customs broker mentions that goods qualifying for regional or preferential trade arrangements can clear at a lower duty rate than the standard schedule. Qualifying takes paperwork proving where your inputs actually came from. ",
+        "sw": "Wakala wako wa forodha anataja kwamba bidhaa zinazokidhi masharti ya kikanda au ya upendeleo wa kibiashara zinaweza kupita kwa kiwango cha ushuru cha chini kuliko ratiba ya kawaida. Kukidhi masharti kunahitaji nyaraka zinazothibitisha malighafi yako ilitoka wapi hasa. "
       }
     },
     {
@@ -2260,8 +2297,8 @@
       "scene": "office",
       "workout": true,
       "situation": {
-        "en": "The plant has cash it does not need this week. Domestic, regional and export each have a case for more of it, the household has a case, and a reserve has a case too. Nothing forces you to put it all in one place — and what leaves the plant now is not there for the five weeks after it.",
-        "sw": "Kiwanda kina pesa ambayo hakiihitaji wiki hii. Soko la ndani, la kikanda na la nje kila moja lina hoja ya kupata zaidi yake, kaya ina hoja, na akiba nayo ina hoja. Hakuna kinachokulazimisha kuweka yote mahali pamoja — na kinachotoka kiwandani sasa hakitakuwepo kwa wiki tano zinazofuata."
+        "en": "The plant has cash it does not need this week. Domestic, regional and export each have a case for more of it, the household has a case, and a reserve has a case too.",
+        "sw": "Kiwanda kina pesa ambayo hakiihitaji wiki hii. Soko la ndani, la kikanda na la nje kila moja lina hoja ya kupata zaidi yake, kaya ina hoja, na akiba nayo ina hoja."
       },
       "info": [
         {
@@ -2376,6 +2413,10 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "Nothing forces you to put it all in one place — and what leaves the plant now is not there for the five weeks after it.",
+        "sw": "Hakuna kinachokulazimisha kuweka yote mahali pamoja — na kinachotoka kiwandani sasa hakitakuwepo kwa wiki tano zinazofuata."
       }
     },
     {
@@ -2387,8 +2428,8 @@
       },
       "scene": "market",
       "situation": {
-        "en": "The Gulf distributor offers a bigger standing order in exchange for exclusivity — no other distributor in their territory. It is real volume, from one buyer who could change their mind, their prices, or their business.",
-        "sw": "Msambazaji wa Ghuba anatoa oda kubwa ya kudumu badala ya upendeleo wa kipekee — hakuna msambazaji mwingine katika eneo lao. Ni kiasi halisi, kutoka kwa mnunuzi mmoja anayeweza kubadilisha nia yake, bei zake, au biashara yake."
+        "en": "A buyer offers a larger order if you stop supplying their competitors. Compare the extra sales with dependence on one buyer.",
+        "sw": "Mnunuzi anatoa oda kubwa ukiacha kuuza kwa washindani wake. Linganisha mauzo ya ziada na kumtegemea mnunuzi mmoja."
       },
       "info": [
         {
@@ -2461,7 +2502,6 @@
               "reputation": 2,
               "concentrated": true
             },
-            "predictAnswer": "up_lot",
             "outcome": {
               "en": "The order is signed and volume grows at once. The export line now runs almost entirely through one buyer's decisions.",
               "sw": "Oda inasainiwa na kiasi kinakua mara moja. Mstari wa nje sasa unaendeshwa karibu kabisa na maamuzi ya mnunuzi mmoja."
@@ -2485,7 +2525,6 @@
               "lines.export.demand": "55",
               "lines.export.capacity": "55"
             },
-            "predictAnswer": "up_bit",
             "outcome": {
               "en": "The distributor accepts a smaller non-exclusive order. Growth is slower, and the export line is not resting on one relationship.",
               "sw": "Msambazaji anakubali oda ndogo isiyo ya kipekee. Ukuaji ni wa polepole, na mstari wa nje hautegemei uhusiano mmoja."
@@ -2506,7 +2545,6 @@
               "sw": "Hakuna mabadiliko upande wowote wiki hii."
             },
             "effects": {},
-            "predictAnswer": "same",
             "outcome": {
               "en": "You tell the distributor you need more time. The current order continues unchanged.",
               "sw": "Unamwambia msambazaji unahitaji muda zaidi. Oda ya sasa inaendelea bila kubadilika."
@@ -2517,6 +2555,10 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "The Gulf distributor offers a bigger standing order in exchange for exclusivity — no other distributor in their territory. It is real volume, from one buyer who could change their mind, their prices, or their business. ",
+        "sw": "Msambazaji wa Ghuba anatoa oda kubwa ya kudumu badala ya upendeleo wa kipekee — hakuna msambazaji mwingine katika eneo lao. Ni kiasi halisi, kutoka kwa mnunuzi mmoja anayeweza kubadilisha nia yake, bei zake, au biashara yake. "
       }
     },
     {
@@ -2528,8 +2570,8 @@
       },
       "scene": "kitchen",
       "situation": {
-        "en": "A second regional distributor is interested, but only above a minimum order quantity larger than anything you currently run. Meeting it means freeing up capacity that domestic and regional customers already use.",
-        "sw": "Msambazaji wa pili wa kikanda ana maslahi, lakini tu juu ya kiasi cha chini cha oda kikubwa kuliko chochote unachoendesha sasa. Kukikidhi kunamaanisha kuachia uwezo ambao wateja wa ndani na wa kikanda tayari wanautumia."
+        "en": "A new buyer sets a minimum order size. You would need to move existing work or buy more equipment.",
+        "sw": "Mnunuzi mpya anaweka kiwango cha chini cha oda. Utahitaji kuhamisha kazi iliyopo au kununua vifaa zaidi."
       },
       "info": [
         {
@@ -2600,7 +2642,6 @@
               "lines.domestic.capacity": "-300",
               "lines.domestic.demand": "-300"
             },
-            "predictAnswer": "down",
             "outcome": {
               "en": "Domestic sales fall right away because capacity moved out from under them. The line takes a fortnight to change over, so the export capacity it frees arrives later — and the distributor's first order has still not been confirmed.",
               "sw": "Mauzo ya ndani yanashuka mara moja kwa sababu uwezo umehamishwa chini yao. Mstari unachukua wiki mbili kubadilishwa, hivyo uwezo wa nje unaoachiliwa unafika baadaye — na oda ya kwanza ya msambazaji bado haijathibitishwa."
@@ -2625,17 +2666,17 @@
           {
             "id": "add-temporary-capacity",
             "label": {
-              "en": "Add capacity for the MOQ without touching domestic",
-              "sw": "Ongeza uwezo kwa MOQ bila kugusa soko la ndani"
+              "en": "Buy extra equipment for the order",
+              "sw": "Nunua vifaa zaidi kwa oda"
             },
             "detail": {
               "en": "A small equipment cost, and domestic customers are not affected.",
               "sw": "Gharama ndogo ya kifaa, na wateja wa ndani hawaguswi."
             },
             "effects": {
-              "assetValue": 1500000
+              "assetValue": 1500000,
+              "cash": -1500000
             },
-            "predictAnswer": "same",
             "outcome": {
               "en": "You order the extra equipment and it starts wearing down its value from the day you pay for it. Domestic and regional lines run exactly as before. The machine is installed a fortnight from now, and even then it earns nothing until an order fills it.",
               "sw": "Unaagiza vifaa vya ziada na vinaanza kupoteza thamani tangu siku unayolipia. Mistari ya ndani na kikanda inaendesha kama awali. Mashine inasimikwa baada ya wiki mbili, na hata hivyo haitapata chochote hadi oda itakapoijaza."
@@ -2668,7 +2709,6 @@
               "sw": "Hakuna uwezo mpya, hakuna ahadi mpya."
             },
             "effects": {},
-            "predictAnswer": "same",
             "outcome": {
               "en": "You tell the second distributor the volume is not a fit yet. The plant continues exactly as it was.",
               "sw": "Unamwambia msambazaji wa pili kiasi hicho bado hakikubaliani. Kiwanda kinaendelea kama kilivyokuwa."
@@ -2679,6 +2719,10 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "A second regional distributor is interested, but only above a minimum order quantity larger than anything you currently run. Meeting it means freeing up capacity that domestic and regional customers already use. ",
+        "sw": "Msambazaji wa pili wa kikanda ana maslahi, lakini tu juu ya kiasi cha chini cha oda kikubwa kuliko chochote unachoendesha sasa. Kukikidhi kunamaanisha kuachia uwezo ambao wateja wa ndani na wa kikanda tayari wanautumia. "
       }
     },
     {
@@ -2690,8 +2734,8 @@
       },
       "scene": "inspection",
       "situation": {
-        "en": "A container is flagged at the destination port over a documentation and residue check. It is held, not yet released, and the buyer is asking what happened and what you will do about it.",
-        "sw": "Kontena linazuiwa bandarini kwa ukaguzi wa nyaraka na masalia. Limezuiwa, bado halijatolewa, na mnunuzi anauliza nini kilitokea na utafanya nini kuhusu hilo."
+        "en": "A container is held at the port for checks. The buyer wants a response before placing another order.",
+        "sw": "Kontena limezuiliwa bandarini kwa ukaguzi. Mnunuzi anataka jibu kabla ya kutoa oda nyingine."
       },
       "info": [
         {
@@ -2755,8 +2799,8 @@
               "sw": "Bebea hasara na urekebishe mchakato uliosababisha"
             },
             "detail": {
-              "en": "The container is a loss. The buyer sees you take it seriously.",
-              "sw": "Kontena ni hasara. Mnunuzi anaona unaichukulia kwa uzito."
+              "en": "Pay for weekly checks and accept a smaller next order.",
+              "sw": "Lipia ukaguzi wa kila wiki na ukubali oda ndogo inayofuata."
             },
             "effects": {
               "hygiene": 8,
@@ -2765,10 +2809,9 @@
               "lines.export.demand": "-150",
               "lines.export.capacity": "-150"
             },
-            "predictAnswer": "down",
             "outcome": {
-              "en": "The container is written off and an extra check is added to the process. The buyer trims the next order while they watch to see if it happens again.",
-              "sw": "Kontena linafutwa na ukaguzi wa ziada unaongezwa kwenye mchakato. Mnunuzi anapunguza oda inayofuata wakati akiangalia kama itatokea tena."
+              "en": "Extra checks cost money each week. The buyer cuts orders while checking your next delivery; the model does not value a written-off container.",
+              "sw": "Ukaguzi wa ziada unagharimu kila wiki. Mnunuzi anapunguza oda akichunguza usafirishaji unaofuata; mfano haukokotoi thamani ya kontena lililofutwa."
             },
             "lesson": {
               "en": "A rejected container costs the goods and some trust, whatever you do next. Fixing the cause is what stops it from costing the relationship too.",
@@ -2790,7 +2833,6 @@
               "lines.export.demand": "-250",
               "lines.export.capacity": "-250"
             },
-            "predictAnswer": "down",
             "outcome": {
               "en": "The port's decision stands regardless. The buyer is now dealing with both a held container and a supplier who would not acknowledge it.",
               "sw": "Uamuzi wa bandari unabaki hata hivyo. Mnunuzi sasa anashughulikia kontena lililozuiwa na msambazaji ambaye hakukubali hilo."
@@ -2801,7 +2843,7 @@
             },
             "later": [
               {
-                "inWeeks": 3,
+                "inWeeks": 2,
                 "effects": {
                   "lines.export.demand": "-100"
                 },
@@ -2827,7 +2869,6 @@
               "licenceFees": 12000,
               "reputation": 4
             },
-            "predictAnswer": "same",
             "outcome": {
               "en": "You recall the batch and pay for an independent recheck before the next shipment goes out. It costs more this week than the other responses, and the buyer notices.",
               "sw": "Unarejesha kundi hilo na kulipia ukaguzi huru kabla shehena inayofuata haijasafirishwa. Kunagharimu zaidi wiki hii kuliko majibu mengine, na mnunuzi anaona."
@@ -2838,7 +2879,7 @@
             },
             "later": [
               {
-                "inWeeks": 4,
+                "inWeeks": 2,
                 "effects": {
                   "reputation": 6,
                   "lines.export.demand": "100"
@@ -2851,6 +2892,10 @@
             ]
           }
         ]
+      },
+      "situationDetails": {
+        "en": "A container is flagged at the destination port over a documentation and residue check. It is held, not yet released, and the buyer is asking what happened and what you will do about it. ",
+        "sw": "Kontena linazuiwa bandarini kwa ukaguzi wa nyaraka na masalia. Limezuiwa, bado halijatolewa, na mnunuzi anauliza nini kilitokea na utafanya nini kuhusu hilo. "
       }
     },
     {
@@ -2862,8 +2907,8 @@
       },
       "scene": "kitchen",
       "situation": {
-        "en": "The Gulf distributor offers a much larger order on the condition that it ships under their own brand, with no mention of your plant on the packaging. Your name and reputation stay a domestic and regional matter.",
-        "sw": "Msambazaji wa Ghuba anatoa oda kubwa zaidi kwa sharti kwamba isafirishwe chini ya chapa yao wenyewe, bila kutajwa kwa kiwanda chako kwenye ufungashaji. Jina lako na sifa yako vinabaki suala la ndani na kikanda."
+        "en": "A buyer offers a larger order under their own brand. Decide whose name goes on the pack.",
+        "sw": "Mnunuzi anatoa oda kubwa kwa chapa yake. Amua jina la nani liwe kwenye kifungashio."
       },
       "info": [
         {
@@ -2935,7 +2980,6 @@
               "lines.export.capacity": "55",
               "reputation": 3
             },
-            "predictAnswer": "up_bit",
             "outcome": {
               "en": "The distributor agrees to the smaller order, under your name. It grows slower, and whatever reputation it earns abroad belongs to the plant.",
               "sw": "Msambazaji anakubali oda ndogo, chini ya jina lako. Inakua polepole, na sifa yoyote inayopatikana nje ni ya kiwanda."
@@ -2960,7 +3004,6 @@
               "lines.export.capacity": "350",
               "reputation": -2
             },
-            "predictAnswer": "up_lot",
             "outcome": {
               "en": "The larger order is confirmed under the distributor's own brand. Volume grows sharply, and none of the credit for it reaches your name abroad.",
               "sw": "Oda kubwa zaidi inathibitishwa chini ya chapa ya msambazaji mwenyewe. Kiasi kinakua sana, na hakuna sifa yake inayofikia jina lako nje."
@@ -2981,7 +3024,6 @@
               "sw": "Hakuna ahadi mpya upande wowote wiki hii."
             },
             "effects": {},
-            "predictAnswer": "same",
             "outcome": {
               "en": "You tell the distributor you need more time to consider it. The current order continues as before.",
               "sw": "Unamwambia msambazaji unahitaji muda zaidi kufikiria. Oda ya sasa inaendelea kama awali."
@@ -2992,6 +3034,10 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "The Gulf distributor offers a much larger order on the condition that it ships under their own brand, with no mention of your plant on the packaging. Your name and reputation stay a domestic and regional matter. ",
+        "sw": "Msambazaji wa Ghuba anatoa oda kubwa zaidi kwa sharti kwamba isafirishwe chini ya chapa yao wenyewe, bila kutajwa kwa kiwanda chako kwenye ufungashaji. Jina lako na sifa yako vinabaki suala la ndani na kikanda. "
       }
     },
     {
@@ -3003,8 +3049,8 @@
       },
       "scene": "night",
       "situation": {
-        "en": "Export orders are at record levels. The profit line looks better than it ever has. When you count the bank, the cash is tighter than it has been all year. Read the ledger before you decide what to do.",
-        "sw": "Oda za nje ziko kwenye kiwango cha rekodi. Mstari wa faida unaonekana bora kuliko ulivyowahi kuwa. Ukihesabu benki, pesa ni ngumu zaidi kuliko ilivyokuwa mwaka mzima. Soma daftari kabla ya kuamua hatua."
+        "en": "Larger orders can leave more money with customers. Compare collecting payment with taking another order.",
+        "sw": "Oda kubwa zinaweza kuacha pesa zaidi kwa wateja. Linganisha kukusanya malipo na kuchukua oda nyingine."
       },
       "info": [
         {
@@ -3097,7 +3143,6 @@
             "effects": {
               "debtorWeeks": 3
             },
-            "predictAnswer": "same",
             "outcome": {
               "en": "Buyers agree, some more readily than others, to shorter terms going forward. Profit does not move, and less of it will sit outside the plant.",
               "sw": "Wanunuzi wanakubali, wengine kwa urahisi zaidi kuliko wengine, masharti mafupi zaidi kuendelea mbele. Faida haibadiliki, na kidogo zaidi yake itakaa nje ya kiwanda."
@@ -3121,7 +3166,6 @@
               "lines.export.demand": "150",
               "lines.export.capacity": "150"
             },
-            "predictAnswer": "up_lot",
             "outcome": {
               "en": "More orders are confirmed on the same credit terms. Profit rises sharply, and an even larger share of it is now sitting with buyers who have not paid.",
               "sw": "Oda zaidi zinathibitishwa kwa masharti yaleyale ya mkopo. Faida inapanda sana, na sehemu kubwa zaidi yake sasa inakaa kwa wanunuzi ambao hawajalipa."
@@ -3145,7 +3189,6 @@
               "lines.export.demand": "-150",
               "lines.export.capacity": "-150"
             },
-            "predictAnswer": "down",
             "outcome": {
               "en": "New export volume is turned away for now. This week's sales are smaller, and the collections effort has nothing new competing with it for attention.",
               "sw": "Kiasi kipya cha nje kinakataliwa kwa sasa. Mauzo ya wiki hii ni madogo, na jitihada za kukusanya hazina kitu kipya kinachoshindana nazo kwa umakini."
@@ -3156,6 +3199,10 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "Export orders are at record levels. The profit line looks better than it ever has. When you count the bank, the cash is tighter than it has been all year. Read the ledger before you decide what to do.",
+        "sw": "Oda za nje ziko kwenye kiwango cha rekodi. Mstari wa faida unaonekana bora kuliko ulivyowahi kuwa. Ukihesabu benki, pesa ni ngumu zaidi kuliko ilivyokuwa mwaka mzima. Soma daftari kabla ya kuamua hatua."
       }
     }
   ]

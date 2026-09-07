@@ -158,9 +158,8 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font);
-  font-size: 17px;
+  font-size: 1.0625rem;
   line-height: 1.5;
-  overflow-x: hidden;
 }
 
 h1 { font-size: 1.05rem; margin: 0; font-weight: 650; letter-spacing: -0.01em; }
@@ -202,19 +201,9 @@ ul { margin: 0; padding-left: 1.1em; }
   color: var(--text-muted);
 }
 
-.progress {
-  height: 5px;
-  background: var(--border);
-  border-radius: 99px;
-  overflow: hidden;
-  margin-bottom: 12px;
-}
-.progress-bar {
-  height: 100%;
-  background: var(--accent-2);
-  border-radius: 99px;
-  transition: width 400ms ease;
-}
+.progress { margin-bottom: 12px; }
+.progress-bar { height: 5px; background: var(--accent-2); border-radius: 99px; }
+.episode-progress { margin: 6px 0; font-size: .9rem; font-weight: 650; }
 
 .scene {
   margin-bottom: 12px;
@@ -578,7 +567,8 @@ ul { margin: 0; padding-left: 1.1em; }
 /* Evidence with no money figure — a step of a process, a cost driver. It sits where the
    amount would, so the options still read as one column of labels and one of evidence. */
 .diagnose-detail {
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
   font-size: 0.83rem;
   color: var(--text-muted);
 }
@@ -634,10 +624,12 @@ ul { margin: 0; padding-left: 1.1em; }
 }
 .predict-choices {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 8px;
 }
 .predict-choice {
+  min-width: 0;
+  overflow-wrap: anywhere;
   min-height: var(--tap);
   padding: 11px 8px;
   background: var(--surface-alt);
@@ -1396,3 +1388,39 @@ ul { margin: 0; padding-left: 1.1em; }
 .ledger-row.cash-flow.negative { color: var(--danger); }
 
 .ledger.mix { margin-top: 12px; }
+
+/* Episode interface: controls stay usable with narrow screens and large text. */
+.topbar { position: static; display: block; }
+.topbar-actions { flex-wrap: wrap; gap: 4px; }
+.btn-small, .lang-btn, summary, .stepper-button { min-height: 48px; }
+summary { cursor: pointer; padding: 10px 0; font-weight: 650; }
+.stepper-controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.number-entry { font: inherit; width: 100%; min-width: 0; min-height: 48px; padding: 8px; color: var(--text); background: var(--surface); border: 2px solid var(--border); border-radius: 8px; }
+.stepper-controls .number-entry { flex: 1 1 120px; }
+.option.selected { border: 3px solid var(--accent); }
+.episode-progress { font-weight: 650; }
+.result-headline { font-size: 1.1rem; font-weight: 700; }
+#decision { scroll-margin-top: 10px; }
+#decision:focus { outline: none; }
+#save-status { width: 100%; font-size: .85rem; }
+.ledger-row { grid-template-columns: minmax(0, 1fr) auto; }
+.ledger-bar { display: none; }
+.ledger-value, .worth-value, .compare-value, .workout-value { white-space: normal; overflow-wrap: anywhere; min-width: 0; }
+.workout-row, .worth-row { flex-wrap: wrap; }
+* { overflow-wrap: break-word; }
+button, input, summary { touch-action: manipulation; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+@media (max-width: 380px) { .stats { grid-template-columns: 1fr 1fr; } .compare-row { gap: 4px; } }
+@media print { .print-record[hidden] { display: block !important; } }
+
+.diagnose-detail { grid-column: 1 / -1; min-width: 0; }
+.diagnose-value { white-space: normal; overflow-wrap: anywhere; }
+.business-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0; }
+.business-fact { background: var(--surface-alt); border-radius: 8px; padding: 8px; min-width: 0; }
+.business-fact span { display: block; font-size: .8rem; }
+.business-fact strong { font-variant-numeric: tabular-nums; }
+.secondary-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+.fact-amount { display: block; width: 100%; height: 12px; }
+/* Motion must not push a task beyond the edge of a small screen. */
+.is-pulsing, .slide-up { animation: none; }

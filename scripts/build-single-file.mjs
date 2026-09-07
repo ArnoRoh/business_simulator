@@ -99,35 +99,13 @@ let js = MODULES.map(([name, path]) => {
   return wrapModule(name, src, injectionsFor(src));
 }).join('\n');
 
-// Replace the network fetches with the embedded content, and make startup work whether
-// or not DOMContentLoaded has already fired (it usually has, in an embedded page).
-// Must consume the catch block too — matching only as far as the end of `try`
-// leaves the original `catch` dangling and the script fails to parse.
-const before = js;
-js = js.replace(
-  /let strings;\s*let manifest;\s*try \{[\s\S]*?\} catch \(err\) \{[\s\S]*?\n  \}/,
-  '  const strings = EMBEDDED_UI;\n  const manifest = EMBEDDED_CHAPTERS;',
-);
-if (js === before) throw new Error('startup-fetch block not found — did main.js change?');
-
-// The per-chapter fetch, served from the embedded map instead. The guard stays: a
-// chapter in the manifest with no content must show the "not ready" card, not throw.
-const beforeChapter = js;
-js = js.replace(
-  /let loaded;\s*try \{\s*const res = await fetch\([\s\S]*?\} catch \(err\) \{[\s\S]*?\n  \}/,
-  `  const loaded = EMBEDDED_SCENARIOS[chapter.file];
-  if (!loaded) {
-    ui.clear(dom.decision);
-    dom.situation.appendChild(ui.el('div', 'card', t('chapter.unavailable')));
-    return;
-  }`,
-);
-if (js === beforeChapter) throw new Error('chapter-fetch block not found — did main.js change?');
-js = js.replace(
-  "document.addEventListener('DOMContentLoaded', init);",
-  `if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-  else init();`,
-);
+// Embedded content uses the same bootstrap and chapter loading paths as the PWA.
+const embeddedFetch = `
+const fetch = async (input, init) => {
+  const name = String(input).split('/').pop();
+  const value = name === 'ui.json' ? EMBEDDED_UI : name === 'chapters.json' ? EMBEDDED_CHAPTERS : EMBEDDED_SCENARIOS[name];
+  return value ? new Response(JSON.stringify(value), { headers: { 'Content-Type': 'application/json' } }) : globalThis.fetch(input, init);
+};`;
 
 // Extract the markup between <body> and </body> from the real index.html, so the two
 // stay in step rather than being maintained twice.
@@ -163,6 +141,7 @@ ${bodyInner}
   const EMBEDDED_CHAPTERS = ${chaptersJson.trim()};
   const EMBEDDED_SCENARIOS = ${JSON.stringify(scenarios)};
   const EMBEDDED_UI = ${uiStrings.trim()};
+${embeddedFetch}
 ${js}
 })();
 </script>

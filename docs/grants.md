@@ -1,7 +1,7 @@
 # Grant and training pipelines
 
 > **Status:** first draft, and **substantially blocked on
-> [Q-002](../memory/OPEN_QUESTIONS.md)** — we do not yet know which programme this feeds.
+> the staged programme** — its direction is agreed, while dates, intake and review operations remain unresolved.
 > Until that is answered, this describes intent rather than a specification.
 
 How simulator output is meant to reach the programmes that select and fund
@@ -98,7 +98,7 @@ is a small benefit and a real one.
 
 ## Integration, once we know the consumer
 
-Deliberately unspecified pending [Q-002](../memory/OPEN_QUESTIONS.md). Likely forms, in
+The local game record supports deliberate share, download and print. External intake is proposed under ADR-0008. Earlier candidate forms, in
 order of increasing commitment:
 
 1. **Printable / PDF profile** the learner carries to an application. Works with any
@@ -127,7 +127,7 @@ arrangement. Non-negotiable:
 
 ## Open
 
-- **[Q-002]** Which programme, and what can it actually ingest — blocks most of this.
+- Programme intake and evaluation need the separate [follow-up plan](./MV-BS-PLAN-002-programme-follow-up.md).
 - **[Q-008]** Data protection, consent and hosting once records affect funding.
 - **[Q-003]** Predictive validity. Without it, everything above is offered as a
   hypothesis, and should be described that way to partners.

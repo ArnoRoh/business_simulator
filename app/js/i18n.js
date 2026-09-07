@@ -20,7 +20,6 @@ const FALLBACK = 'en';
 
 let language = FALLBACK;
 let strings = {};
-let onChange = null;
 
 export function loadStrings(table) {
   strings = table || {};
@@ -30,7 +29,6 @@ export function setLanguage(code) {
   if (!LANGUAGES.some((l) => l.code === code)) return language;
   language = code;
   if (typeof document !== 'undefined') document.documentElement.lang = code;
-  if (onChange) onChange(code);
   return language;
 }
 
@@ -38,9 +36,6 @@ export function getLanguage() {
   return language;
 }
 
-export function onLanguageChange(fn) {
-  onChange = fn;
-}
 
 /**
  * Pick the right variant out of a localised value.
@@ -104,9 +99,4 @@ export function tCount(key, n, params = {}) {
   if (strings[other] !== undefined) return t(other, withCount);
 
   return t(key, withCount);
-}
-
-/** Every key the string table knows about — used by the parity check. */
-export function knownKeys() {
-  return Object.keys(strings);
 }

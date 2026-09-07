@@ -15,8 +15,9 @@ You will get an acknowledgement, and we will tell you what we intend to do about
 
 There is no bounty programme. This is a small grant-funded project.
 
-**Current status:** there is no application code and no deployed system yet, so there is
-nothing running to attack. This policy exists ahead of that.
+**Current status:** a static browser application is deployed. Learner attempts stay in
+local browser storage. Sharing, printing and download require a learner action.
+There is no application backend or automated record upload.
 
 ---
 

@@ -1,6 +1,6 @@
 {
   "id": "factory",
-  "version": 1,
+  "version": 2,
   "unverified": true,
   "title": {
     "en": "Asha's Factory",
@@ -12,7 +12,10 @@
   },
   "currency": "TZS",
   "_bandsNote": "Opening weekly profit is about TZS 788,000. The stall's 1,500/12,000 edges would call almost everything 'up a lot'. Scaled here so all four prediction outcomes are reachable across the chapter's options: 'same' within 40,000, 'up a lot' beyond 300,000.",
-  "bands": { "same": 40000, "lot": 300000 },
+  "bands": {
+    "same": 40000,
+    "lot": 300000
+  },
   "startState": {
     "cash": 15000000,
     "spoilRate": 0.15,
@@ -37,16 +40,48 @@
     "inventoryWeeks": 2,
     "creditorWeeks": 2,
     "lines": [
-      { "id": "loaves", "label": { "en": "Wholesale loaves", "sw": "Mikate ya jumla" }, "price": 900, "unitCost": 620, "demand": 9000, "capacity": 9000 },
-      { "id": "buns", "label": { "en": "Buns", "sw": "Maandazi ya kiwanda" }, "price": 400, "unitCost": 250, "demand": 6000, "capacity": 6000 },
-      { "id": "premium", "label": { "en": "Premium line", "sw": "Bidhaa za hali ya juu" }, "price": 2500, "unitCost": 1500, "demand": 800, "capacity": 800 }
+      {
+        "id": "loaves",
+        "label": {
+          "en": "Wholesale loaves",
+          "sw": "Mikate ya jumla"
+        },
+        "price": 900,
+        "unitCost": 620,
+        "demand": 9000,
+        "capacity": 9000
+      },
+      {
+        "id": "buns",
+        "label": {
+          "en": "Buns",
+          "sw": "Maandazi ya kiwanda"
+        },
+        "price": 400,
+        "unitCost": 250,
+        "demand": 6000,
+        "capacity": 6000
+      },
+      {
+        "id": "premium",
+        "label": {
+          "en": "Premium line",
+          "sw": "Bidhaa za hali ya juu"
+        },
+        "price": 2500,
+        "unitCost": 1500,
+        "demand": 800,
+        "capacity": 800
+      }
     ]
   },
   "carryIn": [
     {
       "flag": "builtTeam",
       "when": true,
-      "startState": { "ownerHoursFixed": 27 },
+      "startState": {
+        "ownerHoursFixed": 27
+      },
       "note": {
         "en": "You have delegated real decisions before, at the bakery. Handing authority to a factory supervisor is not a new muscle.",
         "sw": "Umeshawahi kukabidhi maamuzi halisi hapo awali, kwenye bakery. Kumkabidhi mamlaka msimamizi wa kiwanda si kitu kipya kwako."
@@ -55,7 +90,9 @@
     {
       "flag": "tookCredit",
       "when": true,
-      "startState": { "interestRate": 0.2 },
+      "startState": {
+        "interestRate": 0.2
+      },
       "note": {
         "en": "The bank saw you take a loan and repay it before. The factory's term loan carries a slightly better rate because of it.",
         "sw": "Benki iliona ulichukua mkopo na kuulipa hapo awali. Mkopo wa muda mrefu wa kiwanda una riba nafuu kidogo kwa sababu hiyo."
@@ -64,7 +101,9 @@
     {
       "flag": "keepsRecords",
       "when": true,
-      "startState": { "cash": 15800000 },
+      "startState": {
+        "cash": 15800000
+      },
       "note": {
         "en": "Clean books from the bakery made the lease and the loan easier to arrange. You start with a little more cash because of it.",
         "sw": "Vitabu safi kutoka bakery vilirahisisha mpangilio wa kukodi jengo na mkopo. Unaanza na pesa kidogo zaidi kwa sababu hiyo."
@@ -148,10 +187,34 @@
         "sw": "Faida yako ya wiki itakuwaje?"
       },
       "predictChoices": [
-        { "id": "up_lot", "label": { "en": "Up a lot", "sw": "Inapanda sana" } },
-        { "id": "up_bit", "label": { "en": "Up a little", "sw": "Inapanda kidogo" } },
-        { "id": "same", "label": { "en": "About the same", "sw": "Inabaki vilevile" } },
-        { "id": "down", "label": { "en": "Goes down", "sw": "Inashuka" } }
+        {
+          "id": "up_lot",
+          "label": {
+            "en": "Up a lot",
+            "sw": "Inapanda sana"
+          }
+        },
+        {
+          "id": "up_bit",
+          "label": {
+            "en": "Up a little",
+            "sw": "Inapanda kidogo"
+          }
+        },
+        {
+          "id": "same",
+          "label": {
+            "en": "About the same",
+            "sw": "Inabaki vilevile"
+          }
+        },
+        {
+          "id": "down",
+          "label": {
+            "en": "Goes down",
+            "sw": "Inashuka"
+          }
+        }
       ],
       "options": [
         {
@@ -168,7 +231,6 @@
             "debtorWeeks": "-1",
             "cash": 2500000
           },
-          "predictAnswer": "same",
           "outcome": {
             "en": "The distributor pays part of an old invoice. The factory keeps running and the time your money sits with customers shortens.",
             "sw": "Msambazaji analipa sehemu ya ankara ya zamani. Kiwanda kinaendelea kufanya kazi na muda ambao pesa yako inakaa kwa wateja unapungua."
@@ -192,7 +254,6 @@
             "lines.buns.capacity": "-1500",
             "rent": "-100000"
           },
-          "predictAnswer": "down",
           "outcome": {
             "en": "Buns volume falls and the factory gives up part of its premises cost. Weekly profit drops, but wages and the loan stay serviced.",
             "sw": "Kiasi cha maandazi kinashuka na kiwanda kinaacha sehemu ya gharama ya eneo. Faida ya wiki inashuka, lakini mishahara na mkopo vinaendelea kulipwa."
@@ -218,7 +279,6 @@
             "lines.loaves.capacity": "-500",
             "repayPerWeek": "-30000"
           },
-          "predictAnswer": "down",
           "outcome": {
             "en": "You turn an asset into cash. The factory can move less loaves volume, but the weekly repayment is lighter and distributors collect their own orders.",
             "sw": "Unageuza mali kuwa pesa. Kiwanda kinaweza kusafirisha kiasi kidogo cha mikate, lakini marejesho ya wiki yanapungua na wasambazaji wanachukua oda zao wenyewe."
@@ -241,8 +301,8 @@
       },
       "scene": "kitchen",
       "situation": {
-        "en": "A distributor asks whether you can supply loaves every week instead of when they call. The premium line sells far fewer units but leaves much more on each one. You cannot chase both at once with the same hours.",
-        "sw": "Msambazaji anauliza kama unaweza kusambaza mikate kila wiki badala ya wanapopiga simu. Mstari wa bidhaa za hali ya juu unauza vipande vichache zaidi lakini unaacha zaidi kwa kila kimoja. Huwezi kufukuza vyote viwili kwa masaa yaleyale."
+        "en": "A distributor asks whether you can supply loaves every week instead of when they call. The premium line sells far fewer units but leaves much more on each one.",
+        "sw": "Msambazaji anauliza kama unaweza kusambaza mikate kila wiki badala ya wanapopiga simu. Mstari wa bidhaa za hali ya juu unauza vipande vichache zaidi lakini unaacha zaidi kwa kila kimoja."
       },
       "info": [
         {
@@ -269,10 +329,34 @@
           "sw": "Faida yako ya wiki itakuwaje?"
         },
         "predictChoices": [
-          { "id": "up_lot", "label": { "en": "Up a lot", "sw": "Inapanda sana" } },
-          { "id": "up_bit", "label": { "en": "Up a little", "sw": "Inapanda kidogo" } },
-          { "id": "same", "label": { "en": "About the same", "sw": "Inabaki vilevile" } },
-          { "id": "down", "label": { "en": "Goes down", "sw": "Inashuka" } }
+          {
+            "id": "up_lot",
+            "label": {
+              "en": "Up a lot",
+              "sw": "Inapanda sana"
+            }
+          },
+          {
+            "id": "up_bit",
+            "label": {
+              "en": "Up a little",
+              "sw": "Inapanda kidogo"
+            }
+          },
+          {
+            "id": "same",
+            "label": {
+              "en": "About the same",
+              "sw": "Inabaki vilevile"
+            }
+          },
+          {
+            "id": "down",
+            "label": {
+              "en": "Goes down",
+              "sw": "Inashuka"
+            }
+          }
         ],
         "options": [
           {
@@ -289,7 +373,6 @@
               "lines.loaves.capacity": "+900",
               "lines.loaves.demand": "+900"
             },
-            "predictAnswer": "up_bit",
             "outcome": {
               "en": "The distributor takes the extra loaves every week. Each one leaves less than a premium item, but the standing order fills the ovens well.",
               "sw": "Msambazaji anachukua mikate ya ziada kila wiki. Kila mmoja unaacha kidogo kuliko bidhaa ya hali ya juu, lakini oda ya kudumu inajaza oveni vizuri."
@@ -313,7 +396,6 @@
               "lines.premium.capacity": "+30",
               "lines.premium.demand": "+30"
             },
-            "predictAnswer": "same",
             "outcome": {
               "en": "A small number of extra premium orders fit into the plan. The margin is strong, but there are not yet enough of them to move the week much.",
               "sw": "Oda chache za ziada za bidhaa za hali ya juu zinaingia kwenye mpango. Margin ni nzuri, lakini bado hazitoshi kubadilisha wiki sana."
@@ -326,8 +408,8 @@
           {
             "id": "shift-without-orders",
             "label": {
-              "en": "Move packing time from buns to loaves on a guess",
-              "sw": "Hamisha muda wa kufunga kutoka maandazi kwenda mikate kwa kubahatisha"
+              "en": "Move packing time to loaves before orders arrive",
+              "sw": "Hamisha muda wa ufungashaji kwenda mikate kabla ya oda kufika"
             },
             "detail": {
               "en": "No new order for either line. Just a bet on which sells faster.",
@@ -337,7 +419,6 @@
               "lines.buns.capacity": "-500",
               "lines.loaves.capacity": "+500"
             },
-            "predictAnswer": "down",
             "outcome": {
               "en": "Buns customers wait longer and some orders go unmet, while the extra loaves capacity has no matching order and sits unsold.",
               "sw": "Wateja wa maandazi wanasubiri zaidi na baadhi ya oda hazitimizwi, huku uwezo wa ziada wa mikate ukikaa bila kuuzwa kwa sababu hauna oda inayolingana."
@@ -348,6 +429,10 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "You cannot chase both at once with the same hours.",
+        "sw": "Huwezi kufukuza vyote viwili kwa masaa yaleyale."
       }
     },
     {
@@ -359,8 +444,8 @@
       },
       "scene": "kitchen",
       "situation": {
-        "en": "A consultant suggests a second buns mixer to raise throughput. No new orders are confirmed yet. A nearby factory installed a second line last year with no order behind it either; it ran at less than half capacity and nearly sank them.",
-        "sw": "Mshauri anapendekeza mashine ya pili ya kuchanganya maandazi ili kuongeza uzalishaji. Hakuna oda mpya iliyothibitishwa bado. Kiwanda kingine karibu kiliweka mstari wa pili mwaka jana bila oda nyuma yake pia; kilifanya kazi kwa chini ya nusu ya uwezo wake na karibu kikazama."
+        "en": "A consultant suggests a second buns mixer to raise throughput. No new orders are confirmed yet.",
+        "sw": "Mshauri anapendekeza mashine ya pili ya kuchanganya maandazi ili kuongeza uzalishaji. Hakuna oda mpya iliyothibitishwa bado."
       },
       "info": [
         {
@@ -388,16 +473,40 @@
           "sw": "Faida yako ya wiki itakuwaje?"
         },
         "predictChoices": [
-          { "id": "up_lot", "label": { "en": "Up a lot", "sw": "Inapanda sana" } },
-          { "id": "up_bit", "label": { "en": "Up a little", "sw": "Inapanda kidogo" } },
-          { "id": "same", "label": { "en": "About the same", "sw": "Inabaki vilevile" } },
-          { "id": "down", "label": { "en": "Goes down", "sw": "Inashuka" } }
+          {
+            "id": "up_lot",
+            "label": {
+              "en": "Up a lot",
+              "sw": "Inapanda sana"
+            }
+          },
+          {
+            "id": "up_bit",
+            "label": {
+              "en": "Up a little",
+              "sw": "Inapanda kidogo"
+            }
+          },
+          {
+            "id": "same",
+            "label": {
+              "en": "About the same",
+              "sw": "Inabaki vilevile"
+            }
+          },
+          {
+            "id": "down",
+            "label": {
+              "en": "Goes down",
+              "sw": "Inashuka"
+            }
+          }
         ],
         "options": [
           {
             "id": "buy-second-mixer-now",
             "label": {
-              "en": "Buy the second mixer now, on spec",
+              "en": "Buy the second mixer now, before new orders",
               "sw": "Nunua mashine ya pili sasa, kwa matumaini"
             },
             "detail": {
@@ -406,9 +515,9 @@
             },
             "effects": {
               "assetValue": "+8000000",
-              "lines.premium.capacity": "+300"
+              "lines.premium.capacity": "+300",
+              "cash": -8000000
             },
-            "predictAnswer": "down",
             "outcome": {
               "en": "The mixer is installed, but demand has not grown to match it. Most of the extra output goes unsold, and the machine's weekly depreciation runs whether it is used or not.",
               "sw": "Mashine imewekwa, lakini mahitaji hayajakua kulingana nayo. Uzalishaji mwingi wa ziada hauuzwi, na uchakavu wa wiki wa mashine unaendelea ikiwa na kazi au la."
@@ -429,7 +538,6 @@
               "sw": "Hakuna mashine mpya bado. Hakuna gharama mpya pia."
             },
             "effects": {},
-            "predictAnswer": "same",
             "outcome": {
               "en": "Nothing changes this week. The factory keeps its current capacity and keeps watching for a real order large enough to justify the machine.",
               "sw": "Hakuna kinachobadilika wiki hii. Kiwanda kinaendelea na uwezo wake wa sasa na kinaendelea kuangalia oda halisi kubwa ya kutosha kuhalalisha mashine."
@@ -446,15 +554,14 @@
               "sw": "Kodi uwezo wa muda mfupi kwa oda iliyothibitishwa ya mstari wa hali ya juu"
             },
             "detail": {
-              "en": "A real order first, and equipment sized to fit it.",
-              "sw": "Oda halisi kwanza, na vifaa vilivyopimwa kulingana nayo."
+              "en": "Rent for two weeks to fill a confirmed order. The extra capacity and rental payment then end.",
+              "sw": "Kodi kwa wiki mbili kutimiza oda iliyothibitishwa. Uwezo wa ziada na malipo ya kodi yanaisha baada ya hapo."
             },
             "effects": {
               "rent": "+40000",
               "lines.premium.capacity": "+150",
               "lines.premium.demand": "+150"
             },
-            "predictAnswer": "up_bit",
             "outcome": {
               "en": "The rented capacity matches an order that already exists. The weekly rental cost is real, but every unit it makes has a buyer.",
               "sw": "Uwezo uliokodiwa unalingana na oda iliyopo tayari. Gharama ya wiki ya kukodi ni halisi, lakini kila kipande kinachozalishwa kina mnunuzi."
@@ -462,9 +569,27 @@
             "lesson": {
               "en": "Sizing capacity to a confirmed order, even a rented and temporary one, absorbs its fixed cost from the first week.",
               "sw": "Kupima uwezo kulingana na oda iliyothibitishwa, hata ikiwa ni ya kukodi na ya muda, unabeba gharama yake isiyobadilika tangu wiki ya kwanza."
-            }
+            },
+            "later": [
+              {
+                "inWeeks": 3,
+                "effects": {
+                  "rent": "-40000",
+                  "lines.premium.capacity": "-150",
+                  "lines.premium.demand": "-150"
+                },
+                "cause": {
+                  "en": "the two-week rental and order ending",
+                  "sw": "kumalizika kwa kodi na oda ya wiki mbili"
+                }
+              }
+            ]
           }
         ]
+      },
+      "situationDetails": {
+        "en": "A nearby factory installed a second line last year with no order behind it either; it ran at less than half capacity and nearly sank them.",
+        "sw": "Kiwanda kingine karibu kiliweka mstari wa pili mwaka jana bila oda nyuma yake pia; kilifanya kazi kwa chini ya nusu ya uwezo wake na karibu kikazama."
       }
     },
     {
@@ -476,8 +601,8 @@
       },
       "scene": "kitchen",
       "situation": {
-        "en": "You spend a full day watching the floor. Mixing finishes early and the ovens run steadily, but pallets pile up at the loading bay while the packing table works through them one at a time.",
-        "sw": "Unatumia siku nzima ukiangalia eneo la uzalishaji. Uchanganyaji unamalizika mapema na oveni zinafanya kazi kwa utaratibu, lakini mizigo inarundikana eneo la kupakia huku meza ya ufungashaji ikiifanyia kazi kimoja baada ya kingine."
+        "en": "Compare confirmed orders with what the factory can make. Which fact limits the order you can fill now?",
+        "sw": "Linganisha oda zilizothibitishwa na uwezo wa kiwanda. Ni ukweli gani unaozuia oda unayoweza kutimiza sasa?"
       },
       "info": [
         {
@@ -496,30 +621,54 @@
       ],
       "diagnose": {
         "prompt": {
-          "en": "Which step is actually capping how much you can sell?",
-          "sw": "Ni hatua gani hasa inayozuia kiasi unachoweza kuuza?"
+          "en": "Compare what customers want with what you can make. Which is the tighter limit now?",
+          "sw": "Linganisha mahitaji ya wateja na uwezo wa kutengeneza. Ni kipi kinaweka kikomo sasa?"
         },
         "answer": "packing",
         "options": [
           {
             "id": "mixing",
-            "label": { "en": "Mixing", "sw": "Uchanganyaji" },
-            "detail": { "en": "Finishes early", "sw": "Inamaliza mapema" }
+            "label": {
+              "en": "Mixing",
+              "sw": "Uchanganyaji"
+            },
+            "detail": {
+              "en": "Finishes early",
+              "sw": "Inamaliza mapema"
+            }
           },
           {
             "id": "baking",
-            "label": { "en": "Baking", "sw": "Uokaji" },
-            "detail": { "en": "Runs steadily all day", "sw": "Inaendelea kwa utaratibu siku nzima" }
+            "label": {
+              "en": "Baking",
+              "sw": "Uokaji"
+            },
+            "detail": {
+              "en": "Runs steadily all day",
+              "sw": "Inaendelea kwa utaratibu siku nzima"
+            }
           },
           {
             "id": "packing",
-            "label": { "en": "Packing", "sw": "Ufungashaji" },
-            "detail": { "en": "Pallets pile up waiting", "sw": "Marundo yanarundikana yakisubiri" }
+            "label": {
+              "en": "Packing",
+              "sw": "Ufungashaji"
+            },
+            "detail": {
+              "en": "Pallets pile up waiting",
+              "sw": "Marundo yanarundikana yakisubiri"
+            }
           },
           {
             "id": "delivery",
-            "label": { "en": "Delivery", "sw": "Usafirishaji" },
-            "detail": { "en": "Waits for packed pallets", "sw": "Inasubiri marundo yaliyofungashwa" }
+            "label": {
+              "en": "Delivery",
+              "sw": "Usafirishaji"
+            },
+            "detail": {
+              "en": "Waits for packed pallets",
+              "sw": "Inasubiri marundo yaliyofungashwa"
+            }
           }
         ],
         "right": {
@@ -529,7 +678,8 @@
         "wrong": {
           "en": "That stage keeps up with the rest of the floor. The bottleneck is wherever product piles up waiting, not the stage that looks or sounds the busiest.",
           "sw": "Hatua hiyo inaendana na eneo lingine la uzalishaji. Kizuizi ni pale bidhaa inaporundikana ikisubiri, si hatua inayoonekana au kusikika na shughuli nyingi zaidi."
-        }
+        },
+        "liveConstraint": true
       },
       "decision": {
         "prompt": {
@@ -541,10 +691,34 @@
           "sw": "Faida yako ya wiki itakuwaje?"
         },
         "predictChoices": [
-          { "id": "up_lot", "label": { "en": "Up a lot", "sw": "Inapanda sana" } },
-          { "id": "up_bit", "label": { "en": "Up a little", "sw": "Inapanda kidogo" } },
-          { "id": "same", "label": { "en": "About the same", "sw": "Inabaki vilevile" } },
-          { "id": "down", "label": { "en": "Goes down", "sw": "Inashuka" } }
+          {
+            "id": "up_lot",
+            "label": {
+              "en": "Up a lot",
+              "sw": "Inapanda sana"
+            }
+          },
+          {
+            "id": "up_bit",
+            "label": {
+              "en": "Up a little",
+              "sw": "Inapanda kidogo"
+            }
+          },
+          {
+            "id": "same",
+            "label": {
+              "en": "About the same",
+              "sw": "Inabaki vilevile"
+            }
+          },
+          {
+            "id": "down",
+            "label": {
+              "en": "Goes down",
+              "sw": "Inashuka"
+            }
+          }
         ],
         "options": [
           {
@@ -557,8 +731,9 @@
               "en": "Confirm the bottleneck with numbers before acting on it.",
               "sw": "Thibitisha kizuizi kwa nambari kabla ya kuchukua hatua."
             },
-            "effects": { "ownerHoursUsed": 3 },
-            "predictAnswer": "same",
+            "effects": {
+              "ownerHoursUsed": 3
+            },
             "outcome": {
               "en": "The week of timing confirms what the walk-through suggested. Nothing about production changes yet, but the next spending decision now rests on evidence.",
               "sw": "Wiki ya kupima inathibitisha kile mzunguko wa ukaguzi ulivyoonyesha. Bado hakuna kinachobadilika kwenye uzalishaji, lakini uamuzi wa kutumia pesa unaofuata sasa unategemea ushahidi."
@@ -571,15 +746,16 @@
           {
             "id": "assume-mixing",
             "label": {
-              "en": "Assume mixing is the problem, because it is the loudest stage",
-              "sw": "Dhani uchanganyaji ndio tatizo, kwa sababu ndio hatua yenye kelele nyingi zaidi"
+              "en": "Spend the week adjusting the mixer",
+              "sw": "Tumia wiki kurekebisha kichanganyio"
             },
             "detail": {
-              "en": "Move a packer to help with mixing based on a guess.",
-              "sw": "Hamisha mfungashaji kusaidia uchanganyaji kwa kubahatisha."
+              "en": "Move a packer to the mixer for two weeks. Packing output falls during the change.",
+              "sw": "Hamisha mfungashaji kwenye kichanganyaji kwa wiki mbili. Uzalishaji wa ufungashaji unapungua wakati huo."
             },
-            "effects": { "lines.loaves.capacity": "-200" },
-            "predictAnswer": "down",
+            "effects": {
+              "lines.loaves.capacity": "-200"
+            },
             "outcome": {
               "en": "Mixing was never short of hands. Packing now has one fewer person and the queue at the loading bay grows longer.",
               "sw": "Uchanganyaji haukuwa na uhaba wa watu kamwe. Ufungashaji sasa una mtu mmoja pungufu na foleni eneo la kupakia inazidi kuwa ndefu."
@@ -587,7 +763,19 @@
             "lesson": {
               "en": "Acting on which stage feels busiest, instead of which one actually caps output, can make the real bottleneck worse.",
               "sw": "Kuchukua hatua kwa kuzingatia hatua inayoonekana na shughuli nyingi, badala ya ile inayozuia uzalishaji hasa, kunaweza kuzidisha kizuizi halisi."
-            }
+            },
+            "later": [
+              {
+                "inWeeks": 2,
+                "effects": {
+                  "lines.loaves.capacity": 200.0
+                },
+                "cause": {
+                  "en": "the temporary production interruption ending",
+                  "sw": "kumalizika kwa kusimama kwa uzalishaji kwa muda"
+                }
+              }
+            ]
           },
           {
             "id": "ask-supervisor",
@@ -599,8 +787,9 @@
               "en": "Cheap, and the person closest to the problem already knows.",
               "sw": "Ni rahisi, na mtu aliye karibu zaidi na tatizo tayari anajua."
             },
-            "effects": { "ownerHoursUsed": 1 },
-            "predictAnswer": "same",
+            "effects": {
+              "ownerHoursUsed": 1
+            },
             "outcome": {
               "en": "The supervisor confirms the packing table cannot keep pace after midday, when both ovens are running at once. Nothing changes on the floor yet.",
               "sw": "Msimamizi anathibitisha meza ya ufungashaji haiwezi kuendana na kasi baada ya mchana, wakati oveni zote mbili zinafanya kazi kwa pamoja. Bado hakuna kinachobadilika eneo la uzalishaji."
@@ -622,8 +811,8 @@
       },
       "scene": "kitchen",
       "situation": {
-        "en": "You have money to spend this week. The packing table is the confirmed bottleneck, but the mixer is the machine that looks old and sounds strained, and it is the one everyone on the floor asks you about.",
-        "sw": "Una pesa ya kutumia wiki hii. Meza ya ufungashaji ndio kizuizi kilichothibitishwa, lakini mashine ya kuchanganya ndiyo inayoonekana kuchakaa na kutoa sauti ya mzigo, na ndiyo ambayo kila mtu eneo la uzalishaji anakuuliza kuihusu."
+        "en": "You can add a packing table or a mixer. Compare the extra output with confirmed orders before spending.",
+        "sw": "Unaweza kuongeza meza ya ufungashaji au kichanganyaji. Linganisha uzalishaji wa ziada na oda zilizothibitishwa kabla ya kutumia pesa."
       },
       "info": [
         {
@@ -651,21 +840,45 @@
           "sw": "Faida yako ya wiki itakuwaje?"
         },
         "predictChoices": [
-          { "id": "up_lot", "label": { "en": "Up a lot", "sw": "Inapanda sana" } },
-          { "id": "up_bit", "label": { "en": "Up a little", "sw": "Inapanda kidogo" } },
-          { "id": "same", "label": { "en": "About the same", "sw": "Inabaki vilevile" } },
-          { "id": "down", "label": { "en": "Goes down", "sw": "Inashuka" } }
+          {
+            "id": "up_lot",
+            "label": {
+              "en": "Up a lot",
+              "sw": "Inapanda sana"
+            }
+          },
+          {
+            "id": "up_bit",
+            "label": {
+              "en": "Up a little",
+              "sw": "Inapanda kidogo"
+            }
+          },
+          {
+            "id": "same",
+            "label": {
+              "en": "About the same",
+              "sw": "Inabaki vilevile"
+            }
+          },
+          {
+            "id": "down",
+            "label": {
+              "en": "Goes down",
+              "sw": "Inashuka"
+            }
+          }
         ],
         "options": [
           {
             "id": "invest-in-packing",
             "label": {
-              "en": "Add a second packing table, the confirmed bottleneck",
-              "sw": "Ongeza meza ya pili ya ufungashaji, kizuizi kilichothibitishwa"
+              "en": "Add packing space for the confirmed loaves order",
+              "sw": "Ongeza ufungashaji kwa oda ya mikate iliyothibitishwa"
             },
             "detail": {
-              "en": "Not the machine everyone talks about, but the one that caps sales.",
-              "sw": "Si mashine ambayo kila mtu anaizungumzia, lakini ndiyo inayozuia mauzo."
+              "en": "Pay 3,000,000: half buys equipment, half covers setup. Add capacity and a confirmed order for 700 loaves.",
+              "sw": "Lipa 3,000,000: nusu hununua vifaa, nusu ni gharama ya kuanza. Ongeza uwezo na oda iliyothibitishwa ya mikate 700."
             },
             "effects": {
               "cash": -3000000,
@@ -673,7 +886,6 @@
               "lines.loaves.capacity": "+700",
               "lines.loaves.demand": "+700"
             },
-            "predictAnswer": "up_bit",
             "outcome": {
               "en": "The extra packing capacity lets loaves already waiting reach the loading bay. Weekly sales rise by more than the new equipment's weekly depreciation.",
               "sw": "Uwezo wa ziada wa ufungashaji unaruhusu mikate iliyokuwa ikisubiri kufikia eneo la kupakia. Mauzo ya wiki yanapanda kwa zaidi ya uchakavu wa wiki wa vifaa vipya."
@@ -686,19 +898,18 @@
           {
             "id": "invest-in-mixer",
             "label": {
-              "en": "Buy the second mixer, because it feels most urgent",
-              "sw": "Nunua mashine ya pili ya kuchanganya, kwa sababu inaonekana ya dharura zaidi"
+              "en": "Add mixing capacity for future premium orders",
+              "sw": "Ongeza uchanganyaji kwa oda zijazo za bidhaa bora"
             },
             "detail": {
-              "en": "The machine that worries everyone, not the one that limits sales.",
-              "sw": "Mashine inayowasumbua watu wote, si ile inayozuia mauzo."
+              "en": "Pay 2,000,000: half buys equipment, half covers setup. Add capacity for 600; orders are unchanged.",
+              "sw": "Lipa 2,000,000: nusu hununua vifaa, nusu ni gharama ya kuanza. Ongeza uwezo wa 600; oda hazibadiliki."
             },
             "effects": {
               "cash": -2000000,
               "assetValue": "+1000000",
               "lines.premium.capacity": "+600"
             },
-            "predictAnswer": "down",
             "outcome": {
               "en": "The mixer now makes far more than the packing table can move, and more than the premium line's own orders need. Most of the extra output sits unsold and spoils, while its own weekly depreciation is added on top.",
               "sw": "Mashine sasa inatengeneza zaidi kuliko meza ya ufungashaji inavyoweza kuhamisha, na zaidi ya oda za mstari wa hali ya juu zinavyohitaji. Uzalishaji mwingi wa ziada unakaa bila kuuzwa na unaharibika, huku uchakavu wake wa wiki ukiongezwa juu yake."
@@ -718,11 +929,12 @@
               "en": "No spend yet. Make sure the bottleneck has not moved.",
               "sw": "Hakuna matumizi bado. Hakikisha kizuizi hakijahamia mahali pengine."
             },
-            "effects": { "ownerHoursUsed": 2 },
-            "predictAnswer": "same",
+            "effects": {
+              "ownerHoursUsed": 2
+            },
             "outcome": {
-              "en": "Nothing is spent this week. The packing table stays the confirmed limit and next week's decision can act on it with more confidence.",
-              "sw": "Hakuna kinachotumika wiki hii. Meza ya ufungashaji inabaki kikomo kilichothibitishwa na uamuzi wa wiki ijayo unaweza kuchukua hatua kwa uhakika zaidi."
+              "en": "Cash stays available. You spend more time checking which orders would use extra equipment.",
+              "sw": "Pesa inabaki kupatikana. Unatumia muda zaidi kukagua oda ambazo zingetumia vifaa vya ziada."
             },
             "lesson": {
               "en": "Waiting one more week to be sure is not the same as never acting. A confirmed bottleneck is worth more than a fast guess.",
@@ -742,8 +954,8 @@
       "scene": "office",
       "unverified": true,
       "situation": {
-        "en": "Distributors are asking how long they get to pay. Stock sits in the warehouse for a while before it sells, and your flour supplier gives you some time before you must pay them. The gap between paying for flour and being paid for bread is your own money, tied up.",
-        "sw": "Wasambazaji wanauliza wanapata muda gani wa kulipa. Bidhaa zinakaa ghalani kwa muda kabla ya kuuzwa, na msambazaji wako wa unga anakupa muda kabla hujalipa. Pengo kati ya kulipia unga na kulipwa kwa mkate ni pesa yako mwenyewe, iliyofungwa."
+        "en": "Distributors are asking how long they get to pay. Stock sits in the warehouse for a while before it sells, and your flour supplier gives you some time before you must pay them.",
+        "sw": "Wasambazaji wanauliza wanapata muda gani wa kulipa. Bidhaa zinakaa ghalani kwa muda kabla ya kuuzwa, na msambazaji wako wa unga anakupa muda kabla hujalipa."
       },
       "info": [
         {
@@ -774,10 +986,13 @@
           "step": 1,
           "start": "current",
           "valueAs": "count",
-          "unit": { "en": "weeks", "sw": "wiki" },
+          "unit": {
+            "en": "weeks",
+            "sw": "wiki"
+          },
           "hint": {
-            "en": "This is how many weeks a distributor gets before they must pay you.",
-            "sw": "Hii ni wiki ngapi msambazaji anapata kabla ya kulazimika kukulipa."
+            "en": "This simplified exercise changes cash tied up. It does not model extra orders or fewer stockouts.",
+            "sw": "Zoezi hili hubadilisha pesa iliyofungwa. Halikadirii oda mpya au kupungua kwa ukosefu wa bidhaa."
           },
           "responses": []
         },
@@ -825,7 +1040,12 @@
               "sw": "Mzunguko wa kubadilisha pesa mrefu hivi unaweza kugeuza kiwanda chenye faida kuwa kimoja kisichoweza kutimiza mishahara yake, hata huku oda zikiendelea kukua."
             }
           }
-        ]
+        ],
+        "predictMetric": "cash"
+      },
+      "situationDetails": {
+        "en": "The gap between paying for flour and being paid for bread is your own money, tied up.",
+        "sw": "Pengo kati ya kulipia unga na kulipwa kwa mkate ni pesa yako mwenyewe, iliyofungwa."
       }
     },
     {
@@ -837,8 +1057,8 @@
       },
       "scene": "market",
       "situation": {
-        "en": "Wheat has moved 20% since your last order. Your miller offers a forward contract that locks this week's price for three months. Staying on the spot market means paying whatever the price is each time you order.",
-        "sw": "Bei ya ngano imepanda 20% tangu oda yako ya mwisho. Msagaji wako anatoa mkataba wa mbeleni unaofunga bei ya wiki hii kwa miezi mitatu. Kubaki kwenye soko la papo hapo kunamaanisha kulipa bei yoyote iliyopo kila unapoagiza."
+        "en": "Wheat has moved 20% since your last order. Your miller offers a forward contract that locks this week's price for three months.",
+        "sw": "Bei ya ngano imepanda 20% tangu oda yako ya mwisho. Msagaji wako anatoa mkataba wa mbeleni unaofunga bei ya wiki hii kwa miezi mitatu."
       },
       "info": [
         {
@@ -865,10 +1085,34 @@
           "sw": "Faida yako ya wiki itakuwaje?"
         },
         "predictChoices": [
-          { "id": "up_lot", "label": { "en": "Up a lot", "sw": "Inapanda sana" } },
-          { "id": "up_bit", "label": { "en": "Up a little", "sw": "Inapanda kidogo" } },
-          { "id": "same", "label": { "en": "About the same", "sw": "Inabaki vilevile" } },
-          { "id": "down", "label": { "en": "Goes down", "sw": "Inashuka" } }
+          {
+            "id": "up_lot",
+            "label": {
+              "en": "Up a lot",
+              "sw": "Inapanda sana"
+            }
+          },
+          {
+            "id": "up_bit",
+            "label": {
+              "en": "Up a little",
+              "sw": "Inapanda kidogo"
+            }
+          },
+          {
+            "id": "same",
+            "label": {
+              "en": "About the same",
+              "sw": "Inabaki vilevile"
+            }
+          },
+          {
+            "id": "down",
+            "label": {
+              "en": "Goes down",
+              "sw": "Inashuka"
+            }
+          }
         ],
         "options": [
           {
@@ -884,7 +1128,6 @@
             "effects": {
               "lines.loaves.unitCost": "+15"
             },
-            "predictAnswer": "down",
             "outcome": {
               "en": "Every loaf now costs a little more to make. In exchange, the price is fixed for three months whatever the wheat market does next.",
               "sw": "Kila mkate sasa unagharimu kidogo zaidi kutengeneza. Kwa kubadilishana, bei imefungwa kwa miezi mitatu chochote soko la ngano litakalofanya baadaye."
@@ -897,15 +1140,14 @@
           {
             "id": "stay-spot",
             "label": {
-              "en": "Stay on the spot market and hope it eases",
-              "sw": "Baki kwenye soko la papo hapo na tumaini litapungua"
+              "en": "Keep buying at the current market price",
+              "sw": "Endelea kununua kwa bei ya sasa ya soko"
             },
             "detail": {
               "en": "No cost today. The risk is entirely in what happens next.",
               "sw": "Hakuna gharama leo. Hatari iko kabisa kwenye kitakachotokea baadaye."
             },
             "effects": {},
-            "predictAnswer": "same",
             "outcome": {
               "en": "Nothing changes on this week's ledger. The wheat price move has not yet reached your own cost of flour.",
               "sw": "Hakuna kinachobadilika kwenye daftari la wiki hii. Ongezeko la bei ya ngano bado halijafika kwenye gharama yako ya unga."
@@ -917,7 +1159,9 @@
             "later": [
               {
                 "inWeeks": 3,
-                "effects": { "lines.loaves.unitCost": "+124" },
+                "effects": {
+                  "lines.loaves.unitCost": "+124"
+                },
                 "cause": {
                   "en": "the spot wheat price move you chose to ride out",
                   "sw": "ongezeko la bei ya ngano ya papo hapo ulilochagua kulikabili"
@@ -938,7 +1182,6 @@
             "effects": {
               "inventoryWeeks": "+2"
             },
-            "predictAnswer": "same",
             "outcome": {
               "en": "This week's cost per loaf does not move. More cash than usual is now sitting in the warehouse as flour instead of in the bank.",
               "sw": "Gharama ya wiki hii kwa kila mkate haibadiliki. Pesa zaidi kuliko kawaida sasa inakaa ghalani kama unga badala ya benki."
@@ -949,6 +1192,10 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "Staying on the spot market means paying whatever the price is each time you order.",
+        "sw": "Kubaki kwenye soko la papo hapo kunamaanisha kulipa bei yoyote iliyopo kila unapoagiza."
       }
     },
     {
@@ -960,8 +1207,8 @@
       },
       "scene": "office",
       "situation": {
-        "en": "A distributor was turned away last week because the premium line had sold out before their delivery slot. Holding more finished stock would prevent that, but it means paying for flour, sugar and packaging before you know for certain it will sell.",
-        "sw": "Msambazaji alirudishwa wiki iliyopita kwa sababu mstari wa hali ya juu uliuzika kabla ya zamu yake ya usafirishaji. Kushikilia stock zaidi iliyokamilika kungezuia hilo, lakini kunamaanisha kulipia unga, sukari na vifungashio kabla hujajua kwa uhakika kitauzwa."
+        "en": "Stock uses money before a buyer pays. Choose how many weeks of stock to hold.",
+        "sw": "Bidhaa hutumia pesa kabla mnunuzi hajalipa. Chagua kuweka bidhaa za wiki ngapi."
       },
       "info": [
         {
@@ -992,10 +1239,13 @@
           "step": 1,
           "start": "current",
           "valueAs": "count",
-          "unit": { "en": "weeks of stock", "sw": "wiki za bidhaa" },
+          "unit": {
+            "en": "weeks of stock",
+            "sw": "wiki za bidhaa"
+          },
           "hint": {
-            "en": "More weeks of stock means fewer stockouts and more cash tied up on the shelf.",
-            "sw": "Wiki nyingi za stock inamaanisha uhaba mdogo lakini pesa nyingi zimefungwa kwenye rafu."
+            "en": "This simplified exercise changes cash tied up. It does not model extra orders or fewer stockouts.",
+            "sw": "Zoezi hili hubadilisha pesa iliyofungwa. Halikadirii oda mpya au kupungua kwa ukosefu wa bidhaa."
           },
           "responses": []
         },
@@ -1043,7 +1293,12 @@
               "sw": "Hata tatizo zuri, kuepuka uhaba wa stock, linaweza kutatuliwa kupita kiwango ambacho hakisaidii tena kulingana na gharama yake ya pesa."
             }
           }
-        ]
+        ],
+        "predictMetric": "cash"
+      },
+      "situationDetails": {
+        "en": "This exercise shows the cash cost only. It does not simulate avoided stockouts or extra orders.",
+        "sw": "Zoezi hili linaonyesha gharama ya pesa pekee. Halionyeshi kuzuia upungufu wa bidhaa au kuongeza oda."
       }
     },
     {
@@ -1084,10 +1339,34 @@
           "sw": "Faida yako ya wiki itakuwaje?"
         },
         "predictChoices": [
-          { "id": "up_lot", "label": { "en": "Up a lot", "sw": "Inapanda sana" } },
-          { "id": "up_bit", "label": { "en": "Up a little", "sw": "Inapanda kidogo" } },
-          { "id": "same", "label": { "en": "About the same", "sw": "Inabaki vilevile" } },
-          { "id": "down", "label": { "en": "Goes down", "sw": "Inashuka" } }
+          {
+            "id": "up_lot",
+            "label": {
+              "en": "Up a lot",
+              "sw": "Inapanda sana"
+            }
+          },
+          {
+            "id": "up_bit",
+            "label": {
+              "en": "Up a little",
+              "sw": "Inapanda kidogo"
+            }
+          },
+          {
+            "id": "same",
+            "label": {
+              "en": "About the same",
+              "sw": "Inabaki vilevile"
+            }
+          },
+          {
+            "id": "down",
+            "label": {
+              "en": "Goes down",
+              "sw": "Inashuka"
+            }
+          }
         ],
         "options": [
           {
@@ -1103,7 +1382,6 @@
             "effects": {
               "lines.loaves.unitCost": "-60"
             },
-            "predictAnswer": "up_lot",
             "outcome": {
               "en": "The cost of every loaf drops sharply. The saving is real from the first bag delivered under the new price.",
               "sw": "Gharama ya kila mkate inashuka kwa kiasi kikubwa. Punguzo ni halisi tangu gunia la kwanza kupelekwa kwa bei mpya."
@@ -1115,7 +1393,9 @@
             "later": [
               {
                 "inWeeks": 5,
-                "effects": { "lines.loaves.unitCost": "+30" },
+                "effects": {
+                  "lines.loaves.unitCost": "+30"
+                },
                 "cause": {
                   "en": "the volume contract that still billed you in full during a slower month",
                   "sw": "mkataba wa wingi uliokutoza kikamilifu wakati wa mwezi wa polepole"
@@ -1134,7 +1414,6 @@
               "sw": "Hakuna ahadi, na hakuna punguzo pia."
             },
             "effects": {},
-            "predictAnswer": "same",
             "outcome": {
               "en": "Nothing changes in this week's cost of flour. You keep the freedom to buy less in a slow month.",
               "sw": "Hakuna kinachobadilika kwenye gharama ya unga wiki hii. Unaendelea kuwa na uhuru wa kununua kidogo mwezi wa polepole."
@@ -1157,7 +1436,6 @@
             "effects": {
               "lines.loaves.unitCost": "-20"
             },
-            "predictAnswer": "up_bit",
             "outcome": {
               "en": "Half your flour now costs less. The other half stays at the spot price, and the commitment covers a shorter, less risky period.",
               "sw": "Nusu ya unga wako sasa unagharimu kidogo. Nusu nyingine inabaki kwa bei ya papo hapo, na ahadi inahusu kipindi kifupi, chenye hatari ndogo."
@@ -1215,10 +1493,34 @@
           "sw": "Faida yako ya wiki itakuwaje?"
         },
         "predictChoices": [
-          { "id": "up_lot", "label": { "en": "Up a lot", "sw": "Inapanda sana" } },
-          { "id": "up_bit", "label": { "en": "Up a little", "sw": "Inapanda kidogo" } },
-          { "id": "same", "label": { "en": "About the same", "sw": "Inabaki vilevile" } },
-          { "id": "down", "label": { "en": "Goes down", "sw": "Inashuka" } }
+          {
+            "id": "up_lot",
+            "label": {
+              "en": "Up a lot",
+              "sw": "Inapanda sana"
+            }
+          },
+          {
+            "id": "up_bit",
+            "label": {
+              "en": "Up a little",
+              "sw": "Inapanda kidogo"
+            }
+          },
+          {
+            "id": "same",
+            "label": {
+              "en": "About the same",
+              "sw": "Inabaki vilevile"
+            }
+          },
+          {
+            "id": "down",
+            "label": {
+              "en": "Goes down",
+              "sw": "Inashuka"
+            }
+          }
         ],
         "options": [
           {
@@ -1236,7 +1538,6 @@
               "ownerHoursFixed": "-15",
               "builtTeam": true
             },
-            "predictAnswer": "down",
             "outcome": {
               "en": "The new wage lands on this week's costs immediately. The manager has not yet had time to change anything on the floor.",
               "sw": "Mshahara mpya unaathiri gharama za wiki hii mara moja. Msimamizi bado hajapata muda wa kubadilisha chochote eneo la uzalishaji."
@@ -1248,7 +1549,10 @@
             "later": [
               {
                 "inWeeks": 4,
-                "effects": { "demand": 300, "reputation": 3 },
+                "effects": {
+                  "demand": 300,
+                  "reputation": 3
+                },
                 "cause": {
                   "en": "the manager whose real authority let you focus on distributors instead of the packing table",
                   "sw": "msimamizi ambaye mamlaka yake halisi yalikuruhusu kuzingatia wasambazaji badala ya meza ya ufungashaji"
@@ -1267,7 +1571,6 @@
               "sw": "Hakuna mshahara mpya. Kiwanda kinaendelea kusubiri mtu mmoja."
             },
             "effects": {},
-            "predictAnswer": "same",
             "outcome": {
               "en": "Nothing changes on this week's ledger. Decisions keep queuing behind you the way they always have.",
               "sw": "Hakuna kinachobadilika kwenye daftari la wiki hii. Maamuzi yanaendelea kusubiri nyuma yako kama kawaida."
@@ -1279,7 +1582,10 @@
             "later": [
               {
                 "inWeeks": 4,
-                "effects": { "reputation": -8, "demand": -200 },
+                "effects": {
+                  "reputation": -8,
+                  "demand": -200
+                },
                 "cause": {
                   "en": "the week nobody but you could approve a late delivery, and two distributors waited",
                   "sw": "wiki ambayo hakuna mtu isipokuwa wewe angeweza kuidhinisha usafirishaji wa kuchelewa, na wasambazaji wawili walisubiri"
@@ -1300,7 +1606,6 @@
             "effects": {
               "staff": "+1"
             },
-            "predictAnswer": "down",
             "outcome": {
               "en": "The wage cost lands the same as full delegation would. Decisions still queue behind you, because the manager cannot act without your signature.",
               "sw": "Gharama ya mshahara inaathiri sawa na uwakilishi kamili ungefanya. Maamuzi bado yanasubiri nyuma yako, kwa sababu msimamizi hawezi kutenda bila saini yako."
@@ -1312,7 +1617,9 @@
             "later": [
               {
                 "inWeeks": 3,
-                "effects": { "reputation": -5 },
+                "effects": {
+                  "reputation": -5
+                },
                 "cause": {
                   "en": "the manager whose decisions still needed your signature, so nothing moved any faster",
                   "sw": "msimamizi ambaye maamuzi yake bado yalihitaji saini yako, hivyo hakuna kilichoenda haraka zaidi"
@@ -1360,10 +1667,34 @@
           "sw": "Faida yako ya wiki itakuwaje?"
         },
         "predictChoices": [
-          { "id": "up_lot", "label": { "en": "Up a lot", "sw": "Inapanda sana" } },
-          { "id": "up_bit", "label": { "en": "Up a little", "sw": "Inapanda kidogo" } },
-          { "id": "same", "label": { "en": "About the same", "sw": "Inabaki vilevile" } },
-          { "id": "down", "label": { "en": "Goes down", "sw": "Inashuka" } }
+          {
+            "id": "up_lot",
+            "label": {
+              "en": "Up a lot",
+              "sw": "Inapanda sana"
+            }
+          },
+          {
+            "id": "up_bit",
+            "label": {
+              "en": "Up a little",
+              "sw": "Inapanda kidogo"
+            }
+          },
+          {
+            "id": "same",
+            "label": {
+              "en": "About the same",
+              "sw": "Inabaki vilevile"
+            }
+          },
+          {
+            "id": "down",
+            "label": {
+              "en": "Goes down",
+              "sw": "Inashuka"
+            }
+          }
         ],
         "options": [
           {
@@ -1379,7 +1710,6 @@
             "effects": {
               "wagePerStaff": "+15000"
             },
-            "predictAnswer": "down",
             "outcome": {
               "en": "The bonus is a real cost this week, paid to everyone whether or not the target is hit yet. The supervisor starts adjusting the floor her own way.",
               "sw": "Bonasi ni gharama halisi wiki hii, inayolipwa kwa kila mtu lengo likifikiwa au lisipofikiwa bado. Msimamizi anaanza kurekebisha eneo kwa njia yake mwenyewe."
@@ -1391,7 +1721,10 @@
             "later": [
               {
                 "inWeeks": 3,
-                "effects": { "demand": 300, "reputation": 4 },
+                "effects": {
+                  "demand": 300,
+                  "reputation": 4
+                },
                 "cause": {
                   "en": "the supervisor's own fix for the packing queue, found because you asked for the result and not the method",
                   "sw": "suluhisho la msimamizi mwenyewe kwa foleni ya ufungashaji, lililopatikana kwa sababu uliomba matokeo na si njia"
@@ -1412,7 +1745,6 @@
             "effects": {
               "ownerHoursUsed": 6
             },
-            "predictAnswer": "same",
             "outcome": {
               "en": "Nothing changes on this week's ledger. Your own hours go to checking the method rather than anything else.",
               "sw": "Hakuna kinachobadilika kwenye daftari la wiki hii. Masaa yako yanakwenda kukagua njia badala ya jambo lingine."
@@ -1424,7 +1756,10 @@
             "later": [
               {
                 "inWeeks": 3,
-                "effects": { "reputation": -4, "demand": -100 },
+                "effects": {
+                  "reputation": -4,
+                  "demand": -100
+                },
                 "cause": {
                   "en": "the team that stopped raising problems once every step was already decided for them",
                   "sw": "timu iliyoacha kuleta matatizo mara kila hatua ilipoamuliwa kwa niaba yao"
@@ -1435,15 +1770,14 @@
           {
             "id": "target-with-checklist",
             "label": {
-              "en": "Set a target with a simple shared checklist, nothing more",
-              "sw": "Weka lengo na orodha rahisi ya pamoja, hakuna zaidi"
+              "en": "Assign packing; check output and rejected packs daily",
+              "sw": "Kabidhi ufungashaji; kagua uzalishaji na pakiti zilizokataliwa kila siku"
             },
             "detail": {
               "en": "Some structure, without deciding every step for her.",
               "sw": "Muundo fulani, bila kuamua kila hatua kwa niaba yake."
             },
             "effects": {},
-            "predictAnswer": "same",
             "outcome": {
               "en": "Nothing changes on this week's ledger. The checklist gives the supervisor a shared standard without removing her own judgement.",
               "sw": "Hakuna kinachobadilika kwenye daftari la wiki hii. Orodha inampa msimamizi kiwango cha pamoja bila kuondoa uamuzi wake mwenyewe."
@@ -1455,7 +1789,9 @@
             "later": [
               {
                 "inWeeks": 3,
-                "effects": { "reputation": 2 },
+                "effects": {
+                  "reputation": 2
+                },
                 "cause": {
                   "en": "the shared checklist that gave the packing table a common standard without a rulebook for every minute",
                   "sw": "orodha ya pamoja iliyoipa meza ya ufungashaji kiwango cha pamoja bila kitabu cha kanuni kwa kila dakika"
@@ -1476,8 +1812,8 @@
       "scene": "office",
       "workout": true,
       "situation": {
-        "en": "This week's cost per loaf came in above what your costing sheet says it should. Wages, the loan and the rent have not moved. Something in the direct cost of a loaf has changed.",
-        "sw": "Gharama ya wiki hii kwa kila mkate imekuja juu ya kile karatasi yako ya uhasibu wa gharama inavyosema inapaswa kuwa. Mishahara, mkopo na kodi havijabadilika. Kitu kwenye gharama ya moja kwa moja ya mkate kimebadilika."
+        "en": "This week's cost per loaf came in above what your costing sheet says it should. Wages, the loan and the rent have not moved.",
+        "sw": "Gharama ya wiki hii kwa kila mkate imekuja juu ya kile karatasi yako ya uhasibu wa gharama inavyosema inapaswa kuwa. Mishahara, mkopo na kodi havijabadilika."
       },
       "info": [
         {
@@ -1501,10 +1837,34 @@
         },
         "answer": "wheat-price",
         "options": [
-          { "id": "wage-rate", "label": { "en": "The wage rate", "sw": "Kiwango cha mshahara" } },
-          { "id": "wheat-price", "label": { "en": "The wheat price", "sw": "Bei ya ngano" } },
-          { "id": "packing-spoilage", "label": { "en": "Packing spoilage", "sw": "Uharibifu wa ufungashaji" } },
-          { "id": "demand-shortfall", "label": { "en": "A shortfall in demand", "sw": "Upungufu wa mahitaji" } }
+          {
+            "id": "wage-rate",
+            "label": {
+              "en": "The wage rate",
+              "sw": "Kiwango cha mshahara"
+            }
+          },
+          {
+            "id": "wheat-price",
+            "label": {
+              "en": "The wheat price",
+              "sw": "Bei ya ngano"
+            }
+          },
+          {
+            "id": "packing-spoilage",
+            "label": {
+              "en": "Packing spoilage",
+              "sw": "Uharibifu wa ufungashaji"
+            }
+          },
+          {
+            "id": "demand-shortfall",
+            "label": {
+              "en": "A shortfall in demand",
+              "sw": "Upungufu wa mahitaji"
+            }
+          }
         ],
         "right": {
           "en": "The wheat price move is the variance. Wages, spoilage and demand are all where the costing sheet expected them; the flour cost per loaf is the one figure that has moved.",
@@ -1525,10 +1885,34 @@
           "sw": "Faida yako ya wiki itakuwaje?"
         },
         "predictChoices": [
-          { "id": "up_lot", "label": { "en": "Up a lot", "sw": "Inapanda sana" } },
-          { "id": "up_bit", "label": { "en": "Up a little", "sw": "Inapanda kidogo" } },
-          { "id": "same", "label": { "en": "About the same", "sw": "Inabaki vilevile" } },
-          { "id": "down", "label": { "en": "Goes down", "sw": "Inashuka" } }
+          {
+            "id": "up_lot",
+            "label": {
+              "en": "Up a lot",
+              "sw": "Inapanda sana"
+            }
+          },
+          {
+            "id": "up_bit",
+            "label": {
+              "en": "Up a little",
+              "sw": "Inapanda kidogo"
+            }
+          },
+          {
+            "id": "same",
+            "label": {
+              "en": "About the same",
+              "sw": "Inabaki vilevile"
+            }
+          },
+          {
+            "id": "down",
+            "label": {
+              "en": "Goes down",
+              "sw": "Inashuka"
+            }
+          }
         ],
         "options": [
           {
@@ -1544,7 +1928,6 @@
             "effects": {
               "lines.loaves.price": "+25"
             },
-            "predictAnswer": "up_bit",
             "outcome": {
               "en": "The higher price covers the variance and then some, at the volume you currently sell. Whether distributors keep ordering the same amount at the new price is still to be seen.",
               "sw": "Bei ya juu inafunika tofauti na zaidi, kwa kiasi unachouza sasa. Kama wasambazaji wataendelea kuagiza kiasi kilekile kwa bei mpya bado kinasubiriwa kuonekana."
@@ -1556,7 +1939,9 @@
             "later": [
               {
                 "inWeeks": 3,
-                "effects": { "lines.loaves.demand": -400 },
+                "effects": {
+                  "lines.loaves.demand": -400
+                },
                 "cause": {
                   "en": "the price rise that covered the wheat variance and cost you some volume",
                   "sw": "ongezeko la bei lililofunika tofauti ya ngano na kukugharimu kiasi fulani"
@@ -1575,7 +1960,6 @@
               "sw": "Weka uhusiano wa msambazaji tulivu. Gharama inabaki kwako."
             },
             "effects": {},
-            "predictAnswer": "same",
             "outcome": {
               "en": "The price stays where distributors expect it. The higher wheat cost is already inside this week's cost of sales.",
               "sw": "Bei inabaki mahali wasambazaji wanapotarajia. Gharama ya juu ya ngano tayari iko ndani ya gharama ya mauzo ya wiki hii."
@@ -1598,7 +1982,6 @@
             "effects": {
               "lines.loaves.unitCost": "+15"
             },
-            "predictAnswer": "down",
             "outcome": {
               "en": "The second supplier costs more per bag than the variance itself. What you are paying for is certainty of supply, not a lower price.",
               "sw": "Msambazaji wa pili anagharimu zaidi kwa gunia kuliko tofauti yenyewe. Unachokilipia ni uhakika wa ugavi, si bei ya chini."
@@ -1609,6 +1992,10 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "Something in the direct cost of a loaf has changed.",
+        "sw": "Kitu kwenye gharama ya moja kwa moja ya mkate kimebadilika."
       }
     },
     {
@@ -1648,10 +2035,34 @@
           "sw": "Faida yako ya wiki itakuwaje?"
         },
         "predictChoices": [
-          { "id": "up_lot", "label": { "en": "Up a lot", "sw": "Inapanda sana" } },
-          { "id": "up_bit", "label": { "en": "Up a little", "sw": "Inapanda kidogo" } },
-          { "id": "same", "label": { "en": "About the same", "sw": "Inabaki vilevile" } },
-          { "id": "down", "label": { "en": "Goes down", "sw": "Inashuka" } }
+          {
+            "id": "up_lot",
+            "label": {
+              "en": "Up a lot",
+              "sw": "Inapanda sana"
+            }
+          },
+          {
+            "id": "up_bit",
+            "label": {
+              "en": "Up a little",
+              "sw": "Inapanda kidogo"
+            }
+          },
+          {
+            "id": "same",
+            "label": {
+              "en": "About the same",
+              "sw": "Inabaki vilevile"
+            }
+          },
+          {
+            "id": "down",
+            "label": {
+              "en": "Goes down",
+              "sw": "Inashuka"
+            }
+          }
         ],
         "options": [
           {
@@ -1669,7 +2080,6 @@
               "lines.premium.demand": "+50",
               "lines.premium.capacity": "+50"
             },
-            "predictAnswer": "up_bit",
             "outcome": {
               "en": "Selling direct captures a higher price and reaches a few new buyers the van can now visit. The full margin stays inside the factory.",
               "sw": "Kuuza moja kwa moja kunapata bei ya juu zaidi na kufikia wanunuzi wachache wapya ambao gari sasa linaweza kutembelea. Margin kamili inabaki ndani ya kiwanda."
@@ -1695,7 +2105,6 @@
               "lines.loaves.price": "-20",
               "concentrated": true
             },
-            "predictAnswer": "up_lot",
             "outcome": {
               "en": "The distributor takes a large standing volume at a discounted price. Weekly sales jump, but a growing share of them depend on this one buyer staying happy.",
               "sw": "Msambazaji anachukua wingi mkubwa wa kudumu kwa bei ya punguzo. Mauzo ya wiki yanaruka, lakini sehemu inayokua kati yake inategemea mnunuzi huyu mmoja kubaki radhi."
@@ -1720,7 +2129,6 @@
               "lines.buns.capacity": "+50",
               "lines.buns.unitCost": "+5"
             },
-            "predictAnswer": "same",
             "outcome": {
               "en": "A new region opens up on a small scale. The agent's commission eats a real share of what each extra bun earns.",
               "sw": "Eneo jipya linafunguka kwa kiwango kidogo. Kamisheni ya wakala inakula sehemu halisi ya kile kila andazi la ziada linalopata."
@@ -1742,8 +2150,8 @@
       },
       "scene": "office",
       "situation": {
-        "en": "The factory has cash that could go in several directions. The loan needs servicing, a second line could expand what you sell, a new region could open more distributors, the household has been waiting, and a reserve could protect a bad month. There is no one correct use for every shilling — and the factory runs the next seven weeks on whatever you leave in it.",
-        "sw": "Kiwanda kina pesa inayoweza kwenda pande kadhaa. Mkopo unahitaji kuhudumiwa, mstari wa pili unaweza kupanua unachouza, eneo jipya linaweza kufungua wasambazaji zaidi, kaya imekuwa ikisubiri, na akiba inaweza kulinda mwezi mbaya. Hakuna matumizi moja sahihi kwa kila shilingi — na kiwanda kitaendesha wiki saba zijazo kwa kile utakachoacha ndani."
+        "en": "The factory has cash that could go in several directions. The loan needs servicing, a second line could expand what you sell, a new region could open more distributors, the household has been waiting, and a reserve could protect a bad month.",
+        "sw": "Kiwanda kina pesa inayoweza kwenda pande kadhaa. Mkopo unahitaji kuhudumiwa, mstari wa pili unaweza kupanua unachouza, eneo jipya linaweza kufungua wasambazaji zaidi, kaya imekuwa ikisubiri, na akiba inaweza kulinda mwezi mbaya."
       },
       "info": [
         {
@@ -1859,6 +2267,10 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "There is no one correct use for every shilling — and the factory runs the next seven weeks on whatever you leave in it.",
+        "sw": "Hakuna matumizi moja sahihi kwa kila shilingi — na kiwanda kitaendesha wiki saba zijazo kwa kile utakachoacha ndani."
       }
     },
     {
@@ -1899,10 +2311,34 @@
           "sw": "Faida yako ya wiki itakuwaje?"
         },
         "predictChoices": [
-          { "id": "up_lot", "label": { "en": "Up a lot", "sw": "Inapanda sana" } },
-          { "id": "up_bit", "label": { "en": "Up a little", "sw": "Inapanda kidogo" } },
-          { "id": "same", "label": { "en": "About the same", "sw": "Inabaki vilevile" } },
-          { "id": "down", "label": { "en": "Goes down", "sw": "Inashuka" } }
+          {
+            "id": "up_lot",
+            "label": {
+              "en": "Up a lot",
+              "sw": "Inapanda sana"
+            }
+          },
+          {
+            "id": "up_bit",
+            "label": {
+              "en": "Up a little",
+              "sw": "Inapanda kidogo"
+            }
+          },
+          {
+            "id": "same",
+            "label": {
+              "en": "About the same",
+              "sw": "Inabaki vilevile"
+            }
+          },
+          {
+            "id": "down",
+            "label": {
+              "en": "Goes down",
+              "sw": "Inashuka"
+            }
+          }
         ],
         "options": [
           {
@@ -1921,7 +2357,6 @@
               "lines.premium.capacity": "+150",
               "concentrated": true
             },
-            "predictAnswer": "up_bit",
             "outcome": {
               "en": "Sales through the new shelf outweigh the weekly listing fee. A growing share of the premium line now depends on this one chain's shelf decisions.",
               "sw": "Mauzo kupitia rafu mpya yanazidi ada ya wiki ya kuorodhesha. Sehemu inayokua ya mstari wa hali ya juu sasa inategemea maamuzi ya rafu ya mnyororo huu mmoja."
@@ -1942,7 +2377,6 @@
               "sw": "Hakuna ada mpya, na hakuna kutegemea rafu ya mnyororo mmoja."
             },
             "effects": {},
-            "predictAnswer": "same",
             "outcome": {
               "en": "Nothing changes on this week's ledger. Your existing spread of smaller buyers stays exactly as it was.",
               "sw": "Hakuna kinachobadilika kwenye daftari la wiki hii. Wigo wako uliopo wa wanunuzi wadogo unabaki kama ulivyokuwa."
@@ -1963,11 +2397,10 @@
               "sw": "Gharama ndogo ya wiki, lakini rafu inaweza isisogee kama ilivyoahidiwa."
             },
             "effects": {
-              "licenceFees": "+70000",
+              "licenceFees": "+25000",
               "lines.premium.demand": "+20",
               "lines.premium.capacity": "+20"
             },
-            "predictAnswer": "down",
             "outcome": {
               "en": "The shelf barely moves this month. The listing fee is smaller than the full contract, but it still costs more than the handful of units it sold.",
               "sw": "Rafu haisogei sana mwezi huu. Ada ya kuorodhesha ni ndogo kuliko mkataba kamili, lakini bado inagharimu zaidi ya vipande vichache ilivyouza."
@@ -1991,8 +2424,8 @@
       "unverified": true,
       "workout": true,
       "situation": {
-        "en": "A labour officer visits and asks about your payroll registration. Wages alone are not what an employee costs you; PAYE, NSSF and WCF contributions all sit on top of the wage, and how fully you register changes what the factory pays every week.",
-        "sw": "Afisa wa kazi anatembelea na kuuliza kuhusu usajili wa mishahara. Mshahara peke yake si kile mfanyakazi anachokugharimu; michango ya PAYE, NSSF na WCF yote inakaa juu ya mshahara, na kiwango unachojisajili kinabadilisha kile kiwanda kinacholipa kila wiki. Viwango halisi vinahitaji uthibitisho wa eneo."
+        "en": "Registering workers takes time and adds costs. Compare three practice budgets; local requirements need checking.",
+        "sw": "Kusajili wafanyakazi kunachukua muda na kuongeza gharama. Linganisha bajeti tatu za mazoezi; masharti ya eneo yanahitaji kukaguliwa."
       },
       "info": [
         {
@@ -2019,30 +2452,53 @@
           "sw": "Faida yako ya wiki itakuwaje?"
         },
         "predictChoices": [
-          { "id": "up_lot", "label": { "en": "Up a lot", "sw": "Inapanda sana" } },
-          { "id": "up_bit", "label": { "en": "Up a little", "sw": "Inapanda kidogo" } },
-          { "id": "same", "label": { "en": "About the same", "sw": "Inabaki vilevile" } },
-          { "id": "down", "label": { "en": "Goes down", "sw": "Inashuka" } }
+          {
+            "id": "up_lot",
+            "label": {
+              "en": "Up a lot",
+              "sw": "Inapanda sana"
+            }
+          },
+          {
+            "id": "up_bit",
+            "label": {
+              "en": "Up a little",
+              "sw": "Inapanda kidogo"
+            }
+          },
+          {
+            "id": "same",
+            "label": {
+              "en": "About the same",
+              "sw": "Inabaki vilevile"
+            }
+          },
+          {
+            "id": "down",
+            "label": {
+              "en": "Goes down",
+              "sw": "Inashuka"
+            }
+          }
         ],
         "options": [
           {
             "id": "full-statutory-registration",
             "label": {
-              "en": "Register every worker fully for PAYE, NSSF and WCF",
-              "sw": "Sajili kila mfanyakazi kikamilifu kwa PAYE, NSSF na WCF"
+              "en": "Budget for full registration",
+              "sw": "Tenga bajeti ya usajili kamili"
             },
             "detail": {
-              "en": "The full statutory cost lands on the wage bill from this week.",
-              "sw": "Gharama kamili ya kisheria inaathiri bili ya mishahara tangu wiki hii."
+              "en": "The displayed payroll addition is a teaching assumption, not a statutory rate or a statement of compliance.",
+              "sw": "Ongezeko la mishahara lililoonyeshwa ni dhana ya mafunzo, si kiwango cha kisheria wala uthibitisho wa kufuata sheria."
             },
             "effects": {
               "payrollOnCost": 0.3,
               "formality": 3
             },
-            "predictAnswer": "down",
             "outcome": {
-              "en": "The wage bill rises by the full statutory add-on. Every worker is now fully covered, and the factory is unambiguously compliant if it is ever inspected.",
-              "sw": "Bili ya mishahara inapanda kwa ongezeko kamili la kisheria. Kila mfanyakazi sasa amelindwa kikamilifu, na kiwanda kina uhalali usio na shaka ikikaguliwa."
+              "en": "The selected budget changes the modelled payroll cost. A local reviewer must verify the actual obligations.",
+              "sw": "Bajeti iliyochaguliwa inabadilisha gharama ya mishahara kwenye mfano. Mkaguzi wa eneo lazima athibitishe wajibu halisi."
             },
             "lesson": {
               "en": "An employee's real cost is the wage plus the statutory contributions on top of it. Full registration is expensive, and it is also what protects both the worker and the business.",
@@ -2052,18 +2508,17 @@
           {
             "id": "stay-minimum-compliance",
             "label": {
-              "en": "Stay at your current, minimum level of compliance",
-              "sw": "Baki kwenye kiwango chako cha sasa, cha chini cha ufuasi"
+              "en": "Keep the current budget while checking requirements",
+              "sw": "Weka bajeti ya sasa huku ukikagua masharti"
             },
             "detail": {
-              "en": "No new cost, and no change to your exposure if inspected.",
-              "sw": "Hakuna gharama mpya, na hakuna badiliko kwenye hatari yako ukikaguliwa."
+              "en": "The displayed payroll addition is a teaching assumption, not a statutory rate or a statement of compliance.",
+              "sw": "Ongezeko la mishahara lililoonyeshwa ni dhana ya mafunzo, si kiwango cha kisheria wala uthibitisho wa kufuata sheria."
             },
             "effects": {},
-            "predictAnswer": "same",
             "outcome": {
-              "en": "Nothing changes on this week's ledger. Your current level of registration continues, along with whatever risk comes with it.",
-              "sw": "Hakuna kinachobadilika kwenye daftari la wiki hii. Kiwango chako cha sasa cha usajili kinaendelea, pamoja na hatari yoyote inayokuja nacho."
+              "en": "The selected budget changes the modelled payroll cost. A local reviewer must verify the actual obligations.",
+              "sw": "Bajeti iliyochaguliwa inabadilisha gharama ya mishahara kwenye mfano. Mkaguzi wa eneo lazima athibitishe wajibu halisi."
             },
             "lesson": {
               "en": "Staying at minimum compliance has no cost on a quiet week. It is a real position, with real exposure attached, not a neutral default.",
@@ -2073,21 +2528,20 @@
           {
             "id": "move-to-mid-tier-cover",
             "label": {
-              "en": "Move to a mid-tier of statutory cover for now",
-              "sw": "Hamia kwenye kiwango cha kati cha ulinzi wa kisheria kwa sasa"
+              "en": "Budget for an initial registration step",
+              "sw": "Tenga bajeti ya hatua ya kwanza ya usajili"
             },
             "detail": {
-              "en": "Some of the cost, and some of the protection, without the full jump.",
-              "sw": "Sehemu ya gharama, na sehemu ya ulinzi, bila kuruka kikamilifu."
+              "en": "The displayed payroll addition is a teaching assumption, not a statutory rate or a statement of compliance.",
+              "sw": "Ongezeko la mishahara lililoonyeshwa ni dhana ya mafunzo, si kiwango cha kisheria wala uthibitisho wa kufuata sheria."
             },
             "effects": {
               "payrollOnCost": 0.2,
               "formality": 2
             },
-            "predictAnswer": "same",
             "outcome": {
-              "en": "The wage bill rises a little. The move is real, though it is not yet the full statutory cover a labour officer would ask you to complete.",
-              "sw": "Bili ya mishahara inapanda kidogo. Hatua ni halisi, ingawa bado si ulinzi kamili wa kisheria ambao afisa wa kazi angekuomba ukamilishe."
+              "en": "The selected budget changes the modelled payroll cost. A local reviewer must verify the actual obligations.",
+              "sw": "Bajeti iliyochaguliwa inabadilisha gharama ya mishahara kwenye mfano. Mkaguzi wa eneo lazima athibitishe wajibu halisi."
             },
             "lesson": {
               "en": "Formality is not all-or-nothing. A partial step costs less immediately, and leaves a gap that a full inspection would still find.",
@@ -2107,8 +2561,8 @@
       "scene": "inspection",
       "unverified": true,
       "situation": {
-        "en": "An inspector's report notes that the buns mixer has no guard over its moving parts. Fitting one properly means stopping that line for a day. The exact standard the inspector is checking against needs local verification.",
-        "sw": "Ripoti ya mkaguzi inaonyesha mashine ya maandazi haina kinga juu ya sehemu zake zinazosogea. Kuiweka vizuri kunamaanisha kusimamisha mstari huo kwa siku moja. Kiwango halisi ambacho mkaguzi anakagua dhidi yake kinahitaji uthibitisho wa eneo."
+        "en": "An inspector's report notes that the buns mixer has no guard over its moving parts. Fitting one properly means stopping that line for a day.",
+        "sw": "Ripoti ya mkaguzi inaonyesha mashine ya maandazi haina kinga juu ya sehemu zake zinazosogea. Kuiweka vizuri kunamaanisha kusimamisha mstari huo kwa siku moja."
       },
       "info": [
         {
@@ -2135,10 +2589,34 @@
           "sw": "Faida yako ya wiki itakuwaje?"
         },
         "predictChoices": [
-          { "id": "up_lot", "label": { "en": "Up a lot", "sw": "Inapanda sana" } },
-          { "id": "up_bit", "label": { "en": "Up a little", "sw": "Inapanda kidogo" } },
-          { "id": "same", "label": { "en": "About the same", "sw": "Inabaki vilevile" } },
-          { "id": "down", "label": { "en": "Goes down", "sw": "Inashuka" } }
+          {
+            "id": "up_lot",
+            "label": {
+              "en": "Up a lot",
+              "sw": "Inapanda sana"
+            }
+          },
+          {
+            "id": "up_bit",
+            "label": {
+              "en": "Up a little",
+              "sw": "Inapanda kidogo"
+            }
+          },
+          {
+            "id": "same",
+            "label": {
+              "en": "About the same",
+              "sw": "Inabaki vilevile"
+            }
+          },
+          {
+            "id": "down",
+            "label": {
+              "en": "Goes down",
+              "sw": "Inashuka"
+            }
+          }
         ],
         "options": [
           {
@@ -2157,7 +2635,6 @@
               "hygiene": 5,
               "reputation": 3
             },
-            "predictAnswer": "down",
             "outcome": {
               "en": "The lost day of output shows up directly in this week's sales. The mixer is now fitted correctly and the risk to a worker's hand is gone.",
               "sw": "Siku iliyopotea ya uzalishaji inaonekana moja kwa moja kwenye mauzo ya wiki hii. Mashine sasa imewekwa vizuri na hatari kwa mkono wa mfanyakazi imeondoka."
@@ -2165,7 +2642,19 @@
             "lesson": {
               "en": "Fixing a real safety gap costs something now. Weighed against an injury or a shutdown later, it is usually the cheaper choice.",
               "sw": "Kurekebisha pengo halisi la usalama kunagharimu kitu sasa. Likilinganishwa na jeraha au kufungwa baadaye, kwa kawaida ni uamuzi wa gharama nafuu."
-            }
+            },
+            "later": [
+              {
+                "inWeeks": 2,
+                "effects": {
+                  "lines.buns.capacity": 400.0
+                },
+                "cause": {
+                  "en": "the temporary production interruption ending",
+                  "sw": "kumalizika kwa kusimama kwa uzalishaji kwa muda"
+                }
+              }
+            ]
           },
           {
             "id": "delay-fitting",
@@ -2178,7 +2667,6 @@
               "sw": "Hakuna gharama wiki hii. Pengo linabaki wazi."
             },
             "effects": {},
-            "predictAnswer": "same",
             "outcome": {
               "en": "Nothing changes on this week's ledger. The mixer keeps running exactly as it was, guard and all.",
               "sw": "Hakuna kinachobadilika kwenye daftari la wiki hii. Mashine inaendelea kufanya kazi kama ilivyokuwa, na kinga yake."
@@ -2190,7 +2678,10 @@
             "later": [
               {
                 "inWeeks": 4,
-                "effects": { "reputation": -15, "demand": -500 },
+                "effects": {
+                  "reputation": -15,
+                  "demand": -500
+                },
                 "cause": {
                   "en": "the guard still not fitted when the inspector came back",
                   "sw": "kinga ambayo bado haikuwekwa mkaguzi aliporudi"
@@ -2213,7 +2704,6 @@
               "hygiene": 5,
               "reputation": 3
             },
-            "predictAnswer": "same",
             "outcome": {
               "en": "The guard is fitted without stopping a working day. The overtime cost is a one-off cash payment rather than a hit to this week's sales.",
               "sw": "Kinga inawekwa bila kusimamisha siku ya kazi. Gharama ya muda wa ziada ni malipo ya mara moja ya pesa badala ya kuathiri mauzo ya wiki hii."
@@ -2222,6 +2712,194 @@
               "en": "Scheduling a fix around production, not against it, can meet the same safety standard without giving up a day of sales.",
               "sw": "Kupanga kurekebisha kuzunguka uzalishaji, si dhidi yake, kunaweza kufikia kiwango kilekile cha usalama bila kuacha siku ya mauzo."
             }
+          }
+        ]
+      },
+      "situationDetails": {
+        "en": "The exact standard the inspector is checking against needs local verification.",
+        "sw": "Kiwango halisi ambacho mkaguzi anakagua dhidi yake kinahitaji uthibitisho wa eneo."
+      }
+    },
+    {
+      "id": "t20",
+      "concept": "setback",
+      "conceptLabel": {
+        "en": "A batch fails at a distributor",
+        "sw": "Kundi la bidhaa linashindwa kwa msambazaji"
+      },
+      "scene": "truck",
+      "situation": {
+        "en": "A distributor calls: a batch of loaves arrived under-baked and has to be pulled from their shelves. Customers who bought it already are asking for a refund.",
+        "sw": "Msambazaji anapiga simu: kundi la mikate limefika bila kuiva vizuri na lazima liondolewe kwenye rafu zao. Wateja waliokwisha kununua wanaomba fedha zao zirudishwe."
+      },
+      "info": [
+        {
+          "id": "trace-the-failed-batch",
+          "label": {
+            "en": "Trace which oven and which shift produced the failed batch",
+            "sw": "Fuatilia oveni gani na zamu gani ilizalisha kundi lililoshindwa"
+          },
+          "costHours": 2,
+          "costCash": 0,
+          "reveals": {
+            "en": "A single oven ran under temperature for one shift. It is a specific, fixable fault, not a sign of a factory-wide problem.",
+            "sw": "Oveni moja ilifanya kazi chini ya joto kwa zamu moja. Ni hitilafu maalum, inayoweza kurekebishwa, si dalili ya tatizo la kiwanda kizima."
+          }
+        }
+      ],
+      "decision": {
+        "prompt": {
+          "en": "How do you respond to the distributor?",
+          "sw": "Unamjibuje msambazaji?"
+        },
+        "predictQuestion": {
+          "en": "What happens to your weekly profit?",
+          "sw": "Faida yako ya wiki itakuwaje?"
+        },
+        "predictChoices": [
+          {
+            "id": "up_lot",
+            "label": {
+              "en": "Up a lot",
+              "sw": "Inapanda sana"
+            }
+          },
+          {
+            "id": "up_bit",
+            "label": {
+              "en": "Up a little",
+              "sw": "Inapanda kidogo"
+            }
+          },
+          {
+            "id": "same",
+            "label": {
+              "en": "About the same",
+              "sw": "Inabaki vilevile"
+            }
+          },
+          {
+            "id": "down",
+            "label": {
+              "en": "Goes down",
+              "sw": "Inashuka"
+            }
+          }
+        ],
+        "options": [
+          {
+            "id": "recall-immediately-full-cost",
+            "label": {
+              "en": "Recall the batch immediately and cover the full replacement",
+              "sw": "Rejesha kundi mara moja na ulipe uingizwaji kamili"
+            },
+            "detail": {
+              "en": "The cost is yours alone. The response is fast and visible.",
+              "sw": "Gharama ni yako pekee. Mwitikio ni wa haraka na unaoonekana."
+            },
+            "effects": {
+              "lines.loaves.capacity": "-1100",
+              "reputation": 8
+            },
+            "outcome": {
+              "en": "This week's loaves output drops hard while the line is checked, the batch replaced, and the recall handled. Distributors see a factory that owns its mistakes quickly.",
+              "sw": "Uzalishaji wa mikate wa wiki hii unashuka sana wakati mstari unakaguliwa, kundi linabadilishwa, na urejeshaji unashughulikiwa. Wasambazaji wanaona kiwanda kinachomiliki makosa yake haraka."
+            },
+            "lesson": {
+              "en": "Owning a setback fully costs something immediately. It is often cheaper than the reputation damage of being seen to dodge it.",
+              "sw": "Kumiliki tatizo kikamilifu kunagharimu kitu mara moja. Mara nyingi ni gharama nafuu zaidi kuliko uharibifu wa sifa wa kuonekana ukilikwepa."
+            },
+            "later": [
+              {
+                "inWeeks": 3,
+                "effects": {
+                  "reputation": 5,
+                  "demand": 200
+                },
+                "cause": {
+                  "en": "the fast, visible recall that reassured distributors you catch your own mistakes",
+                  "sw": "kurejesha kwa haraka, kunakoonekana, kulikohakikishia wasambazaji unagundua makosa yako mwenyewe"
+                }
+              },
+              {
+                "inWeeks": 2,
+                "effects": {
+                  "lines.loaves.capacity": 1100.0
+                },
+                "cause": {
+                  "en": "the temporary production interruption ending",
+                  "sw": "kumalizika kwa kusimama kwa uzalishaji kwa muda"
+                }
+              }
+            ]
+          },
+          {
+            "id": "deny-and-blame-handling",
+            "label": {
+              "en": "Say the batch was fine and blame the distributor's handling",
+              "sw": "Sema kundi lilikuwa sawa na lawama uhifadhi wa msambazaji"
+            },
+            "detail": {
+              "en": "No cost today. The distributor is left to deal with their own customers.",
+              "sw": "Hakuna gharama leo. Msambazaji anaachwa kushughulikia wateja wake mwenyewe."
+            },
+            "effects": {},
+            "outcome": {
+              "en": "Nothing changes on this week's ledger. The distributor is left holding customer complaints about a batch you will not acknowledge.",
+              "sw": "Hakuna kinachobadilika kwenye daftari la wiki hii. Msambazaji anaachwa akishughulikia malalamiko ya wateja kuhusu kundi ambalo hutalikubali."
+            },
+            "lesson": {
+              "en": "Denying a real setback avoids its cost this week. The cost does not disappear; it moves to the relationship, and it usually returns larger.",
+              "sw": "Kukataa tatizo halisi kunaepuka gharama yake wiki hii. Gharama haitoweki; inahamia kwenye uhusiano, na kwa kawaida inarudi kubwa zaidi."
+            },
+            "later": [
+              {
+                "inWeeks": 3,
+                "effects": {
+                  "reputation": -20,
+                  "demand": -800
+                },
+                "cause": {
+                  "en": "the recall you denied, until two distributors dropped you",
+                  "sw": "kurejesha ulikokataa, hadi wasambazaji wawili walipokuacha"
+                }
+              }
+            ]
+          },
+          {
+            "id": "recall-share-cost",
+            "label": {
+              "en": "Recall the batch but ask the distributor to share the cost",
+              "sw": "Rejesha kundi lakini omba msambazaji ashiriki gharama"
+            },
+            "detail": {
+              "en": "A smaller loss for you, and a harder conversation with the distributor.",
+              "sw": "Hasara ndogo kwako, na mazungumzo magumu zaidi na msambazaji."
+            },
+            "effects": {
+              "lines.loaves.capacity": "-550",
+              "reputation": 3
+            },
+            "outcome": {
+              "en": "The distributor agrees to share part of the cost, after some negotiation, but output still drops while the batch is fixed. The relationship survives, though it is cooler than before.",
+              "sw": "Msambazaji anakubali kushiriki sehemu ya gharama, baada ya mazungumzo, lakini uzalishaji bado unashuka wakati kundi linarekebishwa. Uhusiano unaendelea kuwepo, ingawa umepoa kuliko awali."
+            },
+            "lesson": {
+              "en": "Sharing the cost of a setback is a real middle ground. It protects your own cash more than owning it fully, at some cost to trust.",
+              "sw": "Kushiriki gharama ya tatizo ni njia halisi ya kati. Inalinda pesa yako mwenyewe zaidi kuliko kumiliki kikamilifu, kwa gharama fulani ya imani."
+            },
+            "later": [
+              {
+                "inWeeks": 2,
+                "effects": {
+                  "lines.loaves.capacity": 550.0
+                },
+                "cause": {
+                  "en": "the temporary production interruption ending",
+                  "sw": "kumalizika kwa kusimama kwa uzalishaji kwa muda"
+                }
+              }
+            ]
           }
         ]
       }
@@ -2280,10 +2958,23 @@
             "sw": "Sifuri hakutumii chochote. Namba hasi kubwa zaidi ni mstari mkubwa, wenye uwezo zaidi."
           },
           "responses": [
-            { "field": "assetValue", "perStep": 500000, "change": -500000 },
-            { "field": "lines.premium.capacity", "perStep": 500000, "change": -80 },
-            { "field": "lines.premium.demand", "perStep": 500000, "change": -65 }
-          ]
+            {
+              "field": "assetValue",
+              "perStep": 500000,
+              "change": -500000
+            },
+            {
+              "field": "lines.premium.capacity",
+              "perStep": 500000,
+              "change": -80
+            },
+            {
+              "field": "lines.premium.demand",
+              "perStep": 500000,
+              "change": -65
+            }
+          ],
+          "displayPositive": true
         },
         "bands": [
           {
@@ -2370,10 +3061,34 @@
           "sw": "Faida yako ya wiki itakuwaje?"
         },
         "predictChoices": [
-          { "id": "up_lot", "label": { "en": "Up a lot", "sw": "Inapanda sana" } },
-          { "id": "up_bit", "label": { "en": "Up a little", "sw": "Inapanda kidogo" } },
-          { "id": "same", "label": { "en": "About the same", "sw": "Inabaki vilevile" } },
-          { "id": "down", "label": { "en": "Goes down", "sw": "Inashuka" } }
+          {
+            "id": "up_lot",
+            "label": {
+              "en": "Up a lot",
+              "sw": "Inapanda sana"
+            }
+          },
+          {
+            "id": "up_bit",
+            "label": {
+              "en": "Up a little",
+              "sw": "Inapanda kidogo"
+            }
+          },
+          {
+            "id": "same",
+            "label": {
+              "en": "About the same",
+              "sw": "Inabaki vilevile"
+            }
+          },
+          {
+            "id": "down",
+            "label": {
+              "en": "Goes down",
+              "sw": "Inashuka"
+            }
+          }
         ],
         "options": [
           {
@@ -2391,7 +3106,6 @@
               "heldStandard": true,
               "reputation": 5
             },
-            "predictAnswer": "down",
             "outcome": {
               "en": "The compliant storage and record-keeping cost lands on this week's rent line. The certificate itself takes longer to arrive than the cost does.",
               "sw": "Gharama ya uhifadhi unaokubalika na utunzaji wa kumbukumbu inaathiri mstari wa kodi wa wiki hii. Cheti chenyewe kinachukua muda mrefu zaidi kufika kuliko gharama."
@@ -2402,8 +3116,11 @@
             },
             "later": [
               {
-                "inWeeks": 4,
-                "effects": { "demand": 400, "reputation": 3 },
+                "inWeeks": 1,
+                "effects": {
+                  "demand": 400,
+                  "reputation": 3
+                },
                 "cause": {
                   "en": "the TBS mark that let two new distributors list you without asking twice",
                   "sw": "alama ya TBS iliyowaruhusu wasambazaji wapya wawili kukuorodhesha bila kuuliza mara mbili"
@@ -2422,7 +3139,6 @@
               "sw": "Hakuna gharama mpya. Hakuna karatasi ya kuonyesha mnunuzi anayeiuliza."
             },
             "effects": {},
-            "predictAnswer": "same",
             "outcome": {
               "en": "Nothing changes on this week's ledger. The factory continues to rely on its existing name with the buyers who already trust it.",
               "sw": "Hakuna kinachobadilika kwenye daftari la wiki hii. Kiwanda kinaendelea kutegemea jina lake lililopo kwa wanunuzi ambao tayari wanaliamini."
@@ -2433,8 +3149,11 @@
             },
             "later": [
               {
-                "inWeeks": 5,
-                "effects": { "reputation": -10, "demand": -300 },
+                "inWeeks": 1,
+                "effects": {
+                  "reputation": -10,
+                  "demand": -300
+                },
                 "cause": {
                   "en": "the batch a distributor rejected for paperwork you had promised and never sent",
                   "sw": "kundi la bidhaa ambalo msambazaji alilikataa kwa karatasi ulizoahidi na hukuzipeleka"
@@ -2455,7 +3174,6 @@
             "effects": {
               "licenceFees": "+5000"
             },
-            "predictAnswer": "same",
             "outcome": {
               "en": "The internal record-keeping costs almost nothing. It is not the same document a buyer's compliance team will ask to see.",
               "sw": "Utunzaji wa kumbukumbu za ndani unagharimu karibu hakuna kitu. Si hati ileile timu ya ufuasi ya mnunuzi itakayoomba kuiona."
@@ -2514,7 +3232,11 @@
             "sw": "700 inalingana kikamilifu na bei ya mshindani. 950 inashikilia imara juu ya bei yako ya sasa."
           },
           "responses": [
-            { "field": "lines.loaves.demand", "perStep": 25, "change": -60 }
+            {
+              "field": "lines.loaves.demand",
+              "perStep": 25,
+              "change": -60
+            }
           ]
         },
         "bands": [
@@ -2559,141 +3281,6 @@
             "lesson": {
               "en": "Differentiating on something other than price is a real option, but it only works if distributors actually value what you are offering instead.",
               "sw": "Kutofautisha kwa kitu kingine zaidi ya bei ni chaguo halisi, lakini kinafanya kazi tu kama wasambazaji wanathamini hasa kile unachotoa badala yake."
-            }
-          }
-        ]
-      }
-    },
-    {
-      "id": "t20",
-      "concept": "setback",
-      "conceptLabel": {
-        "en": "A batch fails at a distributor",
-        "sw": "Kundi la bidhaa linashindwa kwa msambazaji"
-      },
-      "scene": "truck",
-      "situation": {
-        "en": "A distributor calls: a batch of loaves arrived under-baked and has to be pulled from their shelves. Customers who bought it already are asking for a refund.",
-        "sw": "Msambazaji anapiga simu: kundi la mikate limefika bila kuiva vizuri na lazima liondolewe kwenye rafu zao. Wateja waliokwisha kununua wanaomba fedha zao zirudishwe."
-      },
-      "info": [
-        {
-          "id": "trace-the-failed-batch",
-          "label": {
-            "en": "Trace which oven and which shift produced the failed batch",
-            "sw": "Fuatilia oveni gani na zamu gani ilizalisha kundi lililoshindwa"
-          },
-          "costHours": 2,
-          "costCash": 0,
-          "reveals": {
-            "en": "A single oven ran under temperature for one shift. It is a specific, fixable fault, not a sign of a factory-wide problem.",
-            "sw": "Oveni moja ilifanya kazi chini ya joto kwa zamu moja. Ni hitilafu maalum, inayoweza kurekebishwa, si dalili ya tatizo la kiwanda kizima."
-          }
-        }
-      ],
-      "decision": {
-        "prompt": {
-          "en": "How do you respond to the distributor?",
-          "sw": "Unamjibuje msambazaji?"
-        },
-        "predictQuestion": {
-          "en": "What happens to your weekly profit?",
-          "sw": "Faida yako ya wiki itakuwaje?"
-        },
-        "predictChoices": [
-          { "id": "up_lot", "label": { "en": "Up a lot", "sw": "Inapanda sana" } },
-          { "id": "up_bit", "label": { "en": "Up a little", "sw": "Inapanda kidogo" } },
-          { "id": "same", "label": { "en": "About the same", "sw": "Inabaki vilevile" } },
-          { "id": "down", "label": { "en": "Goes down", "sw": "Inashuka" } }
-        ],
-        "options": [
-          {
-            "id": "recall-immediately-full-cost",
-            "label": {
-              "en": "Recall the batch immediately and cover the full replacement",
-              "sw": "Rejesha kundi mara moja na ulipe uingizwaji kamili"
-            },
-            "detail": {
-              "en": "The cost is yours alone. The response is fast and visible.",
-              "sw": "Gharama ni yako pekee. Mwitikio ni wa haraka na unaoonekana."
-            },
-            "effects": {
-              "lines.loaves.capacity": "-1100",
-              "reputation": 8
-            },
-            "predictAnswer": "down",
-            "outcome": {
-              "en": "This week's loaves output drops hard while the line is checked, the batch replaced, and the recall handled. Distributors see a factory that owns its mistakes quickly.",
-              "sw": "Uzalishaji wa mikate wa wiki hii unashuka sana wakati mstari unakaguliwa, kundi linabadilishwa, na urejeshaji unashughulikiwa. Wasambazaji wanaona kiwanda kinachomiliki makosa yake haraka."
-            },
-            "lesson": {
-              "en": "Owning a setback fully costs something immediately. It is often cheaper than the reputation damage of being seen to dodge it.",
-              "sw": "Kumiliki tatizo kikamilifu kunagharimu kitu mara moja. Mara nyingi ni gharama nafuu zaidi kuliko uharibifu wa sifa wa kuonekana ukilikwepa."
-            },
-            "later": [
-              {
-                "inWeeks": 3,
-                "effects": { "reputation": 5, "demand": 200 },
-                "cause": {
-                  "en": "the fast, visible recall that reassured distributors you catch your own mistakes",
-                  "sw": "kurejesha kwa haraka, kunakoonekana, kulikohakikishia wasambazaji unagundua makosa yako mwenyewe"
-                }
-              }
-            ]
-          },
-          {
-            "id": "deny-and-blame-handling",
-            "label": {
-              "en": "Say the batch was fine and blame the distributor's handling",
-              "sw": "Sema kundi lilikuwa sawa na lawama uhifadhi wa msambazaji"
-            },
-            "detail": {
-              "en": "No cost today. The distributor is left to deal with their own customers.",
-              "sw": "Hakuna gharama leo. Msambazaji anaachwa kushughulikia wateja wake mwenyewe."
-            },
-            "effects": {},
-            "predictAnswer": "same",
-            "outcome": {
-              "en": "Nothing changes on this week's ledger. The distributor is left holding customer complaints about a batch you will not acknowledge.",
-              "sw": "Hakuna kinachobadilika kwenye daftari la wiki hii. Msambazaji anaachwa akishughulikia malalamiko ya wateja kuhusu kundi ambalo hutalikubali."
-            },
-            "lesson": {
-              "en": "Denying a real setback avoids its cost this week. The cost does not disappear; it moves to the relationship, and it usually returns larger.",
-              "sw": "Kukataa tatizo halisi kunaepuka gharama yake wiki hii. Gharama haitoweki; inahamia kwenye uhusiano, na kwa kawaida inarudi kubwa zaidi."
-            },
-            "later": [
-              {
-                "inWeeks": 3,
-                "effects": { "reputation": -20, "demand": -800 },
-                "cause": {
-                  "en": "the recall you denied, until two distributors dropped you",
-                  "sw": "kurejesha ulikokataa, hadi wasambazaji wawili walipokuacha"
-                }
-              }
-            ]
-          },
-          {
-            "id": "recall-share-cost",
-            "label": {
-              "en": "Recall the batch but ask the distributor to share the cost",
-              "sw": "Rejesha kundi lakini omba msambazaji ashiriki gharama"
-            },
-            "detail": {
-              "en": "A smaller loss for you, and a harder conversation with the distributor.",
-              "sw": "Hasara ndogo kwako, na mazungumzo magumu zaidi na msambazaji."
-            },
-            "effects": {
-              "lines.loaves.capacity": "-550",
-              "reputation": 3
-            },
-            "predictAnswer": "down",
-            "outcome": {
-              "en": "The distributor agrees to share part of the cost, after some negotiation, but output still drops while the batch is fixed. The relationship survives, though it is cooler than before.",
-              "sw": "Msambazaji anakubali kushiriki sehemu ya gharama, baada ya mazungumzo, lakini uzalishaji bado unashuka wakati kundi linarekebishwa. Uhusiano unaendelea kuwepo, ingawa umepoa kuliko awali."
-            },
-            "lesson": {
-              "en": "Sharing the cost of a setback is a real middle ground. It protects your own cash more than owning it fully, at some cost to trust.",
-              "sw": "Kushiriki gharama ya tatizo ni njia halisi ya kati. Inalinda pesa yako mwenyewe zaidi kuliko kumiliki kikamilifu, kwa gharama fulani ya imani."
             }
           }
         ]

@@ -469,6 +469,8 @@ def build() -> str:
     A("<title>Business Simulator — concept note and cost-effectiveness analysis</title>")
     A(f"<style>{CSS}</style></head><body class='viz-root'><main>")
 
+    A("<p><strong>Model boundary:</strong> Costs cover the first grant stage and its stated review. Later grant tranches are excluded. Long-term benefits are unverified assumptions conditional on this intervention, not measured impact. This is not a fully costed multi-stage programme.</p>")
+
     # ---- header
     A("<h1>Finding transformational firms at the lowest cost</h1>")
     A("<p class='sub'>A staged selection pipeline built on a free, offline business "
@@ -550,7 +552,7 @@ def build() -> str:
     A("<h2>Why the three stages are one instrument</h2>")
     A("<figure>")
     A(chart_loop())
-    A("<figcaption>The simulator trains predict–reveal–diagnose across eighty turns. The "
+    A("<figcaption>The simulator offers eighty decisions in short episodes, with selected diagnosis and cash-book tasks. The "
       "stage-1 business plan is that same act on the founder's own firm: a dated, "
       "numeric forecast rather than a proposal. The six-month review is the reveal. "
       "Selection at each gate is on the quality of the explanation, not on hitting the "
@@ -609,14 +611,14 @@ def build() -> str:
       f"once rather than stopping on a chosen date. That alone takes the discount factor "
       f"from {annuity(6, v('discount')):.1f} to {m['pvf_t']:.1f}.</li>"
       f"<li><strong>The owner earns too.</strong> Counted at zero before, which was "
-      f"simply wrong. Modelled at {pct(v('owner_ratio'), 0)} of the wage bill, net of "
+      f"simply wrong. Modelled at {pct(v('owner_ratio'), 0)} of the worker income-gain base, net of "
       f"tax so it does not double-count the next line.</li>"
-      f"<li><strong>A formal firm pays tax.</strong> {pct(v('tax_ratio'), 0)} of the wage "
-      f"bill, valued at par with private income. This is what the formality chapters "
+      f"<li><strong>A formal firm pays tax.</strong> {pct(v('tax_ratio'), 0)} of the worker income-gain "
+      f"base, valued at par with private income. This is what the formality chapters "
       f"exist to teach, and it is the most direct channel from one firm to public "
       f"goods.</li>"
       f"<li><strong>It buys locally.</strong> Backward linkages into suppliers, at "
-      f"{pct(v('supplier_ratio'), 0)} of the wage bill. Developing a supplier is one of "
+      f"{pct(v('supplier_ratio'), 0)} of the worker income-gain base. Developing a supplier is one of "
       f"the ways a transformational firm changes a value chain rather than just "
       f"occupying a place in it.</li>"
       "</ul>")

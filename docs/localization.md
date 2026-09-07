@@ -47,8 +47,8 @@ someone who reads slowly in their second language.
 
 - Short sentences. One idea each.
 - Common words. Define any term on first use.
-- Target roughly a lower-secondary reading level in the source language before
-  translation. Translating dense English produces dense Swahili.
+- Use short sentences and common words in both languages. Check comprehension with
+  intended adult learners; do not infer ability from education level.
 - Nothing important conveyed by text alone.
 
 **Numbers:**

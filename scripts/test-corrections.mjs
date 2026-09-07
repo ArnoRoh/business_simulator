@@ -1,0 +1,37 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import * as e from '../app/js/engine.js';
+const opening = e.createState();
+const control = e.advanceWeek(opening);
+for (const delta of [-30000, 30000]) {
+  const scheduled = e.scheduleLater(opening, [{ inWeeks: 1, effects: { cash: delta } }], 'synthetic');
+  assert.equal(e.advanceWeek(scheduled).state.cash - control.state.cash, delta);
+}
+const borrowed = e.applyEffects(opening, { cash: 100000, debt: 100000 });
+assert.equal(e.netWorth(borrowed), e.netWorth(opening));
+const fixture = file => JSON.parse(readFileSync(new URL(`../app/content/${file}`, import.meta.url)));
+const factory = fixture('scenario-factory.json');
+const held = e.createState(factory.startState);
+const terms = e.applyEffects(held, { debtorWeeks: 8 });
+assert(e.weeklyCashFlow(terms).cashFlow < 0, 'Credit must show its cash cost before settlement');
+const trade = fixture('scenario-export.json');
+const exposed = e.createState({ ...trade.startState, fxShare: .35, fxBase: 2600, fxRate: 2400 });
+assert(e.weeklyPnl(exposed).fxEffect < 0);
+assert.equal(Math.abs(e.weeklyPnl(e.applyEffects(exposed, { fxCovered: 1 })).fxEffect), 0);
+const factored = e.resolveTurn(exposed, {}, { debtorWeeks: 0, licenceFees: 20000 });
+assert(factored.cash.workingCapitalChange < 0, 'Factoring must release receivables');
+const mixed = e.weeklyPnl(exposed);
+const expected = mixed.perLine.filter(line => ['regional', 'export'].includes(line.id));
+assert.equal(mixed.freight, Math.round(expected.reduce((n, line) => n + line.unitsSold, 0) * exposed.freightPerUnit));
+const book = e.cashBook(opening);
+assert.equal(book.closing, book.opening + book.receipts - book.payments);
+assert.equal(e.resolveTurn(opening, {}, { keepsRecords: true }).state.cash, e.resolveTurn(opening, {}, {}).state.cash, 'A bookkeeping answer cannot create cash');
+const allocation = { amountFrom: 'cash', fraction: 1, step: 100, buckets: [{ id: 'repay', perStep: { debt: -100 } }, { id: 'reserve', keepsCash: true }] };
+const smallLoan = e.createState({ cash: 1000, debt: 200 });
+const paid = e.applyEffects(smallLoan, e.resolveAllocation(smallLoan, allocation, { repay: 1000 }));
+assert.equal(paid.debt, 0); assert.equal(paid.cash, 800, 'Excess repayment stays in reserve');
+const attributed = e.resolveTurn(opening, { id: 'synthetic-origin' }, {}, [{ inWeeks: 1, effects: { cash: -100 } }]);
+assert.equal(attributed.fired[0].originTurnId, 'synthetic-origin');
+const stall = e.createState(fixture('scenario-mama-asha.json').startState);
+assert(e.baseOwnerHours(e.applyEffects(stall, { staff: 1, capacity: 180 })) <= e.baseOwnerHours(stall), 'A worker must cover the production time of their added output');
+console.log('Financial regressions passed');

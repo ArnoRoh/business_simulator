@@ -52,7 +52,7 @@ model can write a fluent plan; it cannot make the numbers come true. And the bes
 signal is not whether they hit the forecast — it is whether they can say precisely why
 they missed it. Grading accuracy alone would reward sandbagging and luck.
 
-The game teaches exactly this: predict, reveal, diagnose, eighty times. Stages 1 and 2
+The game provides eighty decisions, with forecasts, selected diagnosis tasks and cash-book practice. Stages 1 and 2
 are the same move performed on a real business.
 
 ## Small money first, on purpose
@@ -66,8 +66,7 @@ each other rather than with their own ask.
 
 ## What it costs
 
-The pilot is **USD 50,000 in grants — 50 grants of 1,000** — with roughly the same again
-in running costs. Stage 0 costs nothing per extra learner: a static offline-capable web
+The pilot is **USD 50,000 in grants — 50 grants of 1,000** — with USD 23,372 in modelled operating costs, for a total of USD 73,372. Later grant tranches are excluded from this estimate. Stage 0 costs nothing per extra learner: a static offline-capable web
 app, plans judged by an AI. Reaching one finisher costs about **USD 22**, and the model
 puts the pilot at **2.7× the benefit of giving the same money away as cash** on an
 assumed 6% rate of transformational firms among those funded. *Modelled figures on

@@ -27,10 +27,6 @@ export const CARRY_FLAGS = [
   'concentrated',   // ended reliant on one large customer
 ];
 
-/** Anything outside the closed set is dropped, wherever it came from. */
-export function emptyCarry() {
-  return {};
-}
 
 /**
  * Read the carried flags out of a finished chapter.
@@ -108,13 +104,4 @@ export function situationFor(turn, carry = {}) {
   const variant = turn && turn.carryVariant;
   if (variant && matches(variant, pickKnown(carry)) && variant.situation) return variant.situation;
   return turn && turn.situation;
-}
-
-/**
- * The carry as record observations — facts about what was done, never a total.
- */
-export function carrySummary(carry = {}) {
-  return CARRY_FLAGS
-    .filter((flag) => carry[flag] !== undefined)
-    .map((flag) => ({ flag, value: carry[flag] }));
 }

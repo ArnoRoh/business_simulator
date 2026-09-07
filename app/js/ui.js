@@ -134,15 +134,16 @@ function appendNumberFeedback(card, state, input, value) {
   if (/(^|\.)price$/.test(String(input.field))) {
     const after = weeklyPnl(applyEffects(state, effects));
     const unitCostField = String(input.field).replace(/price$/, 'unitCost');
+    const product = String(input.field).startsWith('lines.') ? after.perLine.find(line => line.id === input.field.split('.')[1]) : after;
     feedback.appendChild(el('p', 'number-feedback-line keep', t('num.grossPerWeek', {
-      units: count(after.unitsSold),
+      units: count(product.unitsSold),
       kept: money(value - Number(readField(state, unitCostField) || 0)),
-      gross: money(after.revenue - after.variableCost),
+      gross: money(product.revenue - product.variableCost),
     })));
     hasFeedback = true;
   }
 
-  if (!hasFeedback) feedback.appendChild(el('p', 'number-feedback-line', t('num.noChange')));
+  if (!hasFeedback) feedback.appendChild(el('p', 'number-feedback-line', t('num.resultLater')));
   card.appendChild(feedback);
 }
 
@@ -165,23 +166,44 @@ function renderStepper(root, valueNode, value, min, max, step, format, onChange)
     value = next;
     updateStepperValue(root, valueNode, previous, value, format);
     syncButtons();
+    const entry = root.querySelector('.number-entry');
+    if (entry) {
+      entry.value = value; entry.setCustomValidity(''); entry.setAttribute('aria-invalid', 'false');
+      root.querySelector('.number-error').hidden = true;
+      const commit = root.querySelector('[data-role="commit"]'); if (commit) commit.disabled = false;
+    }
     onChange(value, previous);
   };
 
-  for (const amount of [-5 * step, -step, step, 5 * step]) {
-    const coarse = Math.abs(amount) === 5 * step;
+  for (const amount of [-step, step]) {
     const button = stepButton(
       amount / step,
-      amount < 0 ? (coarse ? 'num.coarseDecrease' : 'num.decrease')
-        : (coarse ? 'num.coarseIncrease' : 'num.increase'),
-      amount < 0 ? (coarse ? 'num.coarseDecreaseLabel' : 'num.decreaseLabel')
-        : (coarse ? 'num.coarseIncreaseLabel' : 'num.increaseLabel'),
+      amount < 0 ? 'num.decrease' : 'num.increase',
+      amount < 0 ? 'num.decreaseLabel' : 'num.increaseLabel',
     );
     button.addEventListener('click', () => applyStep(amount));
     buttons.push({ button, amount });
     root.querySelector('.stepper-controls').appendChild(button);
   }
 
+  const input = el('input', 'number-entry');
+  input.type = 'number'; input.inputMode = 'decimal'; input.min = min; input.max = max; input.step = 'any'; input.value = value;
+  input.setAttribute('aria-label', t('num.entry'));
+  const error = el('p', 'number-error'); error.hidden = true; error.setAttribute('role', 'alert');
+  error.id = `${root.dataset.control}-range`; input.setAttribute('aria-describedby', error.id);
+  input.addEventListener('input', () => {
+    const valid = !input.validity.stepMismatch && input.value.trim() !== '' && Number.isFinite(Number(input.value)) && Number(input.value) >= min && Number(input.value) <= max;
+    input.setCustomValidity(valid ? '' : input.validity.stepMismatch ? t('num.whole') : t('num.range', { min: format(min), max: format(max) }));
+    input.setAttribute('aria-invalid', String(!valid));
+    error.textContent = input.validationMessage; error.hidden = valid;
+    const commit = root.querySelector('[data-role="commit"]');
+    if (commit) commit.disabled = !valid;
+    if (!valid) return;
+    applyStep(Number(input.value) - value);
+    onChange(value, value);
+  });
+  root.querySelector('.stepper-controls').appendChild(input);
+  root.appendChild(error);
   syncButtons();
   return () => value;
 }
@@ -351,7 +373,7 @@ export function renderPnl(container, state, seen = null, prevState = null) {
   // soon as there is an asset, a loan or a credit term (D-017). This is the whole
   // lesson of chapters 2 and 3, and it is taught by putting the two figures next to
   // each other in the panel the learner already reads — not by a new control.
-  const flow = weeklyCashFlow(state, 0);
+  const flow = weeklyCashFlow(state);
   if (flow.cashFlow !== pnl.profit) {
     const cashRow = el('div', `ledger-row total cash-flow${flow.cashFlow < 0 ? ' negative' : ''}`);
     cashRow.appendChild(el('div', 'ledger-label', t('pnl.reachesTheBank')));
@@ -523,6 +545,10 @@ export function renderSituation(container, turn, notes = []) {
   head.appendChild(el('span', 'concept-tag', localised(turn.conceptLabel) || turn.concept || ''));
   card.appendChild(head);
   card.appendChild(el('p', 'situation', localised(turn.situation)));
+  if (localised(turn.situationDetails)) {
+    const more = el('details'); more.appendChild(el('summary', null, t('situation.more')));
+    more.appendChild(el('p', null, localised(turn.situationDetails))); card.appendChild(more);
+  }
 
   if (notes.length && turn.id === 't01') {
     const carried = el('div', 'carry-notes');
@@ -628,17 +654,22 @@ function touchedDimensions(effects = {}) {
  * A direct numeric decision. The caller receives the raw value and the resolved
  * effects, so the learner's actual input can be recorded without reproducing it.
  */
-export function renderNumberDecision(container, turn, state, onCommit) {
+export function renderNumberDecision(container, turn, state, onCommit, draft = null, onDraft = () => {}) {
   clear(container);
   const decision = turn.decision;
-  const input = decision.input;
+  const authored = decision.input;
+  if (authored.displayPositive) {
+    const display = { ...turn, decision: { ...decision, input: { ...authored, displayPositive: false, min: -authored.max, max: -authored.min, start: -(Number(authored.start) || 0), responses: [] } } };
+    return renderNumberDecision(container, display, state, value => onCommit(-value), draft === null ? null : -draft, value => onDraft(-value));
+  }
+  const input = authored;
   const min = Number(input.min);
   const max = Number(input.max);
   const step = Math.max(1, Number(input.step) || 1);
   const rawStart = input.start === 'current' ? readField(state, input.field) : input.start;
   // Inputs are authored on a step grid. If a saved state is between steps, keep it
   // until the learner touches the control; the next press still moves exactly one step.
-  let value = clampNumber(Number(rawStart) || min, min, max);
+  let value = clampNumber(draft ?? (Number.isFinite(Number(rawStart)) ? Number(rawStart) : min), min, max);
   const format = (number) => decisionValue(number, input.valueAs, input.unit);
 
   const card = el('div', 'card number-decision fade-in');
@@ -681,8 +712,9 @@ export function renderNumberDecision(container, turn, state, onCommit) {
   };
   renderStepper(card, valueNode, value, min, max, step, format, (nextValue) => {
     value = nextValue;
-    refreshFeedback(value);
+    refreshFeedback(value); onDraft(value);
   });
+  if (/(^|\.)(staff|capacity|demand)$/.test(input.field)) card.querySelector('.number-entry').step = '1';
 
   const commit = el('button', 'btn btn-primary', t('num.commit'));
   commit.type = 'button';
@@ -698,122 +730,48 @@ export function renderNumberDecision(container, turn, state, onCommit) {
  * amount: this is the simplest reversible default for a split decision and keeps the
  * commit valid before the learner moves anything.
  */
-export function renderAllocateDecision(container, turn, state, onCommit) {
+export function renderAllocateDecision(container, turn, state, onCommit, draft = null, onDraft = () => {}) {
   clear(container);
-  const decision = turn.decision;
-  const allocate = decision.allocate;
+  const allocate = turn.decision.allocate;
   const total = allocationTotal(state, allocate);
-  const step = Math.max(1, Number(allocate.step) || 1);
-  const buckets = Array.isArray(allocate.buckets) ? allocate.buckets : [];
-  const split = Object.fromEntries(buckets.map((bucket, index) => [
-    bucket.id, index === 0 ? total : 0,
-  ]));
-
-  const card = el('div', 'card allocation-decision fade-in');
-  card.dataset.control = 'allocate';
-  card.appendChild(el('div', 'card-title', t('alloc.title')));
-  card.appendChild(el('p', 'predict-question', localised(decision.prompt) || t('alloc.prompt')));
-  const amountLine = el('p', 'allocation-amount', t('alloc.amount', { amount: money(total) }));
-  card.appendChild(amountLine);
-
-  const remainingNode = el('div', 'allocation-remaining');
-  remainingNode.dataset.role = 'remaining';
-  card.appendChild(remainingNode);
-
-  const rows = el('div', 'allocation-buckets');
-  const valueNodes = new Map();
-  // Every stepper button in this control, so they can be greyed out when they cannot
-  // move. The number stepper has done this since it was written and this one never did:
-  // at zero, or with the whole amount already placed, half these buttons looked live and
-  // did nothing. "A learner who presses a live-looking button twice and sees no change
-  // concludes the control is broken, not that they are at the end of the range" —
-  // renderStepper, and it is no less true here.
-  const stepButtons = [];
-  const syncButtons = () => {
-    const used = Object.values(split).reduce((sum, amount) => sum + amount, 0);
-    for (const { button, bucket, amount } of stepButtons) {
-      const current = split[bucket];
-      const headroom = total - (used - current);
-      button.disabled = clampNumber(current + amount, 0, Math.max(0, headroom)) === current;
-    }
-  };
-  const updateSummary = () => {
-    const used = Object.values(split).reduce((sum, amount) => sum + amount, 0);
-    const remaining = total - used;
-    remainingNode.textContent = t(remaining === 0 ? 'alloc.allAllocated' : 'alloc.remaining', {
-      amount: money(Math.max(0, remaining)),
-    });
-    const effects = resolveAllocation(state, allocate, split);
-    const cashChange = numberDelta(effects.cash);
-    const cashNode = card.querySelector('.allocation-cash');
-    if (cashNode) cashNode.textContent = t('alloc.cashAfter', {
-      amount: money((Number(state.cash) || 0) + cashChange),
-    });
-    const commit = card.querySelector('[data-role="commit"]');
-    if (commit) commit.disabled = remaining !== 0;
-  };
-
-  for (const bucket of buckets) {
-    const row = el('div', 'allocation-bucket');
-    row.dataset.bucket = bucket.id;
-    const label = el('div', 'allocation-bucket-label', localised(bucket.label));
-    row.appendChild(label);
-
-    const controls = el('div', 'stepper allocation-stepper');
-    const controlsInner = el('div', 'stepper-controls');
-    controls.appendChild(controlsInner);
-    const valueWrap = el('div', 'stepper-value-wrap');
-    const valueNode = el('div', 'stepper-value', money(split[bucket.id]));
-    valueNode.dataset.role = 'value';
-    valueNode.setAttribute('aria-live', 'polite');
-    valueNode.setAttribute('aria-atomic', 'true');
-    valueWrap.appendChild(valueNode);
-    controls.appendChild(valueWrap);
-    row.appendChild(controls);
-    rows.appendChild(row);
-    valueNodes.set(bucket.id, valueNode);
-
-    const change = (amount) => {
-      const previous = split[bucket.id];
-      const next = clampNumber(previous + amount, 0, previous + amount > total ? previous : total);
-      const usedOther = Object.entries(split)
-        .filter(([id]) => id !== bucket.id)
-        .reduce((sum, [, valueForBucket]) => sum + valueForBucket, 0);
-      const bounded = clampNumber(next, 0, Math.max(0, total - usedOther));
-      if (bounded === previous) return;
-      split[bucket.id] = bounded;
-      updateStepperValue(controls, valueNode, previous, bounded, money);
-      syncButtons();
-      updateSummary();
-    };
-
-    for (const amount of [-5 * step, -step, step, 5 * step]) {
-      const coarse = Math.abs(amount) === 5 * step;
-      const button = stepButton(
-        amount / step,
-        amount < 0 ? (coarse ? 'alloc.coarseDecrease' : 'alloc.decrease')
-          : (coarse ? 'alloc.coarseIncrease' : 'alloc.increase'),
-        amount < 0 ? (coarse ? 'alloc.coarseDecreaseLabel' : 'alloc.decreaseLabel')
-          : (coarse ? 'alloc.coarseIncreaseLabel' : 'alloc.increaseLabel'),
-      );
-      button.addEventListener('click', () => change(amount));
-      stepButtons.push({ button, bucket: bucket.id, amount });
-      controlsInner.appendChild(button);
-    }
+  const buckets = allocate.buckets || [];
+  const reserve = buckets.find(b => b.keepsCash) || buckets.at(-1);
+  const limit = bucket => bucket.perStep?.debt < 0 ? state.debt * allocate.step / -bucket.perStep.debt : total;
+  const split = Object.fromEntries(buckets.map(b => [b.id, b.id === reserve.id ? total : 0]));
+  for (const bucket of buckets.filter(b => b.id !== reserve.id)) {
+    split[bucket.id] = Math.min(split[reserve.id], limit(bucket), Math.max(0, Number(draft?.[bucket.id]) || 0));
+    split[reserve.id] -= split[bucket.id];
   }
-  card.appendChild(rows);
-
-  const cashNode = el('p', 'allocation-cash');
-  card.appendChild(cashNode);
-  const commit = el('button', 'btn btn-primary', t('alloc.commit'));
-  commit.type = 'button';
-  commit.dataset.role = 'commit';
-  commit.setAttribute('aria-label', t('alloc.commitLabel'));
-  commit.addEventListener('click', () => onCommit({ ...split }, resolveAllocation(state, allocate, split)));
-  card.appendChild(commit);
-  syncButtons();
-  updateSummary();
-  container.appendChild(card);
+  if (draft && JSON.stringify(draft) !== JSON.stringify(split)) onDraft({ ...split });
+  const card = el('div', 'card allocation-decision'); card.dataset.control = 'allocate';
+  card.appendChild(el('h2', 'card-title', localised(turn.decision.prompt)));
+  card.appendChild(el('p', null, t('alloc.amount', { amount: money(total) })));
+  const reserveText = el('p', 'allocation-remaining'); reserveText.dataset.role = 'remaining';
+  const buttons = [];
+  const delta = (bucket, direction) => direction < 0 ? -Math.min(split[bucket.id], allocate.step) : Math.max(0, Math.min(split[reserve.id], allocate.step, limit(bucket) - split[bucket.id]));
+  const refresh = () => {
+    reserveText.textContent = t('alloc.remaining', { amount: money(split[reserve.id]) });
+    for (const { button, bucket, direction } of buttons) button.disabled = delta(bucket, direction) === 0;
+  };
+  card.appendChild(reserveText);
+  for (const bucket of buckets.filter(b => b.id !== reserve.id)) {
+    const row = el('div', 'allocation-bucket'); row.dataset.bucket = bucket.id;
+    row.appendChild(el('p', null, localised(bucket.label)));
+    const value = el('output', 'stepper-value', money(split[bucket.id])); value.dataset.role = 'value';
+    const controls = el('div', 'stepper-controls');
+    for (const direction of [-1, 1]) {
+      const button = stepButton(direction, direction < 0 ? 'alloc.decrease' : 'alloc.increase', direction < 0 ? 'alloc.decreaseLabel' : 'alloc.increaseLabel');
+      button.addEventListener('click', () => {
+        const amount = delta(bucket, direction);
+        split[bucket.id] += amount; split[reserve.id] -= amount;
+        value.textContent = money(split[bucket.id]); refresh(); onDraft({ ...split });
+      }); buttons.push({ button, bucket, direction }); controls.appendChild(button);
+    }
+    row.appendChild(value); row.appendChild(controls); card.appendChild(row);
+  }
+  const commit = el('button', 'btn btn-primary', t('alloc.commit')); commit.dataset.role = 'commit';
+  commit.addEventListener('click', () => onCommit({ ...split }));
+  card.appendChild(commit); refresh(); container.appendChild(card);
 }
 
 /**
@@ -834,14 +792,14 @@ function diagnoseEvidence(state) {
 
   // The cash statement. Signs follow the ledger's rule — what leaves the business is
   // negative — so a row's sign still matches the direction it moves the money.
-  const flow = weeklyCashFlow(state, 0);
+  const flow = weeklyCashFlow(state);
   evidence.set('cash.profit', flow.profit);
   evidence.set('cash.depreciation', flow.depreciation);
   evidence.set('cash.repayment', -flow.repayment);
   // The amount standing between profit and cash, not the week's movement in it: the
   // movement is settled every week (advanceWeek), so at the moment this is asked it is
   // zero, and zero is not what the learner is being asked to see.
-  evidence.set('cash.workingCapitalChange', -workingCapital(state));
+  evidence.set('cash.workingCapitalChange', -flow.workingCapitalChange);
 
   return evidence;
 }
@@ -849,7 +807,13 @@ function diagnoseEvidence(state) {
 /** Choose the line — of the ledger, of the cash statement, or of the process. */
 export function renderDiagnose(container, turn, state, onAnswer) {
   clear(container);
-  const diagnose = turn.diagnose;
+  const diagnose = turn.diagnose.liveConstraint ? {
+    ...turn.diagnose, answer: diagnosisAnswer(turn, state),
+    options: [
+      { id: 'capacity', key: 'capacity', label: { en: t('constraint.capacity', { n: count(state.capacity) }), sw: t('constraint.capacity', { n: count(state.capacity) }) }, detail: { en: t('constraint.capacityHelp'), sw: t('constraint.capacityHelp') } },
+      { id: 'demand', key: 'demand', label: { en: t('constraint.demand', { n: count(state.demand) }), sw: t('constraint.demand', { n: count(state.demand) }) }, detail: { en: t('constraint.demandHelp'), sw: t('constraint.demandHelp') } },
+    ],
+  } : turn.diagnose;
   const evidence = diagnoseEvidence(state);
   const card = el('div', 'card diagnose fade-in');
   card.dataset.control = 'diagnose';
@@ -891,21 +855,21 @@ export function renderDiagnose(container, turn, state, onAnswer) {
 }
 
 /** A numeric weekly-profit prediction, centred on the current P&L. */
-export function renderPredictNumber(container, turn, state, onPredict) {
+export function renderPredictNumber(container, turn, state, onPredict, draft = null, onDraft = () => {}) {
   clear(container);
-  const current = weeklyPnl(state).profit;
+  const current = turn.decision.predictMetric === 'cash' ? state.cash : weeklyPnl(state).profit * (turn.advanceWeeks || 1);
   // The window is sized from what this decision could actually produce (engine
   // predictionWindow), not from a fixed number of steps. A fixed ±10 steps could not
   // hold the truth on the very first turn, so a learner who reasoned correctly was
   // still graded "off" — they were being marked against the control, not the business.
   const { min, max, step } = predictionWindow(state, turn);
-  let value = current;
+  let value = draft ?? current;
   const card = el('div', 'card number-prediction predict slide-up');
   card.dataset.control = 'predict-number';
   card.dataset.value = String(value);
   card.appendChild(el('div', 'card-title', t('num.predictTitle')));
   card.appendChild(el('p', 'predict-question', localised(turn.decision.predictQuestion) || t('num.predictPrompt')));
-  card.appendChild(el('p', 'number-hint', t('num.predictCurrent', { amount: money(current) })));
+  card.appendChild(el('p', 'number-hint', t(turn.decision.predictMetric === 'cash' ? 'forecast.cashCurrent' : 'num.predictCurrent', { amount: money(current) })));
   // The two numbers the estimate is built from, kept on screen. They were shown on the
   // work-it-out card and then taken away, which turned an arithmetic step into a
   // memory test.
@@ -937,9 +901,9 @@ export function renderPredictNumber(container, turn, state, onPredict) {
   stepper.appendChild(valueWrap);
   card.appendChild(stepper);
 
-  renderStepper(card, valueNode, value, min, max, step, money, (next) => { value = next; });
+  renderStepper(card, valueNode, value, min, max, step, money, (next) => { value = next; onDraft(value); });
 
-  const commit = el('button', 'btn btn-primary', t('num.predictCommit'));
+  const commit = el('button', 'btn btn-primary', t('turn.run'));
   commit.type = 'button';
   commit.dataset.role = 'commit';
   commit.setAttribute('aria-label', t('num.predictCommitLabel'));
@@ -983,20 +947,23 @@ export function renderGoal(container, progress, goal) {
   container.appendChild(card);
 }
 
-export function renderOptions(container, turn, onChoose) {
+export function renderOptions(container, turn, onChoose, selected = null) {
   clear(container);
   const card = el('div', 'card fade-in');
   card.appendChild(el('div', 'card-title', localised(turn.decision.prompt) || t('decision.prompt')));
+  card.appendChild(el('p', 'number-hint', t('decision.preview')));
   const list = el('div', 'options');
 
   for (const opt of turn.decision.options) {
-    const btn = el('button', 'option');
+    const btn = el('button', `option${selected === opt.id ? ' selected' : ''}`);
+    btn.dataset.option = opt.id; btn.setAttribute('aria-pressed', String(selected === opt.id));
     btn.type = 'button';
     btn.appendChild(el('span', 'option-label', localised(opt.label)));
-    if (opt.detail) btn.appendChild(el('span', 'option-detail', localised(opt.detail)));
+    if (selected === opt.id && opt.detail) btn.appendChild(el('span', 'option-detail', localised(opt.detail)));
+    btn.setAttribute('aria-expanded', String(selected === opt.id));
 
     const touches = touchedDimensions(opt.effects);
-    if (touches.length) {
+    if (selected === opt.id && touches.length) {
       const chips = el('span', 'option-touches');
       chips.appendChild(el('span', 'option-touches-label', t('decision.touches')));
       for (const dim of touches) chips.appendChild(el('span', `chip chip-${dim}`, t(`touch.${dim}`)));
@@ -1004,7 +971,7 @@ export function renderOptions(container, turn, onChoose) {
     }
 
     btn.addEventListener('click', () => {
-      [...list.children].forEach((c) => { c.classList.remove('selected'); c.disabled = true; });
+      [...list.children].forEach((c) => { c.classList.remove('selected'); });
       btn.classList.add('selected');
       onChoose(opt);
     });
@@ -1098,7 +1065,7 @@ export function renderWorkout(container, turn, choiceLabel, state, onReady) {
 
   const card = el('div', 'card workout slide-up');
   card.appendChild(el('div', 'card-title', t('workout.title')));
-  card.appendChild(el('p', 'situation', t('predict.chose', { label: choiceLabel })));
+  if (choiceLabel) card.appendChild(el('p', 'situation', t('predict.chose', { label: choiceLabel })));
   card.appendChild(el('p', 'workout-intro', t('workout.intro')));
 
   const lines = workoutLines(state, pnl);
@@ -1154,7 +1121,7 @@ function bandHint(choiceId) {
  * against a boundary they were never shown, and "up a little" means one thing to them
  * and another to the engine (Q-014).
  */
-export function renderPredict(container, turn, chosenOption, onPredict) {
+export function renderPredict(container, turn, chosenOption, onPredict, selected = null) {
   clear(container);
   const card = el('div', 'card predict slide-up');
   card.appendChild(el('div', 'card-title', t('predict.title')));
@@ -1166,14 +1133,15 @@ export function renderPredict(container, turn, chosenOption, onPredict) {
     || ['up_lot', 'up_bit', 'same', 'down'].map((id) => ({ id }));
 
   for (const choice of choices) {
-    const btn = el('button', 'predict-choice');
+    const btn = el('button', `predict-choice${selected === choice.id ? ' selected' : ''}`);
+    btn.dataset.prediction = choice.id; btn.setAttribute('aria-pressed', String(selected === choice.id));
     btn.type = 'button';
     btn.appendChild(el('span', 'predict-choice-label', localised(choice.label) || t(`predict.${choice.id}`)));
     const hint = bandHint(choice.id);
     if (hint) btn.appendChild(el('span', 'predict-choice-band', hint));
 
     btn.addEventListener('click', () => {
-      [...list.children].forEach((c) => { c.classList.remove('selected'); c.disabled = true; });
+      [...list.children].forEach((c) => { c.classList.remove('selected'); });
       btn.classList.add('selected');
       onPredict(choice);
     });
@@ -1191,60 +1159,8 @@ export function renderPredict(container, turn, chosenOption, onPredict) {
  * A single profit delta tells the learner they were wrong without telling them where
  * they were wrong. Showing every line lets them find the one that moved.
  */
-function comparisonLedger(beforeState, afterState) {
-  const before = weeklyPnl(beforeState);
-  const after = weeklyPnl(afterState);
-  const rowsBefore = ledgerRows(before);
-  const rowsAfter = ledgerRows(after);
-
-  const keys = [...new Set([...rowsBefore, ...rowsAfter].map((r) => r.key))];
-  const wrap = el('div', 'compare');
-
-  const head = el('div', 'compare-row head');
-  head.appendChild(el('div', 'compare-label', ''));
-  head.appendChild(el('div', 'compare-value', t('reveal.before')));
-  head.appendChild(el('div', 'compare-value', t('reveal.after')));
-  wrap.appendChild(head);
-
-  for (const key of keys) {
-    const b = rowsBefore.find((r) => r.key === key);
-    const a = rowsAfter.find((r) => r.key === key);
-    const bv = b ? b.value : 0;
-    const av = a ? a.value : 0;
-    const changed = bv !== av;
-
-    const row = el('div', `compare-row${changed ? ' changed' : ''}`);
-    row.appendChild(el('div', 'compare-label', t(key)));
-    row.appendChild(el('div', `compare-value${bv < 0 ? ' negative' : ''}`, money(bv)));
-    row.appendChild(el('div', `compare-value${av < 0 ? ' negative' : ''}`, money(av)));
-    wrap.appendChild(row);
-  }
-
-  const totalRow = el('div', 'compare-row total');
-  totalRow.appendChild(el('div', 'compare-label', t('pnl.profitThisWeek')));
-  totalRow.appendChild(el('div', `compare-value${before.profit < 0 ? ' negative' : ''}`, money(before.profit)));
-  const afterCell = el('div', `compare-value${after.profit < 0 ? ' negative' : ''}`, money(after.profit));
-  totalRow.appendChild(afterCell);
-  wrap.appendChild(totalRow);
-
-  return { wrap, afterCell, before, after };
-}
 
 /** Which line moved most — the answer to "but why?" after a wrong prediction. */
-function biggestMover(beforeState, afterState) {
-  const before = ledgerRows(weeklyPnl(beforeState));
-  const after = ledgerRows(weeklyPnl(afterState));
-  const keys = [...new Set([...before, ...after].map((r) => r.key))];
-
-  let best = null;
-  for (const key of keys) {
-    const b = before.find((r) => r.key === key);
-    const a = after.find((r) => r.key === key);
-    const change = (a ? a.value : 0) - (b ? b.value : 0);
-    if (!best || Math.abs(change) > Math.abs(best.change)) best = { key, change };
-  }
-  return best;
-}
 
 export function predictionSummaryText(prediction) {
   if (!prediction) return '';
@@ -1260,67 +1176,6 @@ export function predictionSummaryText(prediction) {
   });
 }
 
-export function renderReveal(container, {
-  turn,
-  narrative,
-  prediction,
-  beforeState,
-  afterState,
-  onNext,
-}) {
-  clear(container);
-  const numeric = prediction && prediction.kind === 'number';
-  const correct = numeric ? prediction.grade === 'close' : Boolean(prediction && prediction.correct);
-  const near = numeric && prediction.grade === 'near';
-  const card = el('div', `reveal ${correct ? 'correct' : near ? 'near' : 'wrong'} slide-up`);
-
-  const verdict = el('div', 'reveal-verdict');
-  // Never colour alone — docs/localization.md.
-  verdict.appendChild(el('span', 'reveal-mark', numeric
-    ? (correct ? '✓' : near ? '≈' : '✗')
-    : (correct ? '✓' : '✗')));
-  verdict.appendChild(el('span', 'reveal-text', numeric
-    ? t(`num.grade.${prediction.grade}`)
-    : t(correct ? 'reveal.right' : 'reveal.wrong')));
-  card.appendChild(verdict);
-
-  const { wrap, afterCell, before, after } = comparisonLedger(beforeState, afterState);
-  card.appendChild(wrap);
-
-  const delta = after.profit - before.profit;
-  const deltaRow = el('div', 'reveal-delta');
-  deltaRow.appendChild(el('span', 'reveal-delta-label', t('reveal.weeklyProfit')));
-  const deltaVal = el('span', `reveal-delta-value${delta < 0 ? ' negative' : ''}`, moneySigned(delta));
-  deltaRow.appendChild(deltaVal);
-  card.appendChild(deltaRow);
-
-  // Numeric predictions always need the concrete figures. Band predictions retain
-  // the previous compact summary only when the call missed.
-  if (numeric || !correct) card.appendChild(el('p', 'reveal-said', predictionSummaryText(prediction)));
-
-  const miss = numeric ? prediction.grade === 'off' : !correct;
-  if (miss) {
-    const mover = biggestMover(beforeState, afterState);
-    const look = el('div', 'second-look');
-    look.appendChild(el('div', 'second-look-title', t('secondLook.title')));
-    look.appendChild(el('p', null, mover && mover.change !== 0
-      ? t('secondLook.moved', { label: t(mover.key), change: moneySigned(mover.change) })
-      : t('secondLook.nothing')));
-    card.appendChild(look);
-  }
-
-  if (narrative && narrative.outcome) card.appendChild(el('p', 'outcome', localised(narrative.outcome)));
-  if (narrative && narrative.lesson) card.appendChild(el('p', 'lesson', localised(narrative.lesson)));
-
-  const next = el('button', 'btn btn-primary', t('btn.continue'));
-  next.type = 'button';
-  next.addEventListener('click', onNext);
-  card.appendChild(next);
-
-  container.appendChild(card);
-  animateNumber(deltaVal, 0, delta, { duration: 700, format: moneySigned });
-  animateNumber(afterCell, before.profit, after.profit, { duration: 700, format: money });
-}
 
 /**
  * A consequence that was set in motion earlier and has just landed.
@@ -1357,10 +1212,10 @@ export function renderProgress(container, done, total) {
   clear(container);
   const bar = el('div', 'progress-bar');
   container.appendChild(bar);
-  container.setAttribute('role', 'progressbar');
-  container.setAttribute('aria-valuenow', String(done));
-  container.setAttribute('aria-valuemax', String(total));
-  container.setAttribute('aria-label', t('progress.label', { n: count(done), total: count(total) }));
+  bar.setAttribute('role', 'progressbar');
+  bar.setAttribute('aria-valuenow', String(done));
+  bar.setAttribute('aria-valuemax', String(total));
+  bar.setAttribute('aria-label', t('progress.label', { n: count(done), total: count(total) }));
   growBar(bar, done / Math.max(1, total));
 }
 
@@ -1416,7 +1271,7 @@ export function statementText(s) {
       : s.text;
 }
 
-export function renderProfile(container, profile, tally, state, history, turns = [], decisions = []) {
+export function renderProfile(container, profile, tally, state, history, turns = [], decisions = [], completed = true) {
   clear(container);
 
   // Completion is the gate (ADR-0005, resolved by the owner in session 005). Finishing
@@ -1424,8 +1279,8 @@ export function renderProfile(container, profile, tally, state, history, turns =
   // is never a pass mark here. Saying so plainly is the difference between a record and
   // a score.
   const done = el('div', 'card finished fade-in');
-  done.appendChild(el('div', 'card-title', t('profile.finished.title')));
-  done.appendChild(el('p', 'finished-body', t('profile.finished.body')));
+  done.appendChild(el('div', 'card-title', t(completed ? 'profile.finished.title' : 'record.partial')));
+  done.appendChild(el('p', 'finished-body', t(completed ? 'profile.finished.body' : 'record.partialBody')));
   container.appendChild(done);
 
   const card = el('div', 'card profile fade-in');
@@ -1434,9 +1289,7 @@ export function renderProfile(container, profile, tally, state, history, turns =
   const head = el('div', 'profile-head');
   head.appendChild(el('div', 'profile-tally', proportion(tally.correct, tally.total)));
   head.appendChild(el('div', 'profile-tally-label', t('profile.tallyLabel')));
-  if (tally.trend === 'improved') {
-    head.appendChild(el('div', 'profile-trend', t('profile.improved')));
-  }
+  head.appendChild(el('p', null, t('record.support', { guided: tally.guided || 0, independent: tally.independent || 0 })));
   card.appendChild(head);
 
   for (const s of profile.statements) {
@@ -1468,4 +1321,74 @@ export function renderProfile(container, profile, tally, state, history, turns =
   for (const line of lines) ul.appendChild(el('li', null, line));
   limits.appendChild(ul);
   container.appendChild(limits);
+}
+
+/** Constraint answers derive from the same visible capacity and demand facts. */
+export function diagnosisAnswer(turn, state) {
+  if (turn.diagnose?.liveConstraint) return state.capacity < state.demand ? 'capacity' : 'demand';
+  return turn.diagnose?.answer;
+}
+export function renderCashBook(container, book, draft, onCommit, onDraft) {
+  clear(container);
+  const card = el('div', 'card cashbook'); card.dataset.control = 'cashbook';
+  card.appendChild(el('h2', null, t('book.title')));
+  card.appendChild(el('p', null, t('book.context')));
+  for (const key of ['opening', 'receipts', 'payments']) card.appendChild(el('p', null, t(`book.${key}`, { amount: money(book[key]) })));
+  const input = el('input', 'number-entry'); input.type = 'number'; input.inputMode = 'decimal';
+  input.setAttribute('aria-label', t('book.balance')); input.value = draft ?? '';
+  const commit = el('button', 'btn btn-primary', t('num.commit')); commit.dataset.role = 'commit';
+  const valid = () => input.value !== '' && Number.isFinite(Number(input.value));
+  commit.disabled = !valid();
+  input.addEventListener('input', () => { commit.disabled = !valid(); if (valid()) onDraft(Number(input.value)); });
+  commit.addEventListener('click', () => { if (valid()) onCommit(Number(input.value)); });
+  card.appendChild(input); card.appendChild(commit); container.appendChild(card);
+}
+export function renderTurnResult(container, turn, result, narrative, label, onNext) {
+  clear(container);
+  const card = el('section', 'card reveal');
+  card.appendChild(el('h2', null, t('result.title')));
+  card.appendChild(el('p', null, t('predict.chose', { label })));
+  const headline = el('p', 'result-headline', t('result.totals', { profit: money(result.profit), cash: money(result.cash.closing) }));
+  headline.setAttribute('role', 'status'); card.appendChild(headline);
+  card.appendChild(el('p', null, predictionSummaryText(result.prediction)));
+  if (result.diagnosis) {
+    const d = result.diagnosis;
+    card.appendChild(el('p', 'lesson', t(d.picked === d.answer ? 'diag.correct' : 'diag.correction')));
+    card.appendChild(el('p', null, d.live ? t(`constraint.${d.answer}Help`) : localised(turn.diagnose.explanation)));
+  }
+  if (narrative.outcome) card.appendChild(el('p', null, localised(narrative.outcome)));
+  if (narrative.lesson) card.appendChild(el('p', 'lesson', localised(narrative.lesson)));
+  if (result.book) card.appendChild(el('p', null, t('book.correction', {
+    entered: money(result.book.entered), opening: money(result.book.opening), receipts: money(result.book.receipts), payments: money(result.book.payments), closing: money(result.book.closing),
+  })));
+  const detail = el('details', 'cash-reconciliation');
+  detail.appendChild(el('summary', null, t('result.calculation')));
+  for (const [key, raw] of Object.entries(result.cash)) {
+    const value = ['repayment', 'workingCapitalChange'].includes(key) ? -raw : raw;
+    detail.appendChild(el('p', null, t(`result.${key}`, { amount: money(value) })));
+  }
+  card.appendChild(detail);
+  const consequences = el('div'); renderConsequences(consequences, result.fired, turn.advanceWeeks || 1); card.appendChild(consequences);
+  if (result.state.pending.length) card.appendChild(el('p', null, t('result.pending', { n: result.state.pending.length })));
+  const next = el('button', 'btn btn-primary', t('btn.continue')); next.dataset.role = 'next'; next.addEventListener('click', onNext);
+  card.appendChild(next); container.appendChild(card);
+}
+
+export function renderFacts(container, state) {
+  const facts = el('div', 'business-facts');
+  const pnl = weeklyPnl(state);
+  const time = ownerLoad(state);
+  const values = [['cash', state.cash], ['stock', pnl.variableCost * state.inventoryWeeks], ['owed', pnl.revenue * state.debtorWeeks], ['time', time.used]];
+  const moneyScale = Math.max(1, ...values.slice(0, 3).map(([, value]) => value));
+  for (const [key, value] of values) {
+    const box = el('div', 'business-fact');
+    box.appendChild(el('span', null, t(`facts.${key}`)));
+    box.appendChild(el('strong', null, key === 'time' ? t('facts.hours', { n: count(value), total: count(time.total) }) : money(value)));
+    const bar = el('meter', 'fact-amount');
+    bar.min = 0; bar.max = key === 'time' ? time.total : moneyScale; bar.value = Math.max(0, value);
+    bar.setAttribute('aria-hidden', 'true'); // The exact labelled amount is directly above.
+    box.appendChild(bar);
+    facts.appendChild(box);
+  }
+  container.appendChild(facts);
 }

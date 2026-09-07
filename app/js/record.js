@@ -16,7 +16,7 @@
 
 import { gradePrediction } from './engine.js';
 
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 2;
 
 export function createRecord(scenarioId) {
   return {
@@ -71,17 +71,11 @@ export function observeDecision(record, turnId, concept, optionId, optionLabel, 
   });
 }
 
-export function observeConstraint(record, turnId, text) {
-  return observe(record, { kind: 'constraint-named', turnId, text });
-}
 
 export function observeDiagnosis(record, turnId, picked, answer, correct) {
   return observe(record, { kind: 'diagnosis', turnId, picked, answer, correct });
 }
 
-export function observeInput(record, turnId, field, value) {
-  return observe(record, { kind: 'input', turnId, field, value });
-}
 
 // ---------------------------------------------------------------------------
 // Layer 2 — indicators. Each returns { id, label, summary, evidence: [] }.
@@ -109,26 +103,15 @@ export function calibration(record) {
   const preds = predictions(record);
   const correct = preds.filter((p) => p.correct);
 
-  // Split early vs late to see whether calibration IMPROVED — learning, rather than
-  // arriving already knowing.
-  const half = Math.floor(preds.length / 2);
-  const early = preds.slice(0, half);
-  const late = preds.slice(half);
-  const rate = (arr) => (arr.length ? arr.filter((p) => p.correct).length / arr.length : null);
-
-  const earlyRate = rate(early);
-  const lateRate = rate(late);
-  let trend = null;
-  if (earlyRate !== null && lateRate !== null && preds.length >= 6) {
-    if (lateRate - earlyRate > 0.15) trend = 'improved';
-    else if (earlyRate - lateRate > 0.15) trend = 'declined';
-    else trend = 'steady';
-  }
+  // Different questions cannot establish improvement. Keep observations descriptive.
+  const earlyRate = null, lateRate = null, trend = null;
 
   return {
     id: 'calibration',
     label: 'Anticipating consequences',
     total: preds.length,
+    guided: preds.filter(p => p.assistance?.length).length,
+    independent: preds.filter(p => Array.isArray(p.assistance) && !p.assistance.length).length,
     correct: correct.length,
     earlyRate,
     lateRate,
@@ -252,21 +235,14 @@ export function buildProfile(record) {
   const statements = [];
 
   if (cal.total > 0) {
-    const trendKey = cal.trend ? `profile.detail.${cal.trend}` : null;
     statements.push({
       indicator: cal.label,
       indicatorKey: 'indicator.calibration',
       key: 'profile.stmt.calibration',
       params: { correct: cal.correct, total: cal.total },
       text: `Correctly anticipated the effect of their own decision in ${cal.correct} of ${cal.total} predictions.`,
-      detailKey: trendKey,
-      detail: cal.trend === 'improved'
-        ? 'Accuracy was higher in the second half of the playthrough than the first.'
-        : cal.trend === 'declined'
-          ? 'Accuracy was lower in the second half than the first.'
-          : cal.trend === 'steady'
-            ? 'Accuracy was broadly steady across the playthrough.'
-            : null,
+      detailKey: null,
+      detail: null,
     });
   }
 
@@ -360,5 +336,5 @@ export function buildProfile(record) {
  */
 export function predictionTally(record) {
   const cal = calibration(record);
-  return { correct: cal.correct, total: cal.total, trend: cal.trend };
+  return { correct: cal.correct, total: cal.total, guided: cal.guided, independent: cal.independent };
 }

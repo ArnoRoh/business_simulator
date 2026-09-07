@@ -170,15 +170,15 @@ def build() -> Path:
     b.section("3 · Benefit — transformational firms")
     b.calc("n_tr", "Transformational firms", f"{b.ref['funded']}*{I['p_transform']}",
            m["n_transform"], xlsx.S_NUM1)
-    b.calc("wage1", "Wage bill, year 1",
-           f"{I['jobs_initial']}*{I['income_per_job']}", m["wage_bill_y1"])
+    b.calc("wage1", "Worker income gain, year 1",
+           f"{I['jobs_initial']}*{I['income_per_job']}", m["income_gain_y1"])
     b.calc("pvf_t", "PV factor — grows, survives, bounded by the horizon",
            f"(1/(1+{I['discount']}))*(1-(((1+{I['job_growth']})*{I['survival_t']}"
            f"/(1+{I['discount']}))^{I['horizon_t']}))/(1-((1+{I['job_growth']})"
            f"*{I['survival_t']}/(1+{I['discount']})))",
            m["pvf_t"], xlsx.S_NUM1,
            note="Growth and survival together, rather than a hard cut-off year.")
-    b.calc("pv_w", "PV of wages", f"{b.ref['wage1']}*{b.ref['pvf_t']}", m["pv_wages"])
+    b.calc("pv_w", "PV of worker income gains", f"{b.ref['wage1']}*{b.ref['pvf_t']}", m["pv_wages"])
     b.calc("pv_o", "+ owner's own net income",
            f"{b.ref['pv_w']}*{I['owner_ratio']}", m["pv_owner"])
     b.calc("pv_t", "+ tax paid once formal",

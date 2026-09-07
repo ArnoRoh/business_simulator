@@ -59,8 +59,8 @@ const STRATEGIES = [
   // thing it exists to teach.
   //
   // What a chapter must support is a learner who reads the warnings they are given.
-  // If `attentive` cannot finish solvent and profitable, no such learner can, and for
-  // this strategy alone a bad ending is a FAIL rather than a warning.
+  // A bad ending on this reproducible strategy is a regression failure. It does not
+  // prove what a real learner, or a different strategy, can achieve.
   { id: 'attentive', greedy: true },
 ];
 
@@ -154,7 +154,9 @@ function playOnce(scenario, strategy) {
     let effects = {};
     let later = [];
 
-    if (type === 'number') {
+    if (type === 'cashbook') {
+      effects = { keepsRecords: true };
+    } else if (type === 'number') {
       const values = numberValues(decision.input || {});
       if (values.length === 0) { fail(`${turn.id}: numeric input has no reachable values`); break; }
       if (strategy.greedy) {
