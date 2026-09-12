@@ -188,16 +188,15 @@ try {
  const filePage = await standalone.newPage(); const fileErrors = []; filePage.on('pageerror', e => fileErrors.push(e.message));
  await filePage.goto(new URL('../app/standalone.html', import.meta.url).href);
  await filePage.locator('.chapter-card').first().click(); await filePage.locator('.custom-number > summary').click(); await filePage.locator('.number-entry').first().fill('575');
- await filePage.locator('#save-status').filter({ hasText: 'Progress saved' }).waitFor();
+ await filePage.locator('#save-status').filter({ hasText: /^(Saved|Progress saved)/ }).waitFor();
  await filePage.reload(); await filePage.locator('.number-entry').first().waitFor();
  assert.equal(await filePage.locator('.number-entry').first().inputValue(), '575');
  await filePage.locator('[data-lang="sw"]').click(); assert.equal(await filePage.locator('.number-entry').first().inputValue(), '575');
- const amount = Number(await filePage.locator('.number-preset').last().getAttribute('data-amount'));
  await filePage.locator('.number-preset').last().click(); await filePage.locator('.reveal').waitFor();
  assert.equal(await filePage.locator('.number-prediction').count(), 0);
+ const beforeReload = await filePage.locator('.result-totals').innerText();
  await filePage.reload(); await filePage.locator('.reveal').waitFor();
- assert((await filePage.locator('.result-story').innerText()) !== null);
- assert(Number.isFinite(amount));
+ assert.equal(await filePage.locator('.result-totals').innerText(), beforeReload);
  assert.deepEqual(fileErrors, []); await standalone.close();
  console.log('Draft, record, retry, layout, focus, offline, update, profile, migration and standalone checks passed');
 } finally { await app.close(); }
