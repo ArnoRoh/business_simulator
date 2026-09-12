@@ -329,8 +329,8 @@ export function buildProfile(record) {
 /**
  * Deliberately NOT a score.
  *
- * Prediction accuracy is reported as a proportion because it is the one signal the
- * project owner wants to gate a funnel on. Presenting it as a bare percentage would
+ * Historical prediction accuracy is reported as raw counts. Completion gates
+ * programme entry; new play does not request a forecast. Presenting it as a bare percentage would
  * make it trivially sortable, which is the failure mode assessment.md exists to
  * prevent — so callers get the raw counts and must show the evidence alongside.
  */

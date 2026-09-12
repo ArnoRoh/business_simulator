@@ -26,6 +26,9 @@ jobs:
           npm ci
           npx playwright install --with-deps chromium
 
+      - name: Programme portal
+        run: npm run test:portal
+
       - name: Financial regressions
         run: node scripts/test-corrections.mjs
 

@@ -264,6 +264,8 @@ Smaller decisions go straight to `memory/DECISIONS.md` with no ADR.
 ## 9. Current stage
 
 A vanilla JavaScript PWA implements four chapters. The approved next version adds
-short episodes, practical tasks and durable local attempts. The programme portal and
-AI judge remain proposed. `memory/PROJECT_STATE.md` holds verification and deployment
+short episodes, practical tasks and durable local attempts. A separate programme portal
+and configurable AI judge are implemented locally; see
+`docs/MV-BS-RUN-001-programme-portal.md`. Participant deployment and judge validation
+remain open. `memory/PROJECT_STATE.md` holds verification and deployment
 state; passing software checks is not learner or commercial acceptance.

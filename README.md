@@ -38,6 +38,14 @@ in someone else's currency. They are **not a ladder** — a stall run well is a 
 business, not a step towards a bigger one — and none is locked behind another. See
 [`docs/arc.md`](./docs/arc.md).
 
+## Run the programme portal locally
+
+Run `npm run portal` with Node 22.13 or newer. Open `http://127.0.0.1:8787/portal/`.
+The portal has guided applications, saved drafts, reports at months 2/4/6 and reviewer
+controls. It starts in sample mode. AI grading needs a configured provider.
+See [the run guide](./docs/MV-BS-RUN-001-programme-portal.md). This service is not deployed
+on the public game site.
+
 ## Explore it with an AI agent
 
 You can ask an AI agent to inspect the idea, documentation and code without setting up

@@ -1,7 +1,8 @@
 # The app
 
 Four unlocked business chapters in English and Kiswahili. Each has twenty decisions in
-four short episodes. The figures and translation remain unverified by local reviewers.
+four short missions. Tap an action or price, watch its result and read a short takeaway.
+Normal play asks for no profit estimate. Each chapter ends with a story transition. The figures and translation remain unverified by local reviewers.
 See [game design](../docs/game-design.md) for current behaviour and its limits.
 
 ## Run it
@@ -30,7 +31,7 @@ these budgets. Actual transfer depends on hosting compression and browser cachin
 
 ## State and privacy
 
-The application has no runtime dependency or backend. IndexedDB holds separate local
+The game has no runtime dependency. The separate [programme portal](../docs/MV-BS-RUN-001-programme-portal.md) uses a Node service with native SQLite. IndexedDB holds separate local
 profiles and attempts, including drafts, results, recovery positions and scenario
 snapshots. Replaying archives the previous attempt. The Learners screen lists previous
 attempts and provides local backup and explicit deletion. Profiles have no access lock.

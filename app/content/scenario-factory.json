@@ -1,6 +1,6 @@
 {
   "id": "factory",
-  "version": 2,
+  "version": 3,
   "unverified": true,
   "title": {
     "en": "Asha's Factory",
@@ -159,8 +159,8 @@
     "scene": "office",
     "unverified": true,
     "situation": {
-      "en": "Your cash has gone below zero. Wages, the loan repayment and a supplier invoice are due before the distributors pay what they owe you. The factory is still producing. This is a hard week, not the end of it.",
-      "sw": "Pesa yako imeshuka chini ya sifuri. Mishahara, marejesho ya mkopo na ankara ya msambazaji vinatakiwa kabla wasambazaji hawajalipa wanachodaiwa. Kiwanda bado kinazalisha. Hii ni wiki ngumu, si mwisho wake."
+      "en": "Cash is below zero. How will you cover the next bills and keep trading?",
+      "sw": "Pesa zimepungua chini ya sifuri. Utalipiaje bili zinazofuata na kuendelea na biashara?"
     },
     "info": [
       {
@@ -289,6 +289,10 @@
           }
         }
       ]
+    },
+    "takeaway": {
+      "en": "A setback is a chance to change the next decision.",
+      "sw": "Tatizo linakupa nafasi ya kubadilisha uamuzi unaofuata."
     }
   },
   "turns": [
@@ -301,8 +305,8 @@
       },
       "scene": "kitchen",
       "situation": {
-        "en": "A distributor asks whether you can supply loaves every week instead of when they call. The premium line sells far fewer units but leaves much more on each one.",
-        "sw": "Msambazaji anauliza kama unaweza kusambaza mikate kila wiki badala ya wanapopiga simu. Mstari wa bidhaa za hali ya juu unauza vipande vichache zaidi lakini unaacha zaidi kwa kila kimoja."
+        "en": "A distributor wants regular loaves. Your premium bread leaves more on each sale.",
+        "sw": "Msambazaji anataka mikate ya kawaida. Mkate wako maalumu unaacha zaidi kwa kila mauzo."
       },
       "info": [
         {
@@ -431,8 +435,12 @@
         ]
       },
       "situationDetails": {
-        "en": "You cannot chase both at once with the same hours.",
-        "sw": "Huwezi kufukuza vyote viwili kwa masaa yaleyale."
+        "en": "A distributor asks whether you can supply loaves every week instead of when they call. The premium line sells far fewer units but leaves much more on each one. You cannot chase both at once with the same hours.",
+        "sw": "Msambazaji anauliza kama unaweza kusambaza mikate kila wiki badala ya wanapopiga simu. Mstari wa bidhaa za hali ya juu unauza vipande vichache zaidi lakini unaacha zaidi kwa kila kimoja. Huwezi kufukuza vyote viwili kwa masaa yaleyale."
+      },
+      "takeaway": {
+        "en": "Compare the margin as well as the size of an order.",
+        "sw": "Linganisha faida inayobaki pamoja na ukubwa wa oda."
       }
     },
     {
@@ -444,8 +452,8 @@
       },
       "scene": "kitchen",
       "situation": {
-        "en": "A consultant suggests a second buns mixer to raise throughput. No new orders are confirmed yet.",
-        "sw": "Mshauri anapendekeza mashine ya pili ya kuchanganya maandazi ili kuongeza uzalishaji. Hakuna oda mpya iliyothibitishwa bado."
+        "en": "A consultant suggests another mixer. There are no confirmed extra orders yet.",
+        "sw": "Mshauri anapendekeza mashine nyingine ya kuchanganya. Bado hakuna oda za ziada zilizothibitishwa."
       },
       "info": [
         {
@@ -588,8 +596,12 @@
         ]
       },
       "situationDetails": {
-        "en": "A nearby factory installed a second line last year with no order behind it either; it ran at less than half capacity and nearly sank them.",
-        "sw": "Kiwanda kingine karibu kiliweka mstari wa pili mwaka jana bila oda nyuma yake pia; kilifanya kazi kwa chini ya nusu ya uwezo wake na karibu kikazama."
+        "en": "A consultant suggests a second buns mixer to raise throughput. No new orders are confirmed yet. A nearby factory installed a second line last year with no order behind it either; it ran at less than half capacity and nearly sank them.",
+        "sw": "Mshauri anapendekeza mashine ya pili ya kuchanganya maandazi ili kuongeza uzalishaji. Hakuna oda mpya iliyothibitishwa bado. Kiwanda kingine karibu kiliweka mstari wa pili mwaka jana bila oda nyuma yake pia; kilifanya kazi kwa chini ya nusu ya uwezo wake na karibu kikazama."
+      },
+      "takeaway": {
+        "en": "Buying capacity before demand is confirmed puts cash at risk.",
+        "sw": "Kununua uwezo kabla ya kuthibitisha mahitaji kunahatarisha pesa."
       }
     },
     {
@@ -601,8 +613,8 @@
       },
       "scene": "kitchen",
       "situation": {
-        "en": "Compare confirmed orders with what the factory can make. Which fact limits the order you can fill now?",
-        "sw": "Linganisha oda zilizothibitishwa na uwezo wa kiwanda. Ni ukweli gani unaozuia oda unayoweza kutimiza sasa?"
+        "en": "Look at orders and production capacity. What is limiting the factory now?",
+        "sw": "Angalia oda na uwezo wa uzalishaji. Nini kinazuia kiwanda sasa?"
       },
       "info": [
         {
@@ -800,6 +812,14 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "Compare confirmed orders with what the factory can make. Which fact limits the order you can fill now?",
+        "sw": "Linganisha oda zilizothibitishwa na uwezo wa kiwanda. Ni ukweli gani unaozuia oda unayoweza kutimiza sasa?"
+      },
+      "takeaway": {
+        "en": "Find the limiting step before spending on an improvement.",
+        "sw": "Tafuta hatua inayozuia kazi kabla ya kulipia maboresho."
       }
     },
     {
@@ -811,8 +831,8 @@
       },
       "scene": "kitchen",
       "situation": {
-        "en": "You can add a packing table or a mixer. Compare the extra output with confirmed orders before spending.",
-        "sw": "Unaweza kuongeza meza ya ufungashaji au kichanganyaji. Linganisha uzalishaji wa ziada na oda zilizothibitishwa kabla ya kutumia pesa."
+        "en": "You can add a packing table or a mixer. Which would help fill confirmed orders?",
+        "sw": "Unaweza kuongeza meza ya kufungashia au mashine ya kuchanganya. Ipi itasaidia oda zilizothibitishwa?"
       },
       "info": [
         {
@@ -942,6 +962,14 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "You can add a packing table or a mixer. Compare the extra output with confirmed orders before spending.",
+        "sw": "Unaweza kuongeza meza ya ufungashaji au kichanganyaji. Linganisha uzalishaji wa ziada na oda zilizothibitishwa kabla ya kutumia pesa."
+      },
+      "takeaway": {
+        "en": "Improving the wrong step may not increase what you can sell.",
+        "sw": "Kuboresha hatua isiyo sahihi huenda kusiongeze unachoweza kuuza."
       }
     },
     {
@@ -954,8 +982,8 @@
       "scene": "office",
       "unverified": true,
       "situation": {
-        "en": "Distributors are asking how long they get to pay. Stock sits in the warehouse for a while before it sells, and your flour supplier gives you some time before you must pay them.",
-        "sw": "Wasambazaji wanauliza wanapata muda gani wa kulipa. Bidhaa zinakaa ghalani kwa muda kabla ya kuuzwa, na msambazaji wako wa unga anakupa muda kabla hujalipa."
+        "en": "Distributors want time to pay. How long can the factory wait?",
+        "sw": "Wasambazaji wanataka muda wa kulipa. Kiwanda kinaweza kusubiri muda gani?"
       },
       "info": [
         {
@@ -1044,8 +1072,12 @@
         "predictMetric": "cash"
       },
       "situationDetails": {
-        "en": "The gap between paying for flour and being paid for bread is your own money, tied up.",
-        "sw": "Pengo kati ya kulipia unga na kulipwa kwa mkate ni pesa yako mwenyewe, iliyofungwa."
+        "en": "Distributors are asking how long they get to pay. Stock sits in the warehouse for a while before it sells, and your flour supplier gives you some time before you must pay them. The gap between paying for flour and being paid for bread is your own money, tied up.",
+        "sw": "Wasambazaji wanauliza wanapata muda gani wa kulipa. Bidhaa zinakaa ghalani kwa muda kabla ya kuuzwa, na msambazaji wako wa unga anakupa muda kabla hujalipa. Pengo kati ya kulipia unga na kulipwa kwa mkate ni pesa yako mwenyewe, iliyofungwa."
+      },
+      "takeaway": {
+        "en": "Longer credit terms leave more cash with customers.",
+        "sw": "Muda mrefu wa mkopo unaacha pesa zaidi kwa wateja."
       }
     },
     {
@@ -1057,8 +1089,8 @@
       },
       "scene": "market",
       "situation": {
-        "en": "Wheat has moved 20% since your last order. Your miller offers a forward contract that locks this week's price for three months.",
-        "sw": "Bei ya ngano imepanda 20% tangu oda yako ya mwisho. Msagaji wako anatoa mkataba wa mbeleni unaofunga bei ya wiki hii kwa miezi mitatu."
+        "en": "Wheat prices have moved. Your miller offers a fixed price for three months.",
+        "sw": "Bei za ngano zimebadilika. Muuzaji wako anatoa bei ya kudumu kwa miezi mitatu."
       },
       "info": [
         {
@@ -1194,8 +1226,12 @@
         ]
       },
       "situationDetails": {
-        "en": "Staying on the spot market means paying whatever the price is each time you order.",
-        "sw": "Kubaki kwenye soko la papo hapo kunamaanisha kulipa bei yoyote iliyopo kila unapoagiza."
+        "en": "Wheat has moved 20% since your last order. Your miller offers a forward contract that locks this week's price for three months. Staying on the spot market means paying whatever the price is each time you order.",
+        "sw": "Bei ya ngano imepanda 20% tangu oda yako ya mwisho. Msagaji wako anatoa mkataba wa mbeleni unaofunga bei ya wiki hii kwa miezi mitatu. Kubaki kwenye soko la papo hapo kunamaanisha kulipa bei yoyote iliyopo kila unapoagiza."
+      },
+      "takeaway": {
+        "en": "A fixed price reduces uncertainty, but can cost more if market prices fall.",
+        "sw": "Bei ya kudumu inapunguza kutokuwa na uhakika, lakini inaweza kugharimu zaidi bei za soko zikishuka."
       }
     },
     {
@@ -1207,8 +1243,8 @@
       },
       "scene": "office",
       "situation": {
-        "en": "Stock uses money before a buyer pays. Choose how many weeks of stock to hold.",
-        "sw": "Bidhaa hutumia pesa kabla mnunuzi hajalipa. Chagua kuweka bidhaa za wiki ngapi."
+        "en": "Stock fills the warehouse and uses cash. How many weeks will you keep?",
+        "sw": "Bidhaa zinajaza ghala na kutumia pesa. Utahifadhi za wiki ngapi?"
       },
       "info": [
         {
@@ -1297,8 +1333,12 @@
         "predictMetric": "cash"
       },
       "situationDetails": {
-        "en": "This exercise shows the cash cost only. It does not simulate avoided stockouts or extra orders.",
-        "sw": "Zoezi hili linaonyesha gharama ya pesa pekee. Halionyeshi kuzuia upungufu wa bidhaa au kuongeza oda."
+        "en": "Stock uses money before a buyer pays. Choose how many weeks of stock to hold. This exercise shows the cash cost only. It does not simulate avoided stockouts or extra orders.",
+        "sw": "Bidhaa hutumia pesa kabla mnunuzi hajalipa. Chagua kuweka bidhaa za wiki ngapi. Zoezi hili linaonyesha gharama ya pesa pekee. Halionyeshi kuzuia upungufu wa bidhaa au kuongeza oda."
+      },
+      "takeaway": {
+        "en": "Cash held in stock cannot pay another bill at the same time.",
+        "sw": "Pesa zilizoko kwenye bidhaa haziwezi kulipa bili nyingine wakati huo huo."
       }
     },
     {
@@ -1311,8 +1351,8 @@
       "scene": "market",
       "unverified": true,
       "situation": {
-        "en": "Your main flour supplier offers a twelve-month volume contract at a much lower price per bag, in exchange for a fixed monthly order you cannot reduce even if a slow month comes.",
-        "sw": "Msambazaji wako mkuu wa unga anatoa mkataba wa miezi kumi na mbili wa wingi kwa bei ya chini zaidi kwa gunia, badala ya oda ya kudumu ya kila mwezi ambayo huwezi kupunguza hata mwezi wa polepole ukija."
+        "en": "Your supplier offers a discount if you commit to fixed monthly orders.",
+        "sw": "Muuzaji wako anatoa punguzo ukikubali oda za kila mwezi zisizobadilika."
       },
       "info": [
         {
@@ -1446,6 +1486,14 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "Your main flour supplier offers a twelve-month volume contract at a much lower price per bag, in exchange for a fixed monthly order you cannot reduce even if a slow month comes.",
+        "sw": "Msambazaji wako mkuu wa unga anatoa mkataba wa miezi kumi na mbili wa wingi kwa bei ya chini zaidi kwa gunia, badala ya oda ya kudumu ya kila mwezi ambayo huwezi kupunguza hata mwezi wa polepole ukija."
+      },
+      "takeaway": {
+        "en": "A cheap contract can become expensive when you cannot reduce unused supplies.",
+        "sw": "Mkataba wa bei nafuu unaweza kugharimu zaidi usipoweza kupunguza bidhaa zisizohitajika."
       }
     },
     {
@@ -1460,13 +1508,13 @@
         "flag": "builtTeam",
         "when": true,
         "situation": {
-          "en": "You have handed real decisions to someone else before, at the bakery. A candidate is now available who could run the production floor day to day, if you let her.",
-          "sw": "Umeshawahi kumkabidhi mtu mwingine maamuzi halisi hapo awali, kwenye bakery. Sasa yupo mgombea anayeweza kuendesha eneo la uzalishaji siku hadi siku, ikiwa utamruhusu."
+          "en": "You have tried sharing work before. This manager needs authority to run production.",
+          "sw": "Umejaribu kugawana kazi hapo awali. Meneja huyu anahitaji mamlaka ya kuendesha uzalishaji."
         }
       },
       "situation": {
-        "en": "You are the only person who can approve a late delivery, sign off a recipe change or settle a dispute between staff. The factory is now too large for one person to watch every part of it.",
-        "sw": "Wewe ndiye mtu pekee anayeweza kuidhinisha usafirishaji wa kuchelewa, kuthibitisha mabadiliko ya mchanganyiko, au kutatua mgogoro kati ya wafanyakazi. Kiwanda sasa ni kikubwa mno kwa mtu mmoja kuangalia kila sehemu yake."
+        "en": "Every late delivery and staff dispute comes to you. The factory is waiting.",
+        "sw": "Kila usafirishaji uliochelewa na mgogoro wa wafanyakazi unaletwa kwako. Kiwanda kinasubiri."
       },
       "info": [
         {
@@ -1628,6 +1676,14 @@
             ]
           }
         ]
+      },
+      "situationDetails": {
+        "en": "You are the only person who can approve a late delivery, sign off a recipe change or settle a dispute between staff. The factory is now too large for one person to watch every part of it.",
+        "sw": "Wewe ndiye mtu pekee anayeweza kuidhinisha usafirishaji wa kuchelewa, kuthibitisha mabadiliko ya mchanganyiko, au kutatua mgogoro kati ya wafanyakazi. Kiwanda sasa ni kikubwa mno kwa mtu mmoja kuangalia kila sehemu yake."
+      },
+      "takeaway": {
+        "en": "A manager needs authority as well as a job title.",
+        "sw": "Meneja anahitaji mamlaka pamoja na cheo cha kazi."
       }
     },
     {
@@ -1639,8 +1695,8 @@
       },
       "scene": "kitchen",
       "situation": {
-        "en": "Your supervisor asks how you want the new packing table run. You could tell her exactly which staff do what and when, or you could give her a target and let her work out the method herself.",
-        "sw": "Msimamizi wako anauliza unataka meza mpya ya ufungashaji iendeshwe vipi. Unaweza kumwambia ni wafanyakazi gani wafanye nini na lini hasa, au unaweza kumpa lengo na kumwacha atafute njia mwenyewe."
+        "en": "Your supervisor asks how to run the packing team.",
+        "sw": "Msimamizi wako anauliza jinsi ya kuendesha timu ya kufungasha."
       },
       "info": [
         {
@@ -1800,6 +1856,14 @@
             ]
           }
         ]
+      },
+      "situationDetails": {
+        "en": "Your supervisor asks how you want the new packing table run. You could tell her exactly which staff do what and when, or you could give her a target and let her work out the method herself.",
+        "sw": "Msimamizi wako anauliza unataka meza mpya ya ufungashaji iendeshwe vipi. Unaweza kumwambia ni wafanyakazi gani wafanye nini na lini hasa, au unaweza kumpa lengo na kumwacha atafute njia mwenyewe."
+      },
+      "takeaway": {
+        "en": "Delegate a clear result and check quality, not just quantity.",
+        "sw": "Kabidhi matokeo yaliyo wazi na kagua ubora, si idadi pekee."
       }
     },
     {
@@ -1812,8 +1876,8 @@
       "scene": "office",
       "workout": true,
       "situation": {
-        "en": "This week's cost per loaf came in above what your costing sheet says it should. Wages, the loan and the rent have not moved.",
-        "sw": "Gharama ya wiki hii kwa kila mkate imekuja juu ya kile karatasi yako ya uhasibu wa gharama inavyosema inapaswa kuwa. Mishahara, mkopo na kodi havijabadilika."
+        "en": "Cost per loaf rose. Wages, rent and the loan stayed the same.",
+        "sw": "Gharama kwa mkate imeongezeka. Mishahara, kodi na mkopo havijabadilika."
       },
       "info": [
         {
@@ -1994,8 +2058,12 @@
         ]
       },
       "situationDetails": {
-        "en": "Something in the direct cost of a loaf has changed.",
-        "sw": "Kitu kwenye gharama ya moja kwa moja ya mkate kimebadilika."
+        "en": "This week's cost per loaf came in above what your costing sheet says it should. Wages, the loan and the rent have not moved. Something in the direct cost of a loaf has changed.",
+        "sw": "Gharama ya wiki hii kwa kila mkate imekuja juu ya kile karatasi yako ya uhasibu wa gharama inavyosema inapaswa kuwa. Mishahara, mkopo na kodi havijabadilika. Kitu kwenye gharama ya moja kwa moja ya mkate kimebadilika."
+      },
+      "takeaway": {
+        "en": "Trace a cost change to its source before choosing a fix.",
+        "sw": "Fuatilia chanzo cha mabadiliko ya gharama kabla ya kuchagua suluhisho."
       }
     },
     {
@@ -2007,8 +2075,8 @@
       },
       "scene": "truck",
       "situation": {
-        "en": "You can grow three ways this month: put your own van to work on direct sales, commit most of your loaves volume to one regional distributor, or open a small agent relationship in a new area for buns. Each keeps a different share of the margin.",
-        "sw": "Unaweza kukua kwa njia tatu mwezi huu: tumia gari lako mwenyewe kwa mauzo ya moja kwa moja, ahidi wingi mkubwa wa mikate kwa msambazaji mmoja wa kanda, au fungua uhusiano mdogo wa wakala eneo jipya kwa maandazi. Kila njia inashikilia sehemu tofauti ya margin."
+        "en": "Sell directly, use a distributor, or try an agent in a new area.",
+        "sw": "Uza moja kwa moja, tumia msambazaji, au jaribu wakala eneo jipya."
       },
       "info": [
         {
@@ -2139,6 +2207,14 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "You can grow three ways this month: put your own van to work on direct sales, commit most of your loaves volume to one regional distributor, or open a small agent relationship in a new area for buns. Each keeps a different share of the margin.",
+        "sw": "Unaweza kukua kwa njia tatu mwezi huu: tumia gari lako mwenyewe kwa mauzo ya moja kwa moja, ahidi wingi mkubwa wa mikate kwa msambazaji mmoja wa kanda, au fungua uhusiano mdogo wa wakala eneo jipya kwa maandazi. Kila njia inashikilia sehemu tofauti ya margin."
+      },
+      "takeaway": {
+        "en": "Each sales route changes your margin, workload and dependence.",
+        "sw": "Kila njia ya mauzo inabadilisha faida inayobaki, kazi na utegemezi."
       }
     },
     {
@@ -2150,8 +2226,8 @@
       },
       "scene": "office",
       "situation": {
-        "en": "The factory has cash that could go in several directions. The loan needs servicing, a second line could expand what you sell, a new region could open more distributors, the household has been waiting, and a reserve could protect a bad month.",
-        "sw": "Kiwanda kina pesa inayoweza kwenda pande kadhaa. Mkopo unahitaji kuhudumiwa, mstari wa pili unaweza kupanua unachouza, eneo jipya linaweza kufungua wasambazaji zaidi, kaya imekuwa ikisubiri, na akiba inaweza kulinda mwezi mbaya."
+        "en": "The loan, a new line, another region and home all need cash.",
+        "sw": "Mkopo, njia mpya ya uzalishaji, eneo jingine na nyumbani vyote vinahitaji pesa."
       },
       "info": [
         {
@@ -2269,8 +2345,12 @@
         ]
       },
       "situationDetails": {
-        "en": "There is no one correct use for every shilling — and the factory runs the next seven weeks on whatever you leave in it.",
-        "sw": "Hakuna matumizi moja sahihi kwa kila shilingi — na kiwanda kitaendesha wiki saba zijazo kwa kile utakachoacha ndani."
+        "en": "The factory has cash that could go in several directions. The loan needs servicing, a second line could expand what you sell, a new region could open more distributors, the household has been waiting, and a reserve could protect a bad month. There is no one correct use for every shilling — and the factory runs the next seven weeks on whatever you leave in it.",
+        "sw": "Kiwanda kina pesa inayoweza kwenda pande kadhaa. Mkopo unahitaji kuhudumiwa, mstari wa pili unaweza kupanua unachouza, eneo jipya linaweza kufungua wasambazaji zaidi, kaya imekuwa ikisubiri, na akiba inaweza kulinda mwezi mbaya. Hakuna matumizi moja sahihi kwa kila shilingi — na kiwanda kitaendesha wiki saba zijazo kwa kile utakachoacha ndani."
+      },
+      "takeaway": {
+        "en": "Put scarce cash toward the constraint that matters now.",
+        "sw": "Tumia pesa chache kwa kizuizi kilicho muhimu sasa."
       }
     },
     {
@@ -2283,8 +2363,8 @@
       "scene": "market",
       "unverified": true,
       "situation": {
-        "en": "A supermarket chain offers to list your premium line, in exchange for a weekly listing fee. They cannot promise a volume, only the shelf space.",
-        "sw": "Mnyororo wa maduka makubwa unatoa kuorodhesha mstari wako wa hali ya juu, badala ya ada ya wiki ya kuorodhesha. Hawawezi kuahidi wingi, ni nafasi ya rafu tu."
+        "en": "A supermarket offers shelf space for a weekly fee. It promises no sales.",
+        "sw": "Duka kubwa linatoa nafasi ya rafu kwa ada ya wiki. Haliahidi mauzo."
       },
       "info": [
         {
@@ -2411,6 +2491,14 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "A supermarket chain offers to list your premium line, in exchange for a weekly listing fee. They cannot promise a volume, only the shelf space.",
+        "sw": "Mnyororo wa maduka makubwa unatoa kuorodhesha mstari wako wa hali ya juu, badala ya ada ya wiki ya kuorodhesha. Hawawezi kuahidi wingi, ni nafasi ya rafu tu."
+      },
+      "takeaway": {
+        "en": "Access to a shelf is not the same as a paying customer.",
+        "sw": "Kupata rafu si sawa na kupata mteja anayelipa."
       }
     },
     {
@@ -2424,8 +2512,8 @@
       "unverified": true,
       "workout": true,
       "situation": {
-        "en": "Registering workers takes time and adds costs. Compare three practice budgets; local requirements need checking.",
-        "sw": "Kusajili wafanyakazi kunachukua muda na kuongeza gharama. Linganisha bajeti tatu za mazoezi; masharti ya eneo yanahitaji kukaguliwa."
+        "en": "Worker registration takes time and adds costs. Compare three practice budgets.",
+        "sw": "Usajili wa wafanyakazi unachukua muda na kuongeza gharama. Linganisha bajeti tatu za mazoezi."
       },
       "info": [
         {
@@ -2549,6 +2637,14 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "Registering workers takes time and adds costs. Compare three practice budgets; local requirements need checking.",
+        "sw": "Kusajili wafanyakazi kunachukua muda na kuongeza gharama. Linganisha bajeti tatu za mazoezi; masharti ya eneo yanahitaji kukaguliwa."
+      },
+      "takeaway": {
+        "en": "Budget for formal employment, and check local requirements.",
+        "sw": "Panga bajeti ya ajira rasmi, na kagua masharti ya eneo lako."
       }
     },
     {
@@ -2561,8 +2657,8 @@
       "scene": "inspection",
       "unverified": true,
       "situation": {
-        "en": "An inspector's report notes that the buns mixer has no guard over its moving parts. Fitting one properly means stopping that line for a day.",
-        "sw": "Ripoti ya mkaguzi inaonyesha mashine ya maandazi haina kinga juu ya sehemu zake zinazosogea. Kuiweka vizuri kunamaanisha kusimamisha mstari huo kwa siku moja."
+        "en": "A mixer needs a safety guard. Fitting it will interrupt production.",
+        "sw": "Mashine ya kuchanganya inahitaji kinga. Kuiweka kutasimamisha uzalishaji kwa muda."
       },
       "info": [
         {
@@ -2716,8 +2812,12 @@
         ]
       },
       "situationDetails": {
-        "en": "The exact standard the inspector is checking against needs local verification.",
-        "sw": "Kiwango halisi ambacho mkaguzi anakagua dhidi yake kinahitaji uthibitisho wa eneo."
+        "en": "An inspector's report notes that the buns mixer has no guard over its moving parts. Fitting one properly means stopping that line for a day. The exact standard the inspector is checking against needs local verification.",
+        "sw": "Ripoti ya mkaguzi inaonyesha mashine ya maandazi haina kinga juu ya sehemu zake zinazosogea. Kuiweka vizuri kunamaanisha kusimamisha mstari huo kwa siku moja. Kiwango halisi ambacho mkaguzi anakagua dhidi yake kinahitaji uthibitisho wa eneo."
+      },
+      "takeaway": {
+        "en": "Plan for safe work as part of operating the business.",
+        "sw": "Panga kazi salama kama sehemu ya kuendesha biashara."
       }
     },
     {
@@ -2729,8 +2829,8 @@
       },
       "scene": "truck",
       "situation": {
-        "en": "A distributor calls: a batch of loaves arrived under-baked and has to be pulled from their shelves. Customers who bought it already are asking for a refund.",
-        "sw": "Msambazaji anapiga simu: kundi la mikate limefika bila kuiva vizuri na lazima liondolewe kwenye rafu zao. Wateja waliokwisha kununua wanaomba fedha zao zirudishwe."
+        "en": "A distributor reports under-baked bread. Customers are asking for refunds.",
+        "sw": "Msambazaji anaripoti mkate ambao haujaiva. Wateja wanaomba kurudishiwa pesa."
       },
       "info": [
         {
@@ -2902,6 +3002,14 @@
             ]
           }
         ]
+      },
+      "situationDetails": {
+        "en": "A distributor calls: a batch of loaves arrived under-baked and has to be pulled from their shelves. Customers who bought it already are asking for a refund.",
+        "sw": "Msambazaji anapiga simu: kundi la mikate limefika bila kuiva vizuri na lazima liondolewe kwenye rafu zao. Wateja waliokwisha kununua wanaomba fedha zao zirudishwe."
+      },
+      "takeaway": {
+        "en": "Fix the cause of a failed batch as well as the immediate loss.",
+        "sw": "Rekebisha chanzo cha fungu lililoharibika pamoja na hasara ya sasa."
       }
     },
     {
@@ -2916,13 +3024,13 @@
         "flag": "tookCredit",
         "when": true,
         "situation": {
-          "en": "You have financed equipment on credit before, at the bakery, and paid it back. The bank that saw that history is willing to move quickly on a second packing line here.",
-          "sw": "Umeshawahi kugharamia vifaa kwa mkopo hapo awali, kwenye bakery, na kuulipa. Benki iliyoona historia hiyo iko tayari kutenda haraka kwenye mstari wa pili wa ufungashaji hapa."
+          "en": "You have used credit before. A second packing line still needs a careful spending decision.",
+          "sw": "Umetumia mkopo hapo awali. Njia ya pili ya kufungasha bado inahitaji uamuzi makini wa matumizi."
         }
       },
       "situation": {
-        "en": "A second packing line would let you take on more of the volume distributors keep asking for. It is a real purchase with a real payback period, not a decision to make on optimism alone.",
-        "sw": "Mstari wa pili wa ufungashaji ungekuruhusu kuchukua wingi zaidi ambao wasambazaji wanaendelea kuomba. Ni ununuzi halisi wenye kipindi halisi cha kurudisha gharama, si uamuzi wa kufanya kwa matumaini tu."
+        "en": "A second packing line could fill more orders, but it needs cash first.",
+        "sw": "Njia ya pili ya kufungasha inaweza kutimiza oda zaidi, lakini inahitaji pesa kwanza."
       },
       "info": [
         {
@@ -3021,6 +3129,14 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "A second packing line would let you take on more of the volume distributors keep asking for. It is a real purchase with a real payback period, not a decision to make on optimism alone.",
+        "sw": "Mstari wa pili wa ufungashaji ungekuruhusu kuchukua wingi zaidi ambao wasambazaji wanaendelea kuomba. Ni ununuzi halisi wenye kipindi halisi cha kurudisha gharama, si uamuzi wa kufanya kwa matumaini tu."
+      },
+      "takeaway": {
+        "en": "Compare an investment with the extra earnings it can actually support.",
+        "sw": "Linganisha uwekezaji na mapato ya ziada ambayo unaweza kuleta."
       }
     },
     {
@@ -3033,8 +3149,8 @@
       "scene": "inspection",
       "unverified": true,
       "situation": {
-        "en": "A larger buyer asks whether you hold TBS certification and keep batch traceability records. Neither is free, and the exact requirements and fees need checking with the standards bureau.",
-        "sw": "Mnunuzi mkubwa zaidi anauliza kama una uthibitisho wa TBS na unatunza kumbukumbu za ufuatiliaji wa makundi ya uzalishaji. Hakuna kilicho bure, na mahitaji na ada halisi vinahitaji kuthibitishwa na shirika la viwango."
+        "en": "A bigger buyer asks for certification and batch records. Check what is required.",
+        "sw": "Mnunuzi mkubwa anauliza vyeti na rekodi za mafungu. Kagua kinachohitajika."
       },
       "info": [
         {
@@ -3184,6 +3300,14 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "A larger buyer asks whether you hold TBS certification and keep batch traceability records. Neither is free, and the exact requirements and fees need checking with the standards bureau.",
+        "sw": "Mnunuzi mkubwa zaidi anauliza kama una uthibitisho wa TBS na unatunza kumbukumbu za ufuatiliaji wa makundi ya uzalishaji. Hakuna kilicho bure, na mahitaji na ada halisi vinahitaji kuthibitishwa na shirika la viwango."
+      },
+      "takeaway": {
+        "en": "Standards and traceability require ongoing work, not just a certificate.",
+        "sw": "Viwango na ufuatiliaji vinahitaji kazi ya kila wakati, si cheti pekee."
       }
     },
     {
@@ -3195,8 +3319,8 @@
       },
       "scene": "market",
       "situation": {
-        "en": "A larger factory has entered your loaves market at a price 15% below yours. Distributors are starting to ask whether you will match it.",
-        "sw": "Kiwanda kikubwa zaidi kimeingia sokoni la mikate yako kwa bei ya chini kwa 15% ya bei yako. Wasambazaji wameanza kuuliza kama utailingana."
+        "en": "A larger competitor offers a lower price. Distributors want your response.",
+        "sw": "Mshindani mkubwa anatoa bei ya chini. Wasambazaji wanataka jibu lako."
       },
       "info": [
         {
@@ -3284,7 +3408,33 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "A larger factory has entered your loaves market at a price 15% below yours. Distributors are starting to ask whether you will match it.",
+        "sw": "Kiwanda kikubwa zaidi kimeingia sokoni la mikate yako kwa bei ya chini kwa 15% ya bei yako. Wasambazaji wameanza kuuliza kama utailingana."
+      },
+      "takeaway": {
+        "en": "A lower price must still leave enough to run the business.",
+        "sw": "Bei ya chini bado inapaswa kuacha kiasi cha kutosha kuendesha biashara."
       }
+    }
+  ],
+  "episodes": [
+    {
+      "en": "Find the real constraint",
+      "sw": "Tafuta kizuizi halisi"
+    },
+    {
+      "en": "Build beyond yourself",
+      "sw": "Jenga zaidi ya uwezo wako binafsi"
+    },
+    {
+      "en": "Choose where to grow",
+      "sw": "Chagua pa kukuza biashara"
+    },
+    {
+      "en": "Deliver what you promise",
+      "sw": "Timiza unachoahidi"
     }
   ]
 }

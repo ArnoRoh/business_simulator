@@ -1,6 +1,6 @@
 {
   "id": "bakery",
-  "version": 3,
+  "version": 4,
   "unverified": true,
   "title": {
     "en": "Asha's Bakery",
@@ -144,8 +144,8 @@
     "scene": "kitchen",
     "unverified": true,
     "situation": {
-      "en": "Your cash has gone below zero. The bakery is still open, but flour, wages and the next oven payment are due before enough customer money reaches you. This is a hard week, not the end of the bakery.",
-      "sw": "Pesa yako imeshuka chini ya sifuri. Bakery bado iko wazi, lakini unga, mishahara na malipo ya oveni yanayofuata vinatakiwa kabla pesa ya kutosha kutoka kwa wateja haijakufikia. Hii ni wiki ngumu, si mwisho wa bakery."
+      "en": "Cash is below zero. How will you cover the next bills and keep trading?",
+      "sw": "Pesa zimepungua chini ya sifuri. Utalipiaje bili zinazofuata na kuendelea na biashara?"
     },
     "info": [
       {
@@ -277,6 +277,10 @@
           }
         }
       ]
+    },
+    "takeaway": {
+      "en": "A setback is a chance to change the next decision.",
+      "sw": "Tatizo linakupa nafasi ya kubadilisha uamuzi unaofuata."
     }
   },
   "turns": [
@@ -289,8 +293,8 @@
       },
       "scene": "kitchen",
       "situation": {
-        "en": "The oven is ready every morning, whether customers come or not. Rent, your employee's wage and the oven's weekly wear still have to be covered.",
-        "sw": "Oveni iko tayari kila asubuhi, wateja waje au wasije. Kodi, mshahara wa mfanyakazi wako na uchakavu wa oveni bado lazima vilipwe."
+        "en": "Your oven and worker cost money even on a quiet day.",
+        "sw": "Oveni na mfanyakazi wako wana gharama hata siku yenye wateja wachache."
       },
       "info": [
         {
@@ -432,8 +436,12 @@
         ]
       },
       "situationDetails": {
-        "en": "Rain has made this week's orders uncertain. You must decide how much of the bakery to keep ready.",
-        "sw": "Mvua imefanya oda za wiki hii zisitabirike. Lazima uamue ni kiasi gani cha bakery ubakize kikiwa tayari."
+        "en": "The oven is ready every morning, whether customers come or not. Rent, your employee's wage and the oven's weekly wear still have to be covered. Rain has made this week's orders uncertain. You must decide how much of the bakery to keep ready.",
+        "sw": "Oveni iko tayari kila asubuhi, wateja waje au wasije. Kodi, mshahara wa mfanyakazi wako na uchakavu wa oveni bado lazima vilipwe. Mvua imefanya oda za wiki hii zisitabirike. Lazima uamue ni kiasi gani cha bakery ubakize kikiwa tayari."
+      },
+      "takeaway": {
+        "en": "Some costs stay even when sales fall.",
+        "sw": "Gharama fulani zinabaki hata mauzo yanapopungua."
       }
     },
     {
@@ -445,8 +453,8 @@
       },
       "scene": "kitchen",
       "situation": {
-        "en": "You can make more than the usual number of items, but more capacity also means more unsold stock when customers do not come. Before you accept another order, work out the weekly volume that gives the oven a chance to pay for its fixed costs.",
-        "sw": "Unaweza kutengeneza bidhaa nyingi kuliko kawaida, lakini uwezo mkubwa pia unamaanisha bidhaa nyingi zisizouzwa wateja wasipokuja. Kabla ya kukubali oda nyingine, hesabu kiasi cha wiki kinachoiwezesha oveni kulipia gharama zake zisizobadilika."
+        "en": "How much will you prepare this week? Unsold bread still costs you money.",
+        "sw": "Utaandaa kiasi gani wiki hii? Mkate usiouzwa bado una gharama."
       },
       "info": [
         {
@@ -539,6 +547,14 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "You can make more than the usual number of items, but more capacity also means more unsold stock when customers do not come. Before you accept another order, work out the weekly volume that gives the oven a chance to pay for its fixed costs.",
+        "sw": "Unaweza kutengeneza bidhaa nyingi kuliko kawaida, lakini uwezo mkubwa pia unamaanisha bidhaa nyingi zisizouzwa wateja wasipokuja. Kabla ya kukubali oda nyingine, hesabu kiasi cha wiki kinachoiwezesha oveni kulipia gharama zake zisizobadilika."
+      },
+      "takeaway": {
+        "en": "More production is useful only when enough of it sells.",
+        "sw": "Uzalishaji zaidi unafaa tu ikiwa bidhaa za kutosha zinauzwa."
       }
     },
     {
@@ -551,8 +567,8 @@
       "scene": "market",
       "unverified": true,
       "situation": {
-        "en": "A shop asks which product you can supply more of next week. Bread sells in the largest number, but cakes leave more after their direct ingredients.",
-        "sw": "Duka linauliza ni bidhaa gani unaweza kuongeza wiki ijayo. Mikate inauzwa kwa idadi kubwa, lakini keki zinaacha zaidi baada ya malighafi zake za moja kwa moja."
+        "en": "Bread sells most. Cakes leave more per sale. A shop wants more stock.",
+        "sw": "Mkate unauzika zaidi. Keki zinaacha zaidi kwa kila mauzo. Duka linataka bidhaa zaidi."
       },
       "info": [
         {
@@ -680,8 +696,12 @@
         ]
       },
       "situationDetails": {
-        "en": "You cannot push every line at once.",
-        "sw": "Huwezi kusukuma mistari yote kwa wakati mmoja."
+        "en": "A shop asks which product you can supply more of next week. Bread sells in the largest number, but cakes leave more after their direct ingredients. You cannot push every line at once.",
+        "sw": "Duka linauliza ni bidhaa gani unaweza kuongeza wiki ijayo. Mikate inauzwa kwa idadi kubwa, lakini keki zinaacha zaidi baada ya malighafi zake za moja kwa moja. Huwezi kusukuma mistari yote kwa wakati mmoja."
+      },
+      "takeaway": {
+        "en": "The best-selling product is not always the one that earns most.",
+        "sw": "Bidhaa inayouzwa zaidi si lazima iwe inayoleta faida zaidi."
       }
     },
     {
@@ -693,8 +713,8 @@
       },
       "scene": "kitchen",
       "situation": {
-        "en": "The oven has one working day left to plan. A cake customer will confirm a few orders, while bread is already moving steadily.",
-        "sw": "Umebakiza siku moja ya kazi ya oveni kuipangia. Mteja wa keki atathibitisha oda chache, huku mikate ikiendelea kuuzwa."
+        "en": "Bread is selling steadily. A cake customer has a few orders. How do you use the oven?",
+        "sw": "Mkate unauzika vizuri. Mteja wa keki ana oda chache. Utatumiaje oveni?"
       },
       "info": [
         {
@@ -793,8 +813,12 @@
         ]
       },
       "situationDetails": {
-        "en": "Every cake uses time that could have made bread. Choose how much of the day's capacity goes to cakes.",
-        "sw": "Kila keki inatumia muda ambao ungeweza kutengeneza mikate. Chagua ni kiasi gani cha uwezo wa siku kiende kwenye keki."
+        "en": "The oven has one working day left to plan. A cake customer will confirm a few orders, while bread is already moving steadily. Every cake uses time that could have made bread. Choose how much of the day's capacity goes to cakes.",
+        "sw": "Umebakiza siku moja ya kazi ya oveni kuipangia. Mteja wa keki atathibitisha oda chache, huku mikate ikiendelea kuuzwa. Kila keki inatumia muda ambao ungeweza kutengeneza mikate. Chagua ni kiasi gani cha uwezo wa siku kiende kwenye keki."
+      },
+      "takeaway": {
+        "en": "Use scarce production time where confirmed orders leave a useful margin.",
+        "sw": "Tumia muda mdogo wa uzalishaji kwa oda zilizothibitishwa zinazoacha faida inayofaa."
       }
     },
     {
@@ -807,8 +831,8 @@
       "scene": "office",
       "unverified": true,
       "situation": {
-        "en": "A wedding customer asks for cakes to order, and wants a price before confirming. Cakes are made to order, so what you quote here becomes the price you quote everyone.",
-        "sw": "Mteja wa harusi anaomba keki za oda, na anataka bei kabla ya kuthibitisha. Keki hutengenezwa kwa oda, kwa hiyo bei unayotoa hapa ndiyo bei utakayowatajia wote."
+        "en": "A wedding customer wants a price for cakes made to order.",
+        "sw": "Mteja wa harusi anataka bei ya keki za oda."
       },
       "info": [
         {
@@ -900,8 +924,12 @@
         ]
       },
       "situationDetails": {
-        "en": "Each cake uses the oven during a busy part of the week.",
-        "sw": "Kila keki inatumia oveni wakati wenye shughuli nyingi wiki hiyo."
+        "en": "A wedding customer asks for cakes to order, and wants a price before confirming. Cakes are made to order, so what you quote here becomes the price you quote everyone. Each cake uses the oven during a busy part of the week.",
+        "sw": "Mteja wa harusi anaomba keki za oda, na anataka bei kabla ya kuthibitisha. Keki hutengenezwa kwa oda, kwa hiyo bei unayotoa hapa ndiyo bei utakayowatajia wote. Kila keki inatumia oveni wakati wenye shughuli nyingi wiki hiyo."
+      },
+      "takeaway": {
+        "en": "A price must cover the ingredients and a share of the other costs.",
+        "sw": "Bei inapaswa kulipia viungo na sehemu ya gharama nyingine."
       }
     },
     {
@@ -915,8 +943,8 @@
       "unverified": true,
       "_note": "debtorWeeks is a whole-business average: the engine applies it to ALL revenue, not to the wholesale share. Thirty-day terms on roughly a fifth of sales is about 0.8 weeks blended, not 4. Authored as 4 first time round, which absorbed nearly four weeks of total revenue in one step and made every option here insolvent whatever the learner chose.",
       "situation": {
-        "en": "Two shops want bread every week. They ask to pay 30 days after delivery.",
-        "sw": "Maduka mawili yanataka mikate kila wiki. Yanaomba kulipa siku 30 baada ya kupewa bidhaa."
+        "en": "Two shops want bread every week. They will pay 30 days after delivery.",
+        "sw": "Maduka mawili yanataka mkate kila wiki. Yatalipa siku 30 baada ya kupokea."
       },
       "info": [
         {
@@ -1063,8 +1091,12 @@
         ]
       },
       "situationDetails": {
-        "en": "The order would make your sales look better, but the money would arrive after the flour, wages and rent have already been paid.",
-        "sw": "Oda itafanya mauzo yako yaonekane mazuri, lakini pesa itaingia baada ya unga, mishahara na kodi kuwa tayari imelipwa."
+        "en": "Two shops want bread every week. They ask to pay 30 days after delivery. The order would make your sales look better, but the money would arrive after the flour, wages and rent have already been paid.",
+        "sw": "Maduka mawili yanataka mikate kila wiki. Yanaomba kulipa siku 30 baada ya kupewa bidhaa. Oda itafanya mauzo yako yaonekane mazuri, lakini pesa itaingia baada ya unga, mishahara na kodi kuwa tayari imelipwa."
+      },
+      "takeaway": {
+        "en": "A sale on credit does not put cash in your hand today.",
+        "sw": "Mauzo ya mkopo hayaweki pesa mkononi leo."
       }
     },
     {
@@ -1076,8 +1108,8 @@
       },
       "scene": "office",
       "situation": {
-        "en": "A credit sale can show a profit before the buyer pays. Compare the cash available with the amount customers owe.",
-        "sw": "Mauzo ya mkopo yanaweza kuonyesha faida kabla mnunuzi hajalipa. Linganisha pesa iliyopo na madeni ya wateja."
+        "en": "Customers owe you money. Your bakery still needs cash for flour and wages.",
+        "sw": "Wateja wanakudaiwa pesa. Biashara bado inahitaji pesa za unga na mishahara."
       },
       "info": [
         {
@@ -1226,6 +1258,14 @@
           }
         ],
         "predictMetric": "cash"
+      },
+      "situationDetails": {
+        "en": "A credit sale can show a profit before the buyer pays. Compare the cash available with the amount customers owe.",
+        "sw": "Mauzo ya mkopo yanaweza kuonyesha faida kabla mnunuzi hajalipa. Linganisha pesa iliyopo na madeni ya wateja."
+      },
+      "takeaway": {
+        "en": "A profitable business can run out of cash while waiting for payment.",
+        "sw": "Biashara yenye faida inaweza kukosa pesa wakati inasubiri malipo."
       }
     },
     {
@@ -1238,8 +1278,8 @@
       "scene": "market",
       "unverified": true,
       "situation": {
-        "en": "Your flour supplier offers two ways to buy. Pay cash and the flour is cheaper.",
-        "sw": "Msambazaji wako wa unga anakupa njia mbili za kununua. Lipa taslimu na unga uwe wa bei rahisi."
+        "en": "Your supplier offers cheaper flour for cash, or a higher price with time to pay.",
+        "sw": "Muuzaji ana unga wa bei nafuu kwa pesa taslimu, au bei ya juu ukilipa baadaye."
       },
       "info": [
         {
@@ -1387,8 +1427,12 @@
         ]
       },
       "situationDetails": {
-        "en": "Take it on account and the flour costs more, but you can pay after you have sold some bread. Your customers are still paying on different schedules.",
-        "sw": "Chukua kwa akaunti na unga uwe ghali zaidi, lakini unaweza kulipa baada ya kuuza mikate. Wateja wako bado wanalipa kwa nyakati tofauti."
+        "en": "Your flour supplier offers two ways to buy. Pay cash and the flour is cheaper. Take it on account and the flour costs more, but you can pay after you have sold some bread. Your customers are still paying on different schedules.",
+        "sw": "Msambazaji wako wa unga anakupa njia mbili za kununua. Lipa taslimu na unga uwe wa bei rahisi. Chukua kwa akaunti na unga uwe ghali zaidi, lakini unaweza kulipa baada ya kuuza mikate. Wateja wako bado wanalipa kwa nyakati tofauti."
+      },
+      "takeaway": {
+        "en": "Extra time to pay can be valuable when customers also pay late.",
+        "sw": "Muda wa ziada wa kulipa unaweza kusaidia ikiwa wateja pia wanachelewa kulipa."
       }
     },
     {
@@ -1401,8 +1445,8 @@
       "scene": "market",
       "unverified": true,
       "situation": {
-        "en": "The shop orders are using most of the first oven. A second-hand oven is available.",
-        "sw": "Oda za maduka zinatumia sehemu kubwa ya oveni ya kwanza. Oveni ya mtumba inapatikana."
+        "en": "Orders fill the first oven. A second-hand oven is available.",
+        "sw": "Oda zinajaza oveni ya kwanza. Oveni iliyotumika inauzwa."
       },
       "info": [
         {
@@ -1536,8 +1580,12 @@
         ]
       },
       "situationDetails": {
-        "en": "You can wait and save, borrow to buy it, or take a lease with a weekly payment. The oven can add capacity, but every financing choice has a tail.",
-        "sw": "Unaweza kusubiri na kuweka akiba, kukopa kuinunua, au kukodisha kwa malipo ya wiki. Oveni inaweza kuongeza uwezo, lakini kila uchaguzi wa ufadhili una mkia wa gharama."
+        "en": "The shop orders are using most of the first oven. A second-hand oven is available. You can wait and save, borrow to buy it, or take a lease with a weekly payment. The oven can add capacity, but every financing choice has a tail.",
+        "sw": "Oda za maduka zinatumia sehemu kubwa ya oveni ya kwanza. Oveni ya mtumba inapatikana. Unaweza kusubiri na kuweka akiba, kukopa kuinunua, au kukodisha kwa malipo ya wiki. Oveni inaweza kuongeza uwezo, lakini kila uchaguzi wa ufadhili una mkia wa gharama."
+      },
+      "takeaway": {
+        "en": "Compare cash purchase, borrowing and leasing over time.",
+        "sw": "Linganisha kununua kwa pesa taslimu, kukopa na kukodisha kwa muda."
       }
     },
     {
@@ -1550,8 +1598,8 @@
       "scene": "office",
       "unverified": true,
       "situation": {
-        "en": "If you borrowed for the second oven, the lender asks what weekly repayment you can actually carry. Interest is a cost in the profit line.",
-        "sw": "Kama ulikopa kwa oveni ya pili, mkopeshaji anauliza ni marejesho gani ya wiki unaweza kubeba hasa. Interest ni gharama kwenye mstari wa faida."
+        "en": "If you have a loan, choose a weekly repayment your cash can support.",
+        "sw": "Ikiwa una mkopo, chagua malipo ya wiki ambayo pesa zako zinaweza kumudu."
       },
       "info": [
         {
@@ -1642,8 +1690,12 @@
         ]
       },
       "situationDetails": {
-        "en": "Repayment is cash leaving the bank, but it is not another cost in the profit line. Choose a payment that leaves room for an ordinary bad week.",
-        "sw": "Marejesho ni pesa inayotoka benki, lakini si gharama nyingine kwenye mstari wa faida. Chagua malipo yanayoacha nafasi kwa wiki mbaya ya kawaida."
+        "en": "If you borrowed for the second oven, the lender asks what weekly repayment you can actually carry. Interest is a cost in the profit line. Repayment is cash leaving the bank, but it is not another cost in the profit line. Choose a payment that leaves room for an ordinary bad week.",
+        "sw": "Kama ulikopa kwa oveni ya pili, mkopeshaji anauliza ni marejesho gani ya wiki unaweza kubeba hasa. Interest ni gharama kwenye mstari wa faida. Marejesho ni pesa inayotoka benki, lakini si gharama nyingine kwenye mstari wa faida. Chagua malipo yanayoacha nafasi kwa wiki mbaya ya kawaida."
+      },
+      "takeaway": {
+        "en": "Loan repayments take cash. Only the interest is a profit cost.",
+        "sw": "Malipo ya mkopo yanatumia pesa. Riba pekee ni gharama kwenye faida."
       }
     },
     {
@@ -1656,8 +1708,8 @@
       "scene": "office",
       "unverified": true,
       "situation": {
-        "en": "The ovens are earning well, but the ledger says their value is lower than when you bought them. Depreciation is the weekly share of an asset's value that has been used.",
-        "sw": "Oveni zinaingiza vizuri, lakini daftari linasema thamani yake ni ndogo kuliko uliponunua. Depreciation ni sehemu ya wiki ya thamani ya mali iliyotumika."
+        "en": "The ovens wear down with use, even when no repair bill arrives.",
+        "sw": "Oveni zinachakaa kwa matumizi, hata bila bili ya matengenezo."
       },
       "info": [
         {
@@ -1786,8 +1838,12 @@
         ]
       },
       "situationDetails": {
-        "en": "It lowers profit without taking cash from the bank that week.",
-        "sw": "Inapunguza faida bila kutoa pesa benki wiki hiyo."
+        "en": "The ovens are earning well, but the ledger says their value is lower than when you bought them. Depreciation is the weekly share of an asset's value that has been used. It lowers profit without taking cash from the bank that week.",
+        "sw": "Oveni zinaingiza vizuri, lakini daftari linasema thamani yake ni ndogo kuliko uliponunua. Depreciation ni sehemu ya wiki ya thamani ya mali iliyotumika. Inapunguza faida bila kutoa pesa benki wiki hiyo."
+      },
+      "takeaway": {
+        "en": "Equipment loses value without taking cash from you that week.",
+        "sw": "Vifaa vinapoteza thamani bila kutoa pesa zako wiki hiyo."
       }
     },
     {
@@ -1799,8 +1855,8 @@
       },
       "scene": "kitchen",
       "situation": {
-        "en": "Two large bread bakes use the oven efficiently, but they leave little room to correct a bad demand estimate. Several smaller mixed bakes take more attention, yet they let you move capacity between bread, mandazi and cakes as orders change.",
-        "sw": "Uokaji wa mikate wa makundi mawili makubwa unatumia oveni kwa ufanisi, lakini unaacha nafasi ndogo kurekebisha makadirio mabaya ya mahitaji. Uokaji mdogo wa mchanganyiko unahitaji uangalifu zaidi, lakini unakuwezesha kuhamisha uwezo kati ya mikate, mandazi na keki oda zinapobadilika."
+        "en": "Large batches use the oven well. Small batches let you change course.",
+        "sw": "Mafungu makubwa yanatumia oveni vizuri. Mafungu madogo yanaruhusu kubadili mpango."
       },
       "info": [
         {
@@ -1925,6 +1981,14 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "Two large bread bakes use the oven efficiently, but they leave little room to correct a bad demand estimate. Several smaller mixed bakes take more attention, yet they let you move capacity between bread, mandazi and cakes as orders change.",
+        "sw": "Uokaji wa mikate wa makundi mawili makubwa unatumia oveni kwa ufanisi, lakini unaacha nafasi ndogo kurekebisha makadirio mabaya ya mahitaji. Uokaji mdogo wa mchanganyiko unahitaji uangalifu zaidi, lakini unakuwezesha kuhamisha uwezo kati ya mikate, mandazi na keki oda zinapobadilika."
+      },
+      "takeaway": {
+        "en": "Efficiency and flexibility each have a cost.",
+        "sw": "Ufanisi na uwezo wa kubadilika kila kimoja kina gharama."
       }
     },
     {
@@ -1937,8 +2001,8 @@
       "scene": "kitchen",
       "unverified": true,
       "situation": {
-        "en": "The baker reports that one batch of dough does not always become the same number of sellable items. Separately, some finished items sit unsold at the end of the day.",
-        "sw": "Mwokaji anaripoti kwamba kundi moja la donge halizai kila mara idadi ileile ya bidhaa zinazoweza kuuzwa. Kando na hilo, baadhi ya bidhaa zilizokamilika hubaki bila kuuzwa mwisho wa siku."
+        "en": "Some dough becomes waste. Some finished bread stays unsold.",
+        "sw": "Unga fulani unakuwa taka. Mkate fulani uliokamilika hauuzwi."
       },
       "info": [
         {
@@ -2084,8 +2148,12 @@
         ]
       },
       "situationDetails": {
-        "en": "Production waste and retail spoilage are two different leaks in the bakery.",
-        "sw": "Upotevu wa uzalishaji na bidhaa kuharibika dukani ni uvujaji miwili tofauti ya bakery."
+        "en": "The baker reports that one batch of dough does not always become the same number of sellable items. Separately, some finished items sit unsold at the end of the day. Production waste and retail spoilage are two different leaks in the bakery.",
+        "sw": "Mwokaji anaripoti kwamba kundi moja la donge halizai kila mara idadi ileile ya bidhaa zinazoweza kuuzwa. Kando na hilo, baadhi ya bidhaa zilizokamilika hubaki bila kuuzwa mwisho wa siku. Upotevu wa uzalishaji na bidhaa kuharibika dukani ni uvujaji miwili tofauti ya bakery."
+      },
+      "takeaway": {
+        "en": "Production waste and unsold stock need different fixes.",
+        "sw": "Taka za uzalishaji na bidhaa zisizouzwa zinahitaji suluhisho tofauti."
       }
     },
     {
@@ -2097,8 +2165,8 @@
       },
       "scene": "office",
       "situation": {
-        "en": "The bakery has money in hand that could go in several directions. The loan needs servicing, the ovens need stock, the household needs income, and a reserve could protect a bad week.",
-        "sw": "Bakery ina pesa mkononi inayoweza kwenda kwenye matumizi kadhaa. Mkopo unahitaji kuhudumiwa, oveni zinahitaji stock, kaya inahitaji kipato, na akiba inaweza kulinda wiki mbaya."
+        "en": "Divide available cash between the loan, stock, home and a reserve.",
+        "sw": "Gawa pesa zinazopatikana kwa mkopo, bidhaa, nyumbani na akiba."
       },
       "info": [
         {
@@ -2206,8 +2274,12 @@
         ]
       },
       "situationDetails": {
-        "en": "There is no one correct use for every coin — and whatever leaves the bakery now, the bakery runs the next six weeks without it.",
-        "sw": "Hakuna matumizi moja sahihi kwa kila senti — na chochote kinachotoka kwenye bakery sasa, bakery itaendesha wiki sita zijazo bila hicho."
+        "en": "The bakery has money in hand that could go in several directions. The loan needs servicing, the ovens need stock, the household needs income, and a reserve could protect a bad week. There is no one correct use for every coin — and whatever leaves the bakery now, the bakery runs the next six weeks without it.",
+        "sw": "Bakery ina pesa mkononi inayoweza kwenda kwenye matumizi kadhaa. Mkopo unahitaji kuhudumiwa, oveni zinahitaji stock, kaya inahitaji kipato, na akiba inaweza kulinda wiki mbaya. Hakuna matumizi moja sahihi kwa kila senti — na chochote kinachotoka kwenye bakery sasa, bakery itaendesha wiki sita zijazo bila hicho."
+      },
+      "takeaway": {
+        "en": "A reserve leaves room to respond when a week goes badly.",
+        "sw": "Akiba inaacha nafasi ya kuchukua hatua wiki ikienda vibaya."
       }
     },
     {
@@ -2219,8 +2291,8 @@
       },
       "scene": "kitchen",
       "situation": {
-        "en": "There is baking, counter work and delivery work to organise. Decide whether to add a baker, delegate supervision, or keep the current team.",
-        "sw": "Kuna kuoka, kuuza na kupeleka bidhaa kwa kupanga. Chagua kuongeza mwokaji, kugawa usimamizi, au kubaki na timu ya sasa."
+        "en": "Baking, counter sales and deliveries all need attention. Choose the next role.",
+        "sw": "Kuoka, kuuza kaunta na kusafirisha vinahitaji uangalizi. Chagua jukumu linalofuata."
       },
       "info": [
         {
@@ -2363,6 +2435,14 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "There is baking, counter work and delivery work to organise. Decide whether to add a baker, delegate supervision, or keep the current team.",
+        "sw": "Kuna kuoka, kuuza na kupeleka bidhaa kwa kupanga. Chagua kuongeza mwokaji, kugawa usimamizi, au kubaki na timu ya sasa."
+      },
+      "takeaway": {
+        "en": "Hire for the work that needs doing, then give clear responsibility.",
+        "sw": "Ajiri kwa kazi inayohitajika, kisha toa wajibu ulio wazi."
       }
     },
     {
@@ -2375,8 +2455,8 @@
       "scene": "inspection",
       "unverified": true,
       "situation": {
-        "en": "On days you are away, the bread is sometimes darker and the cake orders are packed differently. You can write a standard procedure: a short recipe and check-list that says what to do and what to check.",
-        "sw": "Siku ambazo haupo, wakati mwingine mikate inakuwa myeusi zaidi na oda za keki zinafungwa tofauti. Unaweza kuandika utaratibu wa kawaida: recipe fupi na checklist inayoeleza cha kufanya na cha kukagua."
+        "en": "When you are away, bread and packing vary. The team needs a reliable method.",
+        "sw": "Ukiwa haupo, mkate na ufungashaji vinatofautiana. Timu inahitaji njia ya kuaminika."
       },
       "info": [
         {
@@ -2518,8 +2598,12 @@
         ]
       },
       "situationDetails": {
-        "en": "The aim is the same quality without your eyes in every batch.",
-        "sw": "Lengo ni ubora uleule bila macho yako kwenye kila kundi."
+        "en": "On days you are away, the bread is sometimes darker and the cake orders are packed differently. You can write a standard procedure: a short recipe and check-list that says what to do and what to check. The aim is the same quality without your eyes in every batch.",
+        "sw": "Siku ambazo haupo, wakati mwingine mikate inakuwa myeusi zaidi na oda za keki zinafungwa tofauti. Unaweza kuandika utaratibu wa kawaida: recipe fupi na checklist inayoeleza cha kufanya na cha kukagua. Lengo ni ubora uleule bila macho yako kwenye kila kundi."
+      },
+      "takeaway": {
+        "en": "A simple written method helps the business work without you beside everyone.",
+        "sw": "Maelekezo rahisi yaliyoandikwa husaidia biashara kufanya kazi bila wewe kuwa karibu na kila mtu."
       }
     },
     {
@@ -2532,8 +2616,8 @@
       "scene": "office",
       "unverified": true,
       "situation": {
-        "en": "A shop asks you to continue delivering while it delays payment. Decide how much cash you can leave with customers.",
-        "sw": "Duka linaomba uendelee kupeleka bidhaa huku likichelewesha malipo. Amua kiasi cha pesa unachoweza kuacha kwa wateja."
+        "en": "A shop delays payment but asks you to keep delivering.",
+        "sw": "Duka linachelewesha malipo lakini linakuomba uendelee kupeleka bidhaa."
       },
       "info": [
         {
@@ -2691,6 +2775,14 @@
             ]
           }
         ]
+      },
+      "situationDetails": {
+        "en": "A shop asks you to continue delivering while it delays payment. Decide how much cash you can leave with customers.",
+        "sw": "Duka linaomba uendelee kupeleka bidhaa huku likichelewesha malipo. Amua kiasi cha pesa unachoweza kuacha kwa wateja."
+      },
+      "takeaway": {
+        "en": "More sales to an unpaid customer can deepen a cash problem.",
+        "sw": "Mauzo zaidi kwa mteja ambaye hajalipa yanaweza kuongeza tatizo la pesa."
       }
     },
     {
@@ -2706,13 +2798,13 @@
         "flag": "keepsRecords",
         "when": true,
         "situation": {
-          "en": "Because you kept a book before taking the bakery, the lender can already see part of the story. They still ask you to keep the same record for six months of bakery trading.",
-          "sw": "Kwa sababu ulitunza daftari kabla ya kuanza bakery, mkopeshaji anaweza kuona sehemu ya historia. Bado anakuomba uendelee na kumbukumbu hiyo kwa miezi sita ya biashara ya bakery."
+          "en": "You have worked with records before. This bakery has a new cash balance to check.",
+          "sw": "Umeshafanya kazi na rekodi hapo awali. Biashara hii ya mkate ina salio jipya la kukagua."
         }
       },
       "situation": {
-        "en": "The cash book has a missing balance. Use the receipts and payments to fill it in.",
-        "sw": "Daftari la pesa halina salio. Tumia mapokezi na malipo kulijaza."
+        "en": "The cash book is missing its closing balance. Can you finish it?",
+        "sw": "Daftari la fedha halina salio la mwisho. Unaweza kulikamilisha?"
       },
       "info": [
         {
@@ -2743,6 +2835,14 @@
           "en": "A promise to pay is not money received. Keep the receipt and check the balance.",
           "sw": "Ahadi ya kulipa si pesa iliyopokelewa. Hifadhi risiti na uhakiki salio."
         }
+      },
+      "situationDetails": {
+        "en": "The cash book has a missing balance. Use the receipts and payments to fill it in.",
+        "sw": "Daftari la pesa halina salio. Tumia mapokezi na malipo kulijaza."
+      },
+      "takeaway": {
+        "en": "A cash book connects each payment to the balance you can check.",
+        "sw": "Daftari la fedha linaunganisha kila malipo na salio unaloweza kukagua."
       }
     },
     {
@@ -2758,13 +2858,13 @@
         "flag": "formality",
         "atLeast": 2,
         "situation": {
-          "en": "You already have some formal footing from before the bakery. A buyer now asks whether your business licence, TIN and food-handling documents are current and whether you can keep the related records.",
-          "sw": "Tayari una msingi fulani wa kuwa rasmi kabla ya bakery. Mnunuzi sasa anauliza kama leseni ya biashara, TIN na nyaraka za kushughulikia chakula bado ni halali na kama unaweza kutunza kumbukumbu zinazohusiana."
+          "en": "You started registration before. This buyer still needs current documents. Check which apply.",
+          "sw": "Ulianza usajili hapo awali. Mnunuzi huyu bado anahitaji nyaraka halali. Kagua zinazohitajika."
         }
       },
       "situation": {
-        "en": "A larger buyer says they need a business licence, a TIN and food-handling documentation before they can buy regularly. You have heard different stories about the time and cost.",
-        "sw": "Mnunuzi mkubwa anasema anahitaji leseni ya biashara, TIN na nyaraka za kushughulikia chakula kabla ya kununua mara kwa mara. Umesikia hadithi tofauti kuhusu muda na gharama."
+        "en": "A bigger buyer needs business documents. You have heard different accounts of the requirements.",
+        "sw": "Mnunuzi mkubwa anahitaji nyaraka za biashara. Umesikia maelezo tofauti kuhusu masharti."
       },
       "info": [
         {
@@ -2917,8 +3017,12 @@
         ]
       },
       "situationDetails": {
-        "en": "The exact local requirements and fees need checking.",
-        "sw": "Mahitaji na ada halisi za eneo vinahitaji kuthibitishwa."
+        "en": "A larger buyer says they need a business licence, a TIN and food-handling documentation before they can buy regularly. You have heard different stories about the time and cost. The exact local requirements and fees need checking.",
+        "sw": "Mnunuzi mkubwa anasema anahitaji leseni ya biashara, TIN na nyaraka za kushughulikia chakula kabla ya kununua mara kwa mara. Umesikia hadithi tofauti kuhusu muda na gharama. Mahitaji na ada halisi za eneo vinahitaji kuthibitishwa."
+      },
+      "takeaway": {
+        "en": "Verify the requirements before paying for a new market.",
+        "sw": "Hakiki masharti kabla ya kulipia soko jipya."
       }
     },
     {
@@ -2930,8 +3034,8 @@
       },
       "scene": "market",
       "situation": {
-        "en": "The next weeks will not look like the last ones. School terms, holidays and the fasting month can move which customers order and when.",
-        "sw": "Wiki zinazofuata hazitafanana na zilizopita. Vipindi vya shule, likizo na mwezi wa kufunga vinaweza kubadilisha ni wateja gani wanaoagiza na lini."
+        "en": "School terms, holidays and fasting can change which products customers want.",
+        "sw": "Mihula ya shule, likizo na kufunga vinaweza kubadilisha bidhaa zinazotakiwa na wateja."
       },
       "info": [
         {
@@ -3075,9 +3179,31 @@
         ]
       },
       "situationDetails": {
-        "en": "You do not need to guess a date; you do need a way to change the bake when the orders change.",
-        "sw": "Huhitaji kubahatisha tarehe; unahitaji njia ya kubadilisha uokaji oda zinapobadilika."
+        "en": "The next weeks will not look like the last ones. School terms, holidays and the fasting month can move which customers order and when. You do not need to guess a date; you do need a way to change the bake when the orders change.",
+        "sw": "Wiki zinazofuata hazitafanana na zilizopita. Vipindi vya shule, likizo na mwezi wa kufunga vinaweza kubadilisha ni wateja gani wanaoagiza na lini. Huhitaji kubahatisha tarehe; unahitaji njia ya kubadilisha uokaji oda zinapobadilika."
+      },
+      "takeaway": {
+        "en": "Use current orders to update a plan when demand changes.",
+        "sw": "Tumia oda za sasa kurekebisha mpango mahitaji yanapobadilika."
       }
+    }
+  ],
+  "episodes": [
+    {
+      "en": "Make the oven pay",
+      "sw": "Fanya oveni ilete faida"
+    },
+    {
+      "en": "Keep cash moving",
+      "sw": "Endeleza mzunguko wa pesa"
+    },
+    {
+      "en": "Make room to grow",
+      "sw": "Tengeneza nafasi ya kukua"
+    },
+    {
+      "en": "Work as a team",
+      "sw": "Fanyeni kazi kama timu"
     }
   ]
 }

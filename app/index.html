@@ -21,33 +21,37 @@
       </div>
     </header>
 
-    <p id="banner" class="banner-unverified" hidden></p>
-    <p id="lang-banner" class="banner-unverified banner-draft" hidden></p>
-
     <div id="progress" class="progress"></div>
 
-    <main>
-      <div id="situation"></div>
-      <div id="decision"></div>
-      <div id="info"></div>
-      <div id="consequence"></div>
-    </main>
-    <button id="save-status" class="btn btn-ghost" type="button" aria-live="polite"></button>
+    <div class="play-board">
+      <section id="business" class="business" hidden>
+        <div id="scene" class="scene" aria-hidden="true"></div>
+        <div id="stats" class="stats"></div>
+      </section>
+      <main>
+        <div id="situation"></div>
+        <div id="decision"></div>
+        <div id="info"></div>
+        <div id="consequence"></div>
+      </main>
+    </div>
     <button id="pnl-toggle" class="btn btn-ghost pnl-toggle" type="button" aria-expanded="false" aria-controls="pnl-wrap">Show the numbers</button>
     <div id="pnl-wrap" hidden>
-      <div id="stats" class="stats"></div>
-      <div id="scene" class="scene" aria-hidden="true"></div>
+      <div id="facts"></div>
       <div id="goal"></div>
       <div id="pnl" class="pnl"></div>
       <div id="trajectory"></div>
     </div>
     <p id="load-error" hidden>Could not open the game. Reconnect and reload. / Mchezo haujafunguka. Unganisha intaneti na ujaribu tena.</p>
     <footer class="foot">
+      <button id="save-status" class="btn btn-ghost" type="button" aria-live="polite"></button>
       <nav class="secondary-actions">
         <button id="record" class="btn btn-ghost btn-small" type="button" hidden></button>
         <button id="learners" class="btn btn-ghost btn-small" type="button"></button>
         <button id="reset" class="btn btn-ghost btn-small" type="button">Start again</button>
       </nav>
+      <p id="banner" class="banner-unverified" hidden></p>
+      <p id="lang-banner" class="banner-unverified banner-draft" hidden></p>
       <p id="foot-privacy">Your progress stays on this phone. Nothing is sent anywhere.</p>
     </footer>
   </div>

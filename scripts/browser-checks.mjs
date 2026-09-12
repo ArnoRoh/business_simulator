@@ -9,6 +9,7 @@ try {
  const page = await context.newPage(); const errors = [];
  page.on('pageerror', error => errors.push(error.message));
  await page.goto(app.url); await page.locator('.chapter-card').first().click();
+ await page.locator('.custom-number > summary').click();
  await page.locator('.number-entry').first().fill('575');
  await page.locator('.number-entry').first().fill('999');
  assert(await page.locator('.number-error').first().isVisible());
@@ -25,9 +26,13 @@ try {
  await page.locator('[data-lang="en"]').click();
  await page.locator('.learning-help summary').click();
  await page.waitForFunction(async () => (await (await import('./js/storage.js')).load()).assistance.length > 0);
- await advance(page); await advance(page);
+ await page.locator('.number-decision [data-role="commit"]').click();
  const revealed = await session(page);
  assert.equal(revealed.phase, 'reveal');
+ assert.equal(revealed.record.observations.find(o => o.kind === 'decision').input, 575);
+ assert.equal(revealed.record.observations.find(o => o.kind === 'decision').inputMethod, 'typed');
+ assert(!revealed.record.observations.some(o => o.kind === 'prediction'));
+ assert(await page.locator('.is-trading .cash-motion').isVisible());
  const count = revealed.record.observations.length;
  await page.reload(); await page.locator('.reveal').waitFor();
  assert.equal((await session(page)).record.observations.length, count);
@@ -69,6 +74,7 @@ try {
    window.restoreWrites = () => { IDBDatabase.prototype.transaction = original; };
    IDBDatabase.prototype.transaction = function(...args) { if(args[1] === 'readwrite') throw new DOMException('Synthetic quota', 'QuotaExceededError'); return original.apply(this,args); };
  });
+ await page.locator('.custom-number > summary').click();
  await page.locator('.number-entry').first().fill('600');
  await page.waitForFunction(() => document.getElementById('save-status').textContent.includes('may not be saved'));
  assert.equal(await page.evaluate(async () => (await (await import('./js/storage.js')).load()).draftValue), 600);
@@ -79,7 +85,7 @@ try {
  assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
  const tiny = await page.locator('button:visible, summary:visible, input:visible').evaluateAll(nodes => nodes.filter(n => n.getBoundingClientRect().height < 47).map(n => n.textContent));
  assert.deepEqual(tiny, []);
- await advance(page); await advance(page);
+ await advance(page);
  assert.equal(await page.evaluate(() => document.activeElement.id), 'decision');
  // First visit becomes usable offline, including after reload.
  await page.evaluate(() => navigator.serviceWorker.ready);
@@ -116,7 +122,7 @@ try {
  // Shared-phone profiles must keep stable numbers and separate attempt records.
  await fresh.locator('#learners').click();
  await fresh.getByRole('button', { name: 'Start for another learner', exact: true }).click();
- await fresh.locator('.chapter-card').first().click(); await fresh.locator('.number-entry').first().waitFor();
+ await fresh.locator('.chapter-card').first().click(); await fresh.locator('.number-preset').first().waitFor();
  assert.notEqual((await session(fresh)).profileId, 'default');
  assert.equal(await fresh.evaluate(async () => (await (await import('./js/storage.js')).backup(true)).filter(([key]) => key.startsWith('attempt:')).length), 1);
  await fresh.locator('#learners').click();
@@ -168,9 +174,9 @@ try {
  // Counts must not turn half a person into a full wage and half the added output.
  const countsContext = await app.browser.newContext(); const countsPage = await countsContext.newPage();
  await countsPage.goto(app.url); await countsPage.locator('.chapter-card').first().click();
- await countsPage.locator('.number-entry').first().waitFor();
+ await countsPage.locator('.number-preset').first().waitFor();
  await countsPage.evaluate(async () => { const store = await import('./js/storage.js'); const saved = await store.load(); saved.turnIndex = 12; saved.authoredDone = 12; await store.save(saved); });
- await countsPage.reload(); await countsPage.locator('.number-entry').first().fill('0.5');
+ await countsPage.reload(); await countsPage.locator('.custom-number > summary').click(); await countsPage.locator('.number-entry').first().fill('0.5');
  assert.equal(await countsPage.locator('.number-entry').first().getAttribute('step'), '1');
  assert(!await countsPage.locator('.number-entry').first().evaluate(input => input.checkValidity()));
  await countsPage.locator('.stepper-button').nth(1).click();
@@ -181,11 +187,17 @@ try {
  const standalone = await app.browser.newContext(); await standalone.setOffline(true);
  const filePage = await standalone.newPage(); const fileErrors = []; filePage.on('pageerror', e => fileErrors.push(e.message));
  await filePage.goto(new URL('../app/standalone.html', import.meta.url).href);
- await filePage.locator('.chapter-card').first().click(); await filePage.locator('.number-entry').first().fill('575');
+ await filePage.locator('.chapter-card').first().click(); await filePage.locator('.custom-number > summary').click(); await filePage.locator('.number-entry').first().fill('575');
  await filePage.locator('#save-status').filter({ hasText: 'Progress saved' }).waitFor();
  await filePage.reload(); await filePage.locator('.number-entry').first().waitFor();
  assert.equal(await filePage.locator('.number-entry').first().inputValue(), '575');
  await filePage.locator('[data-lang="sw"]').click(); assert.equal(await filePage.locator('.number-entry').first().inputValue(), '575');
+ const amount = Number(await filePage.locator('.number-preset').last().getAttribute('data-amount'));
+ await filePage.locator('.number-preset').last().click(); await filePage.locator('.reveal').waitFor();
+ assert.equal(await filePage.locator('.number-prediction').count(), 0);
+ await filePage.reload(); await filePage.locator('.reveal').waitFor();
+ assert((await filePage.locator('.result-story').innerText()) !== null);
+ assert(Number.isFinite(amount));
  assert.deepEqual(fileErrors, []); await standalone.close();
  console.log('Draft, record, retry, layout, focus, offline, update, profile, migration and standalone checks passed');
 } finally { await app.close(); }

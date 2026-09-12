@@ -53,7 +53,7 @@ self.addEventListener('message', event => {
 self.addEventListener('fetch', event => {
   const request = event.request;
   const url = new URL(request.url);
-  if (request.method !== 'GET' || url.origin !== self.location.origin || !url.pathname.startsWith(SCOPE) || url.pathname.endsWith('/build-info.json')) return;
+  if (url.pathname.startsWith('/api/') || request.headers.has('Authorization') || request.method !== 'GET' || url.origin !== self.location.origin || !url.pathname.startsWith(SCOPE) || url.pathname.endsWith('/build-info.json')) return;
   if (url.pathname.includes('/content/scenario-')) {
     event.respondWith(content(request));
     return;

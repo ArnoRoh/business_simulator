@@ -12,7 +12,7 @@ try {
     await page.locator('.chapter-card').first().waitFor();
     await page.locator(`[data-lang="${language}"]`).click();
     for (let chapter = 0; chapter < 4; chapter++) {
-      await page.locator('.chapter-card').nth(chapter).click();
+      if (chapter === 0) await page.locator('.chapter-card').first().click();
       await page.locator('.episode-progress').waitFor();
       for (let action = 0; action < 180; action++) {
         const saved = await session(page);
@@ -28,8 +28,10 @@ try {
           const c = saved.result.cash;
           assert(Math.abs(c.opening + c.direct + c.profit + c.depreciation - c.repayment - c.workingCapitalChange - c.closing) < .001);
           const observations = saved.record.observations;
-          const last = observations.slice(-3).find(o => o.kind === 'prediction');
-          assert(last, 'A result must retain its prediction');
+          const decision = observations.findLast(o => o.kind === 'decision');
+          assert.equal(decision.forecast, 'not-requested');
+          assert.equal(decision.interactionVersion, 2);
+          assert(!observations.some(o => o.kind === 'prediction'), 'Play must not invent an estimate');
         }
         checked++;
         await advance(page);
@@ -40,7 +42,8 @@ try {
       assert.equal(final.record.observations.filter(o => o.kind === 'decision' && !o.turnId.startsWith('recovery-')).length, 20);
       assert.equal(errors.length, 0, errors.join('\n'));
       console.log(`${language}/${final.scenarioId}: 20 decisions and results retained`);
-      await page.locator('#chapters').click();
+      assert(await page.locator('.chapter-transition').isVisible(), 'A chapter ends with its story transition');
+      if (chapter < 3) await page.locator('.chapter-transition .btn-primary').click();
     }
     await context.close();
   }

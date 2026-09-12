@@ -4,49 +4,73 @@
     {
       "id": "mama-asha",
       "file": "scenario-mama-asha.json",
-      "title": { "en": "The mandazi stall", "sw": "Kibanda cha mandazi" },
+      "title": {
+        "en": "The mandazi stall",
+        "sw": "Kibanda cha mandazi"
+      },
       "shift": {
-        "en": "Can you see your own numbers?",
-        "sw": "Je, unaweza kuona namba zako mwenyewe?"
+        "en": "Find a price. Win a customer.",
+        "sw": "Tafuta bei. Pata mteja."
       },
       "blurb": {
         "en": "Asha sells mandazi by the bus stand. Twenty weeks of decisions about price, cost, customers and time.",
         "sw": "Asha anauza mandazi karibu na kituo cha basi. Wiki ishirini za maamuzi kuhusu bei, gharama, wateja na muda."
+      },
+      "bridge": {
+        "en": "You tried prices and customers at the stall. Now Asha has an oven and shop orders. Can you keep cash moving while customers pay later?",
+        "sw": "Umejaribu bei na wateja kibandani. Sasa Asha ana oveni na oda za maduka. Unaweza kuendeleza mzunguko wa pesa wateja wanapolipa baadaye?"
       }
     },
     {
       "id": "bakery",
       "file": "scenario-bakery.json",
-      "title": { "en": "The bakery", "sw": "Mkate wa Asha" },
+      "title": {
+        "en": "The bakery",
+        "sw": "Mkate wa Asha"
+      },
       "shift": {
-        "en": "From a person who sells to a business that runs",
-        "sw": "Kutoka mtu anayeuza hadi biashara inayojiendesha"
+        "en": "An oven, a team, and bills to pay.",
+        "sw": "Oveni, timu, na bili za kulipa."
       },
       "blurb": {
         "en": "A premises, an oven and two shops that want to buy wholesale. Money now arrives on a different schedule from the work that earned it.",
         "sw": "Jengo, oveni na maduka mawili yanayotaka kununua kwa jumla. Sasa pesa inafika kwa ratiba tofauti na kazi iliyoiingiza."
+      },
+      "bridge": {
+        "en": "The bakery needs more than good baking. In the factory, Asha must build a team that can make decisions without waiting for her.",
+        "sw": "Biashara ya mkate inahitaji zaidi ya kuoka vizuri. Kiwandani, Asha lazima ajenge timu inayoweza kufanya maamuzi bila kumsubiri."
       }
     },
     {
       "id": "factory",
       "file": "scenario-factory.json",
-      "title": { "en": "The factory", "sw": "Kiwanda" },
+      "title": {
+        "en": "The factory",
+        "sw": "Kiwanda"
+      },
       "shift": {
-        "en": "From a business that runs to an organisation",
-        "sw": "Kutoka biashara inayojiendesha hadi shirika"
+        "en": "You cannot do every job yourself.",
+        "sw": "Huwezi kufanya kila kazi mwenyewe."
       },
       "blurb": {
         "en": "A leased unit, staff, a van and a loan. Decisions stop being about what to do and start being about who decides.",
         "sw": "Jengo la kupanga, wafanyakazi, gari na mkopo. Maamuzi hayahusu tena nini cha kufanya, bali nani anaamua."
+      },
+      "bridge": {
+        "en": "Asha’s next buyer is overseas. The order is bigger, but the journey is longer and payment may arrive much later.",
+        "sw": "Mnunuzi anayefuata wa Asha yuko nje ya nchi. Oda ni kubwa, lakini safari ni ndefu na malipo yanaweza kuchelewa zaidi."
       }
     },
     {
       "id": "export",
       "file": "scenario-export.json",
-      "title": { "en": "Exporting", "sw": "Kuuza nje" },
+      "title": {
+        "en": "Exporting",
+        "sw": "Kuuza nje"
+      },
       "shift": {
-        "en": "Competing on someone else's terms",
-        "sw": "Kushindana kwa masharti ya mtu mwingine"
+        "en": "New buyers. Longer waits for payment.",
+        "sw": "Wanunuzi wapya. Muda mrefu wa kusubiri malipo."
       },
       "blurb": {
         "en": "A buyer abroad, a currency you do not control, and ninety days between shipping and being paid.",

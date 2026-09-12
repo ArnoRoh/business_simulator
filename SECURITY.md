@@ -17,7 +17,9 @@ There is no bounty programme. This is a small grant-funded project.
 
 **Current status:** a static browser application is deployed. Learner attempts stay in
 local browser storage. Sharing, printing and download require a learner action.
-There is no application backend or automated record upload.
+A separate programme backend is implemented locally, with explicit record sharing and
+financial-data consent. It has not been deployed for participants. See
+[portal operation and data handling](./docs/MV-BS-RUN-001-programme-portal.md).
 
 ---
 

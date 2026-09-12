@@ -417,7 +417,60 @@ function buildNightScene(root, state) {
   cashStack(root, 108, GROUND_Y - 4, state.cash);
 }
 
+// A stable place to return to after each choice. The four businesses have distinct
+// silhouettes; people and stock remain illustrations, not one-to-one unit counts.
+function buildBusiness(root, state, kind) {
+  skyGround(root, false);
+  sun(root, 278, 24, 14);
+  cloud(root, 38, 26, 0.7);
+  cloud(root, 217, 17, 0.45);
+  if (kind === 'export') {
+    root.appendChild(svg('rect', { x: 0, y: 108, width: 320, height: 52, class: 'scene-water' }));
+    const ship = svg('g', { class: 'scene-ship' });
+    ship.appendChild(svg('path', { d: 'M48 113 H266 L245 139 H79 Z', class: 'scene-hull' }));
+    ship.appendChild(svg('rect', { x: 223, y: 68, width: 23, height: 45, rx: 3, class: 'scene-shop' }));
+    ship.appendChild(svg('rect', { x: 228, y: 74, width: 12, height: 8, class: 'scene-window' }));
+    for (let i = 0; i < 5; i++) {
+      ship.appendChild(svg('rect', { x: 83 + (i % 3) * 43, y: 90 - Math.floor(i / 3) * 23, width: 40, height: 21, rx: 2, class: `scene-container scene-container-${i % 3}` }));
+    }
+    root.appendChild(ship);
+    root.appendChild(svg('path', { d: 'M31 132 V30 H151 M34 31 L110 31 L34 62 M134 30 V57', class: 'scene-crane' }));
+    root.appendChild(svg('rect', { x: 0, y: 133, width: 65, height: 27, class: 'scene-dock' }));
+    figure(root, 36, 133, { staff: true, scale: 0.8 });
+    return;
+  }
+  const factory = kind === 'factory';
+  root.appendChild(svg('rect', { x: 62, y: 58, width: 194, height: 75, rx: 4, class: 'scene-shop' }));
+  root.appendChild(svg('path', { d: factory ? 'M55 59 L104 31 V49 L153 24 V48 L203 26 V48 H264 V61 Z' : 'M49 59 L77 34 H241 L269 59 Z', class: 'scene-stall-roof' }));
+  if (factory) {
+    root.appendChild(svg('rect', { x: 70, y: 15, width: 14, height: 37, class: 'scene-dock' }));
+    root.appendChild(svg('path', { d: 'M77 13 Q61 4 79 -3', class: 'scene-steam' }));
+  }
+  for (const x of [77, 145, 210]) {
+    root.appendChild(svg('rect', { x, y: 71, width: 29, height: 29, rx: 3, class: 'scene-window' }));
+    root.appendChild(svg('path', { d: `M${x + 14} 71 V100 M${x} 85 H${x + 29}`, class: 'scene-window-frame' }));
+  }
+  if (factory) {
+    root.appendChild(svg('rect', { x: 85, y: 111, width: 146, height: 12, rx: 6, class: 'scene-conveyor' }));
+    for (let i = 0; i < 5; i++) {
+      root.appendChild(svg('circle', { cx: 96 + 30 * i, cy: 117, r: 4, class: 'scene-truck-wheel' }));
+      root.appendChild(svg('rect', { x: 92 + 28 * i, y: 100, width: 18, height: 11, rx: 2, class: 'scene-box moving-stock' }));
+    }
+  } else {
+    root.appendChild(svg('rect', { x: 72, y: 98, width: 174, height: 31, rx: 3, class: 'scene-stall-counter' }));
+    for (let i = 0; i < 8; i++) {
+      root.appendChild(svg('ellipse', { cx: 84 + 21 * i, cy: 97, rx: 8, ry: 5, class: 'scene-stall-goods' }));
+    }
+    for (let i = 0; i < 10; i++) root.appendChild(svg('rect', { x: 57 + 21 * i, y: 58, width: 21, height: 8, class: i % 2 ? 'scene-stall-awning-b' : 'scene-stall-awning-a' }));
+  }
+  staffRow(root, Math.min(3, state.staff || 0), 136, 255);
+  customerRow(root, deriveCustomerCount(state), 151, 195);
+}
+
 const SCENES = {
+  bakery: (root, state) => buildBusiness(root, state, 'bakery'),
+  factory: (root, state) => buildBusiness(root, state, 'factory'),
+  export: (root, state) => buildBusiness(root, state, 'export'),
   'stall-small': (root, state) => buildStallScene(root, state, 'small'),
   'stall-busy': (root, state) => buildStallScene(root, state, 'busy'),
   'stall-empty': (root, state) => buildStallScene(root, state, 'empty'),

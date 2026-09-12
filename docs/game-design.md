@@ -1,7 +1,7 @@
 # Game design
 
 **Status:** Current implementation on the learner-episodes branch. Deployment and field
-acceptance are separate checks. See [ADR-0009](./adr/0009-learner-episodes-and-local-attempts.md).
+acceptance are separate checks. See [ADR-0012](./adr/0012-play-first-business-journey.md), the implemented redesign proposal.
 
 ## Learner and purpose
 
@@ -17,25 +17,34 @@ opening states. All are available immediately. Each has twenty authored decision
 grouped into four episodes of five. Up to two recovery turns can be inserted when cash
 runs below zero. Recovery does not advance the authored-decision count.
 
-At an episode boundary the learner sees the concepts encountered and a short takeaway.
-They can continue or return to the chapter list. Progress also saves between boundaries.
-Six observed flags can change a later chapter's opening within the existing carry rules.
+At a mission boundary the learner sees a short recap and can continue or take a break.
+At a chapter boundary an illustrated story introduces the next business and its central
+challenge. Starting the next chapter is optional and uses a new authored budget. A
+completed attempt is banked once. Its full record is a separate action.
+Six carried flags can change a later chapter's opening within the existing carry rules.
 There is no aggregate score and no requirement to play the chapters in order.
 
 ## Turn loop
 
-1. Read a short situation and relevant cash, stock, customer-payment and time facts.
-2. Select an action or enter an amount. The action remains editable.
-3. Predict the result beside the action. The question names cash or profit and its period.
-4. Run the week. This commits both action and forecast and applies one calculated result.
-5. Read what changed, why it changed and the cash reconciliation. Continue when ready.
+1. See the business, cash, units sold, owner time and a short situation.
+2. Tap an action or a labelled amount. It runs the simulated period immediately.
+3. Watch the cash movement and read the result plus one short takeaway.
+4. Continue to the next choice, or open the explanation and accounts.
+
+Numeric decisions offer preset amounts with free entry available. Cash-book exercises
+require an entered answer. Normal play does not ask for a forecast. Older saved forecasts
+remain in their records. The new interaction is versioned so a preset choice is not
+misread as independent calculation and an absent forecast is not counted as a mistake.
 
 Business research is optional; its simulated time and money cost is shown before selection.
-Help with words, controls and calculations is free. Opening a worked example is recorded
-as assistance, without treating assistance as lower ability. There is no timer.
+Help with words, controls and calculations is free. Opening a worked example or arithmetic
+preview is recorded as assistance, without treating assistance as lower ability.
+There is no timer. Animation never blocks the next action, and reduced motion is supported.
 
-The detailed accounts, goal, scene and projection remain available under Show the numbers.
-They do not precede the task. A projection is conditional on making no further changes.
+Each business has a distinct SVG scene. Customers, coins, stock and ships are illustrative;
+labelled values give the actual calculated quantities. The detailed accounts, stock,
+receivables, goal and projection remain under Open the accounts. A projection is conditional
+on making no further changes. Original context and choice details remain available on demand.
 
 ## Practical exercises
 
@@ -54,7 +63,7 @@ cash, records, delegation and setbacks with different business conditions.
 The pure engine computes sales, product contributions, operating costs, owner workload,
 quality, reputation, debt, working capital and delayed consequences. A resolved turn
 returns weekly results, closing state, fired consequences and a full cash reconciliation.
-The same result supplies grading, feedback, history and observations. It is never rerun
+The same result supplies feedback, history and observations. It is never rerun
 when a saved result is reopened.
 
 Direct cash changes, including funded purchases and delayed costs, survive settlement.
@@ -74,8 +83,8 @@ These are teaching approximations, not financial products or legal advice.
 ## Content and records
 
 Scenarios remain JSON, with English and Kiswahili text, neutral amounts and a currency
-code. Supported decisions are choice, number, allocation and cash-book practice. Authored
-prediction answers are forbidden: the current calculation is the answer source.
+code. Supported decisions are choice, number, allocation and cash-book practice. Earlier
+forecast definitions remain in versioned content, but normal play no longer uses them.
 
 An attempt pins its scenario snapshot and the flags used at its opening. Legacy attempts retain their observed decision order. A saved transition identifies corrected calculations and preserves the old draft; unplayed decisions use the corrected content. Records contain stable IDs, version context,
 actions, forecasts, assistance, exercise answers and actual results. Chapters and replays

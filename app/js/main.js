@@ -1,13 +1,13 @@
 // Application bootstrap and turn state machine.
 //
-// Flow per turn: decision and forecast together, then result.
+// Flow per turn: tap an action, then see the calculated result.
 // Above the turn loop sits the chapter loop (ADR-0007): four chapters, each a
 // self-contained scenario with an authored opening, connected by six carried flags.
 
 import {
-  createState, applyEffects, weeklyPnl, resolveTurn, bandFor, CALCULATION_VERSION, cashBook,
-  resolveNumberInput, resolveAllocation, bandForValue, gradePrediction,
-  evaluateGoal, needsRecovery, predictionWindow, setBands,
+  createState, applyEffects, weeklyPnl, resolveTurn, CALCULATION_VERSION, cashBook,
+  resolveNumberInput, resolveAllocation, bandForValue,
+  evaluateGoal, needsRecovery, setBands,
 } from './engine.js';
 import * as record from './record.js';
 import * as store from './storage.js';
@@ -58,6 +58,8 @@ function cacheDom() {
   dom.status = q('save-status');
   dom.record = q('record');
   dom.learners = q('learners');
+  dom.business = q('business');
+  dom.facts = q('facts');
 }
 
 function newSession() {
@@ -98,7 +100,10 @@ function newSession() {
 
 function persist() {
   return store.save(session, carry).then(ok => {
-    if (dom.status) dom.status.textContent = t(ok && !store.storageError ? 'save.ok' : 'save.failed');
+    if (dom.status) {
+      dom.status.textContent = t(ok && !store.storageError ? 'save.ok' : 'save.failed');
+      dom.status.classList.toggle('save-failed', !ok || Boolean(store.storageError));
+    }
     return ok;
   });
 }
@@ -210,7 +215,8 @@ function focusTask() {
   const target = session?.phase === 'situation' ? dom.situation : dom.decision;
   target.setAttribute('tabindex', '-1');
   target.focus({ preventScroll: true });
-  target.scrollIntoView({ block: 'start' });
+  const view = dom.business.hidden ? target : dom.business;
+  view.scrollIntoView({ block: 'start', behavior: 'instant' });
 }
 function assisted(id) {
   if (!session.assistance.includes(id)) {
@@ -222,8 +228,6 @@ function assisted(id) {
 function addHelp(container, turn) {
   const help = ui.el('details', 'card learning-help');
   help.appendChild(ui.el('summary', null, t('help.title')));
-  help.appendChild(ui.el('p', null, t('help.controls')));
-  help.appendChild(ui.el('p', null, t('help.cash')));
   help.appendChild(ui.el('p', null, t(`help.${decisionType(turn)}`)));
   const worked = ui.el('div');
   if (decisionType(turn) === 'cashbook') {
@@ -244,19 +248,22 @@ function renderAll() {
   dom.pnlToggle.hidden = false;
   dom.pnlWrap.hidden = dom.pnlToggle.getAttribute('aria-expanded') !== 'true';
   ui.renderProgress(dom.progress, session.authoredDone || 0, 20);
+  const mission = scenario.episodes?.[Math.min(3, Math.floor((session.authoredDone || 0) / 5))];
+  if (mission) dom.progress.appendChild(ui.el('p', 'mission-title', localised(mission)));
   dom.progress.appendChild(ui.el('p', 'episode-progress', t('episode.progress', {
     episode: Math.min(4, Math.floor((session.authoredDone || 0) / 5) + 1),
     decision: (session.authoredDone || 0) % 5 + 1,
   })));
-  ui.renderSituation(dom.situation, tinted(turn), session.authoredDone === 0 ? session.openingNotes || [] : []);
+  if (session.phase === 'reveal') ui.clear(dom.situation);
+  else ui.renderSituation(dom.situation, tinted(turn), session.authoredDone === 0 ? session.openingNotes || [] : []);
   dom.situation.querySelector('details')?.addEventListener('toggle', event => {
     if (!event.target.open) return;
     record.observe(session.record, { kind: 'context-opened', turnId: turn.id, beforeCommit: session.phase !== 'reveal' });
     persist();
   });
-  ui.renderFacts(dom.situation, session.state);
+  ui.renderFacts(dom.facts, session.state);
   ui.renderStats(dom.stats, session.state);
-  ui.renderScene(dom.scene, turn.scene, session.state);
+  ui.renderScene(dom.scene, turn.scene, session.state, scenario.id);
   session.shownLines = ui.renderPnl(dom.pnl, session.state, session.seenLines || []);
   ui.renderTrajectory(dom.trajectory, session.state);
   if (scenario.goal) ui.renderGoal(dom.goal, evaluateGoal(session.state, scenario.goal), scenario.goal);
@@ -266,39 +273,32 @@ function renderAll() {
     ui.renderTurnResult(dom.decision, turn, session.result, narrativeFor(), decisionLabel(), onNext);
     return;
   }
-  const action = ui.el('div');
+  const ready = session.chosenOptionId || session.inputValue !== null || (decisionType(turn) === 'allocate' && session.phase === 'predict');
+  const action = ui.el(ready ? 'details' : 'div', ready ? 'chosen-action' : '');
   ui.clear(dom.decision);
+  if (ready) action.appendChild(ui.el('summary', null, t('play.edit', { choice: decisionLabel() })));
   dom.decision.appendChild(action);
+  const controls = ui.el('div'); action.appendChild(controls);
   const type = decisionType(turn);
   const draft = value => { session.draftValue = value; if (session.inputValue !== null) session.inputValue = value; persist(); };
   if (turn.diagnose && session.diagnosed === null) {
-    ui.renderDiagnose(action, turn, session.state, onDiagnose);
+    ui.renderDiagnose(controls, turn, session.state, onDiagnose);
   } else if (type === 'cashbook') {
-    ui.renderCashBook(action, cashBook(session.state), session.draftValue, onCommitNumber, draft);
+    ui.renderCashBook(controls, cashBook(session.state), session.draftValue, onCommitNumber, draft);
   } else if (type === 'number') {
-    ui.renderNumberDecision(action, turn, session.state, onCommitNumber, session.draftValue ?? session.inputValue, draft);
+    ui.renderNumberDecision(controls, turn, session.state, onCommitNumber, session.draftValue ?? session.inputValue, draft);
   } else if (type === 'allocate') {
-    ui.renderAllocateDecision(action, turn, session.state, onCommitAllocation, session.split, split => { session.split = split; persist(); });
+    ui.renderAllocateDecision(controls, turn, session.state, onCommitAllocation, session.split, split => { session.split = split; persist(); });
   } else {
-    ui.renderOptions(action, turn, onChooseOption, session.chosenOptionId);
+    ui.renderOptions(controls, turn, onChooseOption, session.chosenOptionId);
   }
-  if (session.chosenOptionId || session.inputValue !== null || (type === 'allocate' && session.phase === 'predict')) {
-    const forecast = ui.el('div');
-    dom.decision.appendChild(forecast);
-    const metric = turn.decision.predictMetric || 'profit';
-    const displayTurn = { ...turn, decision: { ...turn.decision, predictQuestion: { en: t(`forecast.${metric}${turn.decision.predict === 'number' ? 'Amount' : ''}`, { n: turn.advanceWeeks || 1 }), sw: t(`forecast.${metric}${turn.decision.predict === 'number' ? 'Amount' : ''}`, { n: turn.advanceWeeks || 1 }) } } };
-    if (turn.decision.predict === 'number') {
-      ui.renderPredictNumber(forecast, displayTurn, session.state, value => { session.predictedValue = value; commitTurn(); }, session.draftPrediction, value => { session.draftPrediction = value; persist(); });
-    } else {
-      ui.renderPredict(forecast, displayTurn, chosenOption(), choice => {
-        session.predictedId = choice.id; persist(); renderAll();
-        dom.decision.querySelector(`[data-prediction="${choice.id}"]`)?.focus();
-      }, session.predictedId);
-      const run = ui.el('button', 'btn btn-primary', t('turn.run'));
-      run.dataset.role = 'run'; run.disabled = !session.predictedId;
-      run.addEventListener('click', commitTurn); forecast.appendChild(run);
-    }
+  // A previous saved draft can still be confirmed; new choices run immediately.
+  if (ready) {
+    const run = ui.el('button', 'btn btn-primary', t('turn.run'));
+    run.dataset.role = 'run'; run.addEventListener('click', () => commitTurn());
+    dom.decision.appendChild(run);
   }
+  dom.decision.querySelector('.decision-calculation')?.addEventListener('toggle', event => { if (event.target.open) assisted('calculation-preview'); });
   addHelp(dom.decision, turn);
   ui.renderInfo(dom.info, turn, session.state, onSeekInfo, new Set(session.sought));
 }
@@ -320,60 +320,55 @@ function onDiagnose(pickedKey) {
   persist(); renderAll(); focusTask();
 }
 function onChooseOption(option) {
-  session.chosenOptionId = option.id; session.phase = 'predict';
-  session.predictedId = null; session.predictedValue = null;
-  persist(); renderAll();
-  dom.decision.querySelector(`[data-option="${option.id}"]`)?.focus();
+  session.chosenOptionId = option.id;
+  session.inputMethod = 'choice';
+  commitTurn();
 }
-function onCommitNumber(value) {
-  session.inputValue = value; session.draftValue = value; session.phase = 'predict';
-  session.predictedId = null; persist(); renderAll();
+function onCommitNumber(value, method = 'typed') {
+  const input = currentTurn().decision.input;
+  if (!Number.isFinite(value) || (input && (value < input.min || value > input.max))) return;
+  if (input && /(^|\.)(staff|capacity|demand)$/.test(input.field) && !Number.isInteger(value)) return;
+  session.inputValue = value; session.draftValue = value; session.inputMethod = method;
+  commitTurn();
 }
 function onCommitAllocation(split) {
-  session.split = split; session.phase = 'predict'; session.predictedId = null;
-  persist(); renderAll();
+  session.split = split; session.inputMethod = 'allocation';
+  commitTurn();
 }
 function commitTurn() {
-  if (session.phase === 'reveal' || [...dom.decision.querySelectorAll('input')].some(input => !input.checkValidity())) return;
+  if (session.phase === 'reveal') return;
   const turn = currentTurn();
   const beforeState = JSON.parse(JSON.stringify(session.state));
   const opt = chosenOption();
   const result = resolveTurn(session.state, turn, chosenEffects(), opt?.later || [], decisionLabel());
-  const metric = turn.decision.predictMetric || 'profit';
-  const actual = metric === 'cash' ? result.state.cash : result.profit;
-  const before = metric === 'cash' ? session.state.cash : weeklyPnl(session.state).profit * (turn.advanceWeeks || 1);
-  const numeric = turn.decision.predict === 'number';
-  const actualId = bandFor(actual - before);
-  const prediction = numeric
-    ? { kind: 'number', ...gradePrediction(session.predictedValue, actual, predictionWindow(session.state, turn).step) }
-    : { kind: 'band', predictedId: session.predictedId, actualId, correct: session.predictedId === actualId };
   if (session.turnOpening) {
     result.cash.direct += session.state.cash - session.turnOpening.cash;
     result.cash.opening = session.turnOpening.cash;
   }
   record.observeDecision(session.record, turn.id, turn.concept, opt?.id || decisionType(turn), decisionLabel(), session.sought.length, weeklyPnl(session.state).profit, result.profit / (turn.advanceWeeks || 1));
   const decision = session.record.observations.at(-1);
-  Object.assign(decision, { input: session.inputValue, allocation: session.split, assistance: [...session.assistance], beforeState, calculationVersion: CALCULATION_VERSION, scenarioVersion: scenario.version });
-  record.observePrediction(session.record, turn.id, numeric ? session.predictedValue : session.predictedId, numeric ? actual : actualId, prediction.correct, metric, numeric ? prediction : null);
-  session.record.observations.at(-1).assistance = [...session.assistance];
+  Object.assign(decision, { input: session.inputValue, inputMethod: session.inputMethod || 'legacy-draft', allocation: session.split,
+    assistance: [...session.assistance], beforeState, calculationVersion: CALCULATION_VERSION,
+    scenarioVersion: scenario.version, interactionVersion: 2, forecast: 'not-requested' });
   if (decisionType(turn) === 'cashbook') {
     result.book = { ...cashBook(session.state), entered: session.inputValue };
     record.observe(session.record, { kind: 'cashbook', turnId: turn.id, ...result.book, assistance: [...session.assistance] });
   }
-  result.prediction = prediction;
   if (turn.diagnose) result.diagnosis = { picked: session.diagnosed, answer: ui.diagnosisAnswer(turn, session.state), live: Boolean(turn.diagnose.liveConstraint) };
   record.observe(session.record, { kind: 'outcome', turnId: turn.id, cash: result.cash, profit: result.profit, state: result.state, calculationVersion: CALCULATION_VERSION });
   session.result = result; session.state = result.state;
   session.history.push(...result.weekly);
   session.phase = 'reveal';
   persist(); renderAll(); focusTask();
+  ui.renderStats(dom.stats, session.state, beforeState);
+  ui.animateTrade(dom.scene, result.cash.closing - result.cash.opening);
 }
 function onNext() {
   const turn = currentTurn();
   if (!turn.id.startsWith('recovery-')) session.authoredDone = (session.authoredDone || 0) + 1;
   if (!dom.pnlWrap.hidden) session.seenLines = [...new Set([...(session.seenLines || []), ...(session.shownLines || [])])];
   session.turnIndex += 1;
-  Object.assign(session, { phase: 'situation', sought: [], chosenOptionId: null, predictedId: null, inputValue: null, split: null, diagnosed: null, predictedValue: null, draftValue: null, draftPrediction: null, assistance: [], turnOpening: null, result: null });
+  Object.assign(session, { phase: 'situation', sought: [], chosenOptionId: null, predictedId: null, inputValue: null, split: null, diagnosed: null, predictedValue: null, draftValue: null, draftPrediction: null, inputMethod: null, assistance: [], turnOpening: null, result: null });
   if (scenario.recovery && needsRecovery(session.state) && session.recoveriesUsed < 2 && session.authoredDone < 20) {
     session.recoveriesUsed += 1; insertRecovery(session.turnIndex, session.recoveriesUsed); session.recoveryAt.push(session.turnIndex);
   }
@@ -385,16 +380,20 @@ function renderEpisode() {
   ui.renderProgress(dom.progress, session.authoredDone, 20);
   dom.pnlWrap.hidden = true; dom.pnlToggle.hidden = true;
   for (const key of ['decision', 'situation', 'info', 'consequence']) ui.clear(dom[key]);
-  const card = ui.el('section', 'card');
+  const card = ui.el('section', 'card episode-recap');
+  const finish = ui.el('div', 'episode-stamp', '✓'); finish.setAttribute('aria-hidden', 'true'); card.appendChild(finish);
   card.appendChild(ui.el('h2', null, t('episode.done', { n: session.authoredDone / 5 })));
+  card.appendChild(ui.el('p', null, t('play.episodeBody')));
   const decisions = session.record.observations.filter(o => o.kind === 'decision' && !o.turnId.startsWith('recovery-')).slice(-5);
+  const recap = ui.el('details'); recap.appendChild(ui.el('summary', null, t('play.recap')));
   for (const item of decisions) {
     const turn = scenario.turns.find(t => t.id === item.turnId);
-    card.appendChild(ui.el('p', null, localised(turn?.conceptLabel) || item.concept));
+    recap.appendChild(ui.el('p', null, localised(turn?.conceptLabel) || item.concept));
   }
   const last = decisions.at(-1);
   const definition = scenario.turns.find(t => t.id === last?.turnId);
-  card.appendChild(ui.el('p', null, localised(definition?.decision?.options?.find(o => o.id === last.optionId)?.lesson || definition?.decision?.lesson) || t('episode.takeaway')));
+  card.appendChild(ui.el('p', 'lesson', localised(definition?.takeaway) || t('episode.takeaway')));
+  card.appendChild(recap);
   const next = ui.el('button', 'btn btn-primary', t('episode.continue'));
   next.addEventListener('click', () => { session.phase = 'situation'; persist(); renderAll(); focusTask(); });
   const stop = ui.el('button', 'btn btn-ghost', t('episode.stop'));
@@ -468,7 +467,9 @@ function bankCarry() {
   store.saveCarry(carry);
 }
 
-function renderEnd(partial = false) {
+function renderEnd(partial = false, recordOnly = false) {
+  document.querySelector('.app').dataset.screen = 'end';
+  dom.business.hidden = true;
   ui.renderStats(dom.stats, session.state);
   ui.renderScene(dom.scene, 'stall-busy', session.state);
   ui.renderProgress(dom.progress, scenario.turns.length, scenario.turns.length);
@@ -492,10 +493,19 @@ function renderEnd(partial = false) {
   // The carried flags are banked here, at the one point a chapter is definitely
   // finished. They are facts about what was done, recorded alongside the observations
   // and never rolled into anything.
-  if (!partial) { bankCarry(); session.completed = true; }
-  session.record.carriedFlags = { ...carry.flags };
-
-  if (!partial) persist();
+  if (!partial && !session.completed) {
+    bankCarry(); session.completed = true;
+    session.record.carriedFlags = { ...carry.flags };
+    persist();
+  }
+  if (!session.completed) session.record.carriedFlags = collectCarry(session.state, session.carryAtStart || {});
+  if (!partial && !recordOnly) {
+    ui.renderChapterTransition(dom.decision, chapters, scenario.id, carry, session.state,
+      id => openChapter(id), () => { scenario = null; renderChapterSelect(); },
+      () => renderEnd(false, true));
+    appendPortalLink();
+    return;
+  }
   const profile = record.buildProfile(session.record);
   const tally = record.predictionTally(session.record);
   ui.renderProfile(
@@ -552,13 +562,26 @@ function renderEnd(partial = false) {
   download.addEventListener('click', () => downloadRecord(payload));
   actions.appendChild(download);
 
-  if (partial) {
+  if (partial || recordOnly) {
     const back = ui.el('button', 'btn btn-primary', t('record.back'));
     back.addEventListener('click', () => { renderAll(); focusTask(); });
     actions.appendChild(back);
   }
   if (session.state.pending?.length) dom.decision.appendChild(ui.el('p', null, t('result.pending', { n: session.state.pending.length })));
   dom.decision.appendChild(actions);
+  if (!partial) appendPortalLink();
+}
+
+function appendPortalLink() {
+  if (!chapters.every(chapter => carry.completed.includes(chapter.id))) return;
+  if (location.protocol === 'file:') {
+    dom.decision.appendChild(ui.el('p', null, t('portal.fileHint')));
+    return;
+  }
+  const link = ui.el('a', 'btn btn-primary', t('portal.open'));
+  link.href = './portal/';
+  link.id = 'programme-portal';
+  dom.decision.appendChild(link);
 }
 
 /** The learner holds their own record — SECURITY.md. Nothing is transmitted. */
@@ -667,8 +690,10 @@ function printRecord(profile) {
 
 /** Strings that live outside the turn loop and so are not redrawn by renderAll. */
 function renderChrome() {
+  document.querySelector('.app').dataset.screen = !scenario ? 'home' : session?.phase || 'situation';
+  dom.business.hidden = !scenario || session?.phase === 'episode';
   document.title = localised(scenario && scenario.title) || t('app.title');
-  dom.title.textContent = localised(scenario && scenario.title) || t('app.title');
+  dom.title.textContent = localised(chapters.find(c => c.id === scenario?.id)?.title) || t('app.title');
   if (!scenario) { dom.banner.hidden = true; }
   dom.reset.textContent = t('btn.startAgain');
   dom.record.textContent = t('record.open'); dom.record.hidden = !scenario;
@@ -865,7 +890,7 @@ async function init() {
     dom.pnlToggle.textContent = t(open ? 'btn.hideNumbers' : 'btn.showNumbers');
   });
 
-  dom.record.addEventListener('click', () => renderEnd(!session.completed));
+  dom.record.addEventListener('click', () => renderEnd(!session.completed, true));
   dom.learners.addEventListener('click', showLearners);
   dom.status.addEventListener('click', () => { if (session) persist(); });
   if (store.storageError) dom.status.textContent = t('save.failed');

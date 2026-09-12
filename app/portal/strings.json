@@ -1,0 +1,982 @@
+{
+  "title": {
+    "en": "Your business",
+    "sw": "Biashara yako"
+  },
+  "home": {
+    "en": "Home",
+    "sw": "Mwanzo"
+  },
+  "next": {
+    "en": "Next",
+    "sw": "Endelea"
+  },
+  "back": {
+    "en": "Back",
+    "sw": "Rudi"
+  },
+  "saveLeave": {
+    "en": "Save and leave",
+    "sw": "Hifadhi na uondoke"
+  },
+  "continue": {
+    "en": "Continue",
+    "sw": "Endelea"
+  },
+  "start": {
+    "en": "Start",
+    "sw": "Anza"
+  },
+  "retry": {
+    "en": "Try again",
+    "sw": "Jaribu tena"
+  },
+  "send": {
+    "en": "Send to the programme",
+    "sw": "Tuma kwa programu"
+  },
+  "edit": {
+    "en": "Edit",
+    "sw": "Badilisha"
+  },
+  "cancel": {
+    "en": "Cancel",
+    "sw": "Ghairi"
+  },
+  "example": {
+    "en": "Show an example",
+    "sw": "Onyesha mfano"
+  },
+  "step": {
+    "en": "Step {n} of {total}",
+    "sw": "Hatua {n} kati ya {total}"
+  },
+  "shortAnswers": {
+    "en": "Short answers are enough. Take your time.",
+    "sw": "Majibu mafupi yanatosha. Usiharakishe."
+  },
+  "testMode": {
+    "en": "Test programme. Use made-up practice details, not real personal or business data.",
+    "sw": "Programu ya majaribio. Tumia taarifa za mazoezi, si taarifa halisi za mtu au biashara."
+  },
+  "unreviewed": {
+    "en": "The Kiswahili wording is a draft and needs local review.",
+    "sw": "Maneno ya Kiswahili ni rasimu na yanahitaji mapitio ya wenyeji."
+  },
+  "savedLocal": {
+    "en": "Saved on this phone.",
+    "sw": "Imehifadhiwa kwenye simu hii."
+  },
+  "waiting": {
+    "en": "Waiting to send. Your answers are saved on this phone.",
+    "sw": "Inasubiri kutumwa. Majibu yako yamehifadhiwa kwenye simu hii."
+  },
+  "sent": {
+    "en": "Sent. The programme has received your answers.",
+    "sw": "Imetumwa. Programu imepokea majibu yako."
+  },
+  "saveFailed": {
+    "en": "Your latest answers could not be saved. Keep this page open and download a copy.",
+    "sw": "Majibu yako ya mwisho hayajahifadhiwa. Usiufunge ukurasa huu. Pakua nakala."
+  },
+  "serviceUnavailable": {
+    "en": "The application service cannot be reached. Try again when connected.",
+    "sw": "Huduma ya maombi haipatikani. Jaribu tena ukiwa na mtandao."
+  },
+  "entryTitle": {
+    "en": "Finished the game?",
+    "sw": "Umemaliza mchezo?"
+  },
+  "entryText": {
+    "en": "Use your finished chapters to get an entry code. Finishing lets you apply; it does not promise a grant.",
+    "sw": "Tumia sura ulizomaliza kupata msimbo wa kuingia. Kumaliza hukuruhusu kuomba; hakuhakikishi ruzuku."
+  },
+  "getCode": {
+    "en": "Get my entry code",
+    "sw": "Pata msimbo wangu"
+  },
+  "checkChapters": {
+    "en": "Check my chapters",
+    "sw": "Angalia sura zangu"
+  },
+  "complete": {
+    "en": "Complete",
+    "sw": "Imekamilika"
+  },
+  "notComplete": {
+    "en": "Not complete yet",
+    "sw": "Bado haijakamilika"
+  },
+  "chooseAttempt": {
+    "en": "Choose the attempt to share",
+    "sw": "Chagua jaribio la kushiriki"
+  },
+  "importRecords": {
+    "en": "Use saved game records",
+    "sw": "Tumia kumbukumbu za mchezo zilizohifadhiwa"
+  },
+  "importHint": {
+    "en": "Choose the game record files you saved. Use records for one learner.",
+    "sw": "Chagua faili za kumbukumbu ulizohifadhi. Tumia kumbukumbu za mwanafunzi mmoja."
+  },
+  "codeLabel": {
+    "en": "Entry code",
+    "sw": "Msimbo wa kuingia"
+  },
+  "useCode": {
+    "en": "Use my code",
+    "sw": "Tumia msimbo wangu"
+  },
+  "returning": {
+    "en": "Already started an application?",
+    "sw": "Umeshaanza ombi?"
+  },
+  "returnLabel": {
+    "en": "Return key",
+    "sw": "Ufunguo wa kurudi"
+  },
+  "signIn": {
+    "en": "Open my application",
+    "sw": "Fungua ombi langu"
+  },
+  "codeReady": {
+    "en": "Your entry code is ready",
+    "sw": "Msimbo wako wa kuingia uko tayari"
+  },
+  "keepCode": {
+    "en": "Write down this code. Use it once to start your application.",
+    "sw": "Andika msimbo huu. Utumie mara moja kuanza ombi lako."
+  },
+  "expires": {
+    "en": "Use before {date}.",
+    "sw": "Tumia kabla ya {date}."
+  },
+  "keepKey": {
+    "en": "Keep your return key",
+    "sw": "Hifadhi ufunguo wako wa kurudi"
+  },
+  "keyHint": {
+    "en": "This key opens your private application. Keep it safe. Use it if you change phones.",
+    "sw": "Ufunguo huu hufungua ombi lako binafsi. Uuhifadhi salama. Utumie ukibadilisha simu."
+  },
+  "keySaved": {
+    "en": "I have kept my key",
+    "sw": "Nimehifadhi ufunguo wangu"
+  },
+  "consentRecords": {
+    "en": "Share only these game records with this programme.",
+    "sw": "Shiriki kumbukumbu hizi tu za mchezo na programu hii."
+  },
+  "consentInfo": {
+    "en": "Recipient: {recipient}. Stored for up to {days} days from entry. Questions or deletion: {contact}.",
+    "sw": "Mpokeaji: {recipient}. Huhifadhiwa hadi siku {days} tangu kuingia. Maswali au kufuta: {contact}."
+  },
+  "sampleRecipient": {
+    "en": "Local test operator",
+    "sw": "Mwendeshaji wa majaribio"
+  },
+  "sampleContact": {
+    "en": "Ask the person running this test",
+    "sw": "Muulize anayeendesha jaribio hili"
+  },
+  "consentFinance": {
+    "en": "I agree to send these business figures and answers for assessment. The programme may use its configured AI service to assess them.",
+    "sw": "Nakubali kutuma takwimu na majibu haya kutathminiwa. Programu inaweza kutumia huduma yake ya AI kuyatathmini."
+  },
+  "consentPhoto": {
+    "en": "I agree to share the attached picture with the programme and its assessor.",
+    "sw": "Nakubali kushiriki picha iliyoambatishwa na programu na mtathmini wake."
+  },
+  "rules": {
+    "en": "You can get help to read, translate or type. The facts and reasons must be yours. Do not ask AI to make the answers for you.",
+    "sw": "Unaweza kupata msaada wa kusoma, kutafsiri au kuandika. Ukweli na sababu lazima ziwe zako. Usiombe AI ikutengenezee majibu."
+  },
+  "penaltyRule": {
+    "en": "Confirmed AI-made answers lose their marks. Repeated cheating can stop you moving to the next stage. You can explain or challenge a finding.",
+    "sw": "Majibu yaliyothibitishwa kutengenezwa na AI hupoteza alama. Udanganyifu wa kurudia unaweza kuzuia hatua inayofuata. Unaweza kueleza au kupinga uamuzi."
+  },
+  "agreeRules": {
+    "en": "I understand the assistance rule.",
+    "sw": "Nimeelewa kanuni ya msaada."
+  },
+  "application": {
+    "en": "Your business idea",
+    "sw": "Wazo lako la biashara"
+  },
+  "followup": {
+    "en": "Two checks and a game question",
+    "sw": "Maswali mawili na swali la mchezo"
+  },
+  "report2": {
+    "en": "Your first report",
+    "sw": "Taarifa yako ya kwanza"
+  },
+  "report4": {
+    "en": "Your second report",
+    "sw": "Taarifa yako ya pili"
+  },
+  "report6": {
+    "en": "Your final report",
+    "sw": "Taarifa yako ya mwisho"
+  },
+  "reportDates": {
+    "en": "Report for {from} to {due}. Due {due}.",
+    "sw": "Taarifa ya {from} hadi {due}. Itumwe {due}."
+  },
+  "nextReport": {
+    "en": "Your next report",
+    "sw": "Taarifa yako inayofuata"
+  },
+  "notDue": {
+    "en": "This report opens on {date}.",
+    "sw": "Taarifa hii itafunguliwa {date}."
+  },
+  "awaitingGrant": {
+    "en": "Your application is with the programme. If you receive a grant, your report dates will appear here.",
+    "sw": "Ombi lako liko kwa programu. Ukipokea ruzuku, tarehe za taarifa zitaonekana hapa."
+  },
+  "nextAction": {
+    "en": "What to do next",
+    "sw": "Cha kufanya sasa"
+  },
+  "pastReports": {
+    "en": "Your sent answers",
+    "sw": "Majibu uliyotuma"
+  },
+  "view": {
+    "en": "View",
+    "sw": "Angalia"
+  },
+  "correction": {
+    "en": "Correct this report",
+    "sw": "Sahihisha taarifa hii"
+  },
+  "correctionReason": {
+    "en": "Why are you correcting this report?",
+    "sw": "Kwa nini unasahihisha taarifa hii?"
+  },
+  "originalKept": {
+    "en": "The first report is kept. This sends a correction beside it.",
+    "sw": "Taarifa ya kwanza itabaki. Hii itatuma marekebisho kando yake."
+  },
+  "review": {
+    "en": "Check your answers",
+    "sw": "Angalia majibu yako"
+  },
+  "reviewHint": {
+    "en": "You can change an answer before you send it.",
+    "sw": "Unaweza kubadilisha jibu kabla ya kulituma."
+  },
+  "unknown": {
+    "en": "I do not know yet",
+    "sw": "Bado sijui"
+  },
+  "unknownHint": {
+    "en": "Leave the amount empty if you do not know yet. Enter 0 only for nothing.",
+    "sw": "Acha kiasi wazi kama bado hujui. Weka 0 tu kama hakuna."
+  },
+  "trading": {
+    "en": "I already sell",
+    "sw": "Tayari ninauza"
+  },
+  "testing": {
+    "en": "I have not started selling",
+    "sw": "Bado sijaanza kuuza"
+  },
+  "field.business": {
+    "en": "What do you sell, or want to sell?",
+    "sw": "Unauza nini, au unataka kuuza nini?"
+  },
+  "field.customer": {
+    "en": "Who buys it?",
+    "sw": "Nani ananunua?"
+  },
+  "field.stage": {
+    "en": "Have you started selling?",
+    "sw": "Umeanza kuuza?"
+  },
+  "field.action": {
+    "en": "What will you try in the next two months?",
+    "sw": "Utajaribu kufanya nini katika miezi miwili ijayo?"
+  },
+  "field.success": {
+    "en": "How will you know it worked?",
+    "sw": "Utajuaje kama imefanikiwa?"
+  },
+  "field.openingCash": {
+    "en": "How much business money is there at the start?",
+    "sw": "Kuna pesa kiasi gani za biashara mwanzoni?"
+  },
+  "field.customers": {
+    "en": "How much will customers pay you?",
+    "sw": "Wateja watakulipa kiasi gani?"
+  },
+  "field.added": {
+    "en": "Other money added: grants, loans or your own money",
+    "sw": "Pesa nyingine zilizoongezwa: ruzuku, mikopo au pesa zako"
+  },
+  "field.costs": {
+    "en": "How much will you pay out for the business?",
+    "sw": "Utalipa kiasi gani kwa biashara?"
+  },
+  "field.drawings": {
+    "en": "How much will you take home?",
+    "sw": "Utachukua kiasi gani kwenda nyumbani?"
+  },
+  "actual.customers": {
+    "en": "How much did customers pay you?",
+    "sw": "Wateja walikulipa kiasi gani?"
+  },
+  "actual.added": {
+    "en": "How much other money came in?",
+    "sw": "Pesa nyingine kiasi gani ziliingia?"
+  },
+  "actual.costs": {
+    "en": "How much did you pay out for the business?",
+    "sw": "Ulilipa kiasi gani kwa biashara?"
+  },
+  "actual.drawings": {
+    "en": "How much did you take home?",
+    "sw": "Ulichukua kiasi gani kwenda nyumbani?"
+  },
+  "field.closingCash": {
+    "en": "How much business money is left now?",
+    "sw": "Pesa kiasi gani za biashara zimebaki sasa?"
+  },
+  "field.basis": {
+    "en": "What did you use to estimate customer payments?",
+    "sw": "Ulitumia nini kukadiria malipo ya wateja?"
+  },
+  "field.spendItem": {
+    "en": "What would you use the grant for?",
+    "sw": "Ungetumia ruzuku kwa nini?"
+  },
+  "field.spendAmount": {
+    "en": "How much of the grant would you use for this?",
+    "sw": "Ungetumia kiasi gani cha ruzuku kwa hili?"
+  },
+  "field.grantReason": {
+    "en": "What would this help you do?",
+    "sw": "Hii ingekusaidia kufanya nini?"
+  },
+  "field.risk": {
+    "en": "What could stop this working?",
+    "sw": "Nini kinaweza kuzuia hili kufanikiwa?"
+  },
+  "field.response": {
+    "en": "What would you do then?",
+    "sw": "Ungefanya nini wakati huo?"
+  },
+  "field.records": {
+    "en": "How will you keep a record?",
+    "sw": "Utahifadhije kumbukumbu?"
+  },
+  "field.contact": {
+    "en": "How can the programme contact you?",
+    "sw": "Programu inaweza kuwasilianaje nawe?"
+  },
+  "contactHint": {
+    "en": "Use a phone number or email you can access. It is not verified by this form.",
+    "sw": "Tumia namba ya simu au barua pepe unayoweza kufikia. Fomu hii haiithibitishi."
+  },
+  "field.help": {
+    "en": "What help did you use?",
+    "sw": "Ulitumia msaada gani?"
+  },
+  "help.none": {
+    "en": "No help",
+    "sw": "Bila msaada"
+  },
+  "help.language": {
+    "en": "Reading, translation or spelling",
+    "sw": "Kusoma, kutafsiri au tahajia"
+  },
+  "help.typing": {
+    "en": "Typing or dictation",
+    "sw": "Kuandika au kutamka"
+  },
+  "help.person": {
+    "en": "Someone helped me explain my own facts",
+    "sw": "Mtu alinisaidia kueleza ukweli wangu"
+  },
+  "help.ai_answers": {
+    "en": "AI made answers for me",
+    "sw": "AI ilinitengenezea majibu"
+  },
+  "field.owedByCustomers": {
+    "en": "How much do customers still owe you?",
+    "sw": "Wateja bado wanakudaiwa kiasi gani?"
+  },
+  "field.owedToSuppliers": {
+    "en": "How much do you still owe suppliers?",
+    "sw": "Bado unadaiwa kiasi gani na wasambazaji?"
+  },
+  "field.stock": {
+    "en": "What did the stock you still hold cost?",
+    "sw": "Bidhaa ulizonazo bado ziligharimu kiasi gani?"
+  },
+  "field.equipment": {
+    "en": "How much did you spend on equipment in this period?",
+    "sw": "Ulitumia kiasi gani kwa vifaa katika kipindi hiki?"
+  },
+  "field.debt": {
+    "en": "How much loan money do you still owe?",
+    "sw": "Bado unadaiwa kiasi gani cha mkopo?"
+  },
+  "moreMoney": {
+    "en": "Other money, stock or unpaid amounts",
+    "sw": "Pesa nyingine, bidhaa au kiasi kisicholipwa"
+  },
+  "moneyTitle": {
+    "en": "Your money",
+    "sw": "Pesa zako"
+  },
+  "period": {
+    "en": "Months {from}–{to}",
+    "sw": "Miezi {from}–{to}"
+  },
+  "forecastTitle": {
+    "en": "Your estimate: {period}",
+    "sw": "Makadirio yako: {period}"
+  },
+  "moneyHint": {
+    "en": "The amounts cover the whole two months. Money left is not profit.",
+    "sw": "Kiasi kinahusu miezi miwili yote. Pesa iliyobaki si faida."
+  },
+  "grantBudget": {
+    "en": "The grant is {amount}.",
+    "sw": "Ruzuku ni {amount}."
+  },
+  "reserveLabel": {
+    "en": "Kept for later: {amount}",
+    "sw": "Itahifadhiwa kwa baadaye: {amount}"
+  },
+  "field.basisAnswer": {
+    "en": "Why did you choose that estimate?",
+    "sw": "Kwa nini ulichagua makadirio hayo?"
+  },
+  "basisPrompt": {
+    "en": "You expected {amount} from customers in the first two months. Explain where that number came from.",
+    "sw": "Ulikadiria {amount} kutoka kwa wateja katika miezi miwili ya kwanza. Eleza kiasi hicho kilitoka wapi."
+  },
+  "field.changeAnswer": {
+    "en": "What would you change?",
+    "sw": "Ungebadilisha nini?"
+  },
+  "changePrompt": {
+    "en": "A customer now pays one month later. What happens to the money you need to keep working?",
+    "sw": "Mteja sasa analipa mwezi mmoja baadaye. Nini kinatokea kwa pesa unazohitaji kuendelea kufanya kazi?"
+  },
+  "field.gameAnswer": {
+    "en": "What did that decision teach you for your own business?",
+    "sw": "Uamuzi huo ulikufundisha nini kwa biashara yako?"
+  },
+  "gamePrompt": {
+    "en": "In the game, you chose: {choice}.",
+    "sw": "Katika mchezo, ulichagua: {choice}."
+  },
+  "field.wentWell": {
+    "en": "What went well?",
+    "sw": "Nini kilienda vizuri?"
+  },
+  "field.wentWrong": {
+    "en": "What went wrong?",
+    "sw": "Nini kilienda vibaya?"
+  },
+  "field.why": {
+    "en": "Why did this happen?",
+    "sw": "Kwa nini hili lilitokea?"
+  },
+  "field.changed": {
+    "en": "What did you change?",
+    "sw": "Ulibadilisha nini?"
+  },
+  "field.result": {
+    "en": "What happened after that change?",
+    "sw": "Nini kilitokea baada ya mabadiliko hayo?"
+  },
+  "field.nextAction": {
+    "en": "What will you do next?",
+    "sw": "Utafanya nini sasa?"
+  },
+  "field.nextCustomers": {
+    "en": "Customer payments you expect in the next two months",
+    "sw": "Malipo ya wateja unayotarajia katika miezi miwili ijayo"
+  },
+  "field.nextCosts": {
+    "en": "Business payments you expect in the next two months",
+    "sw": "Malipo ya biashara unayotarajia katika miezi miwili ijayo"
+  },
+  "field.evidenceNote": {
+    "en": "What record helps show what happened?",
+    "sw": "Kumbukumbu gani husaidia kuonyesha kilichotokea?"
+  },
+  "field.source": {
+    "en": "Where did these numbers come from?",
+    "sw": "Namba hizi zilitoka wapi?"
+  },
+  "source.records": {
+    "en": "My records",
+    "sw": "Kumbukumbu zangu"
+  },
+  "source.estimate": {
+    "en": "My estimate",
+    "sw": "Makadirio yangu"
+  },
+  "source.mixed": {
+    "en": "Some records and some estimates",
+    "sw": "Baadhi ya kumbukumbu na baadhi ya makadirio"
+  },
+  "field.learned": {
+    "en": "What would you do differently now?",
+    "sw": "Ungefanya nini tofauti sasa?"
+  },
+  "field.bottleneck": {
+    "en": "What is stopping your business now?",
+    "sw": "Nini kinazuia biashara yako sasa?"
+  },
+  "field.nextGrantUse": {
+    "en": "What would the next grant help you do?",
+    "sw": "Ruzuku inayofuata ingekusaidia kufanya nini?"
+  },
+  "photo": {
+    "en": "Add one record photo, if useful",
+    "sw": "Ongeza picha moja ya kumbukumbu, ikiwa itasaidia"
+  },
+  "photoHint": {
+    "en": "No faces or private account details. A notebook or receipt is enough. A photo is optional.",
+    "sw": "Bila nyuso au taarifa binafsi za akaunti. Daftari au risiti inatosha. Picha si lazima."
+  },
+  "photoAttached": {
+    "en": "Photo attached",
+    "sw": "Picha imeambatishwa"
+  },
+  "removePhoto": {
+    "en": "Remove photo",
+    "sw": "Ondoa picha"
+  },
+  "compare": {
+    "en": "You expected {expected}. Customers paid {actual}.",
+    "sw": "Ulitarajia {expected}. Wateja walilipa {actual}."
+  },
+  "example.business": {
+    "en": "Say what you sell and who pays for it. A few words are enough.",
+    "sw": "Sema unauza nini na nani analipia. Maneno machache yanatosha."
+  },
+  "example.action": {
+    "en": "Name one action, such as asking a buyer to pay for a small trial.",
+    "sw": "Taja hatua moja, kama kumuomba mnunuzi alipe jaribio dogo."
+  },
+  "example.money": {
+    "en": "Practice example: start with 10, receive 5 and pay 4. You have 11 left. These are example numbers, not your business figures.",
+    "sw": "Mfano wa mazoezi: anza na 10, pokea 5 na lipa 4. Unabaki na 11. Hizi ni namba za mfano, si takwimu za biashara yako."
+  },
+  "example.basis": {
+    "en": "You could use a recent sale, a customer order or a small test. Say if it is only a guess.",
+    "sw": "Unaweza kutumia mauzo ya karibuni, agizo la mteja au jaribio dogo. Sema kama ni makisio tu."
+  },
+  "example.grant": {
+    "en": "Name the main use. The form shows how much you would keep for later.",
+    "sw": "Taja matumizi makuu. Fomu inaonyesha kiasi utakachohifadhi kwa baadaye."
+  },
+  "example.risk": {
+    "en": "Name one thing that could change and what you would do about it.",
+    "sw": "Taja kitu kimoja kinachoweza kubadilika na hatua utakayochukua."
+  },
+  "example.records": {
+    "en": "A notebook is fine. Say what you will write down and when.",
+    "sw": "Daftari linafaa. Sema utaandika nini na lini."
+  },
+  "example.reflection": {
+    "en": "Say what happened, why you think it happened, and what you did. An honest problem is useful information.",
+    "sw": "Sema kilichotokea, kwa nini unadhani kilitokea, na ulichofanya. Tatizo lililoelezwa kwa ukweli ni taarifa muhimu."
+  },
+  "checks": {
+    "en": "Money checks",
+    "sw": "Ukaguzi wa pesa"
+  },
+  "check.cashExpected": {
+    "en": "Calculated money left: {amount}",
+    "sw": "Pesa iliyobaki kwa hesabu: {amount}"
+  },
+  "check.cashGap": {
+    "en": "Your estimate leaves a cash gap of {amount}. Explain how you would handle it.",
+    "sw": "Makadirio yanaacha upungufu wa pesa wa {amount}. Eleza utakavyoushughulikia."
+  },
+  "check.unknownCash": {
+    "en": "Some amounts are unknown, so money left cannot be calculated yet.",
+    "sw": "Baadhi ya kiasi hakijulikani, hivyo pesa iliyobaki haiwezi kuhesabiwa bado."
+  },
+  "check.unknownBalance": {
+    "en": "Some amounts are unknown. The cash balance is not checked yet.",
+    "sw": "Baadhi ya kiasi hakijulikani. Salio bado halijakaguliwa."
+  },
+  "check.cashDifference": {
+    "en": "Your recorded money left differs from the calculation by {amount}. Explain or correct the difference.",
+    "sw": "Pesa iliyobaki uliyorekodi inatofautiana na hesabu kwa {amount}. Eleza au sahihisha tofauti."
+  },
+  "check.balanced": {
+    "en": "The cash amounts add up.",
+    "sw": "Hesabu za pesa zinalingana."
+  },
+  "check.reserve": {
+    "en": "Grant money kept for later: {amount}",
+    "sw": "Pesa ya ruzuku itakayohifadhiwa: {amount}"
+  },
+  "assessment": {
+    "en": "Assessment",
+    "sw": "Tathmini"
+  },
+  "grade.pending": {
+    "en": "Your answers are received. Assessment is waiting.",
+    "sw": "Majibu yamepokelewa. Tathmini inasubiri."
+  },
+  "grade.grading": {
+    "en": "Your answers are being assessed.",
+    "sw": "Majibu yako yanatathminiwa."
+  },
+  "grade.unavailable": {
+    "en": "Your answers are safe. Assessment needs another attempt or a reviewer.",
+    "sw": "Majibu yako yako salama. Tathmini inahitaji jaribio jingine au mtathmini."
+  },
+  "grade.completed": {
+    "en": "Assessment complete. This is not a funding promise.",
+    "sw": "Tathmini imekamilika. Hii si ahadi ya fedha."
+  },
+  "criterion.forecast": {
+    "en": "Basis for your estimates",
+    "sw": "Msingi wa makadirio yako"
+  },
+  "criterion.bottleneck": {
+    "en": "How the grant helps",
+    "sw": "Jinsi ruzuku inavyosaidia"
+  },
+  "criterion.response": {
+    "en": "Response if things change",
+    "sw": "Hatua mambo yakibadilika"
+  },
+  "criterion.records": {
+    "en": "Keeping records",
+    "sw": "Kuhifadhi kumbukumbu"
+  },
+  "criterion.basis": {
+    "en": "Explaining your estimate",
+    "sw": "Kueleza makadirio yako"
+  },
+  "criterion.adjustment": {
+    "en": "Adjusting when payments change",
+    "sw": "Kujirekebisha malipo yakibadilika"
+  },
+  "criterion.transfer": {
+    "en": "Using a lesson from the game",
+    "sw": "Kutumia somo la mchezo"
+  },
+  "criterion.execution": {
+    "en": "Actions and results",
+    "sw": "Hatua na matokeo"
+  },
+  "criterion.understanding": {
+    "en": "Explaining what happened",
+    "sw": "Kueleza kilichotokea"
+  },
+  "criterion.adaptation": {
+    "en": "Learning and changing actions",
+    "sw": "Kujifunza na kubadili hatua"
+  },
+  "criterion.readiness": {
+    "en": "Readiness for the next stage",
+    "sw": "Utayari wa hatua inayofuata"
+  },
+  "score": {
+    "en": "{score} out of 3",
+    "sw": "{score} kati ya 3"
+  },
+  "penalty": {
+    "en": "Credit removed after review",
+    "sw": "Alama zimeondolewa baada ya mapitio"
+  },
+  "appeal": {
+    "en": "Explain or challenge this finding",
+    "sw": "Eleza au pinga uamuzi huu"
+  },
+  "appealSent": {
+    "en": "Your explanation has been received.",
+    "sw": "Maelezo yako yamepokelewa."
+  },
+  "ready": {
+    "en": "Suggested for progression; a programme decision is still needed.",
+    "sw": "Umependekezwa kuendelea; uamuzi wa programu bado unahitajika."
+  },
+  "needs_evidence": {
+    "en": "More evidence or review is needed.",
+    "sw": "Ushahidi au mapitio zaidi yanahitajika."
+  },
+  "not_ready": {
+    "en": "Not yet recommended for progression. Read the reasons below.",
+    "sw": "Bado hujapendekezwa kuendelea. Soma sababu hapa chini."
+  },
+  "progress": {
+    "en": "Selected for the next stage",
+    "sw": "Umechaguliwa kwa hatua inayofuata"
+  },
+  "hold": {
+    "en": "The programme needs more information",
+    "sw": "Programu inahitaji taarifa zaidi"
+  },
+  "not_readyDecision": {
+    "en": "Not progressing this round",
+    "sw": "Hutaendelea katika awamu hii"
+  },
+  "saveOnline": {
+    "en": "Save a copy with the programme",
+    "sw": "Hifadhi nakala kwa programu"
+  },
+  "savedOnline": {
+    "en": "A draft copy is saved with the programme.",
+    "sw": "Nakala ya rasimu imehifadhiwa kwa programu."
+  },
+  "useServerDraft": {
+    "en": "Use the draft saved with the programme",
+    "sw": "Tumia rasimu iliyohifadhiwa kwa programu"
+  },
+  "export": {
+    "en": "Download my records",
+    "sw": "Pakua kumbukumbu zangu"
+  },
+  "backup": {
+    "en": "Download a copy from this phone",
+    "sw": "Pakua nakala kutoka kwenye simu hii"
+  },
+  "signOut": {
+    "en": "Sign out of this phone",
+    "sw": "Ondoka kwenye simu hii"
+  },
+  "signOutHint": {
+    "en": "This removes private portal data from this phone. Keep your return key first. Unsent work needs a saved copy.",
+    "sw": "Hii huondoa taarifa binafsi za programu kwenye simu hii. Hifadhi ufunguo wako kwanza. Kazi ambayo haijatumwa inahitaji nakala."
+  },
+  "delete": {
+    "en": "Delete my portal data",
+    "sw": "Futa taarifa zangu za programu"
+  },
+  "deleteHint": {
+    "en": "This deletes your application, reports and assessments from this service. Your game records stay on your phone. Backup copies follow the stated retention policy.",
+    "sw": "Hii hufuta ombi, taarifa na tathmini zako katika huduma hii. Kumbukumbu za mchezo hubaki kwenye simu. Nakala za akiba hufuata sera ya uhifadhi."
+  },
+  "confirmDelete": {
+    "en": "Delete these records",
+    "sw": "Futa kumbukumbu hizi"
+  },
+  "adminTitle": {
+    "en": "Programme review",
+    "sw": "Mapitio ya programu"
+  },
+  "adminKey": {
+    "en": "Reviewer key",
+    "sw": "Ufunguo wa mtathmini"
+  },
+  "adminOpen": {
+    "en": "Open review",
+    "sw": "Fungua mapitio"
+  },
+  "adminList": {
+    "en": "Applications",
+    "sw": "Maombi"
+  },
+  "adminGrant": {
+    "en": "Record the grant start",
+    "sw": "Rekodi mwanzo wa ruzuku"
+  },
+  "adminDate": {
+    "en": "Date the grant became available",
+    "sw": "Tarehe ruzuku ilipopatikana"
+  },
+  "adminReason": {
+    "en": "Reason or verification note",
+    "sw": "Sababu au maelezo ya uthibitisho"
+  },
+  "adminGrantHint": {
+    "en": "Record an actual grant receipt. This does not send money.",
+    "sw": "Rekodi kupokea ruzuku halisi. Hii haitumi pesa."
+  },
+  "adminSave": {
+    "en": "Save decision",
+    "sw": "Hifadhi uamuzi"
+  },
+  "adminRetry": {
+    "en": "Retry assessment",
+    "sw": "Jaribu tathmini tena"
+  },
+  "adminIntegrity": {
+    "en": "Review an integrity concern",
+    "sw": "Pitia shaka ya uaminifu"
+  },
+  "adminCriterion": {
+    "en": "Affected criterion",
+    "sw": "Kipengele kilichoathiriwa"
+  },
+  "adminFinding": {
+    "en": "Review action",
+    "sw": "Hatua ya mapitio"
+  },
+  "confirm": {
+    "en": "Confirm prohibited assistance",
+    "sw": "Thibitisha msaada uliokatazwa"
+  },
+  "dismiss": {
+    "en": "Dismiss the concern",
+    "sw": "Ondoa shaka"
+  },
+  "reverse": {
+    "en": "Reverse the penalty",
+    "sw": "Ondoa adhabu"
+  },
+  "adminPath": {
+    "en": "Evidence field path",
+    "sw": "Njia ya sehemu ya ushahidi"
+  },
+  "adminQuote": {
+    "en": "Exact evidence excerpt",
+    "sw": "Nukuu sahihi ya ushahidi"
+  },
+  "adminDecision": {
+    "en": "Six-month decision",
+    "sw": "Uamuzi wa miezi sita"
+  },
+  "adminRecover": {
+    "en": "Issue a new return key",
+    "sw": "Toa ufunguo mpya wa kurudi"
+  },
+  "adminRecoveryHint": {
+    "en": "Verify the recovery request independently first. Issuing a new key disables the old key.",
+    "sw": "Thibitisha ombi la kurejesha ufikiaji kwanza. Kutoa ufunguo mpya huzima wa zamani."
+  },
+  "adminExport": {
+    "en": "Export programme records",
+    "sw": "Pakua kumbukumbu za programu"
+  },
+  "adminSaved": {
+    "en": "Decision saved.",
+    "sw": "Uamuzi umehifadhiwa."
+  },
+  "error.invalid": {
+    "en": "Check this answer and try again.",
+    "sw": "Angalia jibu hili na ujaribu tena."
+  },
+  "error.invalidCode": {
+    "en": "That entry code was not found. Check it and try again.",
+    "sw": "Msimbo huo haujapatikana. Uangalie na ujaribu tena."
+  },
+  "error.unauthorized": {
+    "en": "Use your return key to open your application again.",
+    "sw": "Tumia ufunguo wako wa kurudi kufungua ombi tena."
+  },
+  "error.forbidden": {
+    "en": "This request is not allowed.",
+    "sw": "Ombi hili haliruhusiwi."
+  },
+  "error.consent": {
+    "en": "Read and tick the sharing and assistance choices before sending.",
+    "sw": "Soma na uweke alama kwenye chaguo za kushiriki na msaada kabla ya kutuma."
+  },
+  "error.finishChapters": {
+    "en": "Finish all required chapters before getting an entry code.",
+    "sw": "Maliza sura zote zinazohitajika kabla ya kupata msimbo."
+  },
+  "error.recordUnsupported": {
+    "en": "These game records cannot be checked by this programme version. Keep a copy and ask the programme for help.",
+    "sw": "Kumbukumbu hizi haziwezi kukaguliwa na toleo hili. Hifadhi nakala na uombe msaada wa programu."
+  },
+  "error.mixedProfiles": {
+    "en": "Use completed chapters from one learner only.",
+    "sw": "Tumia sura zilizokamilika za mwanafunzi mmoja tu."
+  },
+  "error.alreadyClaimed": {
+    "en": "These records already have an entry code. Use the code or return key you kept.",
+    "sw": "Kumbukumbu hizi tayari zina msimbo. Tumia msimbo au ufunguo uliohifadhi."
+  },
+  "error.expired": {
+    "en": "This code has expired. Ask the programme for help.",
+    "sw": "Msimbo umeisha muda. Omba msaada wa programu."
+  },
+  "error.usedCode": {
+    "en": "This code has already been used. Use your return key.",
+    "sw": "Msimbo huu umetumika. Tumia ufunguo wako wa kurudi."
+  },
+  "error.conflict": {
+    "en": "Another saved version exists. Keep your local copy and reload before replacing it.",
+    "sw": "Kuna toleo jingine lililohifadhiwa. Hifadhi nakala yako na upakie tena kabla ya kubadilisha."
+  },
+  "error.alreadySubmitted": {
+    "en": "This has already been sent. Open the sent copy or make a report correction.",
+    "sw": "Hii tayari imetumwa. Fungua nakala iliyotumwa au sahihisha taarifa."
+  },
+  "error.notFunded": {
+    "en": "Report dates appear after the programme records your grant.",
+    "sw": "Tarehe za taarifa huonekana baada ya programu kurekodi ruzuku yako."
+  },
+  "error.notDue": {
+    "en": "This report is not due yet.",
+    "sw": "Muda wa taarifa hii bado haujafika."
+  },
+  "error.finishApplication": {
+    "en": "Finish the application and follow-up questions first.",
+    "sw": "Maliza ombi na maswali ya ziada kwanza."
+  },
+  "error.finishReports": {
+    "en": "The final report is needed first.",
+    "sw": "Taarifa ya mwisho inahitajika kwanza."
+  },
+  "error.rateLimited": {
+    "en": "Too many attempts. Wait a minute and try again.",
+    "sw": "Majaribio ni mengi. Subiri dakika moja na ujaribu tena."
+  },
+  "error.tooLarge": {
+    "en": "This file is too large. Use a smaller copy.",
+    "sw": "Faili hii ni kubwa sana. Tumia nakala ndogo."
+  },
+  "error.invalidEvidence": {
+    "en": "Choose an exact excerpt from the submitted answer.",
+    "sw": "Chagua nukuu sahihi kutoka kwenye jibu lililotumwa."
+  },
+  "error.busy": {
+    "en": "Assessment is already running. Try again shortly.",
+    "sw": "Tathmini inaendelea. Jaribu tena baada ya muda mfupi."
+  },
+  "error.notFound": {
+    "en": "This item was not found.",
+    "sw": "Kipengele hiki hakijapatikana."
+  },
+  "error.serverError": {
+    "en": "The service could not finish. Your local copy is still available.",
+    "sw": "Huduma haijamaliza. Nakala yako ya simu bado ipo."
+  },
+  "error.photo": {
+    "en": "Use a JPEG or PNG photo under 10 MB.",
+    "sw": "Tumia picha ya JPEG au PNG iliyo chini ya MB 10."
+  },
+  "error.storageConflict": {
+    "en": "Another tab changed your saved work. Download a copy before reloading.",
+    "sw": "Kichupo kingine kimebadili kazi iliyohifadhiwa. Pakua nakala kabla ya kupakia tena."
+  },
+  "restoreBackup": {
+    "en": "Restore a saved backup",
+    "sw": "Rejesha nakala iliyohifadhiwa"
+  },
+  "restoreHint": {
+    "en": "Connect to the internet to check your key and restore your saved answers.",
+    "sw": "Unganisha intaneti ili kukagua ufunguo wako na kurejesha majibu yaliyohifadhiwa."
+  },
+  "declaredAnswerHelp": {
+    "en": "The participant declared help generating answers. Check which answers were affected.",
+    "sw": "Mshiriki ametaja msaada wa kutengeneza majibu. Chunguza majibu yaliyoathiriwa."
+  },
+  "aiRecipient": {
+    "en": "AI assessment service: {recipient}.",
+    "sw": "Huduma ya tathmini ya AI: {recipient}."
+  },
+  "sampleAI": {
+    "en": "Not selected for a participant programme",
+    "sw": "Haijachaguliwa kwa programu ya washiriki"
+  }
+}

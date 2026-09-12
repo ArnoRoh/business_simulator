@@ -1,6 +1,6 @@
 {
   "id": "mama-asha",
-  "version": 3,
+  "version": 4,
   "unverified": true,
   "title": {
     "en": "Mama Asha's Food Stall",
@@ -78,8 +78,8 @@
     },
     "scene": "stall-empty",
     "situation": {
-      "en": "Your cash has gone below zero. The business is still open, but the next payment is due before enough money comes in. This is a hard chapter, not the end of the business.",
-      "sw": "Pesa yako imeshuka chini ya sifuri. Biashara bado iko wazi, lakini malipo yanayofuata yanatakiwa kabla pesa ya kutosha haijaingia. Hii ni sura ngumu, si mwisho wa biashara."
+      "en": "Cash is below zero. How will you cover the next bills and keep trading?",
+      "sw": "Pesa zimepungua chini ya sifuri. Utalipiaje bili zinazofuata na kuendelea na biashara?"
     },
     "info": [
       {
@@ -210,6 +210,10 @@
           }
         }
       ]
+    },
+    "takeaway": {
+      "en": "A setback is a chance to change the next decision.",
+      "sw": "Tatizo linakupa nafasi ya kubadilisha uamuzi unaofuata."
     }
   },
   "turns": [
@@ -222,8 +226,8 @@
       },
       "scene": "stall-small",
       "situation": {
-        "en": "You fry mandazi every morning and sell them by the bus stand. Most weeks you run out before midday.",
-        "sw": "Unakaanga mandazi kila asubuhi na kuyauza kando ya stendi ya mabasi. Wiki nyingi yanaisha kabla ya adhuhuri."
+        "en": "Your mandazi sell out before midday.",
+        "sw": "Mandazi yako yanaisha kabla ya mchana."
       },
       "info": [
         {
@@ -326,8 +330,12 @@
         ]
       },
       "situationDetails": {
-        "en": "About twenty people walk away because you have nothing left. You have never worked out what one mandazi really costs you to make.",
-        "sw": "Takriban watu ishirini wanaondoka bila kupata kwa sababu huna kilichobaki. Hujawahi kuhesabu gharama halisi ya kutengeneza andazi moja."
+        "en": "You fry mandazi every morning and sell them by the bus stand. Most weeks you run out before midday. About twenty people walk away because you have nothing left. You have never worked out what one mandazi really costs you to make.",
+        "sw": "Unakaanga mandazi kila asubuhi na kuyauza kando ya stendi ya mabasi. Wiki nyingi yanaisha kabla ya adhuhuri. Takriban watu ishirini wanaondoka bila kupata kwa sababu huna kilichobaki. Hujawahi kuhesabu gharama halisi ya kutengeneza andazi moja."
+      },
+      "takeaway": {
+        "en": "A higher price earns more per sale, but can send customers away.",
+        "sw": "Bei ya juu huleta zaidi kwa kila mauzo, lakini inaweza kuwafukuza wateja."
       }
     },
     {
@@ -339,8 +347,8 @@
       },
       "scene": "stall-busy",
       "situation": {
-        "en": "A new woman has started selling mandazi thirty metres from you. Hers are smaller and cheaper.",
-        "sw": "Mwanamke mpya ameanza kuuza mandazi mita thelathini kutoka kwako. Yake ni madogo na ya bei rahisi."
+        "en": "A new stall sells cheaper mandazi. Your customers have a choice.",
+        "sw": "Kibanda kipya kinauza mandazi kwa bei nafuu. Wateja wako wana chaguo."
       },
       "info": [
         {
@@ -419,8 +427,12 @@
         ]
       },
       "situationDetails": {
-        "en": "Some of your regulars have tried her. A few came back and said yours taste better.",
-        "sw": "Baadhi ya wateja wako wa kawaida wamemjaribu. Wachache walirudi wakisema yako yana ladha nzuri zaidi."
+        "en": "A new woman has started selling mandazi thirty metres from you. Hers are smaller and cheaper. Some of your regulars have tried her. A few came back and said yours taste better.",
+        "sw": "Mwanamke mpya ameanza kuuza mandazi mita thelathini kutoka kwako. Yake ni madogo na ya bei rahisi. Baadhi ya wateja wako wa kawaida wamemjaribu. Wachache walirudi wakisema yako yana ladha nzuri zaidi."
+      },
+      "takeaway": {
+        "en": "Watch both your sales and what you keep from each sale.",
+        "sw": "Angalia mauzo yako na kiasi unachobakiza kwa kila mauzo."
       }
     },
     {
@@ -432,8 +444,8 @@
       },
       "scene": "kitchen",
       "situation": {
-        "en": "Your flour supplier offers you a deal. Buy a month of flour at once and pay ten percent less for it.",
-        "sw": "Msambazaji wako wa unga anakupa ofa. Nunua unga wa mwezi mzima kwa mara moja ulipe asilimia kumi pungufu."
+        "en": "Buy a month of flour now and get a discount. But your cash will sit in stock.",
+        "sw": "Nunua unga wa mwezi sasa upate punguzo. Lakini pesa zako zitabaki kwenye bidhaa."
       },
       "info": [
         {
@@ -573,8 +585,12 @@
         "predictMetric": "cash"
       },
       "situationDetails": {
-        "en": "But you must pay the whole amount today, in cash.",
-        "sw": "Lakini lazima ulipe kiasi chote leo, taslimu."
+        "en": "Your flour supplier offers you a deal. Buy a month of flour at once and pay ten percent less for it. But you must pay the whole amount today, in cash.",
+        "sw": "Msambazaji wako wa unga anakupa ofa. Nunua unga wa mwezi mzima kwa mara moja ulipe asilimia kumi pungufu. Lakini lazima ulipe kiasi chote leo, taslimu."
+      },
+      "takeaway": {
+        "en": "A discount is only useful if enough cash remains for other needs.",
+        "sw": "Punguzo linafaa ikiwa pesa za kutosha zinabaki kwa mahitaji mengine."
       }
     },
     {
@@ -586,8 +602,8 @@
       },
       "scene": "stall-busy",
       "situation": {
-        "en": "One customer offers to pay now for a small trial order. Another asks you to reserve more stock but has not paid.",
-        "sw": "Mteja mmoja yuko tayari kulipia oda ndogo ya majaribio sasa. Mwingine anaomba bidhaa zaidi zihifadhiwe lakini hajalipa."
+        "en": "One customer pays for a small trial. Another promises a bigger order, but has not paid.",
+        "sw": "Mteja mmoja analipia jaribio dogo. Mwingine anaahidi oda kubwa, lakini hajalipa."
       },
       "info": [
         {
@@ -714,6 +730,14 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "One customer offers to pay now for a small trial order. Another asks you to reserve more stock but has not paid.",
+        "sw": "Mteja mmoja yuko tayari kulipia oda ndogo ya majaribio sasa. Mwingine anaomba bidhaa zaidi zihifadhiwe lakini hajalipa."
+      },
+      "takeaway": {
+        "en": "A paid trial tells you more than an unpaid promise.",
+        "sw": "Jaribio lililolipiwa linakuambia zaidi kuliko ahadi isiyolipiwa."
       }
     },
     {
@@ -725,8 +749,8 @@
       },
       "scene": "market",
       "situation": {
-        "en": "You are thinking about a second spot, outside the secondary school two streets away. You do not know how many people would buy there.",
-        "sw": "Unafikiria eneo la pili, nje ya shule ya sekondari mitaa miwili kutoka hapa. Hujui ni watu wangapi wangenunua pale."
+        "en": "The school could be a good place to sell. You have not tried it yet.",
+        "sw": "Shule inaweza kuwa sehemu nzuri ya kuuza. Bado hujaijaribu."
       },
       "info": [
         {
@@ -866,8 +890,12 @@
         ]
       },
       "situationDetails": {
-        "en": "You have never counted.",
-        "sw": "Hujawahi kuhesabu."
+        "en": "You are thinking about a second spot, outside the secondary school two streets away. You do not know how many people would buy there. You have never counted.",
+        "sw": "Unafikiria eneo la pili, nje ya shule ya sekondari mitaa miwili kutoka hapa. Hujui ni watu wangapi wangenunua pale. Hujawahi kuhesabu."
+      },
+      "takeaway": {
+        "en": "A small test can answer a question before you spend much.",
+        "sw": "Jaribio dogo linaweza kujibu swali kabla hujatumia pesa nyingi."
       }
     },
     {
@@ -879,8 +907,8 @@
       },
       "scene": "kitchen",
       "situation": {
-        "en": "The cash book has a missing balance. Use the receipts and payments to fill it in.",
-        "sw": "Daftari la pesa halina salio. Tumia mapokezi na malipo kulijaza."
+        "en": "Money came in. Money went out. Finish the cash book.",
+        "sw": "Pesa ziliingia. Pesa zilitoka. Kamilisha daftari la fedha."
       },
       "info": [
         {
@@ -911,6 +939,14 @@
           "en": "A promise to pay is not money received. Keep the receipt and check the balance.",
           "sw": "Ahadi ya kulipa si pesa iliyopokelewa. Hifadhi risiti na uhakiki salio."
         }
+      },
+      "situationDetails": {
+        "en": "The cash book has a missing balance. Use the receipts and payments to fill it in.",
+        "sw": "Daftari la pesa halina salio. Tumia mapokezi na malipo kulijaza."
+      },
+      "takeaway": {
+        "en": "Add receipts. Subtract payments. Check what is left.",
+        "sw": "Ongeza pesa zilizopokelewa. Toa malipo. Kagua kilichobaki."
       }
     },
     {
@@ -923,8 +959,8 @@
       "scene": "kitchen",
       "unverified": true,
       "situation": {
-        "en": "You are frying on one small charcoal stove. It takes you four hours every morning and your arm aches.",
-        "sw": "Unakaanga kwenye jiko dogo moja la mkaa. Inakuchukua masaa manne kila asubuhi na mkono wako unauma."
+        "en": "Your small stove takes hours of work. A fryer could make more mandazi.",
+        "sw": "Jiko lako dogo linachukua saa nyingi za kazi. Kikaango kinaweza kutengeneza mandazi zaidi."
       },
       "info": [
         {
@@ -1110,8 +1146,12 @@
         ]
       },
       "situationDetails": {
-        "en": "A second-hand deep fryer is for sale in town. It would double how much you can make in the same time.",
-        "sw": "Mashine ya kukaanga ya mtumba inauzwa mjini. Ingeongeza mara mbili kiasi unachoweza kutengeneza kwa muda uleule."
+        "en": "You are frying on one small charcoal stove. It takes you four hours every morning and your arm aches. A second-hand deep fryer is for sale in town. It would double how much you can make in the same time.",
+        "sw": "Unakaanga kwenye jiko dogo moja la mkaa. Inakuchukua masaa manne kila asubuhi na mkono wako unauma. Mashine ya kukaanga ya mtumba inauzwa mjini. Ingeongeza mara mbili kiasi unachoweza kutengeneza kwa muda uleule."
+      },
+      "takeaway": {
+        "en": "More equipment helps when customers will buy the extra output.",
+        "sw": "Vifaa zaidi husaidia ikiwa wateja watanunua bidhaa za ziada."
       }
     },
     {
@@ -1123,8 +1163,8 @@
       },
       "scene": "market",
       "situation": {
-        "en": "Your flour supplier has raised his price. Another trader offers flour that is twenty percent cheaper.",
-        "sw": "Msambazaji wako wa unga amepandisha bei. Mfanyabiashara mwingine anakupa unga wa bei rahisi kwa asilimia ishirini."
+        "en": "Your usual flour costs more now. A new supplier offers cheaper flour.",
+        "sw": "Unga wako wa kawaida umeongezeka bei. Muuzaji mpya ana unga wa bei nafuu."
       },
       "info": [
         {
@@ -1263,8 +1303,12 @@
         ]
       },
       "situationDetails": {
-        "en": "It looks slightly greyer, and he cannot tell you which mill it came from.",
-        "sw": "Unaonekana wa kijivu kidogo, na hawezi kukwambia ulitoka kinu gani."
+        "en": "Your flour supplier has raised his price. Another trader offers flour that is twenty percent cheaper. It looks slightly greyer, and he cannot tell you which mill it came from.",
+        "sw": "Msambazaji wako wa unga amepandisha bei. Mfanyabiashara mwingine anakupa unga wa bei rahisi kwa asilimia ishirini. Unaonekana wa kijivu kidogo, na hawezi kukwambia ulitoka kinu gani."
+      },
+      "takeaway": {
+        "en": "Test cheaper supplies before risking your customers’ trust.",
+        "sw": "Jaribu malighafi za bei nafuu kabla ya kuhatarisha imani ya wateja."
       }
     },
     {
@@ -1276,8 +1320,8 @@
       },
       "scene": "truck",
       "situation": {
-        "en": "A guesthouse offers a delivery order for six in the morning. How will you get it there?",
-        "sw": "Gesti inatoa oda ya kufikishwa saa kumi na mbili asubuhi. Utaifikishaje?"
+        "en": "A guesthouse wants delivery at six in the morning. Who takes the order there?",
+        "sw": "Nyumba ya wageni inataka oda saa kumi na mbili asubuhi. Nani ataipeleka?"
       },
       "info": [
         {
@@ -1404,6 +1448,14 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "A guesthouse offers a delivery order for six in the morning. How will you get it there?",
+        "sw": "Gesti inatoa oda ya kufikishwa saa kumi na mbili asubuhi. Utaifikishaje?"
+      },
+      "takeaway": {
+        "en": "Your time has a cost, even when no cash changes hands.",
+        "sw": "Muda wako una gharama, hata bila malipo ya pesa."
       }
     },
     {
@@ -1415,8 +1467,8 @@
       },
       "scene": "kitchen",
       "situation": {
-        "en": "You have been reusing your frying oil for longer than you used to, because oil is expensive. Two customers have mentioned that the mandazi taste different.",
-        "sw": "Umekuwa ukitumia mafuta yako ya kukaanga kwa muda mrefu kuliko ulivyokuwa, kwa sababu mafuta ni ghali. Wateja wawili wametaja kwamba mandazi yana ladha tofauti."
+        "en": "Two customers say the mandazi taste different. You have been keeping the frying oil longer.",
+        "sw": "Wateja wawili wanasema ladha ya mandazi imebadilika. Umekuwa ukitumia mafuta kwa muda mrefu."
       },
       "info": [
         {
@@ -1572,8 +1624,12 @@
         ]
       },
       "situationDetails": {
-        "en": "One said her stomach was upset, though she was not sure it was yours.",
-        "sw": "Mmoja alisema tumbo lake liliumwa, ingawa hakuwa na uhakika ni yako."
+        "en": "You have been reusing your frying oil for longer than you used to, because oil is expensive. Two customers have mentioned that the mandazi taste different. One said her stomach was upset, though she was not sure it was yours.",
+        "sw": "Umekuwa ukitumia mafuta yako ya kukaanga kwa muda mrefu kuliko ulivyokuwa, kwa sababu mafuta ni ghali. Wateja wawili wametaja kwamba mandazi yana ladha tofauti. Mmoja alisema tumbo lake liliumwa, ingawa hakuwa na uhakika ni yako."
+      },
+      "takeaway": {
+        "en": "Saving on quality can cost you future customers.",
+        "sw": "Kupunguza gharama kwa kuharibu ubora kunaweza kupoteza wateja wa baadaye."
       }
     },
     {
@@ -1585,8 +1641,8 @@
       },
       "scene": "stall-empty",
       "situation": {
-        "en": "A power cut ran for two days. Your fridge stopped.",
-        "sw": "Umeme ulikatika kwa siku mbili. Friji yako ilisimama."
+        "en": "A power cut stopped the fridge. Some food has spoiled.",
+        "sw": "Umeme ulikatika na friji ikasimama. Chakula fulani kimeharibika."
       },
       "info": [
         {
@@ -1744,8 +1800,12 @@
       },
       "advanceWeeks": 2,
       "situationDetails": {
-        "en": "The milk for the chai spoiled, and so did a large batch of dough. You threw away a great deal of food. Two regular customers saw you doing it.",
-        "sw": "Maziwa ya chai yaliharibika, na vilevile donge kubwa la unga uliokandwa. Ulitupa chakula kingi sana. Wateja wawili wa kawaida walikuona ukifanya hivyo."
+        "en": "A power cut ran for two days. Your fridge stopped. The milk for the chai spoiled, and so did a large batch of dough. You threw away a great deal of food. Two regular customers saw you doing it.",
+        "sw": "Umeme ulikatika kwa siku mbili. Friji yako ilisimama. Maziwa ya chai yaliharibika, na vilevile donge kubwa la unga uliokandwa. Ulitupa chakula kingi sana. Wateja wawili wa kawaida walikuona ukifanya hivyo."
+      },
+      "takeaway": {
+        "en": "Compare a smaller workaround with the full cost of borrowing.",
+        "sw": "Linganisha suluhisho dogo na gharama zote za kukopa."
       }
     },
     {
@@ -1757,8 +1817,8 @@
       },
       "scene": "kitchen",
       "situation": {
-        "en": "You have not had a full day off in months. You open, you fry, you sell, you close.",
-        "sw": "Hujapata siku nzima ya mapumziko kwa miezi. Unafungua, unakaanga, unauza, unafunga."
+        "en": "You fry, sell and clean every day. When do you have time to plan?",
+        "sw": "Unakaanga, unauza na unasafisha kila siku. Unapata muda gani wa kupanga?"
       },
       "info": [
         {
@@ -1851,8 +1911,12 @@
         ]
       },
       "situationDetails": {
-        "en": "Someone asks when you last spent an hour thinking about where the business is going, rather than working in it. You cannot remember.",
-        "sw": "Mtu anakuuliza ni lini mara ya mwisho ulitumia saa moja kufikiria biashara inakoelekea, badala ya kuifanyia kazi. Hukumbuki."
+        "en": "You have not had a full day off in months. You open, you fry, you sell, you close. Someone asks when you last spent an hour thinking about where the business is going, rather than working in it. You cannot remember.",
+        "sw": "Hujapata siku nzima ya mapumziko kwa miezi. Unafungua, unakaanga, unauza, unafunga. Mtu anakuuliza ni lini mara ya mwisho ulitumia saa moja kufikiria biashara inakoelekea, badala ya kuifanyia kazi. Hukumbuki."
+      },
+      "takeaway": {
+        "en": "Time spent improving the business can matter as much as making today’s sales.",
+        "sw": "Muda wa kuboresha biashara unaweza kuwa muhimu kama mauzo ya leo."
       }
     },
     {
@@ -1864,8 +1928,8 @@
       },
       "scene": "kitchen",
       "situation": {
-        "en": "You are working from four in the morning until seven at night. Your niece has offered to help.",
-        "sw": "Unafanya kazi kuanzia saa kumi alfajiri hadi saa moja usiku. Mpwa wako amejitolea kusaidia."
+        "en": "Long days are wearing you out. Your niece offers to help.",
+        "sw": "Siku ndefu za kazi zinakuchosha. Mpwa wako anajitolea kusaidia."
       },
       "info": [
         {
@@ -1953,8 +2017,12 @@
         ]
       },
       "situationDetails": {
-        "en": "She is reliable but knows nothing about the work, and she would need paying.",
-        "sw": "Ni wa kuaminika lakini hajui chochote kuhusu kazi, na angehitaji kulipwa."
+        "en": "You are working from four in the morning until seven at night. Your niece has offered to help. She is reliable but knows nothing about the work, and she would need paying.",
+        "sw": "Unafanya kazi kuanzia saa kumi alfajiri hadi saa moja usiku. Mpwa wako amejitolea kusaidia. Ni wa kuaminika lakini hajui chochote kuhusu kazi, na angehitaji kulipwa."
+      },
+      "takeaway": {
+        "en": "A helper adds wages, but can free time and increase output.",
+        "sw": "Msaidizi anaongeza mshahara, lakini anaweza kuokoa muda na kuongeza uzalishaji."
       }
     },
     {
@@ -1966,8 +2034,8 @@
       },
       "scene": "stall-busy",
       "situation": {
-        "en": "Morning buying takes time. Choose who buys supplies and how you check the work.",
-        "sw": "Kununua mahitaji asubuhi kunachukua muda. Chagua anayenunua na jinsi ya kukagua kazi."
+        "en": "Buying supplies uses your morning. Could someone else do it well?",
+        "sw": "Kununua vifaa kunachukua asubuhi yako. Je, mwingine anaweza kufanya vizuri?"
       },
       "info": [
         {
@@ -2098,6 +2166,14 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "Morning buying takes time. Choose who buys supplies and how you check the work.",
+        "sw": "Kununua mahitaji asubuhi kunachukua muda. Chagua anayenunua na jinsi ya kukagua kazi."
+      },
+      "takeaway": {
+        "en": "Give someone a clear task, then check the result.",
+        "sw": "Mpe mtu kazi iliyo wazi, kisha kagua matokeo."
       }
     },
     {
@@ -2110,8 +2186,8 @@
       "scene": "office",
       "unverified": true,
       "situation": {
-        "en": "A hotel wants to buy from you regularly. It would be your largest customer.",
-        "sw": "Hoteli inataka kununua kwako mara kwa mara. Ingekuwa mteja wako mkubwa zaidi."
+        "en": "A hotel wants regular orders. It asks you to register the business.",
+        "sw": "Hoteli inataka oda za mara kwa mara. Inakuomba usajili biashara."
       },
       "info": [
         {
@@ -2251,8 +2327,12 @@
       },
       "advanceWeeks": 3,
       "situationDetails": {
-        "en": "Their buyer explains that they can only buy from registered businesses that can issue a proper receipt. You have never registered anything.",
-        "sw": "Mnunuzi wao anaeleza kwamba wanaweza kununua tu kutoka kwa biashara zilizosajiliwa zinazoweza kutoa risiti halali. Hujawahi kusajili chochote."
+        "en": "A hotel wants to buy from you regularly. It would be your largest customer. Their buyer explains that they can only buy from registered businesses that can issue a proper receipt. You have never registered anything.",
+        "sw": "Hoteli inataka kununua kwako mara kwa mara. Ingekuwa mteja wako mkubwa zaidi. Mnunuzi wao anaeleza kwamba wanaweza kununua tu kutoka kwa biashara zilizosajiliwa zinazoweza kutoa risiti halali. Hujawahi kusajili chochote."
+      },
+      "takeaway": {
+        "en": "Registration takes resources. Check the requirements and the opportunity.",
+        "sw": "Usajili unahitaji rasilimali. Kagua masharti na fursa."
       }
     },
     {
@@ -2265,8 +2345,8 @@
       "scene": "inspection",
       "unverified": true,
       "situation": {
-        "en": "A hotel buyer offers a kitchen visit before placing an order. They want clean storage and a record of what you made.",
-        "sw": "Mnunuzi wa hoteli anataka kutembelea jiko kabla ya kuagiza. Anataka hifadhi safi na rekodi ya ulivyotengeneza."
+        "en": "A hotel buyer wants to visit your kitchen and see your production records.",
+        "sw": "Mnunuzi wa hoteli anataka kutembelea jiko lako na kuona rekodi za uzalishaji."
       },
       "info": [
         {
@@ -2409,6 +2489,14 @@
             ]
           }
         ]
+      },
+      "situationDetails": {
+        "en": "A hotel buyer offers a kitchen visit before placing an order. They want clean storage and a record of what you made.",
+        "sw": "Mnunuzi wa hoteli anataka kutembelea jiko kabla ya kuagiza. Anataka hifadhi safi na rekodi ya ulivyotengeneza."
+      },
+      "takeaway": {
+        "en": "Daily habits protect quality better than a last-minute clean-up.",
+        "sw": "Mazoea ya kila siku yanalinda ubora kuliko usafi wa dakika ya mwisho."
       }
     },
     {
@@ -2420,8 +2508,8 @@
       },
       "scene": "stall-busy",
       "situation": {
-        "en": "You can divide part of the cash available now. Choose how much to keep, use in the business, or take home.",
-        "sw": "Unaweza kugawa sehemu ya pesa inayopatikana sasa. Chagua kiasi cha kuweka akiba, kutumia kwenye biashara, au kupeleka nyumbani."
+        "en": "You have cash to divide between the business, home and a reserve.",
+        "sw": "Una pesa za kugawa kwa biashara, nyumbani na akiba."
       },
       "info": [
         {
@@ -2516,6 +2604,14 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "You can divide part of the cash available now. Choose how much to keep, use in the business, or take home.",
+        "sw": "Unaweza kugawa sehemu ya pesa inayopatikana sasa. Chagua kiasi cha kuweka akiba, kutumia kwenye biashara, au kupeleka nyumbani."
+      },
+      "takeaway": {
+        "en": "Taking money home is legitimate. Leave enough for the business to continue.",
+        "sw": "Kupeleka pesa nyumbani ni halali. Acha za kutosha kuendeleza biashara."
       }
     },
     {
@@ -2527,8 +2623,8 @@
       },
       "scene": "office",
       "situation": {
-        "en": "An official letter asks about your trading records. Check which requirements apply to your business before deciding.",
-        "sw": "Barua rasmi inauliza kuhusu kumbukumbu zako. Hakiki masharti yanayohusu biashara yako kabla ya kuamua."
+        "en": "An official letter asks about your trading records. It needs a response.",
+        "sw": "Barua rasmi inauliza kuhusu rekodi zako za biashara. Inahitaji jibu."
       },
       "advanceWeeks": 2,
       "info": [
@@ -2665,6 +2761,14 @@
           }
         ],
         "predictMetric": "cash"
+      },
+      "situationDetails": {
+        "en": "An official letter asks about your trading records. Check which requirements apply to your business before deciding.",
+        "sw": "Barua rasmi inauliza kuhusu kumbukumbu zako. Hakiki masharti yanayohusu biashara yako kabla ya kuamua."
+      },
+      "takeaway": {
+        "en": "Check what applies to your business before spending or ignoring a notice.",
+        "sw": "Kagua kinachohusu biashara yako kabla ya kulipa au kupuuza taarifa."
       }
     },
     {
@@ -2676,8 +2780,8 @@
       },
       "scene": "office",
       "situation": {
-        "en": "One hotel offers to become your main buyer. Serving it could leave less time for other customers.",
-        "sw": "Hoteli moja inataka kuwa mnunuzi wako mkuu. Kuihudumia kunaweza kupunguza muda wa wateja wengine."
+        "en": "One hotel could become your main buyer. What if it stopped buying?",
+        "sw": "Hoteli moja inaweza kuwa mnunuzi wako mkuu. Je, ikiacha kununua?"
       },
       "info": [
         {
@@ -2806,7 +2910,15 @@
           }
         ]
       },
-      "advanceWeeks": 3
+      "advanceWeeks": 3,
+      "situationDetails": {
+        "en": "One hotel offers to become your main buyer. Serving it could leave less time for other customers.",
+        "sw": "Hoteli moja inataka kuwa mnunuzi wako mkuu. Kuihudumia kunaweza kupunguza muda wa wateja wengine."
+      },
+      "takeaway": {
+        "en": "A large customer brings sales and dependence at the same time.",
+        "sw": "Mteja mkubwa analeta mauzo na utegemezi kwa wakati mmoja."
+      }
     },
     {
       "id": "t20",
@@ -2817,8 +2929,8 @@
       },
       "scene": "office",
       "situation": {
-        "en": "A hotel buyer asks for a lower price. Compare the price with your costs before agreeing.",
-        "sw": "Mnunuzi wa hoteli anaomba bei ya chini. Linganisha bei na gharama zako kabla ya kukubali."
+        "en": "The hotel wants a lower price. You still need to cover your costs.",
+        "sw": "Hoteli inataka bei ya chini. Bado unahitaji kulipia gharama zako."
       },
       "info": [
         {
@@ -2895,7 +3007,33 @@
             }
           }
         ]
+      },
+      "situationDetails": {
+        "en": "A hotel buyer asks for a lower price. Compare the price with your costs before agreeing.",
+        "sw": "Mnunuzi wa hoteli anaomba bei ya chini. Linganisha bei na gharama zako kabla ya kukubali."
+      },
+      "takeaway": {
+        "en": "A large order helps only if the price leaves enough after costs.",
+        "sw": "Oda kubwa husaidia tu ikiwa bei inabaki na kiasi cha kutosha baada ya gharama."
       }
+    }
+  ],
+  "episodes": [
+    {
+      "en": "Find your customers",
+      "sw": "Tafuta wateja wako"
+    },
+    {
+      "en": "Make each sale count",
+      "sw": "Fanya kila mauzo yafae"
+    },
+    {
+      "en": "Get your time back",
+      "sw": "Pata muda wako tena"
+    },
+    {
+      "en": "Build a business that lasts",
+      "sw": "Jenga biashara inayodumu"
     }
   ]
 }

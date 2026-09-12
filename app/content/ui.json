@@ -1,8 +1,8 @@
 {
   "_comment": "Interface strings. Key-major so the two languages sit side by side for review. Swahili is a DRAFT pending review by a first-language speaker with business exposure (docs/localization.md). Placeholders in {braces} must survive translation; whole sentences only, never assembled from fragments.",
   "app.title": {
-    "en": "Business Simulator",
-    "sw": "Kiigizo cha Biashara"
+    "en": "Asha’s Business",
+    "sw": "Biashara ya Asha"
   },
   "lang.label": {
     "en": "Language",
@@ -13,8 +13,8 @@
     "sw": "Anza upya"
   },
   "btn.continue": {
-    "en": "Continue",
-    "sw": "Endelea"
+    "en": "Next choice →",
+    "sw": "Uamuzi unaofuata →"
   },
   "btn.playAgain": {
     "en": "Play again",
@@ -41,24 +41,24 @@
     "sw": "Faili ulilohifadhi ni kumbukumbu kamili."
   },
   "btn.showNumbers": {
-    "en": "Show the numbers",
-    "sw": "Onyesha namba"
+    "en": "Open the accounts",
+    "sw": "Fungua hesabu"
   },
   "btn.hideNumbers": {
-    "en": "Hide the numbers",
-    "sw": "Ficha namba"
+    "en": "Close the accounts",
+    "sw": "Funga hesabu"
   },
   "foot.privacy": {
     "en": "Your progress stays on this phone. Nothing is sent anywhere.",
     "sw": "Maendeleo yako yanabaki kwenye simu hii. Hakuna kinachotumwa popote."
   },
   "banner.unverified": {
-    "en": "Practice figures — not yet checked locally.",
-    "sw": "Takwimu za mazoezi — bado hazijahakikiwa hapa."
+    "en": "Sample game · figures not checked locally",
+    "sw": "Mchezo wa mfano · takwimu hazijahakikiwa nchini"
   },
   "banner.draftLanguage": {
-    "en": "Translation awaits local review.",
-    "sw": "Tafsiri inasubiri uhakiki wa wenyeji."
+    "en": "Kiswahili draft · awaiting local review",
+    "sw": "Kiswahili cha rasimu · kinasubiri uhakiki"
   },
   "stat.week": {
     "en": "Week",
@@ -233,8 +233,8 @@
     "sw": "Pesa yako inatosha kulipa kodi na mishahara kwa wiki {n} zaidi."
   },
   "info.title": {
-    "en": "Before you decide",
-    "sw": "Kabla ya kuamua"
+    "en": "Ask around",
+    "sw": "Ulizia"
   },
   "info.costHours": {
     "en": "{n}h of your time",
@@ -243,34 +243,6 @@
   "decision.prompt": {
     "en": "What do you do?",
     "sw": "Utafanya nini?"
-  },
-  "decision.touches": {
-    "en": "This choice touches:",
-    "sw": "Uamuzi huu unagusa:"
-  },
-  "touch.cash": {
-    "en": "your cash",
-    "sw": "pesa yako"
-  },
-  "touch.time": {
-    "en": "your time",
-    "sw": "muda wako"
-  },
-  "touch.quality": {
-    "en": "your quality",
-    "sw": "ubora wako"
-  },
-  "touch.reputation": {
-    "en": "your good name",
-    "sw": "jina lako jema"
-  },
-  "touch.capacity": {
-    "en": "how much you can make",
-    "sw": "kiasi unachoweza kutengeneza"
-  },
-  "touch.customers": {
-    "en": "your customers",
-    "sw": "wateja wako"
   },
   "workout.title": {
     "en": "Work it out first",
@@ -393,8 +365,8 @@
     "sw": "Ulichofanya"
   },
   "profile.tallyLabel": {
-    "en": "predictions correct",
-    "sw": "utabiri sahihi"
+    "en": "Earlier forecasts recorded",
+    "sw": "Makadirio ya awali yaliyorekodiwa"
   },
   "profile.tally": {
     "en": "{part} of {whole}",
@@ -496,17 +468,9 @@
     "en": "Figures in the simulation are illustrative placeholders, not researched local data.",
     "sw": "Namba zilizomo katika kiigizo ni za mfano tu, si takwimu za hapa zilizofanyiwa utafiti."
   },
-  "num.title": {
-    "en": "Set the number",
-    "sw": "Weka namba"
-  },
   "num.prompt": {
     "en": "Choose the number you will use.",
     "sw": "Chagua namba utakayotumia."
-  },
-  "num.selected": {
-    "en": "Your choice",
-    "sw": "Uchaguzi wako"
   },
   "num.decrease": {
     "en": "−",
@@ -525,12 +489,12 @@
     "sw": "Ongeza kwa hatua moja"
   },
   "num.commit": {
-    "en": "Use this amount",
-    "sw": "Tumia kiasi hiki"
+    "en": "Try this amount",
+    "sw": "Jaribu kiasi hiki"
   },
   "num.commitLabel": {
-    "en": "Use this number and continue",
-    "sw": "Tumia namba hii na uendelee"
+    "en": "Use this amount and see what happens",
+    "sw": "Tumia kiasi hiki uone kinachotokea"
   },
   "num.grossPerWeek": {
     "en": "You keep {kept} on each one. About {units} sales a week, so {gross} before rent and wages.",
@@ -580,41 +544,9 @@
     "en": "The linked number",
     "sw": "Namba inayohusiana"
   },
-  "num.predictTitle": {
-    "en": "Predict the weekly profit",
-    "sw": "Tabiri faida ya wiki"
-  },
-  "num.predictPrompt": {
-    "en": "What do you think the weekly profit will be?",
-    "sw": "Unafikiri faida ya wiki itakuwa kiasi gani?"
-  },
-  "num.predictCurrent": {
-    "en": "Right now it is {amount}.",
-    "sw": "Kwa sasa ni {amount}."
-  },
-  "num.predictFixed": {
-    "en": "You keep {kept} on each sale, and rent, wages and fees take {fixed} a week.",
-    "sw": "Unabaki na {kept} kwa kila mauzo, na kodi, mishahara na ada vinachukua {fixed} kwa wiki."
-  },
   "num.withUnit": {
     "en": "{value} {unit}",
     "sw": "{value} {unit}"
-  },
-  "num.predictFixedMix": {
-    "en": "Your products together keep {kept} a week after ingredients, and rent, wages and fees take {fixed}.",
-    "sw": "Bidhaa zako kwa pamoja zinabakiza {kept} kwa wiki baada ya viungo, na kodi, mishahara na ada vinachukua {fixed}."
-  },
-  "num.predicted": {
-    "en": "Your estimate",
-    "sw": "Makadirio yako"
-  },
-  "num.predictCommit": {
-    "en": "Use this prediction",
-    "sw": "Tumia utabiri huu"
-  },
-  "num.predictCommitLabel": {
-    "en": "Use this prediction and continue",
-    "sw": "Tumia utabiri huu na uendelee"
   },
   "num.numberSummary": {
     "en": "You said {predicted}. It was {actual}.",
@@ -649,8 +581,8 @@
     "sw": "Ongeza hatua moja kwenye kikapu hiki"
   },
   "alloc.commit": {
-    "en": "Use this split",
-    "sw": "Tumia mgawanyo huu"
+    "en": "Put the money to work",
+    "sw": "Tumia pesa hizi"
   },
   "alloc.commitLabel": {
     "en": "Use this split and continue",
@@ -693,20 +625,20 @@
     "sw": "Sura inayofuata"
   },
   "btn.chooseChapter": {
-    "en": "Choose a chapter",
-    "sw": "Chagua sura"
+    "en": "Businesses",
+    "sw": "Biashara"
   },
   "chapter.selectTitle": {
-    "en": "Choose where to start",
-    "sw": "Chagua pa kuanzia"
+    "en": "Small business. Big decisions.",
+    "sw": "Biashara ndogo. Maamuzi makubwa."
   },
   "chapter.selectIntro": {
-    "en": "Four businesses, one owner. Each one takes about half an hour and stands on its own.",
-    "sw": "Biashara nne, mmiliki mmoja. Kila moja inachukua takribani nusu saa na inajitegemea."
+    "en": "Pick a business. Try a choice. See what happens.",
+    "sw": "Chagua biashara. Jaribu uamuzi. Ona kinachotokea."
   },
   "chapter.notALadder": {
-    "en": "This is not a ladder. A stall run well is a real business, not a step towards a bigger one. Start with whichever is closest to yours.",
-    "sw": "Hii si ngazi. Kibanda kinachoendeshwa vizuri ni biashara halisi, si hatua kuelekea kubwa zaidi. Anza na ile inayofanana zaidi na yako."
+    "en": "Start anywhere. A good small business matters too.",
+    "sw": "Anza popote. Biashara ndogo nzuri pia ina thamani."
   },
   "chapter.finished": {
     "en": "Finished",
@@ -761,8 +693,8 @@
     "sw": "Umeipata pesa hii lakini bado hujaipokea. Iko kwa wateja wako, au rafuni kama bidhaa."
   },
   "save.ok": {
-    "en": "Progress saved on this phone.",
-    "sw": "Maendeleo yamehifadhiwa kwenye simu hii."
+    "en": "Saved · available offline",
+    "sw": "Imehifadhiwa · inapatikana bila intaneti"
   },
   "save.failed": {
     "en": "Progress may not be saved. Tap to retry, or use Learners to save a backup.",
@@ -777,28 +709,28 @@
     "sw": "Pakua nakala ya kumbukumbu"
   },
   "episode.progress": {
-    "en": "Episode {episode} of 4 · Decision {decision} of 5",
-    "sw": "Kipindi {episode} kati ya 4 · Uamuzi {decision} kati ya 5"
+    "en": "Mission {episode}/4 · Choice {decision}/5",
+    "sw": "Lengo {episode}/4 · Uamuzi {decision}/5"
   },
   "episode.done": {
-    "en": "Episode {n} complete",
-    "sw": "Kipindi {n} kimekamilika"
+    "en": "Mission {n} complete!",
+    "sw": "Lengo {n} limekamilika!"
   },
   "episode.continue": {
-    "en": "Continue to the next episode",
-    "sw": "Endelea na kipindi kinachofuata"
+    "en": "Keep playing →",
+    "sw": "Endelea kucheza →"
   },
   "episode.stop": {
-    "en": "Stop here — progress is saved",
-    "sw": "Simama hapa — maendeleo yamehifadhiwa"
+    "en": "Take a break",
+    "sw": "Pumzika"
   },
   "episode.takeaway": {
     "en": "Before spending, check what stops the business from meeting its next order. Cash, stock and time are different limits.",
     "sw": "Kabla ya kutumia pesa, angalia kinachozuia biashara kutimiza oda inayofuata. Pesa, bidhaa na muda ni vikwazo tofauti."
   },
   "help.title": {
-    "en": "Help with words and numbers — free",
-    "sw": "Msaada wa maneno na hesabu — bila malipo"
+    "en": "Need a hand?",
+    "sw": "Unahitaji msaada?"
   },
   "help.controls": {
     "en": "Choose an action. You can change it before you run the week. Use + or −, or type an amount. There is no timer.",
@@ -808,21 +740,13 @@
     "en": "Cash is money you can use now. Profit is sales less costs. A customer can owe you money even when a sale has made a profit.",
     "sw": "Pesa taslimu ni pesa unayoweza kutumia sasa. Faida ni mauzo ukitoa gharama. Mteja anaweza kuwa na deni kwako hata kama mauzo yameleta faida."
   },
-  "forecast.profit": {
-    "en": "What will happen to profit over the next {n} week(s)?",
-    "sw": "Faida itakuwaje katika wiki {n} zijazo?"
-  },
-  "forecast.cash": {
-    "en": "Will your cash be higher or lower after {n} week(s)?",
-    "sw": "Pesa yako itaongezeka au kupungua baada ya wiki {n}?"
-  },
   "num.entry": {
     "en": "Type an amount",
     "sw": "Andika kiasi"
   },
   "book.title": {
-    "en": "Complete a small cash book",
-    "sw": "Kamilisha daftari dogo la pesa"
+    "en": "Balance the cash book",
+    "sw": "Kamilisha daftari la fedha"
   },
   "book.context": {
     "en": "Practise with these receipts and payments. What balance belongs in the book? Your entry does not change the business cash.",
@@ -841,8 +765,8 @@
     "sw": "Pesa iliyolipwa: {amount}"
   },
   "book.balance": {
-    "en": "Closing cash balance",
-    "sw": "Salio la mwisho"
+    "en": "How much is left?",
+    "sw": "Imebaki kiasi gani?"
   },
   "book.example": {
     "en": "Example: start with 10, receive 5, pay 3. Write 12 in the book: 10 + 5 − 3 = 12.",
@@ -861,15 +785,15 @@
     "sw": "Ahadi ya kulipa si pesa iliyopokelewa. Hifadhi risiti na uhakiki salio."
   },
   "result.title": {
-    "en": "What happened",
-    "sw": "Kilichotokea"
+    "en": "Here’s what happened",
+    "sw": "Hiki ndicho kimetokea"
   },
   "result.totals": {
     "en": "Profit: {profit} · Cash available: {cash}",
     "sw": "Faida: {profit} · Pesa inayopatikana: {cash}"
   },
   "result.calculation": {
-    "en": "Follow the money",
+    "en": "Follow the cash",
     "sw": "Fuatilia pesa"
   },
   "result.opening": {
@@ -949,8 +873,8 @@
     "sw": "Vifaa vya ziada haviwezi kuleta oda yenyewe."
   },
   "situation.more": {
-    "en": "More about this situation",
-    "sw": "Maelezo zaidi"
+    "en": "The full story",
+    "sw": "Habari zaidi"
   },
   "turn.run": {
     "en": "Run the week",
@@ -1024,10 +948,6 @@
     "en": "Add money received. Subtract money paid. The answer you write here does not change the business cash.",
     "sw": "Ongeza pesa ulizopokea. Toa pesa ulizolipa. Jibu unaloandika hapa halibadilishi pesa za biashara."
   },
-  "forecast.cashCurrent": {
-    "en": "Cash available now: {amount}.",
-    "sw": "Pesa zinazopatikana sasa: {amount}."
-  },
   "diag.correct": {
     "en": "Your selected fact matched the constraint.",
     "sw": "Ukweli uliochagua ulilingana na kizuizi."
@@ -1040,20 +960,100 @@
     "en": "Each learner has a separate number and saved attempts on this phone. Remember your number. These profiles have no password.",
     "sw": "Kila mwanafunzi ana namba yake na majaribio yaliyohifadhiwa kwenye simu hii. Kumbuka namba yako. Wasifu huu hauna nenosiri."
   },
-  "forecast.profitAmount": {
-    "en": "How much profit will the next {n} week(s) make?",
-    "sw": "Wiki {n} zijazo zitaleta faida ya kiasi gani?"
-  },
-  "forecast.cashAmount": {
-    "en": "How much cash will be available after {n} week(s)?",
-    "sw": "Pesa kiasi gani itapatikana baada ya wiki {n}?"
-  },
-  "decision.preview": {
-    "en": "Choose an action to see its details. You can change it before running the week.",
-    "sw": "Chagua hatua kuona maelezo yake. Unaweza kuibadilisha kabla ya kuendesha wiki."
-  },
   "num.whole": {
     "en": "Use a whole number of items or people.",
     "sw": "Tumia idadi kamili ya bidhaa au watu."
+  },
+  "play.welcome": {
+    "en": "Learn by running a business",
+    "sw": "Jifunze kwa kuendesha biashara"
+  },
+  "play.open": {
+    "en": "Play →",
+    "sw": "Cheza →"
+  },
+  "play.edit": {
+    "en": "Your choice: {choice} · change",
+    "sw": "Uamuzi wako: {choice} · badilisha"
+  },
+  "play.custom": {
+    "en": "Choose a different amount",
+    "sw": "Chagua kiasi kingine"
+  },
+  "play.calculation": {
+    "en": "Help me work it out",
+    "sw": "Nisaidie kufanya hesabu"
+  },
+  "play.options": {
+    "en": "Explain the choices",
+    "sw": "Eleza maamuzi haya"
+  },
+  "play.episodeBody": {
+    "en": "Five choices made. Your place is saved.",
+    "sw": "Umefanya maamuzi matano. Mahali ulipofika pamehifadhiwa."
+  },
+  "play.recap": {
+    "en": "Look back at your choices",
+    "sw": "Angalia maamuzi yako"
+  },
+  "play.weekResult.one": {
+    "en": "{n} week later",
+    "sw": "Baada ya wiki {n}"
+  },
+  "play.weekResult.other": {
+    "en": "{n} weeks later",
+    "sw": "Baada ya wiki {n}"
+  },
+  "play.cashChange": {
+    "en": "Cash change",
+    "sw": "Mabadiliko ya pesa"
+  },
+  "play.profit": {
+    "en": "Profit",
+    "sw": "Faida"
+  },
+  "play.bookAnswer": {
+    "en": "You wrote {entered}. The balance is {closing}.",
+    "sw": "Uliandika {entered}. Salio ni {closing}."
+  },
+  "play.why": {
+    "en": "Why did that happen?",
+    "sw": "Kwa nini ilitokea?"
+  },
+  "play.checkBook": {
+    "en": "Check my book",
+    "sw": "Kagua daftari langu"
+  },
+  "play.nextBusiness": {
+    "en": "A new chapter for Asha",
+    "sw": "Hatua mpya kwa Asha"
+  },
+  "play.nextBudget": {
+    "en": "A new business starts with a new budget. Your earlier choices can still affect its story.",
+    "sw": "Biashara mpya inaanza na bajeti mpya. Maamuzi yako ya awali yanaweza kuathiri hadithi yake."
+  },
+  "play.explore": {
+    "en": "Try {business} →",
+    "sw": "Jaribu {business} →"
+  },
+  "play.arcDone": {
+    "en": "From a stall to overseas orders.",
+    "sw": "Kutoka kibandani hadi oda za nje."
+  },
+  "play.arcBody": {
+    "en": "You have explored prices, people, cash and customers. Try a different choice next time and see what changes.",
+    "sw": "Umejaribu bei, watu, pesa na wateja. Jaribu uamuzi tofauti wakati mwingine uone kinachobadilika."
+  },
+  "play.completedChoices": {
+    "en": "20 choices. Four missions. Your record is saved.",
+    "sw": "Maamuzi 20. Malengo manne. Rekodi yako imehifadhiwa."
+  },
+  "portal.open": {
+    "en": "Apply to the programme",
+    "sw": "Omba kujiunga na programu"
+  },
+  "portal.fileHint": {
+    "en": "To apply online, open the programme portal and use the game records you saved.",
+    "sw": "Kuomba mtandaoni, fungua tovuti ya programu na utumie kumbukumbu za mchezo ulizohifadhi."
   }
 }

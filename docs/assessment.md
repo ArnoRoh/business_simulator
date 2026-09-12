@@ -1,7 +1,7 @@
 # Assessment and the behavioural record
 
 **Status:** Current record contract under
-[ADR-0009](./adr/0009-learner-episodes-and-local-attempts.md). No validation against real
+[ADR-0012](./adr/0012-play-first-business-journey.md), an implemented proposal for review. No validation against real
 firm outcomes exists. Completion is the programme gate; prediction accuracy is not a
 pass mark. See [the project thesis](./context/transformational-entrepreneurship.md).
 
@@ -9,8 +9,14 @@ pass mark. See [the project thesis](./context/transformational-entrepreneurship.
 
 Schema version 2 retains a separate attempt, local profile, scenario version and snapshot,
 calculation version, and chronological observations. It records business research before
-commitment; the committed action, numeric input or allocation; the forecast; the actual
+commitment; the committed action, numeric input or allocation; the actual
 result; and learning help opened before commitment. Opening optional context is also retained, with whether it occurred before commitment. A result is calculated once and saved.
+
+New decisions use `interactionVersion: 2` and `forecast: "not-requested"`. Normal play
+has no forecast step. `inputMethod` distinguishes a preset amount, a typed amount, an
+ordinary choice, an allocation or a confirmed legacy draft. Selecting a displayed price
+is not independent price calculation. Historical forecasts remain as recorded. Their
+absence in new play is neither an incorrect answer nor refusal to engage.
 
 Cash-book observations contain the entered balance, opening cash, receipts, payments,
 correct balance and assistance used. The example is explicitly practice. A wrong answer
@@ -26,7 +32,7 @@ re-grade historical answers. Unreadable source records remain available for back
 
 | Description | Basis and limit |
 |---|---|
-| Prediction accuracy | The predicted and calculated result. Counts with and without opened help are separate. Missing legacy assistance data is not independent work. |
+| Historical prediction accuracy | Only the older forecasts that were actually recorded, not all decisions in the current game. The predicted and calculated result. Counts with and without opened help are separate. Missing legacy assistance data is not independent work. |
 | Information checked before deciding | Only research recorded before the committed action. Opening language or arithmetic help does not count as buying business information. |
 | Decisions after a profit drop | The next committed decision after lower profit. This is not a measure of recovery ability; planned investment can reduce profit. |
 | Concepts encountered | Concepts attached to committed decisions. Exposure is not mastery. |

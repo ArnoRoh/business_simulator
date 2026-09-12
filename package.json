@@ -5,6 +5,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node scripts/test-engine.mjs && node scripts/test-corrections.mjs && node scripts/validate-scenario.mjs && node scripts/validate-i18n.mjs && node scripts/simulate-runs.mjs && node scripts/smoke-app.mjs && node scripts/playthrough.mjs && node scripts/browser-checks.mjs && bash scripts/check-links.sh && python3 scripts/check-model.py"
+    "test": "node scripts/test-engine.mjs && node scripts/test-corrections.mjs && node scripts/validate-scenario.mjs && node scripts/validate-i18n.mjs && node scripts/simulate-runs.mjs && node scripts/smoke-app.mjs && node scripts/playthrough.mjs && node scripts/browser-checks.mjs && bash scripts/check-links.sh && python3 scripts/check-model.py && npm run test:portal",
+    "portal": "node portal/server.mjs",
+    "test:portal": "node scripts/test-portal.mjs"
   }
 }

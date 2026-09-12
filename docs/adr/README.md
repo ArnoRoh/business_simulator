@@ -41,5 +41,6 @@ believed something is how we avoid drifting back into it by accident.
 | [0006](./0006-no-build-vanilla-js.md) | No build step: vanilla ES modules, zero dependencies | Accepted |
 | [0007](./0007-four-chapter-arc.md) | A four-chapter arc with bounded starts and carried flags | Accepted |
 | [0008](./0008-learner-record-portal-and-judge.md) | The learner record, the portal, and the AI judge | **Proposed** — needs the owner ([Q-030](../../memory/OPEN_QUESTIONS.md), [Q-035](../../memory/OPEN_QUESTIONS.md)) |
-
 | [0009](./0009-learner-episodes-and-local-attempts.md) | Short learning episodes and durable local attempts | Accepted — owner-approved plan, 2026-09-07 |
+| [0010](./0010-progress-reports-and-assessment-integrity.md) | Progress reports and assessment integrity | Requirements recorded; implementation defaults in ADR-0011 |
+| [0011](./0011-portal-implementation.md) | Implement the application and reporting portal | Accepted for local implementation |
