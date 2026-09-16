@@ -668,19 +668,27 @@ export function renderNumberDecision(container, turn, state, onCommit, draft = n
   }
 
   const presets = el('div', 'number-presets');
-  const suggestions = /(^|\.)price$/.test(input.field)
-    ? [min, clampNumber(min + Math.round((max - min) / (2 * step)) * step, min, max), max]
-    : [-1, 0, 1, 2, -2].map(n => clampNumber(value + n * step, min, max));
+  const authoredPresets = (input.presets || []).filter(item => Number.isFinite(Number(item.value)));
+  const suggestions = authoredPresets.length
+    ? authoredPresets.map(item => Number(item.value))
+    : /(^|\.)price$/.test(input.field)
+      ? [min, clampNumber(min + Math.round((max - min) / (2 * step)) * step, min, max), max]
+      : [-1, 0, 1, 2, -2].map(n => clampNumber(value + n * step, min, max));
   const values = [...new Set(suggestions)].slice(0, 3).sort((a, b) => a - b);
   for (const preset of values) {
     const button = el('button', 'number-preset'); button.type = 'button';
     button.dataset.amount = String(preset);
-    button.appendChild(el('strong', null, input.valueAs === 'count' ? count(preset) : money(preset)));
+    const label = authoredPresets.find(item => Number(item.value) === preset)?.label;
+    button.appendChild(el('strong', null, label ? localised(label) : input.valueAs === 'count' ? count(preset) : money(preset)));
     if (input.unit) button.appendChild(el('span', null, localised(input.unit)));
     button.addEventListener('click', () => onCommit(preset, 'preset'));
     presets.appendChild(button);
   }
   card.appendChild(presets);
+  if (input.allowCustom === false) {
+    container.appendChild(card);
+    return;
+  }
   const custom = el('details', 'custom-number'); custom.open = draft !== null;
   custom.appendChild(el('summary', null, t('play.custom')));
   const stepper = el('div', 'stepper');

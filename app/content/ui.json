@@ -472,6 +472,14 @@
     "en": "Choose the number you will use.",
     "sw": "Chagua namba utakayotumia."
   },
+  "num.title": {
+    "en": "Choose an action",
+    "sw": "Chagua hatua"
+  },
+  "num.selected": {
+    "en": "Your choice",
+    "sw": "Uchaguzi wako"
+  },
   "num.decrease": {
     "en": "−",
     "sw": "−"
@@ -480,6 +488,14 @@
     "en": "+",
     "sw": "+"
   },
+  "num.coarseDecrease": {
+    "en": "− −",
+    "sw": "− −"
+  },
+  "num.coarseIncrease": {
+    "en": "+ +",
+    "sw": "+ +"
+  },
   "num.decreaseLabel": {
     "en": "Decrease by one step",
     "sw": "Punguza kwa hatua moja"
@@ -487,6 +503,14 @@
   "num.increaseLabel": {
     "en": "Increase by one step",
     "sw": "Ongeza kwa hatua moja"
+  },
+  "num.coarseDecreaseLabel": {
+    "en": "Decrease by a larger step",
+    "sw": "Punguza kwa hatua kubwa"
+  },
+  "num.coarseIncreaseLabel": {
+    "en": "Increase by a larger step",
+    "sw": "Ongeza kwa hatua kubwa"
   },
   "num.commit": {
     "en": "Try this amount",

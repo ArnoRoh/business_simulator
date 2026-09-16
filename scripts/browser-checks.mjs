@@ -8,38 +8,38 @@ try {
  const context = await app.browser.newContext({ viewport: { width: 320, height: 740 }, acceptDownloads: true });
  const page = await context.newPage(); const errors = [];
  page.on('pageerror', error => errors.push(error.message));
- await page.goto(app.url); await page.locator('.chapter-card').first().click();
+ await page.goto(app.url); await page.locator('.chapter-card').nth(1).click(); await advance(page); await advance(page);
  await page.locator('.custom-number > summary').click();
- await page.locator('.number-entry').first().fill('575');
+ await page.locator('.number-entry').first().fill('50');
  await page.locator('.number-entry').first().fill('999');
  assert(await page.locator('.number-error').first().isVisible());
  await page.locator('.stepper-button').first().click();
- assert.equal(await page.locator('.number-entry').first().inputValue(), '550');
+ assert.equal(await page.locator('.number-entry').first().inputValue(), '0');
  assert(await page.locator('.number-entry').first().evaluate(input => input.checkValidity()));
- await page.locator('.number-entry').first().fill('575');
+ await page.locator('.number-entry').first().fill('50');
  const first = await session(page);
- assert.equal(first.draftValue, 575);
+ assert.equal(first.draftValue, 50);
  await page.locator('[data-lang="sw"]').click();
- assert.equal(await page.locator('.number-entry').first().inputValue(), '575');
+ assert.equal(await page.locator('.number-entry').first().inputValue(), '50');
  await page.reload(); await page.locator('.number-entry').first().waitFor();
- assert.equal((await session(page)).draftValue, 575);
+ assert.equal((await session(page)).draftValue, 50);
  await page.locator('[data-lang="en"]').click();
  await page.locator('.learning-help summary').click();
  await page.waitForFunction(async () => (await (await import('./js/storage.js')).load()).assistance.length > 0);
  await page.locator('.number-decision [data-role="commit"]').click();
  const revealed = await session(page);
  assert.equal(revealed.phase, 'reveal');
- assert.equal(revealed.record.observations.find(o => o.kind === 'decision').input, 575);
- assert.equal(revealed.record.observations.find(o => o.kind === 'decision').inputMethod, 'typed');
+ assert.equal(revealed.record.observations.findLast(o => o.kind === 'decision').input, 50);
+ assert.equal(revealed.record.observations.findLast(o => o.kind === 'decision').inputMethod, 'typed');
  assert(!revealed.record.observations.some(o => o.kind === 'prediction'));
  assert(await page.locator('.is-trading .cash-motion').isVisible());
  const count = revealed.record.observations.length;
  await page.reload(); await page.locator('.reveal').waitFor();
  assert.equal((await session(page)).record.observations.length, count);
  assert.deepEqual((await session(page)).result, revealed.result);
- await page.locator('#chapters').click(); await page.locator('.chapter-card').nth(1).click();
+ await page.locator('#chapters').click(); await page.locator('.chapter-card').nth(2).click();
  await page.locator('.option').first().waitFor();
- await page.locator('#chapters').click(); await page.locator('.chapter-card').first().click();
+ await page.locator('#chapters').click(); await page.locator('.chapter-card').nth(1).click();
  await page.locator('.reveal').waitFor(); assert.equal((await session(page)).id, first.id);
  await page.locator('#record').click();
  assert(/your record so far/i.test(await page.locator('#decision').innerText()));
@@ -65,7 +65,8 @@ try {
  assert.equal(exported.schemaVersion, 2); assert.equal(exported.attemptId, first.id);
  assert(exported.observations.some(o => o.kind === 'assistance'));
  await page.getByRole('button', { name: 'Back to my decision', exact: true }).click();
- await page.locator('#reset').click(); await page.locator('.number-decision').waitFor();
+ await page.locator('#reset').click(); await page.locator('.option').first().waitFor();
+ await advance(page); await page.locator('[data-role="next"]').waitFor(); await advance(page); await page.locator('.number-decision').waitFor();
  assert.notEqual((await session(page)).id, first.id);
  assert.equal(await page.evaluate(async () => (await (await import('./js/storage.js')).backup(true)).filter(([key]) => key.startsWith('attempt:')).length), 3);
  // Save failure is visible; retry writes the in-memory draft without deleting the old record.
@@ -75,11 +76,11 @@ try {
    IDBDatabase.prototype.transaction = function(...args) { if(args[1] === 'readwrite') throw new DOMException('Synthetic quota', 'QuotaExceededError'); return original.apply(this,args); };
  });
  await page.locator('.custom-number > summary').click();
- await page.locator('.number-entry').first().fill('600');
+ await page.locator('.number-entry').first().fill('100');
  await page.waitForFunction(() => document.getElementById('save-status').textContent.includes('may not be saved'));
- assert.equal(await page.evaluate(async () => (await (await import('./js/storage.js')).load()).draftValue), 600);
+ assert.equal(await page.evaluate(async () => (await (await import('./js/storage.js')).load()).draftValue), 100);
  await page.evaluate(() => window.restoreWrites()); await page.locator('#save-status').click();
- assert.equal((await session(page)).draftValue, 600);
+ assert.equal((await session(page)).draftValue, 100);
  // Text scaling, touch targets and focus.
  await page.addStyleTag({ content: 'html { font-size: 32px !important; }' });
  assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
@@ -95,8 +96,8 @@ try {
  await context.setOffline(false);
  for (const status of [404, 503]) {
    app.failContent(status);
-   const cached = await page.evaluate(async () => (await fetch('./content/scenario-mama-asha.json')).json());
-   assert.equal(cached.id, 'mama-asha');
+   const cached = await page.evaluate(async () => (await fetch('./content/scenario-bakery.json')).json());
+   assert.equal(cached.id, 'bakery');
  }
  app.failContent(0);
  // A shell update must wait for the open game, and preserve other origin caches.
@@ -123,6 +124,9 @@ try {
  await fresh.locator('#learners').click();
  await fresh.getByRole('button', { name: 'Start for another learner', exact: true }).click();
  await fresh.locator('.chapter-card').first().click(); await fresh.locator('.number-preset').first().waitFor();
+ assert.deepEqual(await fresh.locator('.number-preset').allTextContents(), ["Keep today's price", 'Raise it a little', 'Raise it more']);
+ assert.equal(await fresh.locator('.custom-number').count(), 0);
+ assert(!/num\.[a-z]/i.test(await fresh.locator('body').innerText()));
  assert.notEqual((await session(fresh)).profileId, 'default');
  assert.equal(await fresh.evaluate(async () => (await (await import('./js/storage.js')).backup(true)).filter(([key]) => key.startsWith('attempt:')).length), 1);
  await fresh.locator('#learners').click();
@@ -131,7 +135,7 @@ try {
  await fresh.locator('.chapter-card').first().waitFor();
  await fresh.locator('#learners').click();
  await fresh.getByRole('button', { name: 'Learner 1', exact: true }).click();
- await fresh.locator('.chapter-card').first().click(); await fresh.locator('.reveal').waitFor();
+ await fresh.locator('.chapter-card').nth(1).click(); await fresh.locator('.reveal').waitFor();
  assert.equal((await session(fresh)).id, savedId);
  assert.equal(await fresh.evaluate(async () => (await (await import('./js/storage.js')).backup(true)).filter(([key]) => key.startsWith('attempt:')).length), 3);
  await fresh.screenshot({ path: '/tmp/MV-BS-result-mobile.png', fullPage: true });
@@ -187,11 +191,12 @@ try {
  const standalone = await app.browser.newContext(); await standalone.setOffline(true);
  const filePage = await standalone.newPage(); const fileErrors = []; filePage.on('pageerror', e => fileErrors.push(e.message));
  await filePage.goto(new URL('../app/standalone.html', import.meta.url).href);
- await filePage.locator('.chapter-card').first().click(); await filePage.locator('.custom-number > summary').click(); await filePage.locator('.number-entry').first().fill('575');
+ await filePage.locator('.chapter-card').nth(1).click(); await filePage.locator('.option').first().click(); await filePage.locator('[data-role="next"]').click();
+ await filePage.locator('.custom-number > summary').click(); await filePage.locator('.number-entry').first().fill('50');
  await filePage.locator('#save-status').filter({ hasText: /^(Saved|Progress saved)/ }).waitFor();
  await filePage.reload(); await filePage.locator('.number-entry').first().waitFor();
- assert.equal(await filePage.locator('.number-entry').first().inputValue(), '575');
- await filePage.locator('[data-lang="sw"]').click(); assert.equal(await filePage.locator('.number-entry').first().inputValue(), '575');
+ assert.equal(await filePage.locator('.number-entry').first().inputValue(), '50');
+ await filePage.locator('[data-lang="sw"]').click(); assert.equal(await filePage.locator('.number-entry').first().inputValue(), '50');
  await filePage.locator('.number-preset').last().click(); await filePage.locator('.reveal').waitFor();
  assert.equal(await filePage.locator('.number-prediction').count(), 0);
  const beforeReload = await filePage.locator('.result-totals').innerText();

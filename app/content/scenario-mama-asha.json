@@ -260,8 +260,8 @@
       "decision": {
         "type": "number",
         "prompt": {
-          "en": "Set the price for one mandazi.",
-          "sw": "Panga bei ya andazi moja."
+          "en": "What will you try next?",
+          "sw": "Utajaribu nini sasa?"
         },
         "predict": "number",
         "input": {
@@ -271,6 +271,12 @@
           "step": 25,
           "start": "current",
           "valueAs": "money",
+          "allowCustom": false,
+          "presets": [
+            { "value": 500, "label": { "en": "Keep today's price", "sw": "Baki na bei ya leo" } },
+            { "value": 575, "label": { "en": "Raise it a little", "sw": "Pandisha kidogo" } },
+            { "value": 650, "label": { "en": "Raise it more", "sw": "Pandisha zaidi" } }
+          ],
           "hint": {
             "en": "You pay {cost} to make each one. You sell at {current} today.",
             "sw": "Unalipa {cost} kutengeneza kila moja. Leo unauza kwa {current}."
@@ -368,8 +374,8 @@
       "decision": {
         "type": "number",
         "prompt": {
-          "en": "Set your price while the competitor charges 400.",
-          "sw": "Panga bei yako wakati mshindani anauza kwa 400."
+          "en": "How will you respond to the cheaper stall?",
+          "sw": "Utajibu vipi kibanda cha bei nafuu?"
         },
         "predict": "number",
         "input": {
@@ -379,6 +385,12 @@
           "step": 25,
           "start": "current",
           "valueAs": "money",
+          "allowCustom": false,
+          "presets": [
+            { "value": 500, "label": { "en": "Move closer to her price", "sw": "Karibia bei yake" } },
+            { "value": 575, "label": { "en": "Keep room for your quality", "sw": "Baki na nafasi kwa ubora wako" } },
+            { "value": 650, "label": { "en": "Charge much more for yours", "sw": "Toza zaidi sana kwa yako" } }
+          ],
           "hint": {
             "en": "Her mandazi are smaller. Yours are bigger and better known. You sell at {current} today.",
             "sw": "Mandazi yake ni madogo. Yako ni makubwa na yanajulikana zaidi. Leo unauza kwa {current}."
