@@ -1,79 +1,59 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="color-scheme" content="light dark">
-  <meta name="description" content="A business simulation for learning practical business skills.">
-  <title>Business Simulator</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231f6f5c'/%3E%3Crect x='13' y='32' width='8' height='19' fill='%23f5c451'/%3E%3Crect x='28' y='23' width='8' height='28' fill='%23f5c451'/%3E%3Crect x='43' y='13' width='8' height='38' fill='%23f5c451'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="./css/styles.css">
-  <link rel="manifest" href="./manifest.webmanifest">
-  <meta name="theme-color" content="#1f6f5c">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="description" content="Run Asha's mandazi stall — a 5-day game about running a real business.">
+<title>Asha's Stall — Business Game</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23ff7a18'/%3E%3Ccircle cx='32' cy='20' r='8' fill='%23fff' opacity='.9'/%3E%3Crect x='16' y='34' width='32' height='18' rx='4' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/styles.css">
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#ff7a18">
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <h1 id="title">Business Simulator</h1>
-      <div class="topbar-actions">
-        <div id="lang" class="lang-toggle" role="group"></div>
-        <button id="chapters" class="btn btn-ghost btn-small" type="button" hidden>Choose a chapter</button>
-      </div>
-    </header>
-
-    <div id="progress" class="progress"></div>
-
-    <div class="play-board">
-      <section id="business" class="business" hidden>
-        <div id="scene" class="scene" aria-hidden="true"></div>
-        <div id="stats" class="stats"></div>
-      </section>
-      <main>
-        <div id="situation"></div>
-        <div id="decision"></div>
-        <div id="info"></div>
-        <div id="consequence"></div>
-      </main>
+<div class="phone">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">◉</span>
+      <span class="brand-name">Asha's Stall</span>
+      <span class="brand-sub">5 days • play anywhere</span>
     </div>
-    <button id="pnl-toggle" class="btn btn-ghost pnl-toggle" type="button" aria-expanded="false" aria-controls="pnl-wrap">Show the numbers</button>
-    <div id="pnl-wrap" hidden>
-      <div id="facts"></div>
-      <div id="goal"></div>
-      <div id="pnl" class="pnl"></div>
-      <div id="trajectory"></div>
+    <div class="topbar-right">
+      <button id="lang-btn" class="lang-btn" type="button">SW</button>
+      <button id="sound-btn" class="icon-btn" type="button" aria-label="Sound">♪</button>
     </div>
-    <p id="load-error" hidden>Could not open the game. Reconnect and reload. / Mchezo haujafunguka. Unganisha intaneti na ujaribu tena.</p>
-    <footer class="foot">
-      <button id="save-status" class="btn btn-ghost" type="button" aria-live="polite"></button>
-      <nav class="secondary-actions">
-        <button id="record" class="btn btn-ghost btn-small" type="button" hidden></button>
-        <button id="learners" class="btn btn-ghost btn-small" type="button"></button>
-        <button id="reset" class="btn btn-ghost btn-small" type="button">Start again</button>
-      </nav>
-      <p id="banner" class="banner-unverified" hidden></p>
-      <p id="lang-banner" class="banner-unverified banner-draft" hidden></p>
-      <p id="foot-privacy">Your progress stays on this phone. Nothing is sent anywhere.</p>
-    </footer>
+  </header>
+
+  <div id="progress" class="progress"></div>
+
+  <div id="scene-wrap" class="scene-wrap">
+    <div id="scene" class="scene" aria-hidden="true"></div>
+    <div id="hud" class="hud"></div>
   </div>
 
-  <!-- The printable record, populated only when the learner asks to print. It sits
-       outside .app so the print stylesheet can hide the running app entirely; on
-       screen it stays hidden. Print-to-PDF is how a record leaves a phone that has
-       no share sheet and no connection — see main.js printRecord(). -->
-  <div id="print-record" class="print-record" hidden></div>
+  <main id="main" class="main">
+    <div id="card" class="card"></div>
+    <div id="mini" class="mini"></div>
+  </main>
+  <!-- smoke-compat anchors for delivery wiring (kept hidden, no layout impact) -->
+  <div hidden>
+    <div id="decision"></div><div id="situation"></div><div id="pnl"></div>
+    <div id="save-status"></div><div id="learners"></div><div id="record"></div>
+    <button id="print-record" aria-expanded="false"></button>
+  </div>
 
-  <script type="module" src="./js/main.js"></script>
-
-  <!-- Registered after load, and failing silently on purpose. Offline support is a
-       requirement (ADR-0002) but it is not a precondition for playing: a browser that
-       refuses the worker, or a page opened over file://, must still get a working app
-       rather than an error. -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
-      });
-    }
-  </script>
+  <footer class="foot">
+    <span>Offline • stays on your phone • no maths test</span>
+  </footer>
+</div>
+<script type="module" src="./js/main.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+  }
+</script>
 </body>
 </html>

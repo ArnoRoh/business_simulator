@@ -1,0 +1,447 @@
+{
+  "title": "Asha's Stall",
+  "days": [
+    {
+      "id": "day1",
+      "label": "Day 1 — Find your price",
+      "beats": [
+        {
+          "id": "d1_price",
+          "kicker": "Morning market",
+          "title": "What do you charge for mandazi?",
+          "body": "Customers are walking past. The stall next door sells at 400 — smaller, drier.",
+          "type": "slider",
+          "min": 400,
+          "max": 700,
+          "step": 50,
+          "start": 500,
+          "unitCost": 280,
+          "hint": "Drag to try a price. See the crowd and your tin.",
+          "options": [
+            {
+              "id": "cheap",
+              "label": "Keep it low",
+              "sub": "Win volume",
+              "icon": "🪙",
+              "effects": {
+                "cash": -3000,
+                "reputation": 2
+              }
+            },
+            {
+              "id": "mid",
+              "label": "A little higher",
+              "sub": "Your quality is better",
+              "icon": "⭐",
+              "effects": {
+                "cash": 4000,
+                "reputation": 4
+              }
+            },
+            {
+              "id": "high",
+              "label": "Much higher",
+              "sub": "Test what they'll pay",
+              "icon": "💛",
+              "effects": {
+                "cash": 2000,
+                "reputation": -2
+              }
+            }
+          ]
+        },
+        {
+          "id": "d1_rush",
+          "kicker": "Lunch rush — 20 seconds!",
+          "title": "Serve who you can",
+          "body": "Tap customers before they leave. You can't serve everyone.",
+          "type": "rush",
+          "time": 18,
+          "effectsWin": {
+            "cash": 6000,
+            "reputation": 6
+          },
+          "effectsLose": {
+            "cash": 2000,
+            "reputation": 0
+          }
+        },
+        {
+          "id": "d1_close",
+          "kicker": "Sunset",
+          "title": "A neighbour offers flour on credit",
+          "body": "Pay now for a little cheaper, or pay later and keep cash today?",
+          "type": "choice",
+          "options": [
+            {
+              "id": "cash",
+              "label": "Pay cash now",
+              "sub": "Cheaper later, tight today",
+              "icon": "💵",
+              "effects": {
+                "cash": -2000,
+                "reputation": 1
+              }
+            },
+            {
+              "id": "credit",
+              "label": "Take it on credit",
+              "sub": "Keep cash for tomorrow",
+              "icon": "🤝",
+              "effects": {
+                "cash": 3000,
+                "reputation": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "day2",
+      "label": "Day 2 — What sits on your shelf",
+      "beats": [
+        {
+          "id": "d2_track",
+          "kicker": "Your path",
+          "title": "Which help do you want next?",
+          "body": "Two honest paths — both are complete. Make this stall steady, or build towards selling to other businesses and abroad? You choose; the system never assigns.",
+          "type": "choice",
+          "options": [
+            {
+              "id": "livelihood",
+              "label": "Make this stall steady",
+              "sub": "Keep it simple, keep it yours",
+              "icon": "🏠",
+              "effects": {
+                "cash": 0,
+                "reputation": 3
+              }
+            },
+            {
+              "id": "transform",
+              "label": "Grow to sell to businesses & abroad",
+              "sub": "Longer journey, bigger orders",
+              "icon": "🚀",
+              "effects": {
+                "cash": 0,
+                "reputation": 3
+              }
+            }
+          ]
+        },
+        {
+          "id": "d2_shelf",
+          "kicker": "Opening",
+          "title": "How much do you stock?",
+          "body": "Drag sacks to the shelf. Stock sells — but it's cash sitting there.",
+          "type": "shelf",
+          "levels": 4,
+          "effects": [
+            {
+              "cash": -5000,
+              "stock": 0,
+              "reputation": 0
+            },
+            {
+              "cash": -2000,
+              "stock": 1,
+              "reputation": 2
+            },
+            {
+              "cash": 2000,
+              "stock": 2,
+              "reputation": 4
+            },
+            {
+              "cash": -1000,
+              "stock": 3,
+              "reputation": 1
+            }
+          ]
+        },
+        {
+          "id": "d2_supplier",
+          "kicker": "A trader arrives",
+          "title": "Who do you buy from?",
+          "body": "Cheapest flour is dusty. The reliable one costs more but customers taste it.",
+          "type": "choice",
+          "options": [
+            {
+              "id": "cheap",
+              "label": "Cheapest sack",
+              "sub": "Save now",
+              "icon": "📦",
+              "effects": {
+                "cash": 3000,
+                "reputation": -4
+              }
+            },
+            {
+              "id": "steady",
+              "label": "Steady supplier",
+              "sub": "Consistent quality",
+              "icon": "✅",
+              "effects": {
+                "cash": 0,
+                "reputation": 5
+              }
+            },
+            {
+              "id": "premium",
+              "label": "Premium mill",
+              "sub": "Best taste, thin margin",
+              "icon": "🌾",
+              "effects": {
+                "cash": -2500,
+                "reputation": 7
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "day3",
+      "label": "Day 3 — Extra hands",
+      "beats": [
+        {
+          "id": "d3_hire",
+          "kicker": "You need help",
+          "title": "Who do you hire?",
+          "body": "Swipe the card you trust. Cheap, reliable, or skilled — you can't have all three.",
+          "type": "hire",
+          "options": [
+            {
+              "id": "cousin",
+              "label": "Cousin · 20k/wk",
+              "sub": "Cheap, late sometimes",
+              "icon": "🧢",
+              "effects": {
+                "cash": 2000,
+                "reputation": -2
+              }
+            },
+            {
+              "id": "mama",
+              "label": "Mama J · 35k/wk",
+              "sub": "Reliable, knows customers",
+              "icon": "👩🏾",
+              "effects": {
+                "cash": -1000,
+                "reputation": 6
+              }
+            },
+            {
+              "id": "pro",
+              "label": "Ex-bakery hand · 50k",
+              "sub": "Fast, wants a raise soon",
+              "icon": "👨🏾‍🍳",
+              "effects": {
+                "cash": -4000,
+                "reputation": 8
+              }
+            }
+          ]
+        },
+        {
+          "id": "d3_delegate",
+          "kicker": "You step away",
+          "title": "What do you let them decide?",
+          "body": "If everything needs you, you are the bottleneck.",
+          "type": "choice",
+          "options": [
+            {
+              "id": "tasks",
+              "label": "Tasks only",
+              "sub": "They follow your list",
+              "icon": "📋",
+              "effects": {
+                "cash": 1000,
+                "reputation": 1
+              }
+            },
+            {
+              "id": "quality",
+              "label": "Quality calls",
+              "sub": "They can say no to a bad batch",
+              "icon": "👀",
+              "effects": {
+                "cash": -500,
+                "reputation": 6
+              }
+            },
+            {
+              "id": "money",
+              "label": "Handle money",
+              "sub": "Fast, but risky early",
+              "icon": "💰",
+              "effects": {
+                "cash": 3000,
+                "reputation": -3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "day4",
+      "label": "Day 4 — Big break & bad luck",
+      "beats": [
+        {
+          "id": "d4_order",
+          "kicker": "A school wants 200 mandazi",
+          "title": "Do you take the big order?",
+          "body": "It fills your morning but pays next week. Can you fund it?",
+          "type": "choice",
+          "options": [
+            {
+              "id": "no",
+              "label": "Not now",
+              "sub": "Keep steady",
+              "icon": "🙅🏾",
+              "effects": {
+                "cash": 0,
+                "reputation": 0
+              }
+            },
+            {
+              "id": "yes",
+              "label": "Take it, deliver well",
+              "sub": "Stretch, get known",
+              "icon": "🚐",
+              "effects": {
+                "cash": -3000,
+                "reputation": 8
+              }
+            },
+            {
+              "id": "yes_cheap",
+              "label": "Take it, cut corners",
+              "sub": "More cash today",
+              "icon": "⚠️",
+              "effects": {
+                "cash": 4000,
+                "reputation": -6
+              }
+            }
+          ]
+        },
+        {
+          "id": "d4_shock",
+          "kicker": "Oh no",
+          "title": "The school hasn't paid. It's week 2.",
+          "body": "Your cash is low. The flour man is waiting.",
+          "type": "choice",
+          "options": [
+            {
+              "id": "wait",
+              "label": "Wait and hope",
+              "sub": "Do nothing",
+              "icon": "⏳",
+              "effects": {
+                "cash": -4000,
+                "reputation": -3
+              }
+            },
+            {
+              "id": "call",
+              "label": "Call, offer a small discount for cash now",
+              "sub": "Active, costs a little",
+              "icon": "📞",
+              "effects": {
+                "cash": 2000,
+                "reputation": 4
+              }
+            },
+            {
+              "id": "borrow",
+              "label": "Borrow to cover it",
+              "sub": "Keeps you open, adds pressure",
+              "icon": "🏦",
+              "effects": {
+                "cash": 5000,
+                "reputation": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "day5",
+      "label": "Day 5 — What stays in?",
+      "beats": [
+        {
+          "id": "d5_split",
+          "kicker": "Week's end",
+          "title": "What stays in the business?",
+          "body": "You made something. How much do you take home vs leave to grow?",
+          "type": "split",
+          "options": [
+            {
+              "id": "take",
+              "label": "Take most home",
+              "sub": "Family needs it",
+              "icon": "🏠",
+              "effects": {
+                "cash": -6000,
+                "reputation": 0
+              }
+            },
+            {
+              "id": "balance",
+              "label": "Balanced",
+              "sub": "Home + restock",
+              "icon": "⚖️",
+              "effects": {
+                "cash": -1000,
+                "reputation": 4
+              }
+            },
+            {
+              "id": "reinvest",
+              "label": "Leave it in",
+              "sub": "More stock, better tomorrow",
+              "icon": "🌱",
+              "effects": {
+                "cash": 3000,
+                "reputation": 3
+              }
+            }
+          ]
+        },
+        {
+          "id": "d5_evidence",
+          "kicker": "Show one real task",
+          "title": "Before the grant — one thing from your real business",
+          "body": "Teaching is by doing: photo your last week's cash record OR write a paid-trial offer you'll send tomorrow. One artefact, not a quiz.",
+          "type": "evidence",
+          "options": [
+            {
+              "id": "photo",
+              "label": "Photo my cash record",
+              "sub": "One week, handwritten is fine",
+              "icon": "📸"
+            },
+            {
+              "id": "trial",
+              "label": "Write a paid-trial offer",
+              "sub": "One customer, one price, paid first",
+              "icon": "✍️"
+            }
+          ]
+        },
+        {
+          "id": "d5_reflect",
+          "kicker": "Before the grant",
+          "title": "Why did this week go as it did?",
+          "body": "One line in your own words. No wrong answer — this is your agency signal for the next grant.",
+          "type": "reflect",
+          "prompt": "What one thing would you do differently next week?"
+        }
+      ]
+    }
+  ]
+}

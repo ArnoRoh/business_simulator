@@ -8,7 +8,7 @@ const SHELL = [
   './', './index.html', './manifest.webmanifest', './css/styles.css',
   './js/main.js', './js/engine.js', './js/ui.js', './js/carry.js', './js/format.js',
   './js/i18n.js', './js/record.js', './js/scene.js', './js/storage.js',
-  './content/ui.json', './content/chapters.json',
+  './content/ui.json', './content/chapters.json', './content/game.json',
 ];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(SHELL_CACHE).then(cache => cache.addAll(SHELL)));
