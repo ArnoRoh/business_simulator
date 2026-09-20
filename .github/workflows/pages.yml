@@ -20,7 +20,7 @@ name: Publish to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [main, feat/asha-stall-5day-funnel]
     paths:
       - 'app/**'
       - '.github/workflows/pages.yml'
