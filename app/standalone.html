@@ -1694,6 +1694,7 @@ body { background-image: radial-gradient(ellipse at top, #e0e9d9, transparent 65
 <script>
 (function () {
   'use strict';
+  const EMBEDDED_GAME = null;
   const EMBEDDED_CHAPTERS = {
   "_comment": "Chapter manifest (ADR-0007). Titles and blurbs live here so the select screen costs one small fetch rather than four scenario files — learners pay per megabyte (AGENTS.md section 3). Chapters are never locked: order is a suggestion, not a gate (ADR-0005, D-008).",
   "chapters": [
@@ -2862,7 +2863,7 @@ body { background-image: radial-gradient(ellipse at top, #e0e9d9, transparent 65
 
 const fetch = async (input, init) => {
   const name = String(input).split('/').pop();
-  const value = name === 'ui.json' ? EMBEDDED_UI : name === 'chapters.json' ? EMBEDDED_CHAPTERS : EMBEDDED_SCENARIOS[name];
+  const value = name === 'game.json' ? EMBEDDED_GAME : name === 'ui.json' ? EMBEDDED_UI : name === 'chapters.json' ? EMBEDDED_CHAPTERS : EMBEDDED_SCENARIOS[name];
   return value ? new Response(JSON.stringify(value), { headers: { 'Content-Type': 'application/json' } }) : globalThis.fetch(input, init);
 };
 

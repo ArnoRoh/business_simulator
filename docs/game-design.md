@@ -1,7 +1,23 @@
 # Game design
 
-**Status:** Current implementation on the learner-episodes branch. Deployment and field
-acceptance are separate checks. See [ADR-0012](./adr/0012-play-first-business-journey.md), the implemented redesign proposal.
+**Status:** The public entry is a short introduction. The full four-chapter game is
+at `practice.html`. Field acceptance remains a separate check. See
+[ADR-0013](./adr/0013-short-introduction-and-preserved-chapters.md).
+
+## Short introduction
+
+Thirteen untimed steps cover five sample days. The learner tries prices, a serving
+constraint, stock, supplier credit, delegation, a paid trial, cash collection and
+withdrawals. Decisions have explicit cash transactions. Customer debts and liabilities
+remain visible. A cash-book example gives feedback without a pass threshold.
+
+The learner can choose a steady-income or organisation-building direction. This is a
+preference, not a measured trait. An optional next-step note stays on the device and
+is not proof of execution. Finishing the introduction does not meet the programme’s
+four-chapter entry requirement or establish grant eligibility. A link to the deeper
+game and existing records remains available throughout.
+
+The following sections describe the full four-chapter game.
 
 ## Learner and purpose
 

@@ -1158,36 +1158,3 @@ export function cashBook(state) {
   return { opening: Math.round(state.cash), receipts, payments,
     closing: Math.round(state.cash) + receipts - payments };
 }
-
-// — Asha's Stall entry-episode compat (phone-first 5-day game) —
-// The full simulation above remains the authoritative P&L. This shim lets
-// app/content/game.json run as a 10–15 min decision-only entry without
-// a separate engine bundle, while keeping CALCULATION_VERSION intact for
-// the portal. No score, no rank; completion is the gate.
-export const START = {
-  cash: 45000,
-  reputation: 62,
-  stock: 2,
-  day: 1,
-  customers: 0,
-};
-export function apply(state, effects){
-  const n = {...state};
-  for(const [k,v] of Object.entries(effects||{})){
-    if(typeof v === 'number') n[k] = (n[k]||0) + v;
-  }
-  n.cash = Math.max(0, Math.round(n.cash));
-  n.reputation = Math.max(0, Math.min(100, n.reputation||0));
-  n.stock = Math.max(0, Math.min(4, n.stock||0));
-  return n;
-}
-export function cashTier(cash){
-  if(cash < 15000) return 'low';
-  if(cash < 50000) return 'mid';
-  return 'high';
-}
-export function reputationLabel(r){
-  if(r < 40) return 'needs care';
-  if(r < 70) return 'good';
-  return 'loved';
-}

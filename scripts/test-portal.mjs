@@ -287,7 +287,7 @@ try {
       await page.getByRole('button', { name: 'Sign out of this phone', exact: true }).click();
       await page.getByRole('button', { name: 'Check my chapters', exact: true }).waitFor();
       const { session, advance } = await import('./lib/browser.mjs');
-      await page.goto(base + '/'); await page.locator('.chapter-card').first().click();
+      await page.goto(base + '/practice.html'); await page.locator('.chapter-card').first().click();
       for (let chapter = 0; chapter < 4; chapter++) {
         await page.locator('.episode-progress').waitFor();
         for (let step = 0; step < 180; step++) { if ((await session(page))?.completed) break; await advance(page); }

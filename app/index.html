@@ -2,14 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <meta name="description" content="Run Asha's mandazi stall — a 5-day game about running a real business.">
 <title>Asha's Stall — Business Game</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23ff7a18'/%3E%3Ccircle cx='32' cy='20' r='8' fill='%23fff' opacity='.9'/%3E%3Crect x='16' y='34' width='32' height='18' rx='4' fill='%23fff'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./css/styles.css">
+<link rel="stylesheet" href="./css/entry.css">
 <link rel="manifest" href="./manifest.webmanifest">
 <meta name="theme-color" content="#ff7a18">
 </head>
@@ -18,12 +16,11 @@
   <header class="topbar">
     <div class="brand">
       <span class="brand-mark">◉</span>
-      <span class="brand-name">Asha's Stall</span>
-      <span class="brand-sub">5 days • play anywhere</span>
+      <span id="brand-name" class="brand-name">Asha's Stall</span>
+      <span id="brand-sub" class="brand-sub">5 days • play anywhere</span>
     </div>
     <div class="topbar-right">
       <button id="lang-btn" class="lang-btn" type="button">SW</button>
-      <button id="sound-btn" class="icon-btn" type="button" aria-label="Sound">♪</button>
     </div>
   </header>
 
@@ -35,21 +32,21 @@
   </div>
 
   <main id="main" class="main">
-    <div id="card" class="card"></div>
+    <div id="card" class="card" tabindex="-1"><p>Opening the game… / Mchezo unafunguka…</p></div>
     <div id="mini" class="mini"></div>
   </main>
-  <!-- smoke-compat anchors for delivery wiring (kept hidden, no layout impact) -->
-  <div hidden>
-    <div id="decision"></div><div id="situation"></div><div id="pnl"></div>
-    <div id="save-status"></div><div id="learners"></div><div id="record"></div>
-    <button id="print-record" aria-expanded="false"></button>
-  </div>
-
   <footer class="foot">
-    <span>Offline • stays on your phone • no maths test</span>
+    <p id="sample"></p>
+    <p id="save-status" role="status"></p>
+    <button id="retry" class="ghost" hidden></button>
+    <p id="offline-status" role="status"></p>
+    <button id="old-download" class="ghost" hidden></button>
+    <button id="download" class="ghost"></button>
+    <a id="offline-file" class="ghost" href="./intro-standalone.html" download="MV-BS-INTRO-game.html"></a>
+    <a id="practice" class="ghost" href="./practice.html"></a>
   </footer>
 </div>
-<script type="module" src="./js/main.js"></script>
+<script type="module" src="./js/entry.js"></script>
 <script>
   if ('serviceWorker' in navigator) {
     addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));

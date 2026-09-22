@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="A business simulation for learning practical business skills.">
+  <title>Business Simulator</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231f6f5c'/%3E%3Crect x='13' y='32' width='8' height='19' fill='%23f5c451'/%3E%3Crect x='28' y='23' width='8' height='28' fill='%23f5c451'/%3E%3Crect x='43' y='13' width='8' height='38' fill='%23f5c451'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./css/styles.css">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <meta name="theme-color" content="#1f6f5c">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <h1 id="title">Business Simulator</h1>
+      <div class="topbar-actions">
+        <div id="lang" class="lang-toggle" role="group"></div>
+        <button id="chapters" class="btn btn-ghost btn-small" type="button" hidden>Choose a chapter</button>
+      </div>
+    </header>
+
+    <div id="progress" class="progress"></div>
+
+    <div class="play-board">
+      <section id="business" class="business" hidden>
+        <div id="scene" class="scene" aria-hidden="true"></div>
+        <div id="stats" class="stats"></div>
+      </section>
+      <main>
+        <div id="situation"></div>
+        <div id="decision"></div>
+        <div id="info"></div>
+        <div id="consequence"></div>
+      </main>
+    </div>
+    <button id="pnl-toggle" class="btn btn-ghost pnl-toggle" type="button" aria-expanded="false" aria-controls="pnl-wrap">Show the numbers</button>
+    <div id="pnl-wrap" hidden>
+      <div id="facts"></div>
+      <div id="goal"></div>
+      <div id="pnl" class="pnl"></div>
+      <div id="trajectory"></div>
+    </div>
+    <p id="load-error" hidden>Could not open the game. Reconnect and reload. / Mchezo haujafunguka. Unganisha intaneti na ujaribu tena.</p>
+    <footer class="foot">
+      <button id="save-status" class="btn btn-ghost" type="button" aria-live="polite"></button>
+      <nav class="secondary-actions">
+        <button id="record" class="btn btn-ghost btn-small" type="button" hidden></button>
+        <button id="learners" class="btn btn-ghost btn-small" type="button"></button>
+        <button id="reset" class="btn btn-ghost btn-small" type="button">Start again</button>
+      </nav>
+      <p id="banner" class="banner-unverified" hidden></p>
+      <p id="lang-banner" class="banner-unverified banner-draft" hidden></p>
+      <p id="foot-privacy">Your progress stays on this phone. Nothing is sent anywhere.</p>
+    </footer>
+  </div>
+
+  <!-- The printable record, populated only when the learner asks to print. It sits
+       outside .app so the print stylesheet can hide the running app entirely; on
+       screen it stays hidden. Print-to-PDF is how a record leaves a phone that has
+       no share sheet and no connection — see main.js printRecord(). -->
+  <div id="print-record" class="print-record" hidden></div>
+
+  <script type="module" src="./js/main.js"></script>
+
+  <!-- Registered after load, and failing silently on purpose. Offline support is a
+       requirement (ADR-0002) but it is not a precondition for playing: a browser that
+       refuses the worker, or a page opened over file://, must still get a working app
+       rather than an error. -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>

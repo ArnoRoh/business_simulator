@@ -1,0 +1,1628 @@
+<title>Business Simulator</title>
+<script>
+(function () {
+  if (!document.querySelector('meta[name="viewport"]')) {
+    var m = document.createElement('meta');
+    m.name = 'viewport';
+    m.content = 'width=device-width, initial-scale=1, viewport-fit=cover';
+    document.head.appendChild(m);
+  }
+})();
+</script>
+<style>
+/* Short introduction: native controls, local assets and reduced motion. */
+:root{
+  --bg:#fff6ea;
+  --surface:#ffffff;
+  --ink:#1a140e;
+  --muted:#655846;
+  --line:#f0ddbd;
+  --accent:#aa4200;
+  --accent-2:#0f766e;
+  --accent-3:#facc15;
+  --danger:#e11d48;
+  --ok:#0f766e;
+  --radius:18px;
+  --radius-lg:24px;
+  --tap:52px;
+  --shadow:0 8px 32px rgba(26,20,14,.12), 0 2px 8px rgba(26,20,14,.08);
+  --font-display:system-ui, sans-serif;
+  --font-body:system-ui, sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--font-body); font-size:1.0rem; line-height:1.45;
+  min-height:100dvh; display:flex; justify-content:center;
+}
+.phone{
+  overflow-wrap:anywhere;
+  width:100%; max-width:440px; min-height:100dvh;
+  background:var(--bg); display:flex; flex-direction:column;
+  position:relative;
+}
+/* topbar */
+.topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 16px 10px; background:var(--bg);
+
+}
+.brand{display:flex; flex-direction:column}
+.brand-mark{font-size:1.125rem; color:var(--accent); line-height:1}
+.brand-name{font-family:var(--font-display); font-weight:900; font-size:1.0625rem; letter-spacing:-.02em; margin-top:1px}
+.brand-sub{font-size:0.6875rem; color:var(--muted); font-weight:600; letter-spacing:.02em}
+.topbar-right{flex-shrink:0;display:flex; gap:8px; align-items:center}
+.lang-btn{
+  min-width:48px; min-height:48px; padding:8px; border-radius:12px; border:1.5px solid var(--line);
+  background:var(--surface); font-weight:800; font-size:0.8125rem; cursor:pointer;
+}
+/* progress — 5 days dots */
+.progress{
+  display:flex; gap:8px; align-items:center; padding:8px 16px;
+}
+.dot{
+  flex:1; height:6px; border-radius:99px; background:var(--line); overflow:hidden; position:relative;
+}
+.dot-fill{height:100%; background:var(--accent); border-radius:99px; transition:width .5s cubic-bezier(.34,1.56,.64,1)}
+.dot-label{font-size:0.625rem; font-weight:700; color:var(--muted); margin-top:4px; text-align:center; letter-spacing:.04em}
+/* scene */
+.scene-wrap{position:relative; margin:0 12px; border-radius:var(--radius-lg); overflow:hidden; background:#fde9c7; box-shadow:var(--shadow); min-height:0}
+.scene{width:100%; aspect-ratio: 4/2.1; max-height:200px; display:block; line-height:0}
+.scene svg{width:100%; height:100%; display:block}
+.hud{
+  position:relative; padding:10px; display:flex; flex-wrap:wrap; gap:8px; pointer-events:none;
+}
+.hud-pill{
+  background:rgba(255,255,255,.96); border:1.5px solid rgba(26,20,14,.1); border-radius:999px;
+  padding:6px 10px; font-weight:800; font-size:0.8125rem; display:flex; align-items:center; gap:6px;
+  box-shadow:0 2px 10px rgba(0,0,0,.08)
+}
+.hud-pill.cash{background:var(--ink); color:#fff; border-color:var(--ink)}
+/* card */
+.main{flex:1; padding:14px 12px 18px; display:flex; flex-direction:column; gap:12px}
+.card{
+  background:var(--surface); border:1.5px solid var(--line); border-radius:var(--radius);
+  padding:16px; box-shadow:var(--shadow);
+}
+.kicker{font-size:0.6875rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); margin-bottom:6px}
+.title{font-family:var(--font-display); font-size:1.3125rem; font-weight:900; line-height:1.15; letter-spacing:-.02em; margin:0 0 8px}
+.body{font-size:0.9375rem; color:#2a231c; line-height:1.5; margin:0 0 14px}
+.choices{display:flex; flex-direction:column; gap:10px}
+.choice{
+  width:100%; text-align:left; padding:14px 14px; border-radius:16px; border:2px solid var(--line);
+  background:var(--surface); font:inherit; cursor:pointer; transition:transform .12s, border-color .12s, background .12s;
+  display:flex; gap:12px; align-items:center;
+}
+.choice:active{transform:scale(.98)}
+.primary{
+  width:100%; padding:14px 16px; border-radius:999px; border:0; background:var(--accent); color:#fff;
+  font-family:var(--font-display); font-weight:900; font-size:1.0625rem; letter-spacing:-.01em; cursor:pointer; box-shadow:0 6px 18px rgba(255,122,24,.35);
+  transition:transform .12s;
+}
+.primary:active{transform:scale(.98)}
+.primary:disabled{opacity:.45; cursor:default; transform:none; box-shadow:none}
+.ghost{
+  width:100%; padding:12px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface); font-weight:700; cursor:pointer
+}
+.pulse{animation:pulse .5s}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
+.foot{padding:14px 12px; text-align:center; font-size:0.6875rem; color:var(--muted); letter-spacing:.02em}
+
+button, a, summary { touch-action: manipulation; min-height:48px; }
+button, input, textarea { font:inherit; }
+:focus-visible { outline:3px solid var(--accent-2); outline-offset:3px; }
+a.ghost { color:var(--accent-2); }
+.brand { min-width:0; padding-right:8px; }
+.cash-warning { border-left:4px solid var(--accent); padding:8px; }
+a.primary, a.ghost { display:block; text-decoration:none; text-align:center; }
+.ghost, .primary, .accounts { margin-top:12px; }
+.progress-day { flex:1; }
+.money-row { display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 12px; padding:6px 0; border-bottom:1px solid var(--line); }
+dt { flex:1; min-width:120px; } dd { margin:0; font-weight:700; }
+summary { display:flex; align-items:center; cursor:pointer; font-weight:700; }
+textarea { width:100%; margin:8px 0; padding:12px; border:2px solid var(--line); border-radius:12px; resize:vertical; }
+.cash-change { color:var(--accent-2); font-size:1.25rem; font-weight:800; }
+#card { scroll-margin-top:12px; }
+button:disabled { opacity:.6; cursor:not-allowed; }
+@media (prefers-reduced-motion:reduce) { *, *::before, *::after { animation:none !important; transition:none !important; scroll-behavior:auto !important; } }
+[hidden] { display:none !important; }
+
+</style>
+
+<div class="phone">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">◉</span>
+      <span id="brand-name" class="brand-name">Asha's Stall</span>
+      <span id="brand-sub" class="brand-sub">5 days • play anywhere</span>
+    </div>
+    <div class="topbar-right">
+      <button id="lang-btn" class="lang-btn" type="button">SW</button>
+    </div>
+  </header>
+
+  <div id="progress" class="progress"></div>
+
+  <div id="scene-wrap" class="scene-wrap">
+    <div id="scene" class="scene" aria-hidden="true"></div>
+    <div id="hud" class="hud"></div>
+  </div>
+
+  <main id="main" class="main">
+    <div id="card" class="card" tabindex="-1"><p>Opening the game… / Mchezo unafunguka…</p></div>
+    <div id="mini" class="mini"></div>
+  </main>
+  <footer class="foot">
+    <p id="sample"></p>
+    <p id="save-status" role="status"></p>
+    <button id="retry" class="ghost" hidden></button>
+    <p id="offline-status" role="status"></p>
+    <button id="old-download" class="ghost" hidden></button>
+    <button id="download" class="ghost"></button>
+    <a id="offline-file" class="ghost" href="./intro-standalone.html" download="MV-BS-INTRO-game.html"></a>
+    <a id="practice" class="ghost" href="./practice.html"></a>
+  </footer>
+</div>
+<script>
+  if ('serviceWorker' in navigator) {
+    addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+  }
+</script>
+
+<script>
+(function () {
+  'use strict';
+  const EMBEDDED_GAME = {
+  "id": "asha-intro",
+  "version": 3,
+  "currency": "TZS",
+  "unverified": true,
+  "title": {
+    "en": "Asha's Stall",
+    "sw": "Kibanda cha Asha"
+  },
+  "days": [
+    {
+      "label": {
+        "en": "Find your customers",
+        "sw": "Wajue wateja wako"
+      },
+      "beats": [
+        {
+          "id": "price",
+          "title": {
+            "en": "Try a price",
+            "sw": "Jaribu bei"
+          },
+          "body": {
+            "en": "A batch of 20 mandazi costs {4000}. In this sample market, a higher price can mean fewer sales. Try one batch.",
+            "sw": "Kutengeneza mandazi 20 kunagharimu {4000}. Katika soko hili la mfano, bei kubwa inaweza kupunguza mauzo. Jaribu kiasi kimoja."
+          },
+          "options": [
+            {
+              "id": "low",
+              "label": {
+                "en": "Keep the price low",
+                "sw": "Weka bei ndogo"
+              },
+              "outcome": {
+                "en": "You sold 20 at {300}. You paid {4000} and received {6000}. More customers do not always mean more money left.",
+                "sw": "Umeuza 20 kwa {300} kila moja. Umelipa {4000} na kupokea {6000}. Wateja wengi hawamaanishi pesa nyingi zaidi zinazobaki."
+              },
+              "receipts": 6000,
+              "payments": 4000,
+              "units": 20
+            },
+            {
+              "id": "mid",
+              "label": {
+                "en": "Raise it a little",
+                "sw": "Ongeza bei kidogo"
+              },
+              "outcome": {
+                "en": "You sold 16 at {400}. You received {6400} after paying {4000}. Four unsold mandazi spoiled. Test demand before making more.",
+                "sw": "Umeuza 16 kwa {400} kila moja. Umepokea {6400} baada ya kulipa {4000}. Mandazi manne yaliyobaki yameharibika. Chunguza mahitaji kabla ya kuongeza uzalishaji."
+              },
+              "receipts": 6400,
+              "payments": 4000,
+              "units": 16
+            },
+            {
+              "id": "high",
+              "label": {
+                "en": "Try a much higher price",
+                "sw": "Jaribu bei kubwa zaidi"
+              },
+              "outcome": {
+                "en": "You sold 10 at {500}. You received {5000} after paying {4000}. Half the batch spoiled. A high margin per sale can still leave less money.",
+                "sw": "Umeuza 10 kwa {500} kila moja. Umepokea {5000} baada ya kulipa {4000}. Nusu ya mandazi yameharibika. Faida kubwa kwa kila mauzo inaweza kuacha pesa chache."
+              },
+              "receipts": 5000,
+              "payments": 4000,
+              "units": 10
+            }
+          ]
+        },
+        {
+          "id": "rush",
+          "title": {
+            "en": "A queue builds up",
+            "sw": "Foleni imeongezeka"
+          },
+          "body": {
+            "en": "You have ingredients for 12 more mandazi. Serving each customer takes time. What one change helps today?",
+            "sw": "Una malighafi ya mandazi mengine 12. Kumhudumia kila mteja kunachukua muda. Mabadiliko gani moja yatasaidia leo?"
+          },
+          "options": [
+            {
+              "id": "alone",
+              "label": {
+                "en": "Serve six customers yourself",
+                "sw": "Hudumia wateja sita mwenyewe"
+              },
+              "outcome": {
+                "en": "Six sales brought {2400}; the batch cost {2400}. Working harder did not remove the serving limit.",
+                "sw": "Mauzo sita yameleta {2400}; gharama ilikuwa {2400}. Kufanya kazi zaidi hakuondoa kikomo cha kuhudumia."
+              },
+              "receipts": 2400,
+              "payments": 2400,
+              "units": 6
+            },
+            {
+              "id": "helper",
+              "label": {
+                "en": "Pay a helper to pack orders",
+                "sw": "Lipa msaidizi afunge bidhaa"
+              },
+              "outcome": {
+                "en": "The helper cost {1000}. Twelve sales brought {4800}; ingredients cost {2400}. A clear task helped you serve more.",
+                "sw": "Msaidizi amelipwa {1000}. Mauzo 12 yameleta {4800}; malighafi imegharimu {2400}. Kazi iliyo wazi imeongeza huduma."
+              },
+              "receipts": 4800,
+              "payments": 3400,
+              "units": 12
+            },
+            {
+              "id": "more",
+              "label": {
+                "en": "Make more while people wait",
+                "sw": "Tengeneza zaidi huku watu wakisubiri"
+              },
+              "outcome": {
+                "en": "You spent {4000} but could still serve only six people for {2400}. Production was not the limit.",
+                "sw": "Umetumia {4000} lakini umeweza kuhudumia watu sita tu kwa {2400}. Uzalishaji haukuwa kikwazo."
+              },
+              "receipts": 2400,
+              "payments": 4000,
+              "units": 6
+            }
+          ]
+        },
+        {
+          "id": "flour",
+          "title": {
+            "en": "Buy tomorrow’s flour",
+            "sw": "Nunua unga wa kesho"
+          },
+          "body": {
+            "en": "The same flour costs {4000} now, or {4500} payable on day 5. Credit keeps cash available, but it must be repaid.",
+            "sw": "Unga uleule ni {4000} sasa, au {4500} ukilipa siku ya 5. Mkopo unaacha fedha mkononi, lakini lazima ulipwe."
+          },
+          "options": [
+            {
+              "id": "cash",
+              "label": {
+                "en": "Pay now",
+                "sw": "Lipa sasa"
+              },
+              "outcome": {
+                "en": "Cash fell by {4000}; you now hold flour worth {4000}. Buying stock is not the same as losing it.",
+                "sw": "Fedha zimepungua kwa {4000}; sasa una unga wenye thamani ya {4000}. Kununua bidhaa si sawa na kuzipoteza."
+              },
+              "payments": 4000,
+              "stock": 4000
+            },
+            {
+              "id": "credit",
+              "label": {
+                "en": "Pay on day 5",
+                "sw": "Lipa siku ya 5"
+              },
+              "outcome": {
+                "en": "You received flour worth {4000}, not cash. You owe {4500}. The extra {500} is the cost of waiting to pay.",
+                "sw": "Umepokea unga wa {4000}, si fedha. Unadaiwa {4500}. Ziada ya {500} ni gharama ya kuchelewa kulipa."
+              },
+              "stock": 4000,
+              "debt": 4500
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": {
+        "en": "Stock and your direction",
+        "sw": "Bidhaa na mwelekeo wako"
+      },
+      "beats": [
+        {
+          "id": "stock",
+          "title": {
+            "en": "How much will you make?",
+            "sw": "Utatengeneza kiasi gani?"
+          },
+          "body": {
+            "en": "Yesterday’s flour is worth {4000}. You expect a normal day. More stock ties up cash until a customer pays.",
+            "sw": "Unga wa jana una thamani ya {4000}. Unatarajia siku ya kawaida. Bidhaa nyingi zinashikilia fedha hadi mteja alipe."
+          },
+          "options": [
+            {
+              "id": "small",
+              "label": {
+                "en": "Use only the flour you have",
+                "sw": "Tumia unga ulio nao tu"
+              },
+              "outcome": {
+                "en": "You used all the flour and received {6000}. You kept cash free, but some customers left when you sold out.",
+                "sw": "Umetumia unga wote na kupokea {6000}. Umeacha fedha huru, lakini baadhi ya wateja wameondoka bidhaa zilipoisha."
+              },
+              "receipts": 6000,
+              "stock": -4000,
+              "units": 20
+            },
+            {
+              "id": "balanced",
+              "label": {
+                "en": "Buy a little extra flour",
+                "sw": "Nunua unga kidogo zaidi"
+              },
+              "outcome": {
+                "en": "You paid {2000} more and sold the batch for {9000}. All the flour was used. This worked with today’s demand; it is not a rule for every day.",
+                "sw": "Umeongeza {2000} na kuuza kwa {9000}. Unga wote umetumika. Hii imefaa kwa mahitaji ya leo; si kanuni ya kila siku."
+              },
+              "payments": 2000,
+              "receipts": 9000,
+              "stock": -4000,
+              "units": 30
+            },
+            {
+              "id": "large",
+              "label": {
+                "en": "Buy enough for a much larger day",
+                "sw": "Nunua kwa siku yenye mauzo mengi"
+              },
+              "outcome": {
+                "en": "You paid {6000} more and received {10000}. You still hold unused flour worth {2000}. That value cannot pay a bill until you sell it.",
+                "sw": "Umeongeza {6000} na kupokea {10000}. Bado una unga wa {2000}. Thamani hiyo haiwezi kulipa bili mpaka uuze."
+              },
+              "payments": 6000,
+              "receipts": 10000,
+              "stock": -2000,
+              "units": 34
+            }
+          ]
+        },
+        {
+          "id": "path",
+          "title": {
+            "en": "What do you want to practise?",
+            "sw": "Unataka kufanya mazoezi ya nini?"
+          },
+          "body": {
+            "en": "Both paths matter. This is your preference, not a test of your ability. You can explore every business later.",
+            "sw": "Njia zote zina umuhimu. Hili ni chaguo lako, si kipimo cha uwezo wako. Unaweza kujaribu biashara zote baadaye."
+          },
+          "options": [
+            {
+              "id": "livelihood",
+              "label": {
+                "en": "Build a steady income",
+                "sw": "Jenga kipato cha uhakika"
+              },
+              "outcome": {
+                "en": "A steady business needs reliable cash and time for the owner. The next days let you practise both.",
+                "sw": "Biashara thabiti inahitaji fedha za uhakika na muda kwa mmiliki. Siku zinazofuata zitakupa mazoezi ya yote mawili."
+              }
+            },
+            {
+              "id": "organisation",
+              "label": {
+                "en": "Build a business that can run without you",
+                "sw": "Jenga biashara inayoweza kuendeshwa bila wewe"
+              },
+              "outcome": {
+                "en": "A larger organisation needs capable people, clear tasks and checks. The next days let you try delegation and a customer order.",
+                "sw": "Shirika kubwa linahitaji watu wenye uwezo, kazi zilizo wazi na ukaguzi. Siku zinazofuata utajaribu kukabidhi kazi na agizo la mteja."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": {
+        "en": "Build a team",
+        "sw": "Jenga timu"
+      },
+      "beats": [
+        {
+          "id": "hire",
+          "title": {
+            "en": "Who can help today?",
+            "sw": "Nani anaweza kusaidia leo?"
+          },
+          "body": {
+            "en": "These are invented one-day costs, not local wage rates. Pay for the work you need, then give the person a clear task.",
+            "sw": "Hizi ni gharama za mfano za siku moja, si viwango vya mishahara vya eneo hili. Lipa kwa kazi unayohitaji, kisha toa kazi iliyo wazi."
+          },
+          "options": [
+            {
+              "id": "new",
+              "label": {
+                "en": "Train a new helper · {1000}",
+                "sw": "Mfundishe msaidizi mpya · {1000}"
+              },
+              "outcome": {
+                "en": "You paid {1000}. This helper needs you to show the packing and checking steps.",
+                "sw": "Umelipa {1000}. Msaidizi huyu anahitaji kuonyeshwa hatua za kufunga na kukagua."
+              },
+              "payments": 1000,
+              "trained": false
+            },
+            {
+              "id": "experienced",
+              "label": {
+                "en": "Hire an experienced helper · {2000}",
+                "sw": "Ajiri msaidizi mwenye uzoefu · {2000}"
+              },
+              "outcome": {
+                "en": "You paid {2000}. Experience saves some training time, but you still need clear responsibilities.",
+                "sw": "Umelipa {2000}. Uzoefu unapunguza muda wa mafunzo, lakini majukumu bado yanahitaji kuwa wazi."
+              },
+              "payments": 2000,
+              "trained": true
+            }
+          ]
+        },
+        {
+          "id": "delegate",
+          "title": {
+            "en": "Let the helper run the counter",
+            "sw": "Mruhusu msaidizi ahudumie"
+          },
+          "body": {
+            "en": "You need time to speak to a buyer. A batch costs {2400}; twelve sales can bring {4800}. How will you hand over?",
+            "sw": "Unahitaji muda wa kuzungumza na mnunuzi. Gharama ni {2400}; mauzo 12 yanaweza kuleta {4800}. Utakabidhi kazi vipi?"
+          },
+          "options": [
+            {
+              "id": "control",
+              "label": {
+                "en": "Approve every sale yourself",
+                "sw": "Idhinisha kila mauzo mwenyewe"
+              },
+              "outcome": {
+                "en": "Only eight customers were served. Receipts were {3200}, costs {2400}. The helper still had to wait for you.",
+                "sw": "Wateja wanane tu wamehudumiwa. Mapato ni {3200}, gharama {2400}. Msaidizi bado alikusubiri."
+              },
+              "receipts": 3200,
+              "payments": 2400,
+              "units": 8
+            },
+            {
+              "id": "check",
+              "label": {
+                "en": "Agree the price, show the task, count cash together",
+                "sw": "Kubalianeni bei, onyesha kazi, hesabu fedha pamoja"
+              },
+              "outcome": {
+                "en": "Twelve customers were served. Receipts were {4800}, costs {2400}. Clear authority and a cash check let you step away.",
+                "sw": "Wateja 12 wamehudumiwa. Mapato ni {4800}, gharama {2400}. Mamlaka yaliyo wazi na ukaguzi wa fedha vimekuruhusu kuondoka."
+              },
+              "receipts": 4800,
+              "payments": 2400,
+              "units": 12
+            },
+            {
+              "id": "leave",
+              "label": {
+                "en": "Leave without a handover",
+                "sw": "Ondoka bila maelekezo"
+              },
+              "outcome": {
+                "en": "Your helper’s preparation affected service. The cash record shows the result. Experience helps; a clear handover is still needed.",
+                "sw": "Maandalizi ya msaidizi yameathiri huduma. Rekodi inaonyesha matokeo. Uzoefu unasaidia; maelekezo yaliyo wazi bado yanahitajika."
+              },
+              "payments": 2400,
+              "dynamic": "handover"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": {
+        "en": "Test a bigger order",
+        "sw": "Jaribu agizo kubwa"
+      },
+      "beats": [
+        {
+          "id": "order",
+          "title": {
+            "en": "A shop asks for a trial batch",
+            "sw": "Duka linaomba bidhaa za majaribio"
+          },
+          "body": {
+            "en": "The batch costs {6000}. The buyer offers {9000}, payable after delivery. Negotiate a small paid trial or fund the full order?",
+            "sw": "Gharama ni {6000}. Mnunuzi anatoa {9000}, kulipa baada ya kupokea. Ujadili jaribio dogo la kulipwa au ugharamie agizo lote?"
+          },
+          "options": [
+            {
+              "id": "no",
+              "label": {
+                "en": "Keep serving your usual customers",
+                "sw": "Endelea na wateja wako wa kawaida"
+              },
+              "outcome": {
+                "en": "You declined this order. You have no claim on the shop’s money and no delivery cost. Declining can protect working cash.",
+                "sw": "Umekataa agizo hili. Hudai fedha za duka na huna gharama ya kupeleka. Kukataa kunaweza kulinda fedha za biashara."
+              }
+            },
+            {
+              "id": "credit",
+              "label": {
+                "en": "Deliver the full batch on credit",
+                "sw": "Peleka bidhaa zote kwa mkopo"
+              },
+              "outcome": {
+                "en": "You paid {6000} and the shop owes you {9000}. The sale increased what the business owns, but cash fell.",
+                "sw": "Umelipa {6000} na unadai duka {9000}. Mauzo yameongeza mali ya biashara, lakini fedha zimepungua."
+              },
+              "payments": 6000,
+              "receivable": 9000
+            },
+            {
+              "id": "trial",
+              "label": {
+                "en": "Agree a half-size trial, paid on delivery",
+                "sw": "Kubali nusu ya bidhaa, malipo wakati wa kupokea"
+              },
+              "outcome": {
+                "en": "The buyer accepted the small trial. You paid {3000} and collected {4500}. A paid trial tested demand while limiting cash at risk.",
+                "sw": "Mnunuzi amekubali jaribio dogo. Umelipa {3000} na kupokea {4500}. Jaribio la kulipwa limechunguza mahitaji na kupunguza fedha zilizo hatarini."
+              },
+              "payments": 3000,
+              "receipts": 4500
+            }
+          ]
+        },
+        {
+          "id": "disruption",
+          "title": {
+            "en": "Rain slows the market",
+            "sw": "Mvua imepunguza wateja"
+          },
+          "body": {
+            "en": "Rain has slowed walk-in sales. A small covered stall batch costs {2000} and brings {3000}. Choose how to respond.",
+            "sw": "Mvua imepunguza wateja. Bidhaa chache chini ya kibanda zinagharimu {2000} na kuleta {3000}. Chagua hatua."
+          },
+          "options": [
+            {
+              "id": "trade",
+              "label": {
+                "en": "Make a small batch under cover",
+                "sw": "Tengeneza kiasi kidogo chini ya kibanda"
+              },
+              "outcome": {
+                "en": "You spent {2000} and received {3000}. You adjusted production to today’s demand.",
+                "sw": "Umetumia {2000} na kupokea {3000}. Umebadili uzalishaji kulingana na mahitaji ya leo."
+              },
+              "payments": 2000,
+              "receipts": 3000
+            },
+            {
+              "id": "pause",
+              "label": {
+                "en": "Pause production today",
+                "sw": "Sitisha uzalishaji leo"
+              },
+              "outcome": {
+                "en": "You made no batch and received no sales cash. You avoided paying for food that might not sell.",
+                "sw": "Hujatengeneza bidhaa wala kupokea fedha za mauzo. Umeepuka gharama ya chakula ambacho huenda kisiuzwe."
+              }
+            }
+          ],
+          "creditVariant": {
+            "title": {
+              "en": "The shop is late paying",
+              "sw": "Duka limechelewa kulipa"
+            },
+            "body": {
+              "en": "The shop owes {9000}. It offers {8500} now, or the full amount later. Cash tied up in a sale cannot buy flour.",
+              "sw": "Unadai duka {9000}. Linatoa {8500} sasa, au kiasi chote baadaye. Fedha zilizo kwenye deni haziwezi kununua unga."
+            },
+            "options": [
+              {
+                "id": "collect",
+                "label": {
+                  "en": "Accept {8500} now",
+                  "sw": "Kubali {8500} sasa"
+                },
+                "outcome": {
+                  "en": "You collected {8500} and cleared the {9000} invoice. The {500} discount is a real cost of getting cash sooner.",
+                  "sw": "Umepokea {8500} na kumaliza ankara ya {9000}. Punguzo la {500} ni gharama ya kupata fedha mapema."
+                },
+                "receipts": 8500,
+                "receivable": -9000
+              },
+              {
+                "id": "wait",
+                "label": {
+                  "en": "Keep the full invoice and wait",
+                  "sw": "Subiri kiasi chote cha ankara"
+                },
+                "outcome": {
+                  "en": "You still have a claim for {9000}, but no cash from this sale. There is no promise that it will arrive on time.",
+                  "sw": "Bado unadai {9000}, lakini hujapata fedha za mauzo haya. Hakuna uhakika wa kulipwa kwa wakati."
+                }
+              },
+              {
+                "id": "borrow",
+                "label": {
+                  "en": "Borrow {4000}; repay {4400} tomorrow",
+                  "sw": "Kopa {4000}; rudisha {4400} kesho"
+                },
+                "outcome": {
+                  "en": "Cash rose by {4000}, but debt rose by {4400}. Borrowing is not sales income. The customer still owes you {9000}.",
+                  "sw": "Fedha zimeongezeka kwa {4000}, lakini deni limeongezeka kwa {4400}. Mkopo si mapato ya mauzo. Bado unamdai mteja {9000}."
+                },
+                "receipts": 4000,
+                "debt": 4400
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "label": {
+        "en": "Keep a useful record",
+        "sw": "Weka rekodi yenye manufaa"
+      },
+      "beats": [
+        {
+          "id": "repay",
+          "title": {
+            "en": "Pay what is due",
+            "sw": "Lipa madeni yanayodaiwa"
+          },
+          "body": {
+            "en": "Check the amount you owe below. Settle the flour credit and any short loan before choosing what to take home.",
+            "sw": "Angalia deni lako hapa chini. Lipa mkopo wa unga na mkopo mfupi wowote kabla ya kuchagua fedha za nyumbani."
+          },
+          "options": [
+            {
+              "id": "settle",
+              "label": {
+                "en": "Pay the amount due",
+                "sw": "Lipa deni linalodaiwa"
+              },
+              "outcome": {
+                "en": "The record shows the cash used to repay debt. This is why borrowed cash was never free money. If you owed nothing, nothing was deducted.",
+                "sw": "Rekodi inaonyesha fedha zilizotumika kulipa deni. Ndiyo maana fedha za mkopo si fedha za bure. Kama hukuwa na deni, hakuna kilichokatwa."
+              },
+              "dynamic": "repay"
+            }
+          ]
+        },
+        {
+          "id": "home",
+          "title": {
+            "en": "What can you take home?",
+            "sw": "Unaweza kuchukua kiasi gani nyumbani?"
+          },
+          "body": {
+            "en": "The next batch needs {4000} in cash. Check what would remain after taking money home. Family income and business cash serve different needs.",
+            "sw": "Bidhaa zinazofuata zinahitaji fedha {4000}. Angalia kitakachobaki baada ya kuchukua fedha nyumbani. Kipato cha familia na fedha za biashara zina mahitaji tofauti."
+          },
+          "options": [
+            {
+              "id": "take",
+              "label": {
+                "en": "Take {6000} home",
+                "sw": "Chukua {6000} nyumbani"
+              },
+              "outcome": {
+                "en": "You moved {6000} from business cash to the household. It is an owner withdrawal, not a production cost.",
+                "sw": "Umehamisha {6000} kutoka biashara kwenda nyumbani. Hizi ni fedha alizochukua mmiliki, si gharama ya uzalishaji."
+              },
+              "payments": 6000,
+              "withdrawn": 6000
+            },
+            {
+              "id": "some",
+              "label": {
+                "en": "Take {2000} home",
+                "sw": "Chukua {2000} nyumbani"
+              },
+              "outcome": {
+                "en": "You moved {2000} home and kept the rest available for the stall. A cash reserve helps only if you know the next costs.",
+                "sw": "Umehamisha {2000} nyumbani na kuacha zilizobaki kwa kibanda. Akiba husaidia ukijua gharama zinazofuata."
+              },
+              "payments": 2000,
+              "withdrawn": 2000
+            },
+            {
+              "id": "keep",
+              "label": {
+                "en": "Keep the cash in the stall",
+                "sw": "Acha fedha kwenye kibanda"
+              },
+              "outcome": {
+                "en": "Cash stayed where it was. Keeping money in the business does not create more money; you still need a useful way to use it.",
+                "sw": "Fedha zimebaki zilipokuwa. Kuacha fedha kwenye biashara hakuzalishi fedha zaidi; bado unahitaji matumizi yenye manufaa."
+              }
+            }
+          ]
+        },
+        {
+          "id": "cashbook",
+          "title": {
+            "en": "Check the cash tin",
+            "sw": "Kagua kisanduku cha fedha"
+          },
+          "body": {
+            "en": "Practise with a separate example: opening cash {10000}, cash received {6000}, cash paid {4000}. How much is left? This does not change your stall cash.",
+            "sw": "Fanya mazoezi kwa mfano tofauti: fedha za mwanzo {10000}, fedha zilizopokelewa {6000}, fedha zilizolipwa {4000}. Zimebaki kiasi gani? Hii haibadili fedha za kibanda."
+          },
+          "options": [
+            {
+              "id": "12000",
+              "label": {
+                "en": "{12000}",
+                "sw": "{12000}"
+              },
+              "outcome": {
+                "en": "Yes: {10000} + {6000} − {4000} = {12000}. Record both money in and money out.",
+                "sw": "Ndiyo: {10000} + {6000} − {4000} = {12000}. Andika fedha zilizoingia na zilizotoka."
+              }
+            },
+            {
+              "id": "16000",
+              "label": {
+                "en": "{16000}",
+                "sw": "{16000}"
+              },
+              "outcome": {
+                "en": "That includes the receipts but misses the payment. {10000} + {6000} − {4000} = {12000}.",
+                "sw": "Hizo zinajumuisha mapokezi lakini si malipo. {10000} + {6000} − {4000} = {12000}."
+              }
+            },
+            {
+              "id": "6000",
+              "label": {
+                "en": "{6000}",
+                "sw": "{6000}"
+              },
+              "outcome": {
+                "en": "That leaves out the opening money or receipts. Start with {10000}, add {6000}, subtract {4000}: {12000}.",
+                "sw": "Hizo zimeacha fedha za mwanzo au mapokezi. Anza na {10000}, ongeza {6000}, toa {4000}: {12000}."
+              }
+            }
+          ]
+        },
+        {
+          "id": "reflect",
+          "title": {
+            "en": "Choose one real next step",
+            "sw": "Chagua hatua moja halisi"
+          },
+          "body": {
+            "en": "Optional: what small paid trial could you try, or which cash entry will you record? Do not add names or private customer details. A note is a plan, not proof that you did it.",
+            "sw": "Si lazima: unaweza kujaribu mauzo gani madogo ya kulipwa, au utaandika fedha gani? Usiweke majina au taarifa binafsi za wateja. Maandishi haya ni mpango, si uthibitisho wa utekelezaji."
+          },
+          "kind": "note"
+        }
+      ]
+    }
+  ],
+  "ui": {
+    "subtitle": {
+      "en": "Five sample days · no timer",
+      "sw": "Siku tano za mfano · bila kipima muda"
+    },
+    "sample": {
+      "en": "Sample only. Prices and Kiswahili need local review.",
+      "sw": "Mfano tu. Bei na Kiswahili vinahitaji uhakiki wa eneo hili."
+    },
+    "cash": {
+      "en": "Cash available",
+      "sw": "Fedha zilizopo"
+    },
+    "debt": {
+      "en": "You owe",
+      "sw": "Unadaiwa"
+    },
+    "receivable": {
+      "en": "Customers owe you",
+      "sw": "Unawadai wateja"
+    },
+    "stock": {
+      "en": "Unused flour",
+      "sw": "Unga uliobaki"
+    },
+    "net": {
+      "en": "Cash + flour + customer debts − what you owe",
+      "sw": "Fedha + unga + madeni ya wateja − madeni yako"
+    },
+    "accounts": {
+      "en": "See the money",
+      "sw": "Angalia fedha"
+    },
+    "in": {
+      "en": "Cash received",
+      "sw": "Fedha zilizopokelewa"
+    },
+    "out": {
+      "en": "Cash paid",
+      "sw": "Fedha zilizolipwa"
+    },
+    "change": {
+      "en": "Cash change",
+      "sw": "Mabadiliko ya fedha"
+    },
+    "next": {
+      "en": "Continue →",
+      "sw": "Endelea →"
+    },
+    "day": {
+      "en": "Day {n} of 5",
+      "sw": "Siku ya {n} kati ya 5"
+    },
+    "done": {
+      "en": "You finished the introduction",
+      "sw": "Umemaliza utangulizi"
+    },
+    "limit": {
+      "en": "This record shows choices in a sample game. It does not prove real business performance or qualify you for a grant.",
+      "sw": "Rekodi hii inaonyesha chaguo kwenye mchezo wa mfano. Haithibitishi matokeo ya biashara halisi wala kukupa sifa za ruzuku."
+    },
+    "practice": {
+      "en": "Explore the four businesses →",
+      "sw": "Jaribu biashara nne →"
+    },
+    "saved": {
+      "en": "Saved on this device. Nothing sent.",
+      "sw": "Imehifadhiwa kwenye kifaa hiki. Hakuna kilichotumwa."
+    },
+    "failed": {
+      "en": "Could not save. Keep this page open, download your record, then retry.",
+      "sw": "Haijahifadhiwa. Acha ukurasa wazi, pakua rekodi yako, kisha jaribu tena."
+    },
+    "retry": {
+      "en": "Retry saving",
+      "sw": "Jaribu kuhifadhi tena"
+    },
+    "download": {
+      "en": "Download my record",
+      "sw": "Pakua rekodi yangu"
+    },
+    "replay": {
+      "en": "Start a new attempt",
+      "sw": "Anza jaribio jipya"
+    },
+    "confirm": {
+      "en": "Download your record first if you want to keep it. Replace this introduction attempt? Full-game records stay unchanged.",
+      "sw": "Pakua rekodi yako kwanza ikiwa unataka kuihifadhi. Ubadilishe jaribio hili la utangulizi? Rekodi za mchezo kamili hazitabadilika."
+    },
+    "note": {
+      "en": "My next step (optional)",
+      "sw": "Hatua yangu inayofuata (si lazima)"
+    },
+    "finish": {
+      "en": "Finish",
+      "sw": "Maliza"
+    },
+    "previous": {
+      "en": "Your older introduction save is kept. This revised game starts a separate attempt.",
+      "sw": "Hifadhi yako ya zamani ipo. Mchezo uliorekebishwa unaanza jaribio tofauti."
+    },
+    "invalid": {
+      "en": "This save cannot be opened. Download it before starting a new attempt.",
+      "sw": "Hifadhi hii haiwezi kufunguliwa. Ipakue kabla ya kuanza jaribio jipya."
+    },
+    "raw": {
+      "en": "Download previous save",
+      "sw": "Pakua hifadhi ya awali"
+    },
+    "loading": {
+      "en": "Opening the game…",
+      "sw": "Mchezo unafunguka…"
+    },
+    "error": {
+      "en": "Could not open the game. Reconnect and reload.",
+      "sw": "Mchezo haujafunguka. Unganisha intaneti na ujaribu tena."
+    },
+    "offline": {
+      "en": "Ready for offline play",
+      "sw": "Tayari kucheza bila intaneti"
+    },
+    "online": {
+      "en": "Offline copy not yet ready",
+      "sw": "Nakala ya kucheza bila intaneti haijawa tayari"
+    },
+    "endnote": {
+      "en": "Your next step",
+      "sw": "Hatua yako inayofuata"
+    },
+    "learn": {
+      "en": "Try the bakery next: organise production and people. Or choose any chapter.",
+      "sw": "Jaribu bakery: panga uzalishaji na watu. Au chagua sura yoyote."
+    },
+    "steady": {
+      "en": "Try the stall chapter next: practise steady cash and income. Or choose any chapter.",
+      "sw": "Jaribu sura ya kibanda: fanya mazoezi ya fedha na kipato thabiti. Au chagua sura yoyote."
+    },
+    "unavailable": {
+      "en": "Not enough cash for this choice",
+      "sw": "Fedha hazitoshi kwa chaguo hili"
+    },
+    "conflict": {
+      "en": "This attempt changed in another tab. Download this record, then reload to use the saved attempt.",
+      "sw": "Jaribio hili limebadilika kwenye kichupo kingine. Pakua rekodi hii, kisha fungua tena ili kutumia jaribio lililohifadhiwa."
+    },
+    "fullOnline": {
+      "en": "Open the full game online →",
+      "sw": "Fungua mchezo kamili mtandaoni →"
+    },
+    "offlineFile": {
+      "en": "Download this introduction for offline use",
+      "sw": "Pakua utangulizi huu kwa matumizi bila intaneti"
+    },
+    "cashWarning": {
+      "en": "Cash is below {4000}, the cost of the next batch. Try a smaller batch or collect payment before buying.",
+      "sw": "Fedha ni chini ya {4000}, gharama ya bidhaa zinazofuata. Tengeneza kiasi kidogo au kusanya malipo kabla ya kununua."
+    }
+  },
+  "nextBatchCost": 4000
+};
+  const EMBEDDED_CHAPTERS = {
+  "_comment": "Chapter manifest (ADR-0007). Titles and blurbs live here so the select screen costs one small fetch rather than four scenario files — learners pay per megabyte (AGENTS.md section 3). Chapters are never locked: order is a suggestion, not a gate (ADR-0005, D-008).",
+  "chapters": [
+    {
+      "id": "mama-asha",
+      "file": "scenario-mama-asha.json",
+      "title": {
+        "en": "The mandazi stall",
+        "sw": "Kibanda cha mandazi"
+      },
+      "shift": {
+        "en": "Find a price. Win a customer.",
+        "sw": "Tafuta bei. Pata mteja."
+      },
+      "blurb": {
+        "en": "Asha sells mandazi by the bus stand. Twenty weeks of decisions about price, cost, customers and time.",
+        "sw": "Asha anauza mandazi karibu na kituo cha basi. Wiki ishirini za maamuzi kuhusu bei, gharama, wateja na muda."
+      },
+      "bridge": {
+        "en": "You tried prices and customers at the stall. Now Asha has an oven and shop orders. Can you keep cash moving while customers pay later?",
+        "sw": "Umejaribu bei na wateja kibandani. Sasa Asha ana oveni na oda za maduka. Unaweza kuendeleza mzunguko wa pesa wateja wanapolipa baadaye?"
+      }
+    },
+    {
+      "id": "bakery",
+      "file": "scenario-bakery.json",
+      "title": {
+        "en": "The bakery",
+        "sw": "Mkate wa Asha"
+      },
+      "shift": {
+        "en": "An oven, a team, and bills to pay.",
+        "sw": "Oveni, timu, na bili za kulipa."
+      },
+      "blurb": {
+        "en": "A premises, an oven and two shops that want to buy wholesale. Money now arrives on a different schedule from the work that earned it.",
+        "sw": "Jengo, oveni na maduka mawili yanayotaka kununua kwa jumla. Sasa pesa inafika kwa ratiba tofauti na kazi iliyoiingiza."
+      },
+      "bridge": {
+        "en": "The bakery needs more than good baking. In the factory, Asha must build a team that can make decisions without waiting for her.",
+        "sw": "Biashara ya mkate inahitaji zaidi ya kuoka vizuri. Kiwandani, Asha lazima ajenge timu inayoweza kufanya maamuzi bila kumsubiri."
+      }
+    },
+    {
+      "id": "factory",
+      "file": "scenario-factory.json",
+      "title": {
+        "en": "The factory",
+        "sw": "Kiwanda"
+      },
+      "shift": {
+        "en": "You cannot do every job yourself.",
+        "sw": "Huwezi kufanya kila kazi mwenyewe."
+      },
+      "blurb": {
+        "en": "A leased unit, staff, a van and a loan. Decisions stop being about what to do and start being about who decides.",
+        "sw": "Jengo la kupanga, wafanyakazi, gari na mkopo. Maamuzi hayahusu tena nini cha kufanya, bali nani anaamua."
+      },
+      "bridge": {
+        "en": "Asha’s next buyer is overseas. The order is bigger, but the journey is longer and payment may arrive much later.",
+        "sw": "Mnunuzi anayefuata wa Asha yuko nje ya nchi. Oda ni kubwa, lakini safari ni ndefu na malipo yanaweza kuchelewa zaidi."
+      }
+    },
+    {
+      "id": "export",
+      "file": "scenario-export.json",
+      "title": {
+        "en": "Exporting",
+        "sw": "Kuuza nje"
+      },
+      "shift": {
+        "en": "New buyers. Longer waits for payment.",
+        "sw": "Wanunuzi wapya. Muda mrefu wa kusubiri malipo."
+      },
+      "blurb": {
+        "en": "A buyer abroad, a currency you do not control, and ninety days between shipping and being paid.",
+        "sw": "Mnunuzi nje ya nchi, sarafu usiyoidhibiti, na siku tisini kati ya kusafirisha na kulipwa."
+      }
+    }
+  ]
+};
+  const EMBEDDED_SCENARIOS = {};
+  const EMBEDDED_UI = null;
+
+const fetch = async (input, init) => {
+  const name = String(input).split('/').pop();
+  const value = name === 'game.json' ? EMBEDDED_GAME : name === 'ui.json' ? EMBEDDED_UI : name === 'chapters.json' ? EMBEDDED_CHAPTERS : EMBEDDED_SCENARIOS[name];
+  return value ? new Response(JSON.stringify(value), { headers: { 'Content-Type': 'application/json' } }) : globalThis.fetch(input, init);
+};
+
+/* ---- i18n ---- */
+const NS_i18n = (function () {
+
+// Language, strings and plurals.
+//
+// Rules this file exists to enforce (docs/localization.md, "Language"):
+//
+//   1. No user-facing string lives in code. Everything comes from content/ui.json.
+//   2. No sentence is built by concatenation. Word order differs between languages,
+//      so templates carry whole sentences with named placeholders.
+//   3. Plurals go through Intl.PluralRules, never `if (n === 1)`.
+//
+// Strings are stored key-major — { "btn.continue": { en: "...", sw: "..." } } — so a
+// reviewer reads the two languages side by side instead of scrolling between two
+// blocks. Scenario content uses the same shape, which is what `localised()` reads.
+
+const LANGUAGES = [
+  { code: 'en', label: 'English' },
+  { code: 'sw', label: 'Kiswahili' },
+];
+
+const FALLBACK = 'en';
+
+let language = FALLBACK;
+let strings = {};
+
+function loadStrings(table) {
+  strings = table || {};
+}
+
+function setLanguage(code) {
+  if (!LANGUAGES.some((l) => l.code === code)) return language;
+  language = code;
+  if (typeof document !== 'undefined') document.documentElement.lang = code;
+  return language;
+}
+
+function getLanguage() {
+  return language;
+}
+
+
+/**
+ * Pick the right variant out of a localised value.
+ *
+ * Accepts a bare string too, so scenario content can be part-translated during
+ * authoring without the app breaking.
+ */
+function localised(value) {
+  if (value === null || value === undefined) return '';
+  if (typeof value === 'string') return value;
+  if (typeof value !== 'object') return String(value);
+  return value[language] ?? value[FALLBACK] ?? '';
+}
+
+function interpolate(template, params) {
+  if (!params) return template;
+  return template.replace(/\{(\w+)\}/g, (whole, name) => (
+    Object.prototype.hasOwnProperty.call(params, name) ? String(params[name]) : whole
+  ));
+}
+
+/**
+ * Look up a string.
+ *
+ * A missing key returns the key itself rather than an empty string — a visible
+ * `pnl.sales` in the interface gets fixed; a blank space does not get noticed.
+ * scripts/validate-i18n.mjs is what stops that reaching anyone.
+ */
+function t(key, params) {
+  const entry = strings[key];
+  if (entry === undefined) return key;
+
+  const template = typeof entry === 'string'
+    ? entry
+    : (entry[language] ?? entry[FALLBACK]);
+
+  if (template === undefined || template === null) return key;
+  return interpolate(template, params);
+}
+
+/**
+ * Plural-aware lookup. Given `n`, looks for `key.one` / `key.other` and whichever
+ * other categories the language uses, via Intl.PluralRules.
+ *
+ * `{n}` is available to the template automatically, already locale-formatted by the
+ * caller if it needs to be.
+ */
+function tCount(key, n, params = {}) {
+  let category = 'other';
+  try {
+    category = new Intl.PluralRules(language).select(n);
+  } catch {
+    category = n === 1 ? 'one' : 'other';
+  }
+
+  const withCount = { n, ...params };
+  const specific = `${key}.${category}`;
+  if (strings[specific] !== undefined) return t(specific, withCount);
+
+  const other = `${key}.other`;
+  if (strings[other] !== undefined) return t(other, withCount);
+
+  return t(key, withCount);
+}
+
+  return { loadStrings, setLanguage, getLanguage, localised, t, tCount, LANGUAGES };
+})();
+
+/* ---- format ---- */
+const NS_format = (function () {
+const { t, getLanguage } = NS_i18n;
+// Number and currency formatting.
+//
+// Amounts are stored locale-neutral (plain integers) and formatted only at render
+// time — AGENTS.md section 6. Never author a currency symbol into content.
+
+
+let currency = 'TZS';
+
+function setCurrency(nextCurrency) {
+  currency = nextCurrency || currency;
+}
+
+/** Digit grouping follows the interface language. */
+function localeTag() {
+  return getLanguage() === 'sw' ? 'sw-TZ' : 'en-GB';
+}
+
+// Grouped integer, no decimals. Small-business amounts are whole shillings.
+//
+// The currency stays the ISO code in both languages. "TSh" and the local "1,500/="
+// notation are both plausible for Tanzania, but inventing regulatory or commercial
+// detail is exactly what AGENTS.md section 6 forbids — it is logged for local review
+// instead.
+function money(amount) {
+  const n = Math.round(Number(amount) || 0);
+  const sign = n < 0 ? '-' : '';
+  const grouped = Math.abs(n).toLocaleString(localeTag(), { maximumFractionDigits: 0 });
+  return `${sign}${currency} ${grouped}`;
+}
+
+// Compact form for tight spaces (stat tiles, chart axes). Carries the currency, because
+// a bare "150k" sitting next to a unit count is ambiguous.
+function moneyShort(amount) {
+  const n = Math.round(Number(amount) || 0);
+  const abs = Math.abs(n);
+  const sign = n < 0 ? '-' : '';
+  if (abs >= 1000000) return `${sign}${currency} ${(abs / 1000000).toFixed(1)}M`;
+  if (abs >= 1000) return `${sign}${currency} ${Math.round(abs / 1000)}k`;
+  return `${sign}${currency} ${abs}`;
+}
+
+// Without the currency — for axes and anywhere the unit is already established.
+function compact(amount) {
+  const n = Math.round(Number(amount) || 0);
+  const abs = Math.abs(n);
+  const sign = n < 0 ? '-' : '';
+  if (abs >= 1000000) return `${sign}${(abs / 1000000).toFixed(1)}M`;
+  if (abs >= 1000) return `${sign}${Math.round(abs / 1000)}k`;
+  return `${sign}${abs}`;
+}
+
+/** Always signed, for deltas where the direction is the point. */
+function moneySigned(amount) {
+  const n = Math.round(Number(amount) || 0);
+  return n >= 0 ? `+${money(n)}` : money(n);
+}
+
+function count(n) {
+  return Math.round(Number(n) || 0).toLocaleString(localeTag());
+}
+
+// Proportions read more reliably than percentages for this audience —
+// docs/localization.md. Used for prediction accuracy.
+//
+// Built from a template rather than concatenated: "3 of 16" and "3 kati ya 16" do not
+// share a word order, and docs/localization.md rule 2 forbids assembling sentences
+// from fragments.
+function proportion(part, whole) {
+  const p = Math.round(Number(part) || 0);
+  const w = Math.round(Number(whole) || 0);
+  if (w <= 0) return '—';
+  return t('profile.tally', { part: count(p), whole: count(w) });
+}
+
+function percent(fraction) {
+  return `${Math.round((Number(fraction) || 0) * 100)}%`;
+}
+
+/** Long-form date for the printed record — "21 August 2026" / "21 Agosti 2026". */
+function dateLong(iso) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleDateString(localeTag(), { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+  return { setCurrency, money, moneyShort, compact, moneySigned, count, proportion, percent, dateLong };
+})();
+
+/* ---- entrymodel ---- */
+const NS_entrymodel = (function () {
+
+// A separate, versioned introduction. Never label its observations as full-game evidence.
+const RECORD_VERSION = 1;
+const OPENING = { cash: 15000, stock: 0, debt: 0, receivable: 0, withdrawn: 0, trained: false };
+function startRun(game) {
+  return { schemaVersion: RECORD_VERSION, gameId: game.id, contentVersion: game.version,
+    id: crypto.randomUUID(), startedAt: new Date().toISOString(), scenario: structuredClone(game),
+    step: 0, phase: 'choice', state: { ...OPENING }, observations: [], note: '', trajectory: '' };
+}
+function steps(run) {
+  return run.scenario.days.flatMap((day, dayIndex) => day.beats.map(beat => ({ ...beat, dayIndex })));
+}
+function currentBeat(run) {
+  const beat = steps(run)[run.step];
+  const state = run.phase === 'result' ? run.observations.at(-1).before : run.state;
+  return beat?.creditVariant && state.receivable > 0 ? { ...beat, ...beat.creditVariant } : beat;
+}
+function transaction(state, option) {
+  let { receipts = 0, payments = 0, stock = 0, debt = 0, receivable = 0, withdrawn = 0 } = option;
+  if (option.dynamic === 'repay') { payments = state.debt; debt = -state.debt; }
+  if (option.dynamic === 'handover') receipts = state.trained ? 4000 : 2400;
+  const next = { ...state, cash: state.cash + receipts - payments,
+    stock: state.stock + stock, debt: state.debt + debt,
+    receivable: state.receivable + receivable, withdrawn: state.withdrawn + withdrawn };
+  if (typeof option.trained === 'boolean') next.trained = option.trained;
+  for (const key of ['cash', 'stock', 'debt', 'receivable', 'withdrawn']) {
+    if (!Number.isSafeInteger(next[key]) || next[key] < 0) throw new Error('Invalid transaction: ' + key);
+  }
+  return { state: next, receipts, payments };
+}
+function choose(run, optionId) {
+  if (run.phase !== 'choice') throw new Error('Decision already recorded');
+  const beat = currentBeat(run);
+  const option = beat.options?.find(o => o.id === optionId);
+  if (!option) throw new Error('Unknown choice');
+  const result = transaction(run.state, option);
+  const observation = { kind: 'decision', beatId: beat.id, optionId, at: new Date().toISOString(),
+    before: { ...run.state }, after: result.state, receipts: result.receipts, payments: result.payments,
+    outcome: option.outcome };
+  return { ...run, phase: 'result', state: result.state,
+    trajectory: beat.id === 'path' ? optionId : run.trajectory,
+    observations: [...run.observations, observation] };
+}
+function advance(run) {
+  if (run.phase !== 'result') throw new Error('No result to advance');
+  return { ...run, step: run.step + 1, phase: 'choice' };
+}
+function finish(run) {
+  if (run.phase !== 'choice' || currentBeat(run)?.kind !== 'note') throw new Error('Incomplete attempt');
+  return { ...run, phase: 'complete', completedAt: new Date().toISOString(),
+    observations: [...run.observations, { kind: 'optional-plan', beatId: currentBeat(run).id,
+      text: run.note, at: new Date().toISOString(), verification: 'not-verified' }] };
+}
+function validRun(run) {
+  try {
+    if (run.schemaVersion !== RECORD_VERSION || run.gameId !== 'asha-intro' || run.contentVersion !== 3 ||
+      typeof run.id !== 'string' || typeof run.note !== 'string' || run.note.length > 1000 ||
+      !['choice', 'result', 'complete'].includes(run.phase) || !Number.isInteger(run.step) ||
+      run.step < 0 || run.step >= steps(run).length || !Array.isArray(run.observations)) return false;
+    // Replay with the pinned content. Reject inconsistent saved balances or repeated decisions.
+    let replay = { ...run, state: { ...OPENING }, step: 0, phase: 'choice', observations: [], trajectory: '' };
+    for (const observation of run.observations) {
+      if (observation.kind === 'optional-plan') {
+        if (replay.phase === 'result') replay = advance(replay);
+        if (observation.text !== run.note || observation.verification !== 'not-verified') return false;
+        replay = finish(replay);
+      } else {
+        if (replay.phase === 'result') replay = advance(replay);
+        if (currentBeat(replay)?.id !== observation.beatId) return false;
+        replay = choose(replay, observation.optionId);
+        const expected = replay.observations.at(-1);
+        if (observation.receipts !== expected.receipts || observation.payments !== expected.payments ||
+          !Object.keys(OPENING).every(key => observation.before?.[key] === expected.before[key] && observation.after?.[key] === expected.after[key])) return false;
+      }
+    }
+    if (run.phase === 'choice' && replay.phase === 'result') replay = advance(replay);
+    return replay.step === run.step && replay.phase === run.phase && replay.trajectory === run.trajectory &&
+      Object.keys(OPENING).every(key => replay.state[key] === run.state[key]);
+  } catch { return false; }
+}
+
+  return { startRun, steps, currentBeat, transaction, choose, advance, finish, validRun, RECORD_VERSION, OPENING };
+})();
+
+/* ---- entry ---- */
+const NS_entry = (function () {
+const { startRun, currentBeat, steps, transaction, choose, advance, finish, validRun } = NS_entrymodel;
+const { loadStrings, setLanguage, localised, t, getLanguage } = NS_i18n;
+const { setCurrency, money } = NS_format;
+
+
+
+const KEY = 'business-simulator:asha-intro:v3';
+const $ = id => document.getElementById(id);
+let game, run, saved = true, blocked = false, rawSave = '', offline = false, conflict = false;
+const practiceURL = location.protocol === 'file:' ? 'https://arnoroh.github.io/business_simulator/practice.html' : './practice.html';
+const node = (tag, className, text) => {
+  const el = document.createElement(tag);
+  if (className) el.className = className;
+  if (text !== undefined) el.textContent = text;
+  return el;
+};
+const text = value => localised(value).replace(/\{(\d+)\}/g, (_, n) => money(Number(n)));
+function button(label, action, className = 'primary') {
+  const el = node('button', className, label); el.type = 'button'; el.onclick = action; return el;
+}
+function download(value, name = 'MV-BS-INTRO-record.json') {
+  const url = URL.createObjectURL(new Blob([typeof value === 'string' ? value : JSON.stringify(value, null, 2)], { type: 'application/json' }));
+  const a = node('a'); a.href = url; a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+function save() {
+  if (blocked) return;
+  try {
+    if ((localStorage.getItem(KEY) || '') !== rawSave) { conflict = true; saved = false; status(); return; }
+    const next = JSON.stringify(run);
+    localStorage.setItem(KEY, next); rawSave = next; saved = true;
+  }
+  catch { saved = false; }
+  status();
+}
+function status() {
+  $('save-status').textContent = t(conflict ? 'conflict' : saved ? 'saved' : 'failed');
+  $('retry').hidden = saved || blocked || conflict; $('retry').textContent = t('retry');
+  $('offline-status').textContent = t(offline ? 'offline' : 'online');
+}
+function commit(option) {
+  run = choose(run, option.id); save(); render(true);
+}
+function restart() {
+  if (!confirm(t('confirm'))) return;
+  // Preserve old bytes even when replacing a save we cannot understand.
+  if (blocked) {
+    try { localStorage.setItem(KEY + ':unreadable', rawSave); }
+    catch { download(rawSave, 'MV-BS-INTRO-unreadable.json'); return; }
+  }
+  blocked = false; conflict = false; run = startRun(game); save(); render(true);
+}
+function row(list, label, amount) {
+  const line = node('div', 'money-row'); line.append(node('dt', '', label), node('dd', '', money(amount))); list.append(line);
+}
+function accounts(parent, observation) {
+  const details = node('details', 'accounts'); details.append(node('summary', '', t('accounts')));
+  const list = node('dl');
+  if (observation) {
+    row(list, t('in'), observation.receipts); row(list, t('out'), observation.payments);
+  }
+  for (const key of ['cash', 'stock', 'receivable', 'debt']) row(list, t(key), run.state[key]);
+  row(list, t('net'), run.state.cash + run.state.stock + run.state.receivable - run.state.debt);
+  details.append(list); parent.append(details);
+  if (run.state.cash < run.scenario.nextBatchCost) parent.append(node('p', 'body cash-warning', text(run.scenario.ui.cashWarning)));
+}
+function chrome() {
+  document.title = text(game.title);
+  $('brand-name').textContent = text(game.title); $('brand-sub').textContent = t('subtitle');
+  $('sample').textContent = t('sample'); $('practice').textContent = t(location.protocol === 'file:' ? 'fullOnline' : 'practice');
+  $('practice').href = practiceURL;
+  $('offline-file').textContent = t('offlineFile');
+  $('offline-file').hidden = location.protocol === 'file:';
+  $('old-download').textContent = t('raw');
+  $('download').textContent = t('download'); $('lang-btn').textContent = getLanguage() === 'en' ? 'Kiswahili' : 'English';
+  $('lang-btn').lang = getLanguage() === 'en' ? 'sw' : 'en';
+  const day = currentBeat(run)?.dayIndex ?? 4;
+  $('progress').replaceChildren();
+  run.scenario.days.forEach((d, i) => {
+    const item = node('div', 'progress-day'); const dot = node('div', 'dot');
+    const fill = node('div', 'dot-fill');
+    const daySteps = steps(run).filter(b => b.dayIndex === i);
+    const done = run.observations.filter(o => daySteps.some(b => b.id === o.beatId)).length;
+    fill.style.width = `${done / daySteps.length * 100}%`; dot.append(fill);
+    item.append(dot, node('span', 'dot-label', String(i + 1)));
+    if (day === i) item.setAttribute('aria-current', 'step');
+    $('progress').append(item);
+  });
+  $('progress').setAttribute('aria-label', t('day', { n: day + 1 }));
+  renderScene(day);
+  const hud = $('hud'); hud.replaceChildren();
+  hud.append(node('div', 'hud-pill cash', `${t('cash')}: ${money(run.state.cash)}`));
+  if (run.state.debt) hud.append(node('div', 'hud-pill', `${t('debt')}: ${money(run.state.debt)}`));
+  status();
+}
+function render(focus = false) {
+  chrome();
+  const card = $('card'); card.replaceChildren(); $('mini').replaceChildren();
+  if (blocked) {
+    card.append(node('p', 'body', t('invalid')), button(t('raw'), () => download(rawSave)), button(t('replay'), restart, 'ghost'));
+    $('save-status').textContent = t('invalid'); return;
+  }
+  if (run.phase === 'complete') {
+    card.append(node('h1', 'title', t('done')), node('p', 'body', t('limit')));
+    if (run.note) card.append(node('h2', 'mini-title', t('endnote')), node('p', 'body', run.note));
+    card.append(node('p', 'body', t(run.trajectory === 'organisation' ? 'learn' : 'steady')));
+    const link = node('a', 'primary', t(location.protocol === 'file:' ? 'fullOnline' : 'practice')); link.href = practiceURL; card.append(link);
+    accounts(card); card.append(button(t('replay'), restart, 'ghost'));
+  } else {
+    const beat = currentBeat(run);
+    card.append(node('p', 'kicker', `${t('day', { n: beat.dayIndex + 1 })} · ${text(run.scenario.days[beat.dayIndex].label)}`));
+    if (run.phase === 'result') {
+      const observation = run.observations.at(-1);
+      const option = beat.options.find(o => o.id === observation.optionId);
+      // Keep the explanation that was shown when the learner made the choice.
+      card.append(node('h1', 'title', text(option?.label || beat.title)), node('p', 'body', text(observation.outcome)));
+      const delta = observation.after.cash - observation.before.cash;
+      card.append(node('p', 'cash-change pulse', `${t('change')}: ${delta > 0 ? '+' : ''}${money(delta)}`));
+      const ledger = node('dl'); row(ledger, t('in'), observation.receipts); row(ledger, t('out'), observation.payments); card.append(ledger);
+      card.append(button(t('next'), () => { run = advance(run); save(); render(true); }));
+      accounts(card, observation);
+    } else {
+      card.append(node('h1', 'title', text(beat.title)), node('p', 'body', text(beat.body)));
+      if (beat.kind === 'note') {
+        const label = node('label', '', t('note')); label.htmlFor = 'note';
+        const input = node('textarea'); input.id = 'note'; input.rows = 3; input.maxLength = 1000; input.value = run.note;
+        input.oninput = () => { run.note = input.value; save(); };
+        card.append(label, input, button(t('finish'), () => { run = finish(run); save(); render(true); }));
+      } else {
+        const choices = node('div', 'choices');
+        for (const option of beat.options) {
+          const choice = button(text(option.label), () => commit(option), 'choice');
+          choice.dataset.option = option.id;
+          try { transaction(run.state, option); }
+          catch { choice.disabled = true; choice.append(node('span', '', t('unavailable'))); }
+          choices.append(choice);
+        }
+        card.append(choices);
+      }
+      accounts(card);
+    }
+  }
+  if (focus) { card.focus({ preventScroll: true }); card.scrollIntoView({ block: 'start', behavior: 'instant' }); }
+}
+
+function renderScene(dayIdx){
+  const day = dayIdx+1;
+  const time = ['dawn','morning','noon','afternoon','sunset'][Math.min(4,dayIdx)];
+  const colors = {dawn:'#ffe9c2', morning:'#fff6ea', noon:'#fff', afternoon:'#fff6ea', sunset:'#ffd9a0'};
+  const sky = colors[time];
+  const stallColor = day>3 ? '#ff7a18' : '#0f766e';
+  const crowd = 3;
+  const svg = `
+  <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" role="img">
+    <rect width="400" height="260" rx="22" fill="${sky}"/>
+    <circle cx="340" cy="40" r="18" fill="#facc15" opacity=".9"/>
+    <g opacity=".15">
+      <ellipse cx="70" cy="48" rx="30" ry="12" fill="#fff"/>
+      <ellipse cx="120" cy="38" rx="24" ry="9" fill="#fff"/>
+    </g>
+    <!-- stall -->
+    <rect x="90" y="120" width="220" height="90" rx="14" fill="#fff" stroke="#f0ddbd" stroke-width="2"/>
+    <rect x="80" y="110" width="240" height="22" rx="8" fill="${stallColor}"/>
+    <rect x="90" y="132" width="220" height="6" rx="3" fill="#1a140e" opacity=".08"/>
+    <!-- mandazi stacks -->
+    <g>
+      <ellipse cx="150" cy="175" rx="28" ry="10" fill="#fde9c7"/>
+      <circle cx="140" cy="168" r="10" fill="#facc15" stroke="#e6a20a" stroke-width="1.5"/>
+      <circle cx="158" cy="165" r="11" fill="#fdba74" stroke="#d97706" stroke-width="1.5"/>
+      <circle cx="150" cy="154" r="9" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+    </g>
+    <g>
+      <ellipse cx="250" cy="175" rx="28" ry="10" fill="#fde9c7"/>
+      <circle cx="240" cy="168" r="10" fill="#facc15" stroke="#e6a20a" stroke-width="1.5"/>
+      <circle cx="260" cy="165" r="11" fill="#fdba74" stroke="#d97706" stroke-width="1.5"/>
+    </g>
+    <!-- Asha -->
+    <g>
+      <circle cx="200" cy="108" r="16" fill="#a67c52"/>
+      <path d="M186 122 Q200 132 214 122 L210 105 L190 105 Z" fill="${stallColor}"/>
+      <circle cx="194" cy="107" r="1.5" fill="#1a140e"/><circle cx="206" cy="107" r="1.5" fill="#1a140e"/>
+      <path d="M196 114 Q200 118 204 114" stroke="#1a140e" fill="none" stroke-width="1.3" stroke-linecap="round"/>
+    </g>
+    <!-- customers -->
+    <g>
+      ${Array.from({length:crowd},(_,i)=>{
+        const x = 30 + i*52 + (i%2?6:0);
+        const y = 210 - (i%3?0:8);
+        return `<g>
+          <circle cx="${x}" cy="${y-12}" r="9" fill="#c9a88a"/>
+          <rect x="${x-10}" y="${y}" width="20" height="14" rx="6" fill="#fff6ea" stroke="#f0ddbd"/>
+          <circle cx="${x-2}" cy="${y-14}" r="1.2" fill="#1a140e"/><circle cx="${x+4}" cy="${y-14}" r="1.2" fill="#1a140e"/>
+        </g>`;
+      }).join('')}
+    </g>
+    <!-- cash tin -->
+    <g>
+      <rect x="310" y="160" width="36" height="28" rx="6" fill="#1a140e"/>
+      <rect x="314" y="164" width="28" height="4" rx="2" fill="#facc15" opacity=".9"/>
+
+    </g>
+  </svg>`;
+  $('scene').innerHTML = svg;
+}
+
+async function init() {
+  const response = await fetch('./content/game.json');
+  if (!response.ok) throw new Error('Content unavailable');
+  game = await response.json();
+  loadStrings(game.ui);
+  try { setLanguage(localStorage.getItem('asha-language') || 'en'); } catch { setLanguage('en'); }
+  run = startRun(game);
+  let previous = '';
+  try {
+    rawSave = localStorage.getItem(KEY) || '';
+    if (rawSave) {
+      const parsed = JSON.parse(rawSave);
+      if (validRun(parsed)) run = parsed;
+      else blocked = true;
+    }
+    previous = localStorage.getItem('asha-stall-v2') || '';
+  } catch { if (rawSave) blocked = true; else saved = false; }
+  setCurrency(run.scenario.currency);
+  loadStrings(run.scenario.ui);
+  $('lang-btn').onclick = () => {
+    setLanguage(getLanguage() === 'en' ? 'sw' : 'en');
+    try { localStorage.setItem('asha-language', getLanguage()); } catch { /* Language still works without storage. */ }
+    render();
+  };
+  $('download').onclick = () => download(blocked ? rawSave : run);
+  $('retry').onclick = save;
+  const isNew = !rawSave;
+  if (!blocked) save();
+  render();
+  if (previous) {
+    $('old-download').hidden = false;
+    $('old-download').onclick = () => download(previous, 'MV-BS-INTRO-previous.json');
+    if (isNew) $('mini').append(node('p', 'body', t('previous')));
+  }
+  if (location.protocol === 'file:') { offline = true; status(); }
+  else if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.ready.then(async () => {
+      // The old worker can remain active during an update. Check the cached entry assets.
+      const cacheNames = await caches.keys();
+      offline = (await Promise.all(cacheNames.map(async name => {
+        const cache = await caches.open(name);
+        return Boolean(await cache.match('./js/entry.js') && await cache.match('./content/game.json'));
+      }))).some(Boolean);
+      status();
+    }).catch(() => { offline = false; status(); });
+  }
+}
+init().catch(() => {
+  $('card').replaceChildren(node('p', 'body', 'Could not open the game. Reconnect and reload. / Mchezo haujafunguka. Unganisha intaneti na ujaribu tena.'),
+    button('Reload / Fungua tena', () => location.reload()));
+});
+
+  return {  };
+})();
+})();
+</script>

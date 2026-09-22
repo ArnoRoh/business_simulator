@@ -14,8 +14,13 @@ import { readFileSync, writeFileSync } from 'node:fs';
 
 const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
 
+const entry = process.argv.includes('--entry');
+
 // Module order matters: dependencies first.
-const MODULES = [
+const MODULES = entry ? [
+  ['i18n', 'app/js/i18n.js'], ['format', 'app/js/format.js'],
+  ['entrymodel', 'app/js/entrymodel.js'], ['entry', 'app/js/entry.js'],
+] : [
   ['i18n', 'app/js/i18n.js'],
   ['format', 'app/js/format.js'],
   ['engine', 'app/js/engine.js'],
@@ -79,7 +84,7 @@ ${body}
 
 const chaptersJson = read('app/content/chapters.json');
 const uiStrings = read('app/content/ui.json');
-const css = read('app/css/styles.css');
+const css = read(entry ? 'app/css/entry.css' : 'app/css/styles.css');
 
 // Every authored chapter, keyed by the filename the manifest names, so the embedded
 // build can serve openChapter() from memory. A chapter listed but not yet written is
@@ -103,13 +108,13 @@ let js = MODULES.map(([name, path]) => {
 const embeddedFetch = `
 const fetch = async (input, init) => {
   const name = String(input).split('/').pop();
-  const value = name === 'ui.json' ? EMBEDDED_UI : name === 'chapters.json' ? EMBEDDED_CHAPTERS : EMBEDDED_SCENARIOS[name];
+  const value = name === 'game.json' ? EMBEDDED_GAME : name === 'ui.json' ? EMBEDDED_UI : name === 'chapters.json' ? EMBEDDED_CHAPTERS : EMBEDDED_SCENARIOS[name];
   return value ? new Response(JSON.stringify(value), { headers: { 'Content-Type': 'application/json' } }) : globalThis.fetch(input, init);
 };`;
 
 // Extract the markup between <body> and </body> from the real index.html, so the two
 // stay in step rather than being maintained twice.
-const html = read('app/index.html');
+const html = read(entry ? 'app/index.html' : 'app/practice.html');
 const bodyInner = html.slice(html.indexOf('<body>') + 6, html.indexOf('</body>')).trim()
   .replace(/\s*<script type="module"[\s\S]*?<\/script>/, '');
 
@@ -138,15 +143,16 @@ ${bodyInner}
 <script>
 (function () {
   'use strict';
+  const EMBEDDED_GAME = ${entry ? read('app/content/game.json').trim() : 'null'};
   const EMBEDDED_CHAPTERS = ${chaptersJson.trim()};
-  const EMBEDDED_SCENARIOS = ${JSON.stringify(scenarios)};
-  const EMBEDDED_UI = ${uiStrings.trim()};
+  const EMBEDDED_SCENARIOS = ${JSON.stringify(entry ? {} : scenarios)};
+  const EMBEDDED_UI = ${entry ? "null" : uiStrings.trim()};
 ${embeddedFetch}
 ${js}
 })();
 </script>
 `;
 
-const dest = new URL('../app/standalone.html', import.meta.url);
+const dest = new URL(entry ? '../app/intro-standalone.html' : '../app/standalone.html', import.meta.url);
 writeFileSync(dest, out);
 console.log(`wrote ${dest.pathname}  (${(out.length / 1024).toFixed(1)} KB)`);

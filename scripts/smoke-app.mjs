@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
-const sw = read('app/sw.js'), html = read('app/index.html');
+const sw = read('app/sw.js'), html = read('app/practice.html');
 const shell = [...sw.matchAll(/'\.\/([^']+)'/g)].map(m => m[1]).filter(p => p.includes('.'));
 assert(shell.length > 5);
 for (const file of shell) assert(existsSync(new URL(`../app/${file}`, import.meta.url)), file);

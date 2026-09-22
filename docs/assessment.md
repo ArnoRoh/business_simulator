@@ -1,5 +1,12 @@
 # Assessment and the behavioural record
 
+The five-day introduction uses a separate record. It records simulated choices, cash
+transactions and an optional unverified plan. It does not measure founder type, verify
+real activity or qualify a learner for a grant. No timer or speed score is used.
+See [ADR-0013](./adr/0013-short-introduction-and-preserved-chapters.md). The observations
+below describe the full four-chapter simulation.
+
+
 **Status:** Current record contract under
 [ADR-0012](./adr/0012-play-first-business-journey.md), an implemented proposal for review. No validation against real
 firm outcomes exists. Completion is the programme gate; prediction accuracy is not a

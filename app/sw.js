@@ -5,7 +5,7 @@ const PREFIX = `business-simulator:${SCOPE}:`;
 const SHELL_CACHE = PREFIX + CACHE;
 const CONTENT_CACHE = PREFIX + 'content';
 const SHELL = [
-  './', './index.html', './manifest.webmanifest', './css/styles.css',
+  './', './index.html', './practice.html', './css/entry.css', './js/entry.js', './js/entrymodel.js', './manifest.webmanifest', './css/styles.css',
   './js/main.js', './js/engine.js', './js/ui.js', './js/carry.js', './js/format.js',
   './js/i18n.js', './js/record.js', './js/scene.js', './js/storage.js',
   './content/ui.json', './content/chapters.json', './content/game.json',

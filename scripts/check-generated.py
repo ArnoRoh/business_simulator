@@ -5,7 +5,7 @@ from io import BytesIO
 from zipfile import ZipFile
 import subprocess
 root = Path(__file__).resolve().parent.parent
-files = ['docs/concept-note.html', 'docs/concept-note-model.csv', 'docs/concept-note-model.xlsx', 'app/standalone.html']
+files = ['docs/concept-note.html', 'docs/concept-note-model.csv', 'docs/concept-note-model.xlsx', 'app/standalone.html', 'app/intro-standalone.html']
 def content(path):
     data = (root / path).read_bytes()
     if path.endswith('.xlsx'):
@@ -13,7 +13,7 @@ def content(path):
             return {name: book.read(name) for name in book.namelist()}
     return data
 before = {path: content(path) for path in files}
-for command in [['python3', 'scripts/build-concept-note.py'], ['python3', 'scripts/build-model-xlsx.py'], ['node', 'scripts/build-single-file.mjs']]:
+for command in [['python3', 'scripts/build-concept-note.py'], ['python3', 'scripts/build-model-xlsx.py'], ['node', 'scripts/build-single-file.mjs'], ['node', 'scripts/build-single-file.mjs', '--entry']]:
     subprocess.run(command, cwd=root, check=True, stdout=subprocess.DEVNULL)
 for path in files:
     assert before[path] == content(path), f'{path} was stale; review and keep the regenerated output'

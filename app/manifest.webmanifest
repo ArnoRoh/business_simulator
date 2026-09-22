@@ -1,11 +1,10 @@
 {
   "name": "Asha's Stall",
   "short_name": "Asha",
-  "description": "Run a mandazi stall for 5 days — no maths quiz, just decisions.",
+  "description": "Practise five sample days, then explore four business chapters.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
   "background_color": "#fff6ea",
   "theme_color": "#ff7a18",
   "icons": [

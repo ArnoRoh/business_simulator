@@ -73,6 +73,7 @@ while IFS= read -r file; do
 done < <(find . -name '*.md' -type f \
            -not -path './node_modules/*' \
            -not -path './.git/*' \
+           -not -path './.agents/*' \
            -not -path './dist/*')
 
 echo "Checked ${checked} relative link(s)."

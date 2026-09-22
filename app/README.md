@@ -1,5 +1,11 @@
 # The app
 
+Start with thirteen untimed steps in Asha’s five-day introduction. English and
+Kiswahili work throughout. Cash, stock, customer debts and repayments follow your
+choices. The introduction is practice; it does not qualify anyone for a grant.
+
+Open `practice.html` at any time for existing records and the deeper game:
+
 Four unlocked business chapters in English and Kiswahili. Each has twenty decisions in
 four short missions. Tap an action or price, watch its result and read a short takeaway.
 Normal play asks for no profit estimate. Each chapter ends with a story transition. The figures and translation remain unverified by local reviewers.
@@ -23,7 +29,13 @@ content download. Edit source files and regenerate it with:
 
 ```bash
 node scripts/build-single-file.mjs
+node scripts/build-single-file.mjs --entry
 ```
+
+`intro-standalone.html` is the smaller, self-contained introduction. Its link to
+the full game needs a connection. Introduction progress is one active attempt per
+browser; download it before replacing it. The full game retains separate attempts
+and learner profiles. Old prototype saves remain untouched.
 
 The served PWA downloads chapters on demand. Compressed artifact budgets are 150 KiB for
 the shell plus first chapter and 60 KiB per additional chapter. `smoke-app.mjs` checks

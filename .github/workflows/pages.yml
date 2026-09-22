@@ -20,7 +20,7 @@ name: Publish to GitHub Pages
 
 on:
   push:
-    branches: [main, feat/asha-stall-5day-funnel]
+    branches: [main]
     paths:
       - 'app/**'
       - '.github/workflows/pages.yml'
@@ -58,6 +58,7 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Verify before publishing
         run: |
+          node scripts/test-asha-entry.mjs
           node scripts/test-corrections.mjs
           node scripts/browser-checks.mjs
           node scripts/test-engine.mjs
@@ -97,7 +98,9 @@ jobs:
       # kept honest separately — docs-checks.yml fails when it drifts — but a learner
       # downloading this file gets the current app either way.
       - name: Rebuild standalone.html
-        run: node scripts/build-single-file.mjs
+        run: |
+          node scripts/build-single-file.mjs
+          node scripts/build-single-file.mjs --entry
 
       - uses: actions/upload-pages-artifact@v3
         with:

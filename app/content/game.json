@@ -1,447 +1,814 @@
 {
-  "title": "Asha's Stall",
+  "id": "asha-intro",
+  "version": 3,
+  "currency": "TZS",
+  "unverified": true,
+  "title": {
+    "en": "Asha's Stall",
+    "sw": "Kibanda cha Asha"
+  },
   "days": [
     {
-      "id": "day1",
-      "label": "Day 1 — Find your price",
+      "label": {
+        "en": "Find your customers",
+        "sw": "Wajue wateja wako"
+      },
       "beats": [
         {
-          "id": "d1_price",
-          "kicker": "Morning market",
-          "title": "What do you charge for mandazi?",
-          "body": "Customers are walking past. The stall next door sells at 400 — smaller, drier.",
-          "type": "slider",
-          "min": 400,
-          "max": 700,
-          "step": 50,
-          "start": 500,
-          "unitCost": 280,
-          "hint": "Drag to try a price. See the crowd and your tin.",
+          "id": "price",
+          "title": {
+            "en": "Try a price",
+            "sw": "Jaribu bei"
+          },
+          "body": {
+            "en": "A batch of 20 mandazi costs {4000}. In this sample market, a higher price can mean fewer sales. Try one batch.",
+            "sw": "Kutengeneza mandazi 20 kunagharimu {4000}. Katika soko hili la mfano, bei kubwa inaweza kupunguza mauzo. Jaribu kiasi kimoja."
+          },
           "options": [
             {
-              "id": "cheap",
-              "label": "Keep it low",
-              "sub": "Win volume",
-              "icon": "🪙",
-              "effects": {
-                "cash": -3000,
-                "reputation": 2
-              }
+              "id": "low",
+              "label": {
+                "en": "Keep the price low",
+                "sw": "Weka bei ndogo"
+              },
+              "outcome": {
+                "en": "You sold 20 at {300}. You paid {4000} and received {6000}. More customers do not always mean more money left.",
+                "sw": "Umeuza 20 kwa {300} kila moja. Umelipa {4000} na kupokea {6000}. Wateja wengi hawamaanishi pesa nyingi zaidi zinazobaki."
+              },
+              "receipts": 6000,
+              "payments": 4000,
+              "units": 20
             },
             {
               "id": "mid",
-              "label": "A little higher",
-              "sub": "Your quality is better",
-              "icon": "⭐",
-              "effects": {
-                "cash": 4000,
-                "reputation": 4
-              }
+              "label": {
+                "en": "Raise it a little",
+                "sw": "Ongeza bei kidogo"
+              },
+              "outcome": {
+                "en": "You sold 16 at {400}. You received {6400} after paying {4000}. Four unsold mandazi spoiled. Test demand before making more.",
+                "sw": "Umeuza 16 kwa {400} kila moja. Umepokea {6400} baada ya kulipa {4000}. Mandazi manne yaliyobaki yameharibika. Chunguza mahitaji kabla ya kuongeza uzalishaji."
+              },
+              "receipts": 6400,
+              "payments": 4000,
+              "units": 16
             },
             {
               "id": "high",
-              "label": "Much higher",
-              "sub": "Test what they'll pay",
-              "icon": "💛",
-              "effects": {
-                "cash": 2000,
-                "reputation": -2
-              }
+              "label": {
+                "en": "Try a much higher price",
+                "sw": "Jaribu bei kubwa zaidi"
+              },
+              "outcome": {
+                "en": "You sold 10 at {500}. You received {5000} after paying {4000}. Half the batch spoiled. A high margin per sale can still leave less money.",
+                "sw": "Umeuza 10 kwa {500} kila moja. Umepokea {5000} baada ya kulipa {4000}. Nusu ya mandazi yameharibika. Faida kubwa kwa kila mauzo inaweza kuacha pesa chache."
+              },
+              "receipts": 5000,
+              "payments": 4000,
+              "units": 10
             }
           ]
         },
         {
-          "id": "d1_rush",
-          "kicker": "Lunch rush — 20 seconds!",
-          "title": "Serve who you can",
-          "body": "Tap customers before they leave. You can't serve everyone.",
-          "type": "rush",
-          "time": 18,
-          "effectsWin": {
-            "cash": 6000,
-            "reputation": 6
+          "id": "rush",
+          "title": {
+            "en": "A queue builds up",
+            "sw": "Foleni imeongezeka"
           },
-          "effectsLose": {
-            "cash": 2000,
-            "reputation": 0
-          }
+          "body": {
+            "en": "You have ingredients for 12 more mandazi. Serving each customer takes time. What one change helps today?",
+            "sw": "Una malighafi ya mandazi mengine 12. Kumhudumia kila mteja kunachukua muda. Mabadiliko gani moja yatasaidia leo?"
+          },
+          "options": [
+            {
+              "id": "alone",
+              "label": {
+                "en": "Serve six customers yourself",
+                "sw": "Hudumia wateja sita mwenyewe"
+              },
+              "outcome": {
+                "en": "Six sales brought {2400}; the batch cost {2400}. Working harder did not remove the serving limit.",
+                "sw": "Mauzo sita yameleta {2400}; gharama ilikuwa {2400}. Kufanya kazi zaidi hakuondoa kikomo cha kuhudumia."
+              },
+              "receipts": 2400,
+              "payments": 2400,
+              "units": 6
+            },
+            {
+              "id": "helper",
+              "label": {
+                "en": "Pay a helper to pack orders",
+                "sw": "Lipa msaidizi afunge bidhaa"
+              },
+              "outcome": {
+                "en": "The helper cost {1000}. Twelve sales brought {4800}; ingredients cost {2400}. A clear task helped you serve more.",
+                "sw": "Msaidizi amelipwa {1000}. Mauzo 12 yameleta {4800}; malighafi imegharimu {2400}. Kazi iliyo wazi imeongeza huduma."
+              },
+              "receipts": 4800,
+              "payments": 3400,
+              "units": 12
+            },
+            {
+              "id": "more",
+              "label": {
+                "en": "Make more while people wait",
+                "sw": "Tengeneza zaidi huku watu wakisubiri"
+              },
+              "outcome": {
+                "en": "You spent {4000} but could still serve only six people for {2400}. Production was not the limit.",
+                "sw": "Umetumia {4000} lakini umeweza kuhudumia watu sita tu kwa {2400}. Uzalishaji haukuwa kikwazo."
+              },
+              "receipts": 2400,
+              "payments": 4000,
+              "units": 6
+            }
+          ]
         },
         {
-          "id": "d1_close",
-          "kicker": "Sunset",
-          "title": "A neighbour offers flour on credit",
-          "body": "Pay now for a little cheaper, or pay later and keep cash today?",
-          "type": "choice",
+          "id": "flour",
+          "title": {
+            "en": "Buy tomorrow’s flour",
+            "sw": "Nunua unga wa kesho"
+          },
+          "body": {
+            "en": "The same flour costs {4000} now, or {4500} payable on day 5. Credit keeps cash available, but it must be repaid.",
+            "sw": "Unga uleule ni {4000} sasa, au {4500} ukilipa siku ya 5. Mkopo unaacha fedha mkononi, lakini lazima ulipwe."
+          },
           "options": [
             {
               "id": "cash",
-              "label": "Pay cash now",
-              "sub": "Cheaper later, tight today",
-              "icon": "💵",
-              "effects": {
-                "cash": -2000,
-                "reputation": 1
+              "label": {
+                "en": "Pay now",
+                "sw": "Lipa sasa"
+              },
+              "outcome": {
+                "en": "Cash fell by {4000}; you now hold flour worth {4000}. Buying stock is not the same as losing it.",
+                "sw": "Fedha zimepungua kwa {4000}; sasa una unga wenye thamani ya {4000}. Kununua bidhaa si sawa na kuzipoteza."
+              },
+              "payments": 4000,
+              "stock": 4000
+            },
+            {
+              "id": "credit",
+              "label": {
+                "en": "Pay on day 5",
+                "sw": "Lipa siku ya 5"
+              },
+              "outcome": {
+                "en": "You received flour worth {4000}, not cash. You owe {4500}. The extra {500} is the cost of waiting to pay.",
+                "sw": "Umepokea unga wa {4000}, si fedha. Unadaiwa {4500}. Ziada ya {500} ni gharama ya kuchelewa kulipa."
+              },
+              "stock": 4000,
+              "debt": 4500
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": {
+        "en": "Stock and your direction",
+        "sw": "Bidhaa na mwelekeo wako"
+      },
+      "beats": [
+        {
+          "id": "stock",
+          "title": {
+            "en": "How much will you make?",
+            "sw": "Utatengeneza kiasi gani?"
+          },
+          "body": {
+            "en": "Yesterday’s flour is worth {4000}. You expect a normal day. More stock ties up cash until a customer pays.",
+            "sw": "Unga wa jana una thamani ya {4000}. Unatarajia siku ya kawaida. Bidhaa nyingi zinashikilia fedha hadi mteja alipe."
+          },
+          "options": [
+            {
+              "id": "small",
+              "label": {
+                "en": "Use only the flour you have",
+                "sw": "Tumia unga ulio nao tu"
+              },
+              "outcome": {
+                "en": "You used all the flour and received {6000}. You kept cash free, but some customers left when you sold out.",
+                "sw": "Umetumia unga wote na kupokea {6000}. Umeacha fedha huru, lakini baadhi ya wateja wameondoka bidhaa zilipoisha."
+              },
+              "receipts": 6000,
+              "stock": -4000,
+              "units": 20
+            },
+            {
+              "id": "balanced",
+              "label": {
+                "en": "Buy a little extra flour",
+                "sw": "Nunua unga kidogo zaidi"
+              },
+              "outcome": {
+                "en": "You paid {2000} more and sold the batch for {9000}. All the flour was used. This worked with today’s demand; it is not a rule for every day.",
+                "sw": "Umeongeza {2000} na kuuza kwa {9000}. Unga wote umetumika. Hii imefaa kwa mahitaji ya leo; si kanuni ya kila siku."
+              },
+              "payments": 2000,
+              "receipts": 9000,
+              "stock": -4000,
+              "units": 30
+            },
+            {
+              "id": "large",
+              "label": {
+                "en": "Buy enough for a much larger day",
+                "sw": "Nunua kwa siku yenye mauzo mengi"
+              },
+              "outcome": {
+                "en": "You paid {6000} more and received {10000}. You still hold unused flour worth {2000}. That value cannot pay a bill until you sell it.",
+                "sw": "Umeongeza {6000} na kupokea {10000}. Bado una unga wa {2000}. Thamani hiyo haiwezi kulipa bili mpaka uuze."
+              },
+              "payments": 6000,
+              "receipts": 10000,
+              "stock": -2000,
+              "units": 34
+            }
+          ]
+        },
+        {
+          "id": "path",
+          "title": {
+            "en": "What do you want to practise?",
+            "sw": "Unataka kufanya mazoezi ya nini?"
+          },
+          "body": {
+            "en": "Both paths matter. This is your preference, not a test of your ability. You can explore every business later.",
+            "sw": "Njia zote zina umuhimu. Hili ni chaguo lako, si kipimo cha uwezo wako. Unaweza kujaribu biashara zote baadaye."
+          },
+          "options": [
+            {
+              "id": "livelihood",
+              "label": {
+                "en": "Build a steady income",
+                "sw": "Jenga kipato cha uhakika"
+              },
+              "outcome": {
+                "en": "A steady business needs reliable cash and time for the owner. The next days let you practise both.",
+                "sw": "Biashara thabiti inahitaji fedha za uhakika na muda kwa mmiliki. Siku zinazofuata zitakupa mazoezi ya yote mawili."
+              }
+            },
+            {
+              "id": "organisation",
+              "label": {
+                "en": "Build a business that can run without you",
+                "sw": "Jenga biashara inayoweza kuendeshwa bila wewe"
+              },
+              "outcome": {
+                "en": "A larger organisation needs capable people, clear tasks and checks. The next days let you try delegation and a customer order.",
+                "sw": "Shirika kubwa linahitaji watu wenye uwezo, kazi zilizo wazi na ukaguzi. Siku zinazofuata utajaribu kukabidhi kazi na agizo la mteja."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": {
+        "en": "Build a team",
+        "sw": "Jenga timu"
+      },
+      "beats": [
+        {
+          "id": "hire",
+          "title": {
+            "en": "Who can help today?",
+            "sw": "Nani anaweza kusaidia leo?"
+          },
+          "body": {
+            "en": "These are invented one-day costs, not local wage rates. Pay for the work you need, then give the person a clear task.",
+            "sw": "Hizi ni gharama za mfano za siku moja, si viwango vya mishahara vya eneo hili. Lipa kwa kazi unayohitaji, kisha toa kazi iliyo wazi."
+          },
+          "options": [
+            {
+              "id": "new",
+              "label": {
+                "en": "Train a new helper · {1000}",
+                "sw": "Mfundishe msaidizi mpya · {1000}"
+              },
+              "outcome": {
+                "en": "You paid {1000}. This helper needs you to show the packing and checking steps.",
+                "sw": "Umelipa {1000}. Msaidizi huyu anahitaji kuonyeshwa hatua za kufunga na kukagua."
+              },
+              "payments": 1000,
+              "trained": false
+            },
+            {
+              "id": "experienced",
+              "label": {
+                "en": "Hire an experienced helper · {2000}",
+                "sw": "Ajiri msaidizi mwenye uzoefu · {2000}"
+              },
+              "outcome": {
+                "en": "You paid {2000}. Experience saves some training time, but you still need clear responsibilities.",
+                "sw": "Umelipa {2000}. Uzoefu unapunguza muda wa mafunzo, lakini majukumu bado yanahitaji kuwa wazi."
+              },
+              "payments": 2000,
+              "trained": true
+            }
+          ]
+        },
+        {
+          "id": "delegate",
+          "title": {
+            "en": "Let the helper run the counter",
+            "sw": "Mruhusu msaidizi ahudumie"
+          },
+          "body": {
+            "en": "You need time to speak to a buyer. A batch costs {2400}; twelve sales can bring {4800}. How will you hand over?",
+            "sw": "Unahitaji muda wa kuzungumza na mnunuzi. Gharama ni {2400}; mauzo 12 yanaweza kuleta {4800}. Utakabidhi kazi vipi?"
+          },
+          "options": [
+            {
+              "id": "control",
+              "label": {
+                "en": "Approve every sale yourself",
+                "sw": "Idhinisha kila mauzo mwenyewe"
+              },
+              "outcome": {
+                "en": "Only eight customers were served. Receipts were {3200}, costs {2400}. The helper still had to wait for you.",
+                "sw": "Wateja wanane tu wamehudumiwa. Mapato ni {3200}, gharama {2400}. Msaidizi bado alikusubiri."
+              },
+              "receipts": 3200,
+              "payments": 2400,
+              "units": 8
+            },
+            {
+              "id": "check",
+              "label": {
+                "en": "Agree the price, show the task, count cash together",
+                "sw": "Kubalianeni bei, onyesha kazi, hesabu fedha pamoja"
+              },
+              "outcome": {
+                "en": "Twelve customers were served. Receipts were {4800}, costs {2400}. Clear authority and a cash check let you step away.",
+                "sw": "Wateja 12 wamehudumiwa. Mapato ni {4800}, gharama {2400}. Mamlaka yaliyo wazi na ukaguzi wa fedha vimekuruhusu kuondoka."
+              },
+              "receipts": 4800,
+              "payments": 2400,
+              "units": 12
+            },
+            {
+              "id": "leave",
+              "label": {
+                "en": "Leave without a handover",
+                "sw": "Ondoka bila maelekezo"
+              },
+              "outcome": {
+                "en": "Your helper’s preparation affected service. The cash record shows the result. Experience helps; a clear handover is still needed.",
+                "sw": "Maandalizi ya msaidizi yameathiri huduma. Rekodi inaonyesha matokeo. Uzoefu unasaidia; maelekezo yaliyo wazi bado yanahitajika."
+              },
+              "payments": 2400,
+              "dynamic": "handover"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": {
+        "en": "Test a bigger order",
+        "sw": "Jaribu agizo kubwa"
+      },
+      "beats": [
+        {
+          "id": "order",
+          "title": {
+            "en": "A shop asks for a trial batch",
+            "sw": "Duka linaomba bidhaa za majaribio"
+          },
+          "body": {
+            "en": "The batch costs {6000}. The buyer offers {9000}, payable after delivery. Negotiate a small paid trial or fund the full order?",
+            "sw": "Gharama ni {6000}. Mnunuzi anatoa {9000}, kulipa baada ya kupokea. Ujadili jaribio dogo la kulipwa au ugharamie agizo lote?"
+          },
+          "options": [
+            {
+              "id": "no",
+              "label": {
+                "en": "Keep serving your usual customers",
+                "sw": "Endelea na wateja wako wa kawaida"
+              },
+              "outcome": {
+                "en": "You declined this order. You have no claim on the shop’s money and no delivery cost. Declining can protect working cash.",
+                "sw": "Umekataa agizo hili. Hudai fedha za duka na huna gharama ya kupeleka. Kukataa kunaweza kulinda fedha za biashara."
               }
             },
             {
               "id": "credit",
-              "label": "Take it on credit",
-              "sub": "Keep cash for tomorrow",
-              "icon": "🤝",
-              "effects": {
-                "cash": 3000,
-                "reputation": 2
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "day2",
-      "label": "Day 2 — What sits on your shelf",
-      "beats": [
-        {
-          "id": "d2_track",
-          "kicker": "Your path",
-          "title": "Which help do you want next?",
-          "body": "Two honest paths — both are complete. Make this stall steady, or build towards selling to other businesses and abroad? You choose; the system never assigns.",
-          "type": "choice",
-          "options": [
-            {
-              "id": "livelihood",
-              "label": "Make this stall steady",
-              "sub": "Keep it simple, keep it yours",
-              "icon": "🏠",
-              "effects": {
-                "cash": 0,
-                "reputation": 3
-              }
-            },
-            {
-              "id": "transform",
-              "label": "Grow to sell to businesses & abroad",
-              "sub": "Longer journey, bigger orders",
-              "icon": "🚀",
-              "effects": {
-                "cash": 0,
-                "reputation": 3
-              }
-            }
-          ]
-        },
-        {
-          "id": "d2_shelf",
-          "kicker": "Opening",
-          "title": "How much do you stock?",
-          "body": "Drag sacks to the shelf. Stock sells — but it's cash sitting there.",
-          "type": "shelf",
-          "levels": 4,
-          "effects": [
-            {
-              "cash": -5000,
-              "stock": 0,
-              "reputation": 0
-            },
-            {
-              "cash": -2000,
-              "stock": 1,
-              "reputation": 2
-            },
-            {
-              "cash": 2000,
-              "stock": 2,
-              "reputation": 4
-            },
-            {
-              "cash": -1000,
-              "stock": 3,
-              "reputation": 1
-            }
-          ]
-        },
-        {
-          "id": "d2_supplier",
-          "kicker": "A trader arrives",
-          "title": "Who do you buy from?",
-          "body": "Cheapest flour is dusty. The reliable one costs more but customers taste it.",
-          "type": "choice",
-          "options": [
-            {
-              "id": "cheap",
-              "label": "Cheapest sack",
-              "sub": "Save now",
-              "icon": "📦",
-              "effects": {
-                "cash": 3000,
-                "reputation": -4
-              }
-            },
-            {
-              "id": "steady",
-              "label": "Steady supplier",
-              "sub": "Consistent quality",
-              "icon": "✅",
-              "effects": {
-                "cash": 0,
-                "reputation": 5
-              }
-            },
-            {
-              "id": "premium",
-              "label": "Premium mill",
-              "sub": "Best taste, thin margin",
-              "icon": "🌾",
-              "effects": {
-                "cash": -2500,
-                "reputation": 7
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "day3",
-      "label": "Day 3 — Extra hands",
-      "beats": [
-        {
-          "id": "d3_hire",
-          "kicker": "You need help",
-          "title": "Who do you hire?",
-          "body": "Swipe the card you trust. Cheap, reliable, or skilled — you can't have all three.",
-          "type": "hire",
-          "options": [
-            {
-              "id": "cousin",
-              "label": "Cousin · 20k/wk",
-              "sub": "Cheap, late sometimes",
-              "icon": "🧢",
-              "effects": {
-                "cash": 2000,
-                "reputation": -2
-              }
-            },
-            {
-              "id": "mama",
-              "label": "Mama J · 35k/wk",
-              "sub": "Reliable, knows customers",
-              "icon": "👩🏾",
-              "effects": {
-                "cash": -1000,
-                "reputation": 6
-              }
-            },
-            {
-              "id": "pro",
-              "label": "Ex-bakery hand · 50k",
-              "sub": "Fast, wants a raise soon",
-              "icon": "👨🏾‍🍳",
-              "effects": {
-                "cash": -4000,
-                "reputation": 8
-              }
-            }
-          ]
-        },
-        {
-          "id": "d3_delegate",
-          "kicker": "You step away",
-          "title": "What do you let them decide?",
-          "body": "If everything needs you, you are the bottleneck.",
-          "type": "choice",
-          "options": [
-            {
-              "id": "tasks",
-              "label": "Tasks only",
-              "sub": "They follow your list",
-              "icon": "📋",
-              "effects": {
-                "cash": 1000,
-                "reputation": 1
-              }
-            },
-            {
-              "id": "quality",
-              "label": "Quality calls",
-              "sub": "They can say no to a bad batch",
-              "icon": "👀",
-              "effects": {
-                "cash": -500,
-                "reputation": 6
-              }
-            },
-            {
-              "id": "money",
-              "label": "Handle money",
-              "sub": "Fast, but risky early",
-              "icon": "💰",
-              "effects": {
-                "cash": 3000,
-                "reputation": -3
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "day4",
-      "label": "Day 4 — Big break & bad luck",
-      "beats": [
-        {
-          "id": "d4_order",
-          "kicker": "A school wants 200 mandazi",
-          "title": "Do you take the big order?",
-          "body": "It fills your morning but pays next week. Can you fund it?",
-          "type": "choice",
-          "options": [
-            {
-              "id": "no",
-              "label": "Not now",
-              "sub": "Keep steady",
-              "icon": "🙅🏾",
-              "effects": {
-                "cash": 0,
-                "reputation": 0
-              }
-            },
-            {
-              "id": "yes",
-              "label": "Take it, deliver well",
-              "sub": "Stretch, get known",
-              "icon": "🚐",
-              "effects": {
-                "cash": -3000,
-                "reputation": 8
-              }
-            },
-            {
-              "id": "yes_cheap",
-              "label": "Take it, cut corners",
-              "sub": "More cash today",
-              "icon": "⚠️",
-              "effects": {
-                "cash": 4000,
-                "reputation": -6
-              }
-            }
-          ]
-        },
-        {
-          "id": "d4_shock",
-          "kicker": "Oh no",
-          "title": "The school hasn't paid. It's week 2.",
-          "body": "Your cash is low. The flour man is waiting.",
-          "type": "choice",
-          "options": [
-            {
-              "id": "wait",
-              "label": "Wait and hope",
-              "sub": "Do nothing",
-              "icon": "⏳",
-              "effects": {
-                "cash": -4000,
-                "reputation": -3
-              }
-            },
-            {
-              "id": "call",
-              "label": "Call, offer a small discount for cash now",
-              "sub": "Active, costs a little",
-              "icon": "📞",
-              "effects": {
-                "cash": 2000,
-                "reputation": 4
-              }
-            },
-            {
-              "id": "borrow",
-              "label": "Borrow to cover it",
-              "sub": "Keeps you open, adds pressure",
-              "icon": "🏦",
-              "effects": {
-                "cash": 5000,
-                "reputation": 0
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "day5",
-      "label": "Day 5 — What stays in?",
-      "beats": [
-        {
-          "id": "d5_split",
-          "kicker": "Week's end",
-          "title": "What stays in the business?",
-          "body": "You made something. How much do you take home vs leave to grow?",
-          "type": "split",
-          "options": [
-            {
-              "id": "take",
-              "label": "Take most home",
-              "sub": "Family needs it",
-              "icon": "🏠",
-              "effects": {
-                "cash": -6000,
-                "reputation": 0
-              }
-            },
-            {
-              "id": "balance",
-              "label": "Balanced",
-              "sub": "Home + restock",
-              "icon": "⚖️",
-              "effects": {
-                "cash": -1000,
-                "reputation": 4
-              }
-            },
-            {
-              "id": "reinvest",
-              "label": "Leave it in",
-              "sub": "More stock, better tomorrow",
-              "icon": "🌱",
-              "effects": {
-                "cash": 3000,
-                "reputation": 3
-              }
-            }
-          ]
-        },
-        {
-          "id": "d5_evidence",
-          "kicker": "Show one real task",
-          "title": "Before the grant — one thing from your real business",
-          "body": "Teaching is by doing: photo your last week's cash record OR write a paid-trial offer you'll send tomorrow. One artefact, not a quiz.",
-          "type": "evidence",
-          "options": [
-            {
-              "id": "photo",
-              "label": "Photo my cash record",
-              "sub": "One week, handwritten is fine",
-              "icon": "📸"
+              "label": {
+                "en": "Deliver the full batch on credit",
+                "sw": "Peleka bidhaa zote kwa mkopo"
+              },
+              "outcome": {
+                "en": "You paid {6000} and the shop owes you {9000}. The sale increased what the business owns, but cash fell.",
+                "sw": "Umelipa {6000} na unadai duka {9000}. Mauzo yameongeza mali ya biashara, lakini fedha zimepungua."
+              },
+              "payments": 6000,
+              "receivable": 9000
             },
             {
               "id": "trial",
-              "label": "Write a paid-trial offer",
-              "sub": "One customer, one price, paid first",
-              "icon": "✍️"
+              "label": {
+                "en": "Agree a half-size trial, paid on delivery",
+                "sw": "Kubali nusu ya bidhaa, malipo wakati wa kupokea"
+              },
+              "outcome": {
+                "en": "The buyer accepted the small trial. You paid {3000} and collected {4500}. A paid trial tested demand while limiting cash at risk.",
+                "sw": "Mnunuzi amekubali jaribio dogo. Umelipa {3000} na kupokea {4500}. Jaribio la kulipwa limechunguza mahitaji na kupunguza fedha zilizo hatarini."
+              },
+              "payments": 3000,
+              "receipts": 4500
             }
           ]
         },
         {
-          "id": "d5_reflect",
-          "kicker": "Before the grant",
-          "title": "Why did this week go as it did?",
-          "body": "One line in your own words. No wrong answer — this is your agency signal for the next grant.",
-          "type": "reflect",
-          "prompt": "What one thing would you do differently next week?"
+          "id": "disruption",
+          "title": {
+            "en": "Rain slows the market",
+            "sw": "Mvua imepunguza wateja"
+          },
+          "body": {
+            "en": "Rain has slowed walk-in sales. A small covered stall batch costs {2000} and brings {3000}. Choose how to respond.",
+            "sw": "Mvua imepunguza wateja. Bidhaa chache chini ya kibanda zinagharimu {2000} na kuleta {3000}. Chagua hatua."
+          },
+          "options": [
+            {
+              "id": "trade",
+              "label": {
+                "en": "Make a small batch under cover",
+                "sw": "Tengeneza kiasi kidogo chini ya kibanda"
+              },
+              "outcome": {
+                "en": "You spent {2000} and received {3000}. You adjusted production to today’s demand.",
+                "sw": "Umetumia {2000} na kupokea {3000}. Umebadili uzalishaji kulingana na mahitaji ya leo."
+              },
+              "payments": 2000,
+              "receipts": 3000
+            },
+            {
+              "id": "pause",
+              "label": {
+                "en": "Pause production today",
+                "sw": "Sitisha uzalishaji leo"
+              },
+              "outcome": {
+                "en": "You made no batch and received no sales cash. You avoided paying for food that might not sell.",
+                "sw": "Hujatengeneza bidhaa wala kupokea fedha za mauzo. Umeepuka gharama ya chakula ambacho huenda kisiuzwe."
+              }
+            }
+          ],
+          "creditVariant": {
+            "title": {
+              "en": "The shop is late paying",
+              "sw": "Duka limechelewa kulipa"
+            },
+            "body": {
+              "en": "The shop owes {9000}. It offers {8500} now, or the full amount later. Cash tied up in a sale cannot buy flour.",
+              "sw": "Unadai duka {9000}. Linatoa {8500} sasa, au kiasi chote baadaye. Fedha zilizo kwenye deni haziwezi kununua unga."
+            },
+            "options": [
+              {
+                "id": "collect",
+                "label": {
+                  "en": "Accept {8500} now",
+                  "sw": "Kubali {8500} sasa"
+                },
+                "outcome": {
+                  "en": "You collected {8500} and cleared the {9000} invoice. The {500} discount is a real cost of getting cash sooner.",
+                  "sw": "Umepokea {8500} na kumaliza ankara ya {9000}. Punguzo la {500} ni gharama ya kupata fedha mapema."
+                },
+                "receipts": 8500,
+                "receivable": -9000
+              },
+              {
+                "id": "wait",
+                "label": {
+                  "en": "Keep the full invoice and wait",
+                  "sw": "Subiri kiasi chote cha ankara"
+                },
+                "outcome": {
+                  "en": "You still have a claim for {9000}, but no cash from this sale. There is no promise that it will arrive on time.",
+                  "sw": "Bado unadai {9000}, lakini hujapata fedha za mauzo haya. Hakuna uhakika wa kulipwa kwa wakati."
+                }
+              },
+              {
+                "id": "borrow",
+                "label": {
+                  "en": "Borrow {4000}; repay {4400} tomorrow",
+                  "sw": "Kopa {4000}; rudisha {4400} kesho"
+                },
+                "outcome": {
+                  "en": "Cash rose by {4000}, but debt rose by {4400}. Borrowing is not sales income. The customer still owes you {9000}.",
+                  "sw": "Fedha zimeongezeka kwa {4000}, lakini deni limeongezeka kwa {4400}. Mkopo si mapato ya mauzo. Bado unamdai mteja {9000}."
+                },
+                "receipts": 4000,
+                "debt": 4400
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "label": {
+        "en": "Keep a useful record",
+        "sw": "Weka rekodi yenye manufaa"
+      },
+      "beats": [
+        {
+          "id": "repay",
+          "title": {
+            "en": "Pay what is due",
+            "sw": "Lipa madeni yanayodaiwa"
+          },
+          "body": {
+            "en": "Check the amount you owe below. Settle the flour credit and any short loan before choosing what to take home.",
+            "sw": "Angalia deni lako hapa chini. Lipa mkopo wa unga na mkopo mfupi wowote kabla ya kuchagua fedha za nyumbani."
+          },
+          "options": [
+            {
+              "id": "settle",
+              "label": {
+                "en": "Pay the amount due",
+                "sw": "Lipa deni linalodaiwa"
+              },
+              "outcome": {
+                "en": "The record shows the cash used to repay debt. This is why borrowed cash was never free money. If you owed nothing, nothing was deducted.",
+                "sw": "Rekodi inaonyesha fedha zilizotumika kulipa deni. Ndiyo maana fedha za mkopo si fedha za bure. Kama hukuwa na deni, hakuna kilichokatwa."
+              },
+              "dynamic": "repay"
+            }
+          ]
+        },
+        {
+          "id": "home",
+          "title": {
+            "en": "What can you take home?",
+            "sw": "Unaweza kuchukua kiasi gani nyumbani?"
+          },
+          "body": {
+            "en": "The next batch needs {4000} in cash. Check what would remain after taking money home. Family income and business cash serve different needs.",
+            "sw": "Bidhaa zinazofuata zinahitaji fedha {4000}. Angalia kitakachobaki baada ya kuchukua fedha nyumbani. Kipato cha familia na fedha za biashara zina mahitaji tofauti."
+          },
+          "options": [
+            {
+              "id": "take",
+              "label": {
+                "en": "Take {6000} home",
+                "sw": "Chukua {6000} nyumbani"
+              },
+              "outcome": {
+                "en": "You moved {6000} from business cash to the household. It is an owner withdrawal, not a production cost.",
+                "sw": "Umehamisha {6000} kutoka biashara kwenda nyumbani. Hizi ni fedha alizochukua mmiliki, si gharama ya uzalishaji."
+              },
+              "payments": 6000,
+              "withdrawn": 6000
+            },
+            {
+              "id": "some",
+              "label": {
+                "en": "Take {2000} home",
+                "sw": "Chukua {2000} nyumbani"
+              },
+              "outcome": {
+                "en": "You moved {2000} home and kept the rest available for the stall. A cash reserve helps only if you know the next costs.",
+                "sw": "Umehamisha {2000} nyumbani na kuacha zilizobaki kwa kibanda. Akiba husaidia ukijua gharama zinazofuata."
+              },
+              "payments": 2000,
+              "withdrawn": 2000
+            },
+            {
+              "id": "keep",
+              "label": {
+                "en": "Keep the cash in the stall",
+                "sw": "Acha fedha kwenye kibanda"
+              },
+              "outcome": {
+                "en": "Cash stayed where it was. Keeping money in the business does not create more money; you still need a useful way to use it.",
+                "sw": "Fedha zimebaki zilipokuwa. Kuacha fedha kwenye biashara hakuzalishi fedha zaidi; bado unahitaji matumizi yenye manufaa."
+              }
+            }
+          ]
+        },
+        {
+          "id": "cashbook",
+          "title": {
+            "en": "Check the cash tin",
+            "sw": "Kagua kisanduku cha fedha"
+          },
+          "body": {
+            "en": "Practise with a separate example: opening cash {10000}, cash received {6000}, cash paid {4000}. How much is left? This does not change your stall cash.",
+            "sw": "Fanya mazoezi kwa mfano tofauti: fedha za mwanzo {10000}, fedha zilizopokelewa {6000}, fedha zilizolipwa {4000}. Zimebaki kiasi gani? Hii haibadili fedha za kibanda."
+          },
+          "options": [
+            {
+              "id": "12000",
+              "label": {
+                "en": "{12000}",
+                "sw": "{12000}"
+              },
+              "outcome": {
+                "en": "Yes: {10000} + {6000} − {4000} = {12000}. Record both money in and money out.",
+                "sw": "Ndiyo: {10000} + {6000} − {4000} = {12000}. Andika fedha zilizoingia na zilizotoka."
+              }
+            },
+            {
+              "id": "16000",
+              "label": {
+                "en": "{16000}",
+                "sw": "{16000}"
+              },
+              "outcome": {
+                "en": "That includes the receipts but misses the payment. {10000} + {6000} − {4000} = {12000}.",
+                "sw": "Hizo zinajumuisha mapokezi lakini si malipo. {10000} + {6000} − {4000} = {12000}."
+              }
+            },
+            {
+              "id": "6000",
+              "label": {
+                "en": "{6000}",
+                "sw": "{6000}"
+              },
+              "outcome": {
+                "en": "That leaves out the opening money or receipts. Start with {10000}, add {6000}, subtract {4000}: {12000}.",
+                "sw": "Hizo zimeacha fedha za mwanzo au mapokezi. Anza na {10000}, ongeza {6000}, toa {4000}: {12000}."
+              }
+            }
+          ]
+        },
+        {
+          "id": "reflect",
+          "title": {
+            "en": "Choose one real next step",
+            "sw": "Chagua hatua moja halisi"
+          },
+          "body": {
+            "en": "Optional: what small paid trial could you try, or which cash entry will you record? Do not add names or private customer details. A note is a plan, not proof that you did it.",
+            "sw": "Si lazima: unaweza kujaribu mauzo gani madogo ya kulipwa, au utaandika fedha gani? Usiweke majina au taarifa binafsi za wateja. Maandishi haya ni mpango, si uthibitisho wa utekelezaji."
+          },
+          "kind": "note"
         }
       ]
     }
-  ]
+  ],
+  "ui": {
+    "subtitle": {
+      "en": "Five sample days · no timer",
+      "sw": "Siku tano za mfano · bila kipima muda"
+    },
+    "sample": {
+      "en": "Sample only. Prices and Kiswahili need local review.",
+      "sw": "Mfano tu. Bei na Kiswahili vinahitaji uhakiki wa eneo hili."
+    },
+    "cash": {
+      "en": "Cash available",
+      "sw": "Fedha zilizopo"
+    },
+    "debt": {
+      "en": "You owe",
+      "sw": "Unadaiwa"
+    },
+    "receivable": {
+      "en": "Customers owe you",
+      "sw": "Unawadai wateja"
+    },
+    "stock": {
+      "en": "Unused flour",
+      "sw": "Unga uliobaki"
+    },
+    "net": {
+      "en": "Cash + flour + customer debts − what you owe",
+      "sw": "Fedha + unga + madeni ya wateja − madeni yako"
+    },
+    "accounts": {
+      "en": "See the money",
+      "sw": "Angalia fedha"
+    },
+    "in": {
+      "en": "Cash received",
+      "sw": "Fedha zilizopokelewa"
+    },
+    "out": {
+      "en": "Cash paid",
+      "sw": "Fedha zilizolipwa"
+    },
+    "change": {
+      "en": "Cash change",
+      "sw": "Mabadiliko ya fedha"
+    },
+    "next": {
+      "en": "Continue →",
+      "sw": "Endelea →"
+    },
+    "day": {
+      "en": "Day {n} of 5",
+      "sw": "Siku ya {n} kati ya 5"
+    },
+    "done": {
+      "en": "You finished the introduction",
+      "sw": "Umemaliza utangulizi"
+    },
+    "limit": {
+      "en": "This record shows choices in a sample game. It does not prove real business performance or qualify you for a grant.",
+      "sw": "Rekodi hii inaonyesha chaguo kwenye mchezo wa mfano. Haithibitishi matokeo ya biashara halisi wala kukupa sifa za ruzuku."
+    },
+    "practice": {
+      "en": "Explore the four businesses →",
+      "sw": "Jaribu biashara nne →"
+    },
+    "saved": {
+      "en": "Saved on this device. Nothing sent.",
+      "sw": "Imehifadhiwa kwenye kifaa hiki. Hakuna kilichotumwa."
+    },
+    "failed": {
+      "en": "Could not save. Keep this page open, download your record, then retry.",
+      "sw": "Haijahifadhiwa. Acha ukurasa wazi, pakua rekodi yako, kisha jaribu tena."
+    },
+    "retry": {
+      "en": "Retry saving",
+      "sw": "Jaribu kuhifadhi tena"
+    },
+    "download": {
+      "en": "Download my record",
+      "sw": "Pakua rekodi yangu"
+    },
+    "replay": {
+      "en": "Start a new attempt",
+      "sw": "Anza jaribio jipya"
+    },
+    "confirm": {
+      "en": "Download your record first if you want to keep it. Replace this introduction attempt? Full-game records stay unchanged.",
+      "sw": "Pakua rekodi yako kwanza ikiwa unataka kuihifadhi. Ubadilishe jaribio hili la utangulizi? Rekodi za mchezo kamili hazitabadilika."
+    },
+    "note": {
+      "en": "My next step (optional)",
+      "sw": "Hatua yangu inayofuata (si lazima)"
+    },
+    "finish": {
+      "en": "Finish",
+      "sw": "Maliza"
+    },
+    "previous": {
+      "en": "Your older introduction save is kept. This revised game starts a separate attempt.",
+      "sw": "Hifadhi yako ya zamani ipo. Mchezo uliorekebishwa unaanza jaribio tofauti."
+    },
+    "invalid": {
+      "en": "This save cannot be opened. Download it before starting a new attempt.",
+      "sw": "Hifadhi hii haiwezi kufunguliwa. Ipakue kabla ya kuanza jaribio jipya."
+    },
+    "raw": {
+      "en": "Download previous save",
+      "sw": "Pakua hifadhi ya awali"
+    },
+    "loading": {
+      "en": "Opening the game…",
+      "sw": "Mchezo unafunguka…"
+    },
+    "error": {
+      "en": "Could not open the game. Reconnect and reload.",
+      "sw": "Mchezo haujafunguka. Unganisha intaneti na ujaribu tena."
+    },
+    "offline": {
+      "en": "Ready for offline play",
+      "sw": "Tayari kucheza bila intaneti"
+    },
+    "online": {
+      "en": "Offline copy not yet ready",
+      "sw": "Nakala ya kucheza bila intaneti haijawa tayari"
+    },
+    "endnote": {
+      "en": "Your next step",
+      "sw": "Hatua yako inayofuata"
+    },
+    "learn": {
+      "en": "Try the bakery next: organise production and people. Or choose any chapter.",
+      "sw": "Jaribu bakery: panga uzalishaji na watu. Au chagua sura yoyote."
+    },
+    "steady": {
+      "en": "Try the stall chapter next: practise steady cash and income. Or choose any chapter.",
+      "sw": "Jaribu sura ya kibanda: fanya mazoezi ya fedha na kipato thabiti. Au chagua sura yoyote."
+    },
+    "unavailable": {
+      "en": "Not enough cash for this choice",
+      "sw": "Fedha hazitoshi kwa chaguo hili"
+    },
+    "conflict": {
+      "en": "This attempt changed in another tab. Download this record, then reload to use the saved attempt.",
+      "sw": "Jaribio hili limebadilika kwenye kichupo kingine. Pakua rekodi hii, kisha fungua tena ili kutumia jaribio lililohifadhiwa."
+    },
+    "fullOnline": {
+      "en": "Open the full game online →",
+      "sw": "Fungua mchezo kamili mtandaoni →"
+    },
+    "offlineFile": {
+      "en": "Download this introduction for offline use",
+      "sw": "Pakua utangulizi huu kwa matumizi bila intaneti"
+    },
+    "cashWarning": {
+      "en": "Cash is below {4000}, the cost of the next batch. Try a smaller batch or collect payment before buying.",
+      "sw": "Fedha ni chini ya {4000}, gharama ya bidhaa zinazofuata. Tengeneza kiasi kidogo au kusanya malipo kabla ya kununua."
+    }
+  },
+  "nextBatchCost": 4000
 }

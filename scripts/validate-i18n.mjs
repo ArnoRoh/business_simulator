@@ -13,7 +13,9 @@ import { readFileSync, readdirSync } from 'node:fs';
 const LANGUAGES = ['en', 'sw'];
 const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
 
+const entry = JSON.parse(read('app/content/game.json'));
 const strings = JSON.parse(read('app/content/ui.json'));
+const entryStrings = entry.ui;
 
 // Every chapter in the manifest, not one hardcoded file (ADR-0007). A chapter that has
 // not been authored yet is reported and skipped rather than crashing the check — the
@@ -35,9 +37,10 @@ const fail = (msg) => { console.log(`  FAIL ${msg}`); problems += 1; };
 // --- every entry carries every language ----------------------------------
 
 console.log('\nui.json — language coverage:');
-const keys = Object.keys(strings).filter((k) => !k.startsWith('_'));
+const allStrings = { ...strings, ...entryStrings };
+const keys = Object.keys(allStrings).filter((k) => !k.startsWith('_'));
 for (const key of keys) {
-  const entry = strings[key];
+  const entry = allStrings[key];
   if (typeof entry !== 'object') { fail(`${key} is not an object`); continue; }
   for (const lang of LANGUAGES) {
     if (typeof entry[lang] !== 'string' || entry[lang].trim() === '') {
@@ -52,7 +55,7 @@ console.log(`  ${keys.length} keys × ${LANGUAGES.length} languages`);
 console.log('\nui.json — placeholders match across languages:');
 const placeholders = (s) => (s.match(/\{(\w+)\}/g) || []).sort().join(',');
 for (const key of keys) {
-  const entry = strings[key];
+  const entry = allStrings[key];
   if (typeof entry !== 'object') continue;
   const reference = placeholders(entry.en || '');
   for (const lang of LANGUAGES) {
@@ -84,7 +87,8 @@ const known = new Set(keys);
 const pluralCategories = ['one', 'other', 'zero', 'two', 'few', 'many'];
 
 for (const [key, file] of requested) {
-  if (known.has(key)) continue;
+  const table = file === 'entry.js' ? entryStrings : strings;
+  if (Object.hasOwn(table, key)) continue;
   if (pluralCategories.some((c) => known.has(`${key}.${c}`))) continue;
   fail(`${file} asks for "${key}", which ui.json does not define`);
 }
@@ -123,7 +127,7 @@ const CONTENT_KEYS = new Set([
   'prompt', 'predictQuestion', 'conceptLabel', 'title', 'blurb', 'cause',
   // Chapter-level content (ADR-0007): the manifest's one-line framing, the notes a
   // carried flag adds to an opening, and a product line's name in the ledger.
-  'shift', 'note', 'description',
+  'shift', 'note', 'description', 'body',
 ]);
 
 let localised = 0;
@@ -147,6 +151,7 @@ const walk = (node, path) => {
   }
 };
 walk(manifest, 'chapters.json');
+walk({ days: entry.days, title: entry.title }, 'game.json');
 for (const [id, scenario] of chapters) walk(scenario, id);
 console.log(`  ${chapters.length} chapter(s), ${localised} localised content strings × ${LANGUAGES.length} languages`);
 if (missing.length) console.log(`  not authored yet, skipped: ${missing.join(', ')}`);

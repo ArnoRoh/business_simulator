@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { resolve, extname } from 'node:path';
 import { chromium } from 'playwright';
-export async function browserApp() {
+export async function browserApp(entry = false) {
   const root = fileURLToPath(new URL('../../app/', import.meta.url));
   let workerVersion = 'test-a';
   let contentFailure = 0;
@@ -21,7 +21,7 @@ export async function browserApp() {
   });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   const browser = await chromium.launch({ headless: true, args: ['--no-sandbox'] });
-  return { browser, url: `http://127.0.0.1:${server.address().port}/`,
+  return { browser, url: `http://127.0.0.1:${server.address().port}/${entry ? '' : 'practice.html'}`,
     failContent: status => { contentFailure = status; },
     updateWorker: () => { workerVersion = 'test-b'; },
     close: async () => { await browser.close(); await new Promise(resolve => server.close(resolve)); },
@@ -29,6 +29,8 @@ export async function browserApp() {
 }
 export const session = page => page.evaluate(async () => (await import('./js/storage.js')).load());
 export async function advance(page) {
+  // Opening a chapter loads content and its saved attempt asynchronously.
+  await page.locator('#decision .option, #decision [data-role], #decision .episode-recap .btn-primary, #decision .number-preset, #decision .diagnose-option').filter({ visible: true }).first().waitFor();
   if (await page.locator('[data-role="next"]').count()) return page.locator('[data-role="next"]').click();
   if ((await session(page))?.phase === 'episode') return page.locator('#decision .btn-primary').click();
   if (await page.locator('[data-role="run"]').isVisible()) return page.locator('[data-role="run"]').click();
