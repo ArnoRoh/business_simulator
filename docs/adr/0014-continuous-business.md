@@ -6,7 +6,7 @@
 
 **Deciders:** Project owner; awaiting review of the proposed design
 
-**Related:** [Design proposal](../MV-BS-DES-001-continuous-business.md),
+**Related:** [Consolidated design proposal](../MV-BS-DES-002-continuous-business-pipeline.md),
 [ADR-0007](./0007-four-chapter-arc.md),
 [ADR-0012](./0012-play-first-business-journey.md),
 [ADR-0013](./0013-short-introduction-and-preserved-chapters.md)
@@ -17,12 +17,24 @@ The owner rejects both the cumbersome older interactions and the shallow five-da
 introduction. Links to four separate chapters do not solve this. The current task asks
 for design before implementation, with freedom to replace the game structure.
 
+Two parallel proposals and a review now form one current draft, MV-BS-DES-002.
+MV-BS-DES-001 remains a historical proposal. Agreement between the reviewing agents
+does not constitute owner acceptance. This ADR remains Proposed.
+
 ## Proposed decision
 
 Use the linked design as the candidate for review: one business with continuous cash,
 stock, orders, staff and obligations. Progress comes from operating consequences and
 player goals. Separate simulated events, intentions, reported activity and verified
 real activity. Preserve existing learner records and their historical meanings.
+
+Keep standing plans, dated obligations and periodic reviews. Delivery creates sales;
+collection later releases cash for subsequent purchases. Show basic sales, cash and
+profit without a notebook. Records preserve transaction detail and support investigation.
+After opening instruction, offer explicit constraint highlights as optional help.
+Paid trials give limited observations; neither changing a plan nor changing it faster
+is inherently better. The 24-week prototype schedule is provisional and must leave
+time to observe the consequences of major commitments.
 
 Acceptance would supersede the four-chapter structure in ADR-0007 and the experience
 structure in ADR-0012/0013. It would require a new record contract and a review of the

@@ -9,6 +9,10 @@ will not resolve on a public checkout.
 
 Start with the background note. Everything else is downstream of it.
 
+**Current redesign draft:** [MV-BS-DES-002 — one continuous business](./MV-BS-DES-002-continuous-business-pipeline.md).
+This consolidated proposal and ADR-0014 await owner review. The existing game-design
+and arc documents below describe the inherited experience; the new design is not implemented.
+
 | # | Document | What it covers |
 |---|---|---|
 | 1 | [`context/transformational-entrepreneurship.md`](./context/transformational-entrepreneurship.md) | **The project owner's background note.** The intellectual foundation. Where other docs disagree with it, the note is right. |

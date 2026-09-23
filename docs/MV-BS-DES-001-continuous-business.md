@@ -2,7 +2,11 @@
 
 **Business Simulator · Masika Ventures**
 
-**Status:** Design proposal for owner review. Not implemented or accepted.
+**Status:** Historical proposal, retired as the current draft. Not implemented or accepted.
+
+Use [MV-BS-DES-002 — consolidated game design](./MV-BS-DES-002-continuous-business-pipeline.md)
+for review. It combines the parallel proposals and review corrections. The original
+proposal below remains for traceability; it is not a second implementation specification.
 
 **Date:** 2026-09-23
 
