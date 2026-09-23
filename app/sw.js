@@ -4,14 +4,36 @@ const SCOPE = new URL(self.registration.scope).pathname;
 const PREFIX = `business-simulator:${SCOPE}:`;
 const SHELL_CACHE = PREFIX + CACHE;
 const CONTENT_CACHE = PREFIX + 'content';
-const SHELL = [
-  './', './index.html', './practice.html', './css/entry.css', './js/entry.js', './js/entrymodel.js', './manifest.webmanifest', './css/styles.css',
+// The season game is the core every visitor caches. The earlier introduction and the
+// four chapters are cached when one of their pages installs the worker, or when the
+// previous shell already held them, so existing players keep offline access.
+const CORE = [
+  './', './index.html', './css/season.css', './js/game.js', './js/season.js', './js/seasonscene.js',
+  './js/seasonstore.js', './js/i18n.js', './js/format.js', './content/season.json', './manifest.webmanifest',
+];
+const LEGACY = [
+  './intro.html', './practice.html', './css/entry.css', './js/entry.js', './js/entrymodel.js', './css/styles.css',
   './js/main.js', './js/engine.js', './js/ui.js', './js/carry.js', './js/format.js',
   './js/i18n.js', './js/record.js', './js/scene.js', './js/storage.js',
-  './content/ui.json', './content/chapters.json', './content/game.json',
+  './content/ui.json', './content/chapters.json', './content/game.json', './manifest.webmanifest',
 ];
+const LEGACY_PAGE = /\/(intro|practice)\.html$/;
+// Did an earlier shell of this scope already hold this file?
+async function had(path) {
+  for (const key of await caches.keys()) {
+    if ((key.startsWith(PREFIX) || /^business-simulator-(?:v\d+|[a-f0-9]+)$/.test(key)) && key !== SHELL_CACHE && !key.endsWith(':content') &&
+      await (await caches.open(key)).match(new URL(path, self.registration.scope).href)) return true;
+  }
+  return false;
+}
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(SHELL_CACHE).then(cache => cache.addAll(SHELL)));
+  event.waitUntil((async () => {
+    const pages = (await self.clients.matchAll({ type: 'window', includeUncontrolled: true })).map(page => new URL(page.url).pathname);
+    const legacy = pages.some(path => LEGACY_PAGE.test(path)) || await had('./practice.html');
+    const core = !pages.length || pages.some(path => !LEGACY_PAGE.test(path)) || await had('./js/game.js');
+    const cache = await caches.open(SHELL_CACHE);
+    await cache.addAll([...new Set([...(core ? CORE : []), ...(legacy ? LEGACY : [])])]);
+  })());
 });
 self.addEventListener('activate', event => {
   event.waitUntil((async () => {

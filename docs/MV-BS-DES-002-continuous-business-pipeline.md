@@ -2,15 +2,17 @@
 
 **Business Simulator · Masika Ventures**
 
-**Status:** Single current design draft for owner review. Not implemented or accepted.
+**Status:** Approved implementation direction, 2026-09-23. Local implementation complete;
+prototype timing and commercial assumptions remain provisional. Not field validated.
 
 **Date:** 2026-09-23
 
-**Decision record:** [Proposed ADR-0014](./adr/0014-continuous-business.md).
+**Decision record:** [ADR-0014](./adr/0014-continuous-business.md).
 Consolidates the two parallel proposals and their review. [MV-BS-DES-001](./MV-BS-DES-001-continuous-business.md)
-remains a historical proposal. Agreement between the agents is not owner acceptance.
+remains a historical proposal. The owner subsequently accepted this direction and
+requested implementation with Opus 5.5, including animations.
 
-**Replaces, if accepted:** the thirteen-step introduction (ADR-0013) and the four-chapter
+**Replaces in the current source:** the thirteen-step introduction (ADR-0013) and the four-chapter
 structure (ADR-0007) as the main game. Existing records stay readable (section 10).
 
 All amounts in this document are **sample figures**. They show the shape of the design.
@@ -642,11 +644,37 @@ validate a selection rule. This design claims neither learning impact nor predic
 
 This is the single current candidate for review. Its concrete proposal is one continuing
 business, standing plans, a visual goods-and-cash cycle, dated obligations, useful records
-and periodic reviews. The owner is reviewing whether that experience is worth prototyping;
-the 24-week schedule and numerical goals remain test settings.
+and periodic reviews. The owner accepted implementation. The 24-week schedule and numerical goals remain
+test settings. Local code exists; field acceptance and deployment are separate.
 
-ADR-0014 remains Proposed. After design acceptance, test the full causal sequence with
-cards, define the minimum model and new record contract, then prototype both early and
-later play. Review local figures and Kiswahili before learner trials. The final duration
+The owner has accepted ADR-0014 and requested a playable implementation. Build the
+minimum complete model and record contract, including early and later play. The causal
+paper test and observed phone trials remain external acceptance work. Review local
+figures and Kiswahili before learner trials. The final duration
 depends on those trials. Programme intake, validation and participant deployment remain
 separate work; this draft changes none of them.
+
+## 12. Local implementation boundary
+
+The new source entry implements the continuous season. The five business panels open
+on demand. A standing plan can run one week, or routine weeks until an event or review.
+The scene shows saved results; animation never determines revenue or records timing.
+Cash, sales and profit remain visible without buying information. Borrowed principal,
+interest, stock, assets and delayed customer payments have separate ledger effects.
+
+The season retains several local attempts. A record pins rules and bilingual content,
+ordered actions, results, language, assistance and chosen goals. See
+[ADR-0015](./adr/0015-season-records-and-preserved-games.md). Earlier games keep their
+own pages and stores. The new record has no portal submission or eligibility claim.
+
+The implementation is a bounded model. It buys a week's inputs before trading. Customer
+payments vary within authored bounds. School and kiosk orders receive stock before
+walk-in customers. One helper cooks; training and checks change capacity or losses.
+The notebook preserves invoice and delivery detail. Looking at its comparison is an
+observed use of supplied records, not independent bookkeeping. The away goal records
+sales with a helper, notebook and checking plan; it does not certify reconciliation or
+leadership. Unmet household needs remain visible; they are not booked as business debt.
+
+Commercial amounts, customer terms and staff arrangements are fictional test settings.
+No local employment or food-safety rule is verified by this model. The game does not
+capture or verify a real paid experiment. Those links remain programme work.

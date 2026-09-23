@@ -4,7 +4,9 @@ import { readFileSync, existsSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 const sw = read('app/sw.js'), html = read('app/practice.html');
-const shell = [...sw.matchAll(/'\.\/([^']+)'/g)].map(m => m[1]).filter(p => p.includes('.'));
+const files = name => [...sw.match(new RegExp(`const ${name} = \\[([\\s\\S]*?)\\];`))[1].matchAll(/'\.\/([^']+)'/g)].map(m => m[1]);
+const core = files('CORE'), legacy = files('LEGACY');
+const shell = [...new Set([...core, ...legacy])];
 assert(shell.length > 5);
 for (const file of shell) assert(existsSync(new URL(`../app/${file}`, import.meta.url)), file);
 for (const id of ['decision', 'situation', 'save-status', 'learners', 'record', 'print-record']) assert(html.includes(`id="${id}"`));
@@ -14,10 +16,12 @@ assert(sw.includes('build-info.json'));
 assert(!sw.includes('skipWaiting()'));
 assert(html.includes('serviceWorker.register'));
 const chapters = JSON.parse(read('app/content/chapters.json')).chapters;
-const shellBytes = gzipSync(sw).length + shell.reduce((sum, file) => sum + gzipSync(read(`app/${file}`)).length, 0);
+const size = files => gzipSync(sw).length + [...new Set(files)].reduce((sum, file) => sum + gzipSync(read(`app/${file}`)).length, 0);
+const coreBytes = size(core), shellBytes = size(legacy);
+assert(coreBytes <= 150 * 1024, `Season first load: ${coreBytes}`);
 for (const chapter of chapters) {
   const bytes = gzipSync(read(`app/content/${chapter.file}`)).length;
   assert(bytes <= 60 * 1024, chapter.id);
   if (chapter === chapters[0]) assert(shellBytes + bytes <= 150 * 1024, `First load: ${shellBytes + bytes}`);
 }
-console.log(`Delivery wiring and download budgets passed (${shellBytes} compressed shell bytes)`);
+console.log(`Delivery wiring and download budgets passed (${coreBytes} season core / ${shellBytes} earlier-game shell compressed bytes)`);

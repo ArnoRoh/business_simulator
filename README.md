@@ -8,35 +8,29 @@ than instruction, and it **observes** what a learner actually does — producing
 behavioural record intended as a cheap first stage of an execution test for grant
 programmes and training providers.
 
-> **Status: playable proof of concept.** Four chapters of 20 turns — a mandazi stall, a
-> bakery, a factory, exporting — in English and Kiswahili, phone-first. Rough, and meant
-> to be played and argued with. The Tanzanian figures are placeholders and the app says
-> so on screen. See `memory/PROJECT_STATE.md` (kept privately — see below) for where
-> things actually stand.
+> **Status:** The source now opens one continuous business season in English and
+> Kiswahili. You run a mandazi stall with stock, repeat customers, debts, household
+> needs and staff. The 24-week setting and all commercial figures are samples for
+> testing. Learner, local-commercial and native-language review remain open.
 
 ## Play the game
 
-**[Open the Business Simulator](https://arnoroh.github.io/business_simulator/)**
+The [public site](https://arnoroh.github.io/business_simulator/) still runs the earlier
+release until a separate deployment. This branch does not change that site.
 
-You do not need to download the repository, copy files or run a local server. Open the
-link in a browser on a phone or computer. The game is free to use and does not require
-an account.
+For the new game, serve `app/` locally or open
+[the new offline file](./app/season-standalone.html) directly. Start trading with the
+ready plan; change it when needed. Cash, profit and sales stay visible. Short animations
+show cash sales, credit deliveries, customers leaving and waste. There is no timer or
+required profit prediction. The core works offline after its first successful load.
 
-This is a rough proof of concept, not a finished course. You can choose English or
-Kiswahili and start with any of the four chapters. It is designed to work offline after
-the first load, although offline play on a real device is still being tested.
+A steady livelihood and a business that can operate while you are away are both valid
+goals. There is no entrepreneur score. The record describes simulated choices, not
+verified real execution or grant eligibility. Data stays on the device unless you
+choose to download and share it.
 
-Each turn: a situation, information you can buy with time or money, a decision — and then
-**you predict what will happen before you find out.** That prediction step is the whole
-design. It is the moment of engagement and the measurement at the same time, because you
-cannot reliably predict a system you do not understand.
-
-The four chapters follow one owner as her business changes shape, and each one changes
-what can kill her: not knowing your margin, then running out of cash while profitable,
-then building capacity you cannot fill or supervise, then meeting someone else's standard
-in someone else's currency. They are **not a ladder** — a stall run well is a real
-business, not a step towards a bigger one — and none is locked behind another. See
-[`docs/arc.md`](./docs/arc.md).
+Earlier games and records remain available at `intro.html` and `practice.html`.
+See [the current design](./docs/MV-BS-DES-002-continuous-business-pipeline.md).
 
 ## Run the programme portal locally
 
@@ -62,7 +56,7 @@ Then paste this prompt:
 > Explore this repository without changing it. Read `AGENTS.md` first, especially
 > sections 1–6, and then read `docs/context/transformational-entrepreneurship.md`.
 > Play or inspect the app if your tools allow it. Explain what the project is trying to
-> do, how the four chapters work, what is already built, and the most important open
+> do, how the continuous business and preserved earlier games work, what is already built, and the most important open
 > risks or questions. Distinguish measured facts from assumptions. The public repository
 > does not include the private `memory/` directory, so flag missing context instead of
 > inventing it.
@@ -85,7 +79,7 @@ python3 -m http.server 8000
 ```
 
 Then open `http://localhost:8000`. The generated
-[`app/standalone.html`](./app/standalone.html) can also be opened directly without a
+[`app/season-standalone.html`](./app/season-standalone.html) can also be opened directly without a
 server. More technical detail is in [`app/README.md`](./app/README.md). If the agent will
 make changes rather than only explore, also read [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 

@@ -1,0 +1,3434 @@
+<title>Business Simulator</title>
+<script>
+(function () {
+  if (!document.querySelector('meta[name="viewport"]')) {
+    var m = document.createElement('meta');
+    m.name = 'viewport';
+    m.content = 'width=device-width, initial-scale=1, viewport-fit=cover';
+    document.head.appendChild(m);
+  }
+})();
+</script>
+<style>
+:root {
+  --ink: #1f160e; --muted: #5b4a3a; --paper: #fff8ee; --card: #fff; --line: #e8d5bb;
+  --teal: #0f766e; --teal-dark: #115e59; --orange: #c2410c; --gold: #facc15; --red: #b91c1c;
+  font: 17px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--ink); background: var(--paper);
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+.app { max-width: 560px; margin: 0 auto; padding: 0 12px 32px; }
+h1, h2, h3, h4 { line-height: 1.2; margin: .2em 0 .4em; }
+h1 { font-size: 1.25rem; } h2 { font-size: 1.15rem; } h3 { font-size: 1.05rem; } h4 { font-size: .95rem; margin-top: .8em; }
+p { margin: .35em 0; }
+.small { font-size: .88rem; color: var(--muted); }
+.warn { color: var(--red); font-weight: 600; }
+.top { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 0 4px; }
+.top p { margin: 0; color: var(--muted); font-size: .9rem; }
+
+/* Summary strip: cash, profit and sales are always on screen. */
+.strip { position: sticky; top: 0; z-index: 2; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 8px;
+  background: var(--teal-dark); color: #fff; border-radius: 0 0 12px 12px; padding: 8px 10px; }
+.strip .label { display: block; font-size: .74rem; opacity: .9; }
+.strip strong { font-size: 1.02rem; white-space: nowrap; }
+.strip .meta { grid-column: 1 / -1; margin: 0; font-size: .82rem; display: flex; flex-wrap: wrap; gap: 2px 12px; }
+
+.calendar { list-style: none; display: grid; grid-template-columns: repeat(24, 1fr); gap: 2px; padding: 0; margin: 8px 0; }
+.calendar li { position: relative; height: 22px; border-radius: 3px; background: #efe2cf; font-size: .6rem; text-align: center; line-height: 22px; color: var(--muted); }
+.calendar li.past { background: #cfe3dd; }
+.calendar li.now { background: var(--teal); color: #fff; font-weight: 700; }
+.calendar li.close { border-bottom: 3px solid var(--muted); }
+.calendar li.pay::after, .calendar li.away::after, .calendar li.invoice::after { content: ""; position: absolute; top: -3px; left: 50%; width: 7px; height: 7px; margin-left: -3.5px; border-radius: 50%; }
+.calendar li.pay::after { background: var(--red); }
+.calendar li.away::after { background: #7c3aed; }
+.calendar li.invoice::after { background: var(--gold); border: 1px solid #a16207; }
+
+.scene-wrap { position: relative; }
+.scene { border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: #ffe8c4; }
+.scene svg { display: block; width: 100%; height: auto; }
+.scene .tray { fill: #d6a664; } .scene .mz { fill: #f59e0b; stroke: #b45309; stroke-width: .8; }
+.scene .pot rect { fill: #475569; } .scene .steam { fill: none; stroke: #fff; stroke-width: 2; opacity: .7; }
+.scene .sack { fill: #f5f0e6; stroke: #a8927a; } .scene .paper { fill: #fff; stroke: #d6d3d1; }
+.scene .awning { fill: var(--teal); } .scene .tag rect { fill: var(--red); } .scene .tag text { fill: #fff; font: 700 8px system-ui; text-anchor: middle; }
+.scene .fill { transform-box: fill-box; transform-origin: 50% 100%; transition: transform 3s linear; }
+.skip { position: absolute; right: 8px; bottom: 8px; min-height: 40px; padding: 4px 14px; border-radius: 20px; border: 0; background: rgba(31, 22, 14, .8); color: #fff; font: inherit; }
+
+/* Week replay: transient marks are invisible unless a week is playing. */
+.fx { opacity: 0; }
+.scene .daylabel { font: 700 13px system-ui; fill: var(--ink); text-anchor: middle; }
+.scene .soldout { font: 700 9px system-ui; fill: var(--red); }
+.scene .coin { fill: var(--gold); stroke: #a16207; }
+.scene .invoice { fill: #fff; stroke: #64748b; }
+.scene .waste { fill: #92400e; }
+.scene .drops path { stroke: #0369a1; stroke-width: 2; }
+.playing .fx { animation: slot .5s ease both; animation-delay: calc(var(--d) * .5s); }
+.playing .coin { animation-name: coin; animation-delay: calc(var(--d) * .5s + var(--i, 0) * .07s); }
+.playing .invoice { animation-name: invoice; }
+.playing .leave { animation-name: leave; }
+.playing .waste { animation-name: waste; }
+.playing .arrive { animation-name: arrive; animation-duration: .6s; }
+.playing .steam { animation: steam 1s ease-in-out infinite; }
+@keyframes slot { 0% { opacity: 0; } 15%, 85% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes coin { 0% { opacity: 1; transform: none; } 100% { opacity: .2; transform: translate(calc(-36px - var(--i, 0) * 14px), -28px); } }
+@keyframes invoice { 0% { opacity: 1; transform: none; } 100% { opacity: .3; transform: translate(-148px, -22px) scale(.7); } }
+@keyframes leave { 0% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translate(40px, 0); } }
+@keyframes waste { 0% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translate(61px, 14px); } }
+@keyframes arrive { 0% { opacity: 1; transform: translate(-40px, 0); } 100% { opacity: 0; transform: none; } }
+@keyframes steam { 50% { transform: translateY(-3px); opacity: .3; } }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+
+.main { display: grid; gap: 10px; margin-top: 10px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.card:focus { outline: 3px solid var(--teal); }
+.result, .outcome, .event { animation: rise .3s ease; }
+.result .tin { font-size: 1.1rem; font-weight: 700; }
+.result .compare { font-weight: 600; color: var(--teal-dark); }
+.notes, .weeks { padding-left: 1.1em; margin: .4em 0; }
+.kicker { text-transform: uppercase; letter-spacing: .04em; font-size: .75rem; color: var(--muted); margin: 0; }
+.event { border: 2px solid var(--orange); }
+.needs { background: #fff7ed; border-radius: 8px; padding: 8px 10px; margin: 8px 0; }
+.needs ul { margin: 0; padding-left: 1.1em; }
+.options, .goals { display: grid; gap: 8px; margin-top: 10px; }
+.limit-note { border-left: 6px solid var(--orange); font-weight: 600; }
+.goal-line { margin: 0; font-weight: 600; color: var(--teal-dark); }
+
+.board { display: grid; gap: 10px; }
+.tile { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; }
+.tile.limit { border: 3px solid var(--orange); box-shadow: 0 0 0 3px #fed7aa; }
+.tile h3 { display: flex; align-items: center; gap: 8px; }
+.icon svg { width: 24px; height: 24px; fill: none; stroke: var(--teal); stroke-width: 2; stroke-linejoin: round; display: block; }
+.tile ul { padding-left: 1.1em; margin: .2em 0; }
+.debtor { border-top: 1px solid var(--line); padding-top: 6px; margin-top: 6px; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+button, .links a { font: inherit; min-height: 48px; border-radius: 10px; padding: 8px 14px; cursor: pointer; }
+.primary { background: var(--teal); color: #fff; border: 0; font-weight: 700; width: 100%; }
+.secondary { background: #fff; color: var(--teal-dark); border: 2px solid var(--teal); font-weight: 600; }
+.danger { background: var(--red); color: #fff; border: 0; }
+.link { background: none; border: 0; color: var(--teal-dark); text-decoration: underline; padding-left: 0; }
+.choice { text-align: left; background: #fff; border: 2px solid var(--teal); color: var(--ink); font-weight: 600; display: grid; gap: 2px; }
+.choice small { color: var(--red); font-weight: 400; }
+.goal { text-align: left; background: #fff; border: 2px solid var(--line); color: var(--ink); display: grid; gap: 2px; }
+.goal.chosen { border-color: var(--teal); background: #f0fdfa; }
+.goal em { color: var(--teal-dark); font-style: normal; font-weight: 700; }
+button:disabled { opacity: .55; cursor: not-allowed; }
+button:focus-visible, a:focus-visible, input:focus-visible + span, summary:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
+.run { display: grid; gap: 8px; }
+
+.seg { border: 0; padding: 0; margin: 8px 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.seg legend { font-weight: 600; margin-bottom: 4px; padding: 0; }
+.seg label { position: relative; }
+.seg input { position: absolute; opacity: 0; inset: 0; margin: 0; }
+.seg span { display: flex; align-items: center; min-height: 48px; padding: 6px 12px; border: 2px solid var(--line); border-radius: 10px; background: #fff; }
+.seg input:checked + span { border-color: var(--teal); background: var(--teal); color: #fff; font-weight: 700; }
+.stepper { margin: 6px 0; }
+.stepper label { display: block; font-weight: 600; }
+.stepper > div { display: flex; gap: 6px; align-items: stretch; }
+.stepper button { min-width: 52px; font-size: 1.3rem; }
+.stepper input { width: 6.5em; min-height: 48px; font: inherit; font-size: 1.1rem; text-align: center; border: 2px solid var(--line); border-radius: 10px; }
+
+.rows { margin: 6px 0; }
+.rows div { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px dotted var(--line); padding: 3px 0; }
+.rows dt { color: var(--muted); } .rows dd { margin: 0; font-weight: 600; text-align: right; }
+details { margin: 6px 0; } summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 600; color: var(--teal-dark); }
+
+.foot { margin-top: 20px; border-top: 1px solid var(--line); padding-top: 10px; display: grid; gap: 6px; }
+.foot h2 { font-size: 1rem; margin-top: 8px; }
+#saved.ok { color: var(--teal-dark); } #saved.warn { color: var(--red); font-weight: 700; }
+.runs { list-style: none; padding: 0; display: grid; gap: 6px; }
+.runs li { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.links { display: flex; flex-wrap: wrap; gap: 8px; }
+.links a { display: inline-flex; align-items: center; border: 2px solid var(--teal); color: var(--teal-dark); text-decoration: none; font-weight: 600; }
+.links a[hidden] { display: none; }
+
+@media (min-width: 640px) { .board { grid-template-columns: 1fr 1fr; } .tile[data-tile="money"] { grid-column: 1 / -1; } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+.tile > summary { gap: 10px; }
+.tile[open] > summary { margin-bottom: 8px; }
+.scene { scroll-margin-top: 120px; }
+.plan-summary { font-weight: 600; }
+.strip strong { white-space: normal; overflow-wrap: anywhere; }
+@media (max-width: 359px) { .calendar { grid-template-columns: repeat(12, 1fr); } }
+
+.board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.tile[open], .tile[data-tile="money"] { grid-column: 1 / -1; }
+.tile > summary::after { content: "+"; margin-left: auto; }
+.tile[open] > summary::after { content: "−"; }
+
+.top { flex-wrap: wrap; }
+.top > div { flex: 1 1 160px; }
+.rows div { flex-wrap: wrap; }
+.rows dt, .rows dd { overflow-wrap: anywhere; max-width: 100%; }
+button, summary, .links a { overflow-wrap: anywhere; max-width: 100%; }
+.strip > div { min-width: 0; overflow-wrap: anywhere; }
+
+.calendar { grid-template-columns: repeat(auto-fit, minmax(1.25rem, 1fr)); }
+.stepper input { min-width: 0; flex: 1; }
+.stepper button { flex-shrink: 0; }
+
+.scene .collected { fill: var(--gold); stroke: #a16207; }
+.playing .collected { animation-name: collected; }
+@keyframes collected { from { opacity: 1; } to { opacity: 0; transform: translate(64px, 15px); } }
+
+.board { grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)); }
+.tile:not([open]) .icon { display: none; }
+
+</style>
+
+<div class="app">
+  <header class="top">
+    <div><h1 id="title">The mandazi stall</h1><p id="sub"></p></div>
+    <button id="lang" type="button" data-action="lang" class="secondary">Kiswahili</button>
+  </header>
+  <section class="strip" aria-live="polite">
+    <div><span class="label" data-i18n="cash"></span><strong id="cash" data-testid="cash"></strong></div>
+    <div><span class="label" data-i18n="profit"></span><strong id="profit" data-testid="profit"></strong></div>
+    <div><span class="label" data-i18n="sales"></span><strong id="sales" data-testid="sales"></strong></div>
+    <p class="meta"><span id="week" data-testid="week"></span> <span id="due"></span> <span id="hours"></span></p>
+  </section>
+  <ol id="calendar" class="calendar"></ol>
+  <div class="scene-wrap">
+    <div id="scene" class="scene" role="img"></div>
+    <button id="skip" type="button" data-action="skip" class="skip" hidden></button>
+  </div>
+  <main id="main" class="main"><p>Opening the game… / Mchezo unafunguka…</p></main>
+  <footer class="foot">
+    <p><span id="saved" data-testid="saved" role="status"></span>
+      <button id="retry" type="button" data-action="retry" class="secondary" hidden></button>
+      <button id="reload" type="button" data-action="reload" class="secondary" hidden></button></p>
+    <p id="offline" role="status"></p>
+    <details><summary id="records-tools"></summary>
+    <button id="export" type="button" data-action="export" class="secondary"></button>
+    <details><summary id="runs-title"></summary><ul id="runs" class="runs"></ul></details>
+    <h2 id="earlier-title"></h2>
+    <p id="earlier-found"></p>
+    <p class="links"><a id="intro-link" href="./intro.html"></a> <a id="chapters-link" href="./practice.html"></a>
+      <a id="offline-file" href="./season-standalone.html" download="MV-BS-SEASON-game.html"></a></p>
+    </details>
+    <p id="sample" class="small"></p><p id="draft" class="small"></p><p id="privacy" class="small"></p>
+  </footer>
+</div>
+<script>
+  if ('serviceWorker' in navigator) {
+    addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+  }
+</script>
+
+<script>
+(function () {
+  'use strict';
+  const EMBEDDED_GAME = null;
+  const EMBEDDED_SEASON = {
+  "_comment": "Continuous season text (MV-BS-DES-002). Numbers live in app/js/season.js SAMPLE and are unverified samples. Kiswahili is a draft for native review (Q-044).",
+  "id": "mandazi-season",
+  "version": 1,
+  "currency": "TZS",
+  "unverified": true,
+  "ui": {
+    "title": {
+      "en": "The mandazi stall",
+      "sw": "Kibanda cha mandazi"
+    },
+    "sub": {
+      "en": "One season · sample figures",
+      "sw": "Msimu mmoja · takwimu za mfano"
+    },
+    "otherLang": {
+      "en": "Kiswahili",
+      "sw": "English"
+    },
+    "cash": {
+      "en": "Cash",
+      "sw": "Pesa"
+    },
+    "profit": {
+      "en": "Last profit",
+      "sw": "Faida iliyopita"
+    },
+    "sales": {
+      "en": "Last sales",
+      "sw": "Mauzo yaliyopita"
+    },
+    "week": {
+      "en": "Week {n} of {total}",
+      "sw": "Wiki {n} kati ya {total}"
+    },
+    "hours": {
+      "en": "Your hours: {n} a week",
+      "sw": "Saa zako: {n} kwa wiki"
+    },
+    "nextDue": {
+      "en": "Home: {amount} · week {n}",
+      "sw": "Nyumbani: {amount} · wiki {n}"
+    },
+    "calendar": {
+      "en": "Season calendar",
+      "sw": "Kalenda ya msimu"
+    },
+    "cal.pay": {
+      "en": "Household payment",
+      "sw": "Malipo ya nyumbani"
+    },
+    "cal.away": {
+      "en": "You travel",
+      "sw": "Unasafiri"
+    },
+    "cal.close": {
+      "en": "Month review",
+      "sw": "Tathmini ya mwezi"
+    },
+    "cal.invoice": {
+      "en": "Money due to you",
+      "sw": "Pesa unayodai inafika"
+    },
+    "scene": {
+      "en": "Stall: {pots} pots, {trays} trays a day, {packs} packs in stock, {papers} unpaid invoices.",
+      "sw": "Kibanda: sufuria {pots}, trei {trays} kwa siku, pakiti {packs} stoo, ankara {papers} hazijalipwa."
+    },
+    "buy": {
+      "en": "Buy",
+      "sw": "Nunua"
+    },
+    "cook": {
+      "en": "Cook",
+      "sw": "Pika"
+    },
+    "sell": {
+      "en": "Sell",
+      "sw": "Uza"
+    },
+    "collect": {
+      "en": "Collect",
+      "sw": "Kusanya"
+    },
+    "money": {
+      "en": "Household and loans",
+      "sw": "Nyumbani na mikopo"
+    },
+    "stock": {
+      "en": "{n} packs in stock. One pack makes one tray.",
+      "sw": "Pakiti {n} stoo. Pakiti moja ni trei moja."
+    },
+    "packPrice": {
+      "en": "Pack price now: {amount}",
+      "sw": "Bei ya pakiti sasa: {amount}"
+    },
+    "payWith": {
+      "en": "Pay for packs",
+      "sw": "Lipia pakiti"
+    },
+    "pay.cash": {
+      "en": "Cash",
+      "sw": "Taslimu"
+    },
+    "pay.credit": {
+      "en": "Supplier credit, pay in 2 weeks",
+      "sw": "Mkopo wa msambazaji, lipa baada ya wiki 2"
+    },
+    "buyFor": {
+      "en": "Keep stock for",
+      "sw": "Weka stoo ya"
+    },
+    "buyWeeks.1": {
+      "en": "1 week",
+      "sw": "Wiki 1"
+    },
+    "buyWeeks.2": {
+      "en": "2 weeks, cheaper packs",
+      "sw": "Wiki 2, pakiti nafuu"
+    },
+    "supplierOwed": {
+      "en": "You owe Mzee Bakari {amount}.",
+      "sw": "Unadaiwa na Mzee Bakari {amount}."
+    },
+    "blocked": {
+      "en": "Mzee Bakari gives no credit until he is paid.",
+      "sw": "Mzee Bakari hatoi mkopo hadi alipwe."
+    },
+    "trays": {
+      "en": "Trays a day",
+      "sw": "Trei kwa siku"
+    },
+    "less": {
+      "en": "Less",
+      "sw": "Punguza"
+    },
+    "more": {
+      "en": "More",
+      "sw": "Ongeza"
+    },
+    "canCook": {
+      "en": "You can cook up to {n} trays a day.",
+      "sw": "Unaweza kupika hadi trei {n} kwa siku."
+    },
+    "by.pots": {
+      "en": "Your pots set this limit.",
+      "sw": "Sufuria zako zinaweka kikomo hiki."
+    },
+    "by.hours": {
+      "en": "Cooking hours set this limit.",
+      "sw": "Saa za kupika zinaweka kikomo hiki."
+    },
+    "ordersNeed": {
+      "en": "Your regular buyers take {n} trays a day.",
+      "sw": "Wateja wako wa kawaida wanachukua trei {n} kwa siku."
+    },
+    "pots": {
+      "en": "Pots: {n}",
+      "sw": "Sufuria: {n}"
+    },
+    "buyPot": {
+      "en": "Buy a pot ({amount})",
+      "sw": "Nunua sufuria ({amount})"
+    },
+    "sellPot": {
+      "en": "Sell a pot for {amount}",
+      "sw": "Uza sufuria kwa {amount}"
+    },
+    "helper": {
+      "en": "Juma cooks at dawn. Wage {amount} a week.",
+      "sw": "Juma anapika alfajiri. Mshahara {amount} kwa wiki."
+    },
+    "training": {
+      "en": "Juma is training this week.",
+      "sw": "Juma yuko mafunzoni wiki hii."
+    },
+    "checks": {
+      "en": "Checks on Juma's work",
+      "sw": "Ukaguzi wa kazi ya Juma"
+    },
+    "check.none": {
+      "en": "No check",
+      "sw": "Bila ukaguzi"
+    },
+    "check.batch": {
+      "en": "Count each batch (2 h)",
+      "sw": "Hesabu kila kundi (saa 2)"
+    },
+    "check.every": {
+      "en": "Check every piece (6 h)",
+      "sw": "Kagua kila kipande (saa 6)"
+    },
+    "price": {
+      "en": "Price per piece",
+      "sw": "Bei kwa kipande"
+    },
+    "price.low": {
+      "en": "Low",
+      "sw": "Chini"
+    },
+    "price.normal": {
+      "en": "Normal",
+      "sw": "Kawaida"
+    },
+    "price.high": {
+      "en": "High",
+      "sw": "Juu"
+    },
+    "buyers": {
+      "en": "Who buys",
+      "sw": "Wanaonunua"
+    },
+    "ch.stall": {
+      "en": "Walk-in customers at the bus stand",
+      "sw": "Wateja wa stendi ya basi"
+    },
+    "ch.office": {
+      "en": "Office: chai and mandazi at 10:00, cash",
+      "sw": "Ofisi: chai na mandazi saa 4, taslimu"
+    },
+    "ch.school": {
+      "en": "School: {n} pieces a day, paid 4 weeks later",
+      "sw": "Shule: vipande {n} kwa siku, malipo baada ya wiki 4"
+    },
+    "ch.kiosk": {
+      "en": "Kiosk: {n} pieces a day, paid next week",
+      "sw": "Kioski: vipande {n} kwa siku, malipo wiki ijayo"
+    },
+    "ch.credit": {
+      "en": "{who}: 5 pieces a day on credit",
+      "sw": "{who}: vipande 5 kwa siku kwa mkopo"
+    },
+    "owed": {
+      "en": "Owed to you",
+      "sw": "Unaodai"
+    },
+    "nobody": {
+      "en": "Nobody owes you money.",
+      "sw": "Hakuna anayekudai."
+    },
+    "due": {
+      "en": "{amount}, due week {n}",
+      "sw": "{amount}, inalipwa wiki ya {n}"
+    },
+    "dueLate": {
+      "en": "{amount}, late since week {n}",
+      "sw": "{amount}, imechelewa tangu wiki ya {n}"
+    },
+    "dueUnknown": {
+      "en": "{amount}, date not written down",
+      "sw": "{amount}, tarehe haikuandikwa"
+    },
+    "chase": {
+      "en": "Ask {who} to pay (1 h)",
+      "sw": "Mwombe {who} alipe (saa 1)"
+    },
+    "creditOff": {
+      "en": "Stop credit for {who}",
+      "sw": "Sitisha mkopo kwa {who}"
+    },
+    "creditOn": {
+      "en": "Allow credit for {who}",
+      "sw": "Ruhusu mkopo kwa {who}"
+    },
+    "notebook": {
+      "en": "Notebook: customers, dates, deliveries. 2 evening hours a week.",
+      "sw": "Daftari: wateja, tarehe, mizigo. Saa 2 za jioni kwa wiki."
+    },
+    "notebookOn": {
+      "en": "Keep the notebook",
+      "sw": "Tunza daftari"
+    },
+    "notebookOff": {
+      "en": "Stop the notebook",
+      "sw": "Acha daftari"
+    },
+    "household": {
+      "en": "Household money each week",
+      "sw": "Pesa ya nyumbani kila wiki"
+    },
+    "unmet": {
+      "en": "Household money not paid so far: {amount}",
+      "sw": "Pesa ya nyumbani isiyolipwa hadi sasa: {amount}"
+    },
+    "loan": {
+      "en": "Loan: {amount} left. Each week {principal} plus {interest} interest.",
+      "sw": "Mkopo: {amount} umebaki. Kila wiki {principal} pamoja na riba {interest}."
+    },
+    "borrow": {
+      "en": "Borrow {amount} from the savings group",
+      "sw": "Kopa {amount} kutoka kikundi cha akiba"
+    },
+    "terms": {
+      "en": "Sample terms: repay {principal} a week plus {interest} interest.",
+      "sw": "Masharti ya mfano: lipa {principal} kwa wiki pamoja na riba {interest}."
+    },
+    "repay": {
+      "en": "Repay the loan now ({amount})",
+      "sw": "Lipa mkopo sasa ({amount})"
+    },
+    "arrears": {
+      "en": "Unpaid: {who} {amount}, due week {n}",
+      "sw": "Deni: {who} {amount}, linalipwa wiki ya {n}"
+    },
+    "closeBiz": {
+      "en": "Close the business",
+      "sw": "Funga biashara"
+    },
+    "closeAsk": {
+      "en": "Close the business for good? Its account stays in your record.",
+      "sw": "Funga biashara kabisa? Hesabu zake zitabaki kwenye rekodi yako."
+    },
+    "closed": {
+      "en": "The business is closed. Its full account stays in your record.",
+      "sw": "Biashara imefungwa. Hesabu zake zote zinabaki kwenye rekodi yako."
+    },
+    "run": {
+      "en": "Run week {n}",
+      "sw": "Endesha wiki ya {n}"
+    },
+    "runUntil": {
+      "en": "Run until something needs me",
+      "sw": "Endesha hadi kitu kinihitaji"
+    },
+    "help": {
+      "en": "What limited last week?",
+      "sw": "Nini kilizuia wiki iliyopita?"
+    },
+    "helpNote": {
+      "en": "Using help is noted in your record. It is not a penalty.",
+      "sw": "Msaada unaotumia unaandikwa kwenye rekodi. Si adhabu."
+    },
+    "limit.buy": {
+      "en": "Buying: the tin and credit could not pay for all the packs.",
+      "sw": "Kununua: pesa na mkopo havikutosha kwa pakiti zote."
+    },
+    "limit.pots": {
+      "en": "Cooking: your pots were full. Customers left without food.",
+      "sw": "Kupika: sufuria zilijaa. Wateja waliondoka bila chakula."
+    },
+    "limit.hours": {
+      "en": "Cooking: nobody had more hours to cook.",
+      "sw": "Kupika: hakuna aliyekuwa na saa zaidi za kupika."
+    },
+    "limit.plan": {
+      "en": "Cooking: customers wanted more than you planned to cook.",
+      "sw": "Kupika: wateja walitaka zaidi ya ulichopanga kupika."
+    },
+    "limit.demand": {
+      "en": "Selling: food was left over. Fewer people wanted it at this price.",
+      "sw": "Kuuza: chakula kilibaki. Watu wachache walikitaka kwa bei hii."
+    },
+    "limit.collect": {
+      "en": "Collecting: customers owe you more than the tin holds.",
+      "sw": "Kukusanya: wateja wanadaiwa zaidi ya pesa iliyo kwenye kopo."
+    },
+    "limit.none": {
+      "en": "No single stage held the business back last week.",
+      "sw": "Hakuna hatua moja iliyozuia biashara wiki iliyopita."
+    },
+    "start": {
+      "en": "Your stall, one pot. Earn a living and meet your promises.",
+      "sw": "Kibanda chako, sufuria moja. Pata riziki na timiza ahadi zako."
+    },
+    "goalLine": {
+      "en": "Earn a living and meet your promises.",
+      "sw": "Pata riziki na timiza ahadi zako."
+    },
+    "weekLine": {
+      "en": "Week {n}: sales {sales}, profit {profit}, tin {cash}",
+      "sw": "Wiki {n}: mauzo {sales}, faida {profit}, kopo {cash}"
+    },
+    "result": {
+      "en": "Week {n} result",
+      "sw": "Matokeo ya wiki ya {n}"
+    },
+    "tin": {
+      "en": "Tin: {start} to {end}",
+      "sw": "Kopo: {start} hadi {end}"
+    },
+    "compare": {
+      "en": "Profit {profit}. The tin changed by {change}.",
+      "sw": "Faida {profit}. Kopo limebadilika kwa {change}."
+    },
+    "whereCash": {
+      "en": "Where the cash went",
+      "sw": "Pesa ilikwenda wapi"
+    },
+    "howProfit": {
+      "en": "How the profit was made",
+      "sw": "Faida ilipatikanaje"
+    },
+    "byDay": {
+      "en": "Day by day",
+      "sw": "Siku kwa siku"
+    },
+    "day": {
+      "en": "Day {n}",
+      "sw": "Siku {n}"
+    },
+    "dayLine": {
+      "en": "Day {n}: cooked {made} trays, sold {sold} at the stall, {away} customers turned away, {waste} pieces left over.",
+      "sw": "Siku {n}: trei {made} zimepikwa, {sold} zimeuzwa kibandani, wateja {away} wamekosa, vipande {waste} vimebaki."
+    },
+    "soldOut": {
+      "en": "Sold out",
+      "sw": "Imeisha"
+    },
+    "skip": {
+      "en": "Skip",
+      "sw": "Ruka"
+    },
+    "flow.sales": {
+      "en": "Cash sales",
+      "sw": "Mauzo ya taslimu"
+    },
+    "flow.collected": {
+      "en": "Customers paid what they owed",
+      "sw": "Wateja walilipa madeni"
+    },
+    "flow.borrowed": {
+      "en": "Borrowed",
+      "sw": "Mkopo uliopokelewa"
+    },
+    "flow.equipmentSold": {
+      "en": "Equipment sold",
+      "sw": "Vifaa vilivyouzwa"
+    },
+    "flow.supplies": {
+      "en": "Packs paid in cash",
+      "sw": "Pakiti zilizolipwa taslimu"
+    },
+    "flow.supplier": {
+      "en": "Paid to Mzee Bakari",
+      "sw": "Malipo kwa Mzee Bakari"
+    },
+    "flow.arrears": {
+      "en": "Old unpaid bills paid",
+      "sw": "Madeni ya zamani yamelipwa"
+    },
+    "flow.costs": {
+      "en": "Costs paid",
+      "sw": "Gharama zilizolipwa"
+    },
+    "flow.equipment": {
+      "en": "Equipment bought",
+      "sw": "Vifaa vilivyonunuliwa"
+    },
+    "flow.principal": {
+      "en": "Loan repaid",
+      "sw": "Mkopo uliolipwa"
+    },
+    "flow.household": {
+      "en": "Household money",
+      "sw": "Pesa ya nyumbani"
+    },
+    "pnl.revenue": {
+      "en": "Sales, paid or not",
+      "sw": "Mauzo, yaliyolipwa au la"
+    },
+    "pnl.materials": {
+      "en": "Packs cooked",
+      "sw": "Pakiti zilizopikwa"
+    },
+    "pnl.chai": {
+      "en": "Tea and cups",
+      "sw": "Chai na vikombe"
+    },
+    "pnl.fee": {
+      "en": "Stall fee and fuel",
+      "sw": "Ada ya kibanda na mafuta"
+    },
+    "pnl.wages": {
+      "en": "Wages",
+      "sw": "Mishahara"
+    },
+    "pnl.interest": {
+      "en": "Interest",
+      "sw": "Riba"
+    },
+    "pnl.depreciation": {
+      "en": "Equipment wear",
+      "sw": "Uchakavu wa vifaa"
+    },
+    "pnl.other": {
+      "en": "Other costs",
+      "sw": "Gharama nyingine"
+    },
+    "note.soldOut": {
+      "en": "Sold out on {n} of 6 days.",
+      "sw": "Imeisha siku {n} kati ya 6."
+    },
+    "note.waste": {
+      "en": "{n} pieces left over and thrown away.",
+      "sw": "Vipande {n} vilibaki na kutupwa."
+    },
+    "note.invoice": {
+      "en": "{who} owes {amount} for this week, due week {n}.",
+      "sw": "{who} anadaiwa {amount} kwa wiki hii, inalipwa wiki ya {n}."
+    },
+    "note.collected": {
+      "en": "{who} paid {amount} for week {n}.",
+      "sw": "{who} amelipa {amount} ya wiki ya {n}."
+    },
+    "note.late": {
+      "en": "{who} did not pay on time.",
+      "sw": "{who} hakulipa kwa wakati."
+    },
+    "note.householdShort": {
+      "en": "The tin could not pay all the household money: {amount} short.",
+      "sw": "Kopo halikutosha pesa yote ya nyumbani: pungufu {amount}."
+    },
+    "note.blocked": {
+      "en": "Mzee Bakari was not paid on time and stopped credit.",
+      "sw": "Mzee Bakari hakulipwa kwa wakati akasitisha mkopo."
+    },
+    "note.schoolShort": {
+      "en": "The school got less than it ordered.",
+      "sw": "Shule ilipata chini ya ilichoagiza."
+    },
+    "note.schoolLost": {
+      "en": "The school stopped ordering.",
+      "sw": "Shule iliacha kuagiza."
+    },
+    "note.kioskShort": {
+      "en": "The kiosk got less than it ordered.",
+      "sw": "Kioski kilipata chini ya kilichoagiza."
+    },
+    "note.kioskLost": {
+      "en": "The kiosk stopped ordering.",
+      "sw": "Kioski kiliacha kuagiza."
+    },
+    "note.rejected": {
+      "en": "The school did not accept {n} pieces.",
+      "sw": "Shule haikukubali vipande {n}."
+    },
+    "note.trial": {
+      "en": "Office trial: on a usual day {paid} of the {invited} people who were interested paid.",
+      "sw": "Jaribio la ofisi: siku ya kawaida watu {paid} kati ya {invited} waliopendezwa walilipa."
+    },
+    "note.away": {
+      "en": "You were away this week.",
+      "sw": "Hukuwepo wiki hii."
+    },
+    "cashWarning": {
+      "en": "The tin cannot pay for next week's packs and household money.",
+      "sw": "Kopo haliwezi kulipia pakiti za wiki ijayo na pesa ya nyumbani."
+    },
+    "outcomeTitle": {
+      "en": "You chose",
+      "sw": "Umechagua"
+    },
+    "unavailable": {
+      "en": "Not possible now",
+      "sw": "Haiwezekani sasa"
+    },
+    "needsTitle": {
+      "en": "What this order needs",
+      "sw": "Oda hii inahitaji nini"
+    },
+    "needs.trays": {
+      "en": "Trays a day with this order: {trays}. You can cook {cap} now.",
+      "sw": "Trei kwa siku na oda hii: {trays}. Sasa unaweza kupika {cap}."
+    },
+    "needs.cash": {
+      "en": "Extra packs, and a wage if you need help, before the first payment: about {amount} over {n} weeks. Your other costs and payments continue.",
+      "sw": "Pakiti za ziada, na mshahara ukihitaji msaada, kabla ya malipo ya kwanza: karibu {amount} kwa wiki {n}. Gharama na malipo yako mengine yanaendelea."
+    },
+    "needs.hours": {
+      "en": "Delivery: {n} of your hours a week.",
+      "sw": "Kupeleka: saa zako {n} kwa wiki."
+    },
+    "needs.inspection": {
+      "en": "Food-hygiene inspection {amount}. Sample figure, not a checked local rule.",
+      "sw": "Ukaguzi wa usafi wa chakula {amount}. Takwimu ya mfano, si kanuni iliyohakikiwa."
+    },
+    "needs.have": {
+      "en": "In the tin now: {amount}.",
+      "sw": "Kwenye kopo sasa: {amount}."
+    },
+    "review": {
+      "en": "Month {n} review",
+      "sw": "Tathmini ya mwezi {n}"
+    },
+    "seasonReview": {
+      "en": "Season review",
+      "sw": "Tathmini ya msimu"
+    },
+    "continue": {
+      "en": "Continue trading",
+      "sw": "Endelea kufanya biashara"
+    },
+    "threads": {
+      "en": "What led to what",
+      "sw": "Nini kilileta nini"
+    },
+    "goal": {
+      "en": "Choose a goal. You can change it at any month review. No goal is worth more than another.",
+      "sw": "Chagua lengo. Unaweza kulibadilisha kila tathmini ya mwezi. Hakuna lengo lenye thamani zaidi."
+    },
+    "goal.income": {
+      "en": "Steady money for home",
+      "sw": "Pesa ya nyumbani kila wiki"
+    },
+    "goal.customers": {
+      "en": "Regular business customers",
+      "sw": "Wateja wa kibiashara wa kudumu"
+    },
+    "goal.away": {
+      "en": "A business that runs without you",
+      "sw": "Biashara inayoendelea bila wewe"
+    },
+    "goalNow.income": {
+      "en": "{a} of 8 full weekly payments; cash equals {b} of 4 household payments before business bills.",
+      "sw": "Malipo {a} kati ya 8 ya wiki yametimizwa; pesa ni sawa na malipo {b} kati ya 4 ya nyumbani kabla ya madeni ya biashara."
+    },
+    "goalNow.customers": {
+      "en": "{a} of 3 business customers buying.",
+      "sw": "Wateja {a} kati ya 3 wa kibiashara wananunua."
+    },
+    "goalNow.away": {
+      "en": "{a} of 1 week with sales while you were away, with the notebook kept and Juma's work checked.",
+      "sw": "Wiki {a} kati ya 1 yenye mauzo ukiwa safarini, daftari likitunzwa na kazi ya Juma ikikaguliwa."
+    },
+    "reached": {
+      "en": "Reached",
+      "sw": "Limefikiwa"
+    },
+    "yourGoal": {
+      "en": "Your goal: {goal}",
+      "sw": "Lengo lako: {goal}"
+    },
+    "f.sales": {
+      "en": "Sales",
+      "sw": "Mauzo"
+    },
+    "f.profit": {
+      "en": "Profit",
+      "sw": "Faida"
+    },
+    "f.cash": {
+      "en": "Cash in the tin",
+      "sw": "Pesa kwenye kopo"
+    },
+    "f.stock": {
+      "en": "Packs in stock (value)",
+      "sw": "Pakiti stoo (thamani)"
+    },
+    "f.owedToYou": {
+      "en": "Owed to you",
+      "sw": "Unaodai"
+    },
+    "f.owedByYou": {
+      "en": "You owe",
+      "sw": "Unadaiwa"
+    },
+    "f.household": {
+      "en": "Weeks household money paid in full",
+      "sw": "Wiki pesa ya nyumbani ililipwa kamili"
+    },
+    "f.unmet": {
+      "en": "Household money and payments not met",
+      "sw": "Pesa ya nyumbani na malipo yasiyotimizwa"
+    },
+    "f.hours": {
+      "en": "Your hours a week, last 4 weeks",
+      "sw": "Saa zako kwa wiki, wiki 4 zilizopita"
+    },
+    "f.business": {
+      "en": "Business customers",
+      "sw": "Wateja wa kibiashara"
+    },
+    "f.away": {
+      "en": "Weeks traded without you",
+      "sw": "Wiki za biashara bila wewe"
+    },
+    "f.people": {
+      "en": "Helpers hired (unpaid wages appear in debts)",
+      "sw": "Wasaidizi walioajiriwa (mishahara isiyolipwa inaonyeshwa kwenye madeni)"
+    },
+    "f.drawings": {
+      "en": "Taken home in total",
+      "sw": "Jumla uliyopeleka nyumbani"
+    },
+    "limits": {
+      "en": "These are facts from this game, not a score. Sample figures. They do not predict how a real business will do.",
+      "sw": "Hizi ni taarifa kutoka mchezo huu, si alama. Takwimu za mfano. Hazitabiri biashara halisi itakavyokwenda."
+    },
+    "thread.collected": {
+      "en": "Week {from} sale: {who} paid {amount} in week {week}.",
+      "sw": "Mauzo ya wiki ya {from}: {who} alilipa {amount} wiki ya {week}."
+    },
+    "thread.trial": {
+      "en": "Week {week}: in the office trial {paid} of {invited} people paid on a usual day.",
+      "sw": "Wiki ya {week}: katika jaribio la ofisi watu {paid} kati ya {invited} walilipa siku ya kawaida."
+    },
+    "thread.borrowed": {
+      "en": "Week {week}: you borrowed {amount}.",
+      "sw": "Wiki ya {week}: ulikopa {amount}."
+    },
+    "thread.loanRepaid": {
+      "en": "Week {week}: the loan was repaid.",
+      "sw": "Wiki ya {week}: mkopo ulilipwa."
+    },
+    "thread.paymentPaid": {
+      "en": "Week {week}: the household payment of {amount} was paid on time.",
+      "sw": "Wiki ya {week}: malipo ya nyumbani {amount} yalilipwa kwa wakati."
+    },
+    "thread.paymentLate": {
+      "en": "Week {week}: the household payment due in week {from} was paid late.",
+      "sw": "Wiki ya {week}: malipo ya nyumbani ya wiki ya {from} yalilipwa kwa kuchelewa."
+    },
+    "thread.paymentMissed": {
+      "en": "Week {week}: {amount} of the household payment was not met.",
+      "sw": "Wiki ya {week}: {amount} ya malipo ya nyumbani hayakutimizwa."
+    },
+    "thread.supplierBlocked": {
+      "en": "Week {week}: a bill to Mzee Bakari from week {from} was unpaid, so he stopped credit.",
+      "sw": "Wiki ya {week}: deni la Mzee Bakari la wiki ya {from} halikulipwa, akasitisha mkopo."
+    },
+    "thread.schoolStart": {
+      "en": "Week {week}: the school order began, {pieces} pieces a day.",
+      "sw": "Wiki ya {week}: oda ya shule ilianza, vipande {pieces} kwa siku."
+    },
+    "thread.schoolTrialDone": {
+      "en": "Week {week}: the school paid {amount} for the trial week.",
+      "sw": "Wiki ya {week}: shule ililipa {amount} kwa wiki ya majaribio."
+    },
+    "thread.schoolLost": {
+      "en": "Week {week}: after short deliveries, the school stopped ordering.",
+      "sw": "Wiki ya {week}: baada ya kupeleka pungufu, shule iliacha kuagiza."
+    },
+    "thread.kioskLost": {
+      "en": "Week {week}: the kiosk stopped ordering.",
+      "sw": "Wiki ya {week}: kioski kiliacha kuagiza."
+    },
+    "thread.awayCovered": {
+      "en": "Week {week}: the business traded while you were away.",
+      "sw": "Wiki ya {week}: biashara iliendelea ukiwa safarini."
+    },
+    "thread.awayClosed": {
+      "en": "Week {week}: you closed while away and told customers.",
+      "sw": "Wiki ya {week}: ulifunga ukiwa safarini na uliwaambia wateja."
+    },
+    "thread.awayMissed": {
+      "en": "Week {week}: nobody ran the stall while you were away.",
+      "sw": "Wiki ya {week}: hakuna aliyeendesha kibanda ukiwa safarini."
+    },
+    "who.neema": {
+      "en": "Mama Neema",
+      "sw": "Mama Neema"
+    },
+    "who.baraka": {
+      "en": "Baraka",
+      "sw": "Baraka"
+    },
+    "who.zawadi": {
+      "en": "Bi Zawadi",
+      "sw": "Bi Zawadi"
+    },
+    "who.school": {
+      "en": "The school",
+      "sw": "Shule"
+    },
+    "who.kiosk": {
+      "en": "The kiosk",
+      "sw": "Kioski"
+    },
+    "who.bakari": {
+      "en": "Mzee Bakari",
+      "sw": "Mzee Bakari"
+    },
+    "who.juma": {
+      "en": "Juma's wage",
+      "sw": "Mshahara wa Juma"
+    },
+    "who.lender": {
+      "en": "Savings group",
+      "sw": "Kikundi cha akiba"
+    },
+    "who.fee": {
+      "en": "Stall fee",
+      "sw": "Ada ya kibanda"
+    },
+    "saved.ok": {
+      "en": "Saved on this phone",
+      "sw": "Imehifadhiwa kwenye simu hii"
+    },
+    "saved.failed": {
+      "en": "Not saved. Your last step is still on screen.",
+      "sw": "Haijahifadhiwa. Hatua yako ya mwisho bado iko kwenye skrini."
+    },
+    "saved.conflict": {
+      "en": "This run changed in another tab. Reload to continue.",
+      "sw": "Mchezo huu umebadilika kwenye kichupo kingine. Pakia upya kuendelea."
+    },
+    "retry": {
+      "en": "Try saving again",
+      "sw": "Jaribu kuhifadhi tena"
+    },
+    "reload": {
+      "en": "Reload",
+      "sw": "Pakia upya"
+    },
+    "unreadable": {
+      "en": "This record does not match this version of the game. It is kept. Download it, or start a new run.",
+      "sw": "Rekodi hii hailingani na toleo hili la mchezo. Imehifadhiwa. Ipakue, au anza mchezo mpya."
+    },
+    "offline.ready": {
+      "en": "Ready to play offline",
+      "sw": "Tayari kucheza bila intaneti"
+    },
+    "offline.no": {
+      "en": "Offline play is not ready yet",
+      "sw": "Kucheza bila intaneti bado hakuko tayari"
+    },
+    "export": {
+      "en": "Download my record",
+      "sw": "Pakua rekodi yangu"
+    },
+    "runs": {
+      "en": "My runs on this phone",
+      "sw": "Michezo yangu kwenye simu hii"
+    },
+    "runLabel": {
+      "en": "Run {n}: week {w}",
+      "sw": "Mchezo {n}: wiki {w}"
+    },
+    "open": {
+      "en": "Open",
+      "sw": "Fungua"
+    },
+    "delete": {
+      "en": "Delete",
+      "sw": "Futa"
+    },
+    "deleteAsk": {
+      "en": "Delete this run from this phone? This cannot be undone.",
+      "sw": "Futa mchezo huu kwenye simu hii? Haiwezi kurudishwa."
+    },
+    "newRun": {
+      "en": "Start a new run",
+      "sw": "Anza mchezo mpya"
+    },
+    "newRunAsk": {
+      "en": "Start a new run? This run stays saved. A later run is different evidence, because you know the game.",
+      "sw": "Anza mchezo mpya? Huu utabaki. Mchezo wa baadaye ni ushahidi tofauti, kwa sababu unaujua mchezo."
+    },
+    "earlier": {
+      "en": "Earlier games",
+      "sw": "Michezo ya awali"
+    },
+    "earlierFound": {
+      "en": "An earlier game is saved on this phone. It is kept and you can continue it.",
+      "sw": "Mchezo wa awali umehifadhiwa kwenye simu hii. Umetunzwa na unaweza kuuendeleza."
+    },
+    "intro": {
+      "en": "The 5-day introduction",
+      "sw": "Utangulizi wa siku 5"
+    },
+    "chapters": {
+      "en": "The four chapters",
+      "sw": "Sura nne"
+    },
+    "offlineFile": {
+      "en": "Download the offline file",
+      "sw": "Pakua faili la nje ya mtandao"
+    },
+    "sample": {
+      "en": "Sample figures for testing. They are not checked local prices.",
+      "sw": "Takwimu za mfano kwa majaribio. Si bei za eneo zilizohakikiwa."
+    },
+    "draft": {
+      "en": "The Kiswahili text is a draft for review.",
+      "sw": "Maandishi ya Kiswahili ni rasimu ya kukaguliwa."
+    },
+    "privacy": {
+      "en": "Your record stays on this phone. Nothing is sent.",
+      "sw": "Rekodi yako inabaki kwenye simu hii. Hakuna kinachotumwa."
+    },
+    "error": {
+      "en": "Could not open the game. Reconnect and reload.",
+      "sw": "Mchezo haujafunguka. Unganisha intaneti na upakie upya."
+    },
+    "standingPlan": {
+      "en": "Daily: {trays} trays at {price} a piece. Home: {home} a week.",
+      "sw": "Kila siku: trei {trays}, {price} kwa kipande. Nyumbani: {home} kwa wiki."
+    },
+    "unsavedLeave": {
+      "en": "This step is not saved. Download your record before leaving. Leave it now?",
+      "sw": "Hatua hii haijahifadhiwa. Pakua rekodi kabla ya kuondoka. Uondoke sasa?"
+    },
+    "chasePaid": {
+      "en": "{who} paid {amount}. Following up took one hour.",
+      "sw": "{who} amelipa {amount}. Ufuatiliaji ulichukua saa moja."
+    },
+    "chaseWaiting": {
+      "en": "{who} has not paid. Following up took one hour; the amount is still owed.",
+      "sw": "{who} hajalipa. Ufuatiliaji ulichukua saa moja; deni bado lipo."
+    },
+    "recordsTools": {
+      "en": "Records, offline file and earlier games",
+      "sw": "Rekodi, faili la nje ya mtandao na michezo ya awali"
+    },
+    "trainHelper": {
+      "en": "Train Juma this week ({amount})",
+      "sw": "Mfundishe Juma wiki hii ({amount})"
+    },
+    "endHelper": {
+      "en": "End future shifts; keep wages owed",
+      "sw": "Sitisha zamu zijazo; deni la mshahara linabaki"
+    },
+    "weekExtra": {
+      "en": "Week {n} · continuing after the season",
+      "sw": "Wiki {n} · unaendelea baada ya msimu"
+    },
+    "moreResults": {
+      "en": "More deliveries and payments ({n})",
+      "sw": "Mizigo na malipo mengine ({n})"
+    }
+  },
+  "events": {
+    "payment": {
+      "title": {
+        "en": "A household payment is due",
+        "sw": "Malipo ya nyumbani yanadaiwa"
+      },
+      "body": {
+        "en": "This week the household must pay {amount}. The tin has {cash}.",
+        "sw": "Wiki hii nyumbani lazima walipe {amount}. Kopo lina {cash}."
+      },
+      "options": {
+        "pay": {
+          "label": {
+            "en": "Pay it from the tin",
+            "sw": "Lipa kutoka kopo"
+          },
+          "outcome": {
+            "en": "Paid. The tin is lower for next week's packs.",
+            "sw": "Imelipwa. Kopo limepungua kwa pakiti za wiki ijayo."
+          }
+        },
+        "borrow": {
+          "label": {
+            "en": "Borrow {loan} and pay",
+            "sw": "Kopa {loan} ulipe"
+          },
+          "outcome": {
+            "en": "Paid with a loan. Weekly repayments start now.",
+            "sw": "Imelipwa kwa mkopo. Marejesho ya kila wiki yanaanza sasa."
+          }
+        },
+        "defer": {
+          "label": {
+            "en": "Ask for 2 more weeks (fee {fee})",
+            "sw": "Omba wiki 2 zaidi (ada {fee})"
+          },
+          "outcome": {
+            "en": "Agreed. The payment is now due in 2 weeks.",
+            "sw": "Imekubaliwa. Malipo sasa ni baada ya wiki 2."
+          }
+        },
+        "short": {
+          "label": {
+            "en": "Pay what the tin has",
+            "sw": "Lipa kilichopo kwenye kopo"
+          },
+          "outcome": {
+            "en": "Part was paid. The rest was not met.",
+            "sw": "Sehemu imelipwa. Iliyobaki haikutimizwa."
+          }
+        }
+      }
+    },
+    "pot": {
+      "title": {
+        "en": "A second pot",
+        "sw": "Sufuria ya pili"
+      },
+      "body": {
+        "en": "The shop has a second pot for {amount}. One pot cooks at most 5 trays a day.",
+        "sw": "Duka lina sufuria ya pili kwa {amount}. Sufuria moja inapika trei 5 kwa siku zaidi."
+      },
+      "options": {
+        "buy": {
+          "label": {
+            "en": "Buy it",
+            "sw": "Inunue"
+          },
+          "outcome": {
+            "en": "You have two pots. Raise the trays when you want.",
+            "sw": "Una sufuria mbili. Ongeza trei ukitaka."
+          }
+        },
+        "later": {
+          "label": {
+            "en": "Not now",
+            "sw": "Si sasa"
+          },
+          "outcome": {
+            "en": "You can buy a pot from the Cook tile at any time.",
+            "sw": "Unaweza kununua sufuria kwenye sehemu ya Pika wakati wowote."
+          }
+        }
+      }
+    },
+    "neema": {
+      "title": {
+        "en": "Mama Neema asks for credit",
+        "sw": "Mama Neema anaomba mkopo"
+      },
+      "body": {
+        "en": "Your neighbour asks to take 5 mandazi a day and pay next week.",
+        "sw": "Jirani yako anaomba kuchukua mandazi 5 kwa siku na kulipa wiki ijayo."
+      },
+      "options": {
+        "yes": {
+          "label": {
+            "en": "Yes",
+            "sw": "Ndiyo"
+          },
+          "outcome": {
+            "en": "She takes 5 a day. It is a sale now; the money comes later.",
+            "sw": "Anachukua 5 kwa siku. Ni mauzo sasa; pesa itakuja baadaye."
+          }
+        },
+        "no": {
+          "label": {
+            "en": "No",
+            "sw": "Hapana"
+          },
+          "outcome": {
+            "en": "Only cash sales for now.",
+            "sw": "Mauzo ya taslimu tu kwa sasa."
+          }
+        }
+      }
+    },
+    "notebook": {
+      "title": {
+        "en": "Keep a notebook?",
+        "sw": "Tunza daftari?"
+      },
+      "body": {
+        "en": "A notebook keeps each customer's amount, date and delivery. It takes 2 evening hours a week. Totals stay on screen either way.",
+        "sw": "Daftari linatunza kiasi, tarehe na mzigo wa kila mteja. Linachukua saa 2 za jioni kwa wiki. Jumla zinabaki kwenye skrini hata hivyo."
+      },
+      "options": {
+        "start": {
+          "label": {
+            "en": "Start the notebook",
+            "sw": "Anza daftari"
+          },
+          "outcome": {
+            "en": "From now on, new sales on credit have dates and details.",
+            "sw": "Kuanzia sasa, mauzo mapya ya mkopo yana tarehe na maelezo."
+          }
+        },
+        "later": {
+          "label": {
+            "en": "Not now",
+            "sw": "Si sasa"
+          },
+          "outcome": {
+            "en": "You can start it from the Collect tile.",
+            "sw": "Unaweza kuanza kwenye sehemu ya Kusanya."
+          }
+        }
+      }
+    },
+    "office": {
+      "title": {
+        "en": "The office across the road",
+        "sw": "Ofisi ng'ambo ya barabara"
+      },
+      "body": {
+        "en": "20 office workers say: 'We would all buy chai and mandazi at 10:00 every day.' Saying is not paying.",
+        "sw": "Wafanyakazi 20 wa ofisi wanasema: 'Sote tungenunua chai na mandazi saa 4 kila siku.' Kusema si kulipa."
+      },
+      "options": {
+        "flask": {
+          "label": {
+            "en": "Buy a flask and cups ({flask}) and start",
+            "sw": "Nunua chupa ya chai na vikombe ({flask}) uanze"
+          },
+          "outcome": {
+            "en": "The office round starts. It takes 1 hour a day.",
+            "sw": "Mzunguko wa ofisi umeanza. Unachukua saa 1 kwa siku."
+          }
+        },
+        "trial": {
+          "label": {
+            "en": "Paid trial for one week ({trial})",
+            "sw": "Jaribio la kulipwa kwa wiki moja ({trial})"
+          },
+          "outcome": {
+            "en": "This week you sell there with a borrowed flask. You will see who pays.",
+            "sw": "Wiki hii unauza huko kwa chupa ya kuazima. Utaona nani analipa."
+          }
+        },
+        "later": {
+          "label": {
+            "en": "Not now",
+            "sw": "Si sasa"
+          },
+          "outcome": {
+            "en": "The offer stays open for two weeks.",
+            "sw": "Ofa inabaki wazi kwa wiki mbili."
+          }
+        }
+      }
+    },
+    "office2": {
+      "title": {
+        "en": "The office asks again",
+        "sw": "Ofisi inauliza tena"
+      },
+      "body": {
+        "en": "The office workers still talk about chai at 10:00. This is the last time they ask.",
+        "sw": "Wafanyakazi wa ofisi bado wanazungumzia chai saa 4. Hii ni mara ya mwisho wanauliza."
+      },
+      "options": {
+        "flask": {
+          "label": {
+            "en": "Buy a flask and cups ({flask}) and start",
+            "sw": "Nunua chupa ya chai na vikombe ({flask}) uanze"
+          },
+          "outcome": {
+            "en": "The office round starts.",
+            "sw": "Mzunguko wa ofisi umeanza."
+          }
+        },
+        "trial": {
+          "label": {
+            "en": "Paid trial for one week ({trial})",
+            "sw": "Jaribio la kulipwa kwa wiki moja ({trial})"
+          },
+          "outcome": {
+            "en": "This week you sell there. You will see who pays.",
+            "sw": "Wiki hii unauza huko. Utaona nani analipa."
+          }
+        },
+        "no": {
+          "label": {
+            "en": "No, stay with the stall",
+            "sw": "Hapana, baki na kibanda"
+          },
+          "outcome": {
+            "en": "You keep to the stall.",
+            "sw": "Unabaki na kibanda."
+          }
+        }
+      }
+    },
+    "officeResult": {
+      "title": {
+        "en": "After the office trial",
+        "sw": "Baada ya jaribio la ofisi"
+      },
+      "body": {
+        "en": "On a usual trial day {paid} of the 20 people paid. That was one week at one price. Later weeks can differ.",
+        "sw": "Siku ya kawaida ya jaribio watu {paid} kati ya 20 walilipa. Ilikuwa wiki moja kwa bei moja. Wiki zijazo zinaweza kutofautiana."
+      },
+      "options": {
+        "flask": {
+          "label": {
+            "en": "Buy a flask ({flask}) and keep going",
+            "sw": "Nunua chupa ({flask}) uendelee"
+          },
+          "outcome": {
+            "en": "The office round is now every day.",
+            "sw": "Mzunguko wa ofisi sasa ni kila siku."
+          }
+        },
+        "no": {
+          "label": {
+            "en": "Stop here",
+            "sw": "Acha hapa"
+          },
+          "outcome": {
+            "en": "You tested it and chose the stall.",
+            "sw": "Ulijaribu na ukachagua kibanda."
+          }
+        }
+      }
+    },
+    "neighbours": {
+      "title": {
+        "en": "More neighbours ask for credit",
+        "sw": "Majirani zaidi wanaomba mkopo"
+      },
+      "body": {
+        "en": "Baraka and Bi Zawadi heard about Mama Neema. They ask for the same terms.",
+        "sw": "Baraka na Bi Zawadi wamesikia kuhusu Mama Neema. Wanaomba masharti hayo hayo."
+      },
+      "options": {
+        "yes": {
+          "label": {
+            "en": "Yes to both",
+            "sw": "Ndiyo kwa wote"
+          },
+          "outcome": {
+            "en": "Three neighbours now buy on credit.",
+            "sw": "Majirani watatu sasa wananunua kwa mkopo."
+          }
+        },
+        "no": {
+          "label": {
+            "en": "No",
+            "sw": "Hapana"
+          },
+          "outcome": {
+            "en": "Only Mama Neema buys on credit.",
+            "sw": "Mama Neema pekee ananunua kwa mkopo."
+          }
+        }
+      }
+    },
+    "school": {
+      "title": {
+        "en": "The school cook",
+        "sw": "Mpishi wa shule"
+      },
+      "body": {
+        "en": "The office manager told the school about you. The school asks for {full} pieces a day at {price} each, paid 4 weeks after each week's delivery.",
+        "sw": "Meneja wa ofisi aliiambia shule kuhusu wewe. Shule inaomba vipande {full} kwa siku kwa {price} kila kimoja, malipo wiki 4 baada ya mzigo wa kila wiki."
+      },
+      "options": {
+        "full": {
+          "label": {
+            "en": "Accept the full order",
+            "sw": "Kubali oda yote"
+          },
+          "outcome": {
+            "en": "The order starts. Check your trays and cash.",
+            "sw": "Oda imeanza. Angalia trei na pesa zako."
+          }
+        },
+        "small": {
+          "label": {
+            "en": "Offer {small} pieces a day",
+            "sw": "Pendekeza vipande {small} kwa siku"
+          },
+          "outcome": {
+            "en": "The school agreed to the smaller order.",
+            "sw": "Shule imekubali oda ndogo."
+          }
+        },
+        "trial": {
+          "label": {
+            "en": "Offer one paid trial week",
+            "sw": "Pendekeza wiki moja ya majaribio ya kulipwa"
+          },
+          "outcome": {
+            "en": "This week you deliver {small} a day. The school pays at the end of the week.",
+            "sw": "Wiki hii unapeleka {small} kwa siku. Shule inalipa mwisho wa wiki."
+          }
+        },
+        "decline": {
+          "label": {
+            "en": "Decline",
+            "sw": "Kataa"
+          },
+          "outcome": {
+            "en": "You declined. That is a normal choice.",
+            "sw": "Umekataa. Ni uamuzi wa kawaida."
+          }
+        }
+      }
+    },
+    "schoolTrial": {
+      "title": {
+        "en": "After the school trial",
+        "sw": "Baada ya majaribio ya shule"
+      },
+      "body": {
+        "en": "The school paid for the trial week. It now asks for a regular order, paid 4 weeks after delivery.",
+        "sw": "Shule imelipa wiki ya majaribio. Sasa inaomba oda ya kawaida, malipo wiki 4 baada ya mzigo."
+      },
+      "options": {
+        "full": {
+          "label": {
+            "en": "Accept {full} pieces a day",
+            "sw": "Kubali vipande {full} kwa siku"
+          },
+          "outcome": {
+            "en": "The order starts.",
+            "sw": "Oda imeanza."
+          }
+        },
+        "small": {
+          "label": {
+            "en": "Offer {small} pieces a day",
+            "sw": "Pendekeza vipande {small} kwa siku"
+          },
+          "outcome": {
+            "en": "The school agreed to the smaller order.",
+            "sw": "Shule imekubali oda ndogo."
+          }
+        },
+        "decline": {
+          "label": {
+            "en": "Decline",
+            "sw": "Kataa"
+          },
+          "outcome": {
+            "en": "You declined after the trial.",
+            "sw": "Umekataa baada ya majaribio."
+          }
+        }
+      }
+    },
+    "schoolCounter": {
+      "title": {
+        "en": "The school says no to a smaller order",
+        "sw": "Shule imekataa oda ndogo"
+      },
+      "body": {
+        "en": "The cook needs {full} pieces a day from one supplier.",
+        "sw": "Mpishi anahitaji vipande {full} kwa siku kutoka kwa msambazaji mmoja."
+      },
+      "options": {
+        "full": {
+          "label": {
+            "en": "Accept the full order",
+            "sw": "Kubali oda yote"
+          },
+          "outcome": {
+            "en": "The order starts.",
+            "sw": "Oda imeanza."
+          }
+        },
+        "decline": {
+          "label": {
+            "en": "Decline",
+            "sw": "Kataa"
+          },
+          "outcome": {
+            "en": "You declined.",
+            "sw": "Umekataa."
+          }
+        }
+      }
+    },
+    "competitor": {
+      "title": {
+        "en": "A new stall opens",
+        "sw": "Kibanda kipya kimefunguliwa"
+      },
+      "body": {
+        "en": "Another mandazi seller opens near the bus stand. Some customers try her stall.",
+        "sw": "Muuzaji mwingine wa mandazi amefungua karibu na stendi. Wateja wengine wanajaribu kibanda chake."
+      },
+      "options": {
+        "lower": {
+          "label": {
+            "en": "Lower your price",
+            "sw": "Punguza bei yako"
+          },
+          "outcome": {
+            "en": "Your price is now low. Watch your profit per piece.",
+            "sw": "Bei yako sasa iko chini. Angalia faida kwa kila kipande."
+          }
+        },
+        "hold": {
+          "label": {
+            "en": "Keep your price",
+            "sw": "Baki na bei yako"
+          },
+          "outcome": {
+            "en": "You keep your price. Fewer people may come for a while.",
+            "sw": "Unabaki na bei yako. Watu wachache wanaweza kuja kwa muda."
+          }
+        }
+      }
+    },
+    "kiosk": {
+      "title": {
+        "en": "A kiosk wants mandazi",
+        "sw": "Kioski kinataka mandazi"
+      },
+      "body": {
+        "en": "The kiosk by the market asks for {pieces} pieces a day at {price}, paid the next week.",
+        "sw": "Kioski karibu na soko kinaomba vipande {pieces} kwa siku kwa {price}, malipo wiki inayofuata."
+      },
+      "options": {
+        "yes": {
+          "label": {
+            "en": "Accept",
+            "sw": "Kubali"
+          },
+          "outcome": {
+            "en": "The kiosk order starts. It takes 3 of your hours a week.",
+            "sw": "Oda ya kioski imeanza. Inachukua saa zako 3 kwa wiki."
+          }
+        },
+        "no": {
+          "label": {
+            "en": "Decline",
+            "sw": "Kataa"
+          },
+          "outcome": {
+            "en": "You declined the kiosk.",
+            "sw": "Umekataa kioski."
+          }
+        }
+      }
+    },
+    "helper": {
+      "title": {
+        "en": "Juma offers to help",
+        "sw": "Juma anajitolea kusaidia"
+      },
+      "body": {
+        "en": "Juma offers to cook at dawn for {wage} a week. His name does not tell you what he can do.",
+        "sw": "Juma anajitolea kupika alfajiri kwa {wage} kwa wiki. Jina lake halikuambii anachoweza kufanya."
+      },
+      "options": {
+        "trial": {
+          "label": {
+            "en": "Pay for one trial morning ({helperTrial})",
+            "sw": "Lipia asubuhi moja ya majaribio ({helperTrial})"
+          },
+          "outcome": {
+            "en": "Juma cooked {skill} of 100 pieces to your standard.",
+            "sw": "Juma alipika vipande {skill} kati ya 100 kwa kiwango chako."
+          }
+        },
+        "hire": {
+          "label": {
+            "en": "Hire him now",
+            "sw": "Mwajiri sasa"
+          },
+          "outcome": {
+            "en": "Juma starts. You have not seen his work yet.",
+            "sw": "Juma ameanza. Bado hujaona kazi yake."
+          }
+        },
+        "train": {
+          "label": {
+            "en": "Hire and train him for a week ({training})",
+            "sw": "Mwajiri na umfundishe kwa wiki ({training})"
+          },
+          "outcome": {
+            "en": "This week he learns. From next week he cooks.",
+            "sw": "Wiki hii anajifunza. Kuanzia wiki ijayo anapika."
+          }
+        },
+        "later": {
+          "label": {
+            "en": "Not now",
+            "sw": "Si sasa"
+          },
+          "outcome": {
+            "en": "You keep working alone.",
+            "sw": "Unaendelea kufanya kazi peke yako."
+          }
+        }
+      }
+    },
+    "helperHire": {
+      "title": {
+        "en": "After Juma's trial morning",
+        "sw": "Baada ya asubuhi ya majaribio ya Juma"
+      },
+      "body": {
+        "en": "Juma cooked {skill} of 100 pieces to your standard. Training can raise that.",
+        "sw": "Juma alipika vipande {skill} kati ya 100 kwa kiwango chako. Mafunzo yanaweza kuongeza."
+      },
+      "options": {
+        "hire": {
+          "label": {
+            "en": "Hire him",
+            "sw": "Mwajiri"
+          },
+          "outcome": {
+            "en": "Juma starts.",
+            "sw": "Juma ameanza."
+          }
+        },
+        "train": {
+          "label": {
+            "en": "Hire and train him for a week ({training})",
+            "sw": "Mwajiri na umfundishe kwa wiki ({training})"
+          },
+          "outcome": {
+            "en": "This week he learns. From next week he cooks.",
+            "sw": "Wiki hii anajifunza. Kuanzia wiki ijayo anapika."
+          }
+        },
+        "no": {
+          "label": {
+            "en": "Do not hire",
+            "sw": "Usimwajiri"
+          },
+          "outcome": {
+            "en": "You keep working alone.",
+            "sw": "Unaendelea kufanya kazi peke yako."
+          }
+        }
+      }
+    },
+    "discrepancy": {
+      "title": {
+        "en": "Fewer pieces accepted",
+        "sw": "Vipande vichache vimekubaliwa"
+      },
+      "body": {
+        "en": "Last week the school did not accept {n} pieces that were sent.",
+        "sw": "Wiki iliyopita shule haikukubali vipande {n} vilivyotumwa."
+      },
+      "options": {
+        "records": {
+          "label": {
+            "en": "Look at the delivery records",
+            "sw": "Angalia kumbukumbu za mizigo"
+          },
+          "outcome": {
+            "en": "You looked into it.",
+            "sw": "Umelifuatilia."
+          }
+        },
+        "count": {
+          "label": {
+            "en": "Agree a count for each batch with Juma",
+            "sw": "Kubaliana na Juma kuhesabu kila kundi"
+          },
+          "outcome": {
+            "en": "Juma counts each batch. It takes 2 of your hours a week.",
+            "sw": "Juma anahesabu kila kundi. Inachukua saa zako 2 kwa wiki."
+          }
+        },
+        "leave": {
+          "label": {
+            "en": "Leave it",
+            "sw": "Acha"
+          },
+          "outcome": {
+            "en": "Nothing changes.",
+            "sw": "Hakuna kinachobadilika."
+          }
+        }
+      }
+    },
+    "away": {
+      "title": {
+        "en": "You travel in week 17",
+        "sw": "Unasafiri wiki ya 17"
+      },
+      "body": {
+        "en": "You will be away for five days in week 17. Decide now or next week.",
+        "sw": "Utakuwa safarini siku tano wiki ya 17. Amua sasa au wiki ijayo."
+      },
+      "options": {
+        "cover": {
+          "label": {
+            "en": "Juma runs the stall",
+            "sw": "Juma anaendesha kibanda"
+          },
+          "outcome": {
+            "en": "Juma will cook and sell. He can cook less while he also sells.",
+            "sw": "Juma atapika na kuuza. Atapika kidogo kwa kuwa pia anauza."
+          }
+        },
+        "close": {
+          "label": {
+            "en": "Close for the week and tell customers",
+            "sw": "Funga wiki hiyo na uwaambie wateja"
+          },
+          "outcome": {
+            "en": "No sales that week. Customers know.",
+            "sw": "Hakuna mauzo wiki hiyo. Wateja wanajua."
+          }
+        },
+        "later": {
+          "label": {
+            "en": "Decide next week",
+            "sw": "Amua wiki ijayo"
+          },
+          "outcome": {
+            "en": "You will be asked again next week.",
+            "sw": "Utaulizwa tena wiki ijayo."
+          }
+        }
+      }
+    },
+    "away2": {
+      "title": {
+        "en": "Next week you are away",
+        "sw": "Wiki ijayo uko safarini"
+      },
+      "body": {
+        "en": "Who runs the business in week 17?",
+        "sw": "Nani ataendesha biashara wiki ya 17?"
+      },
+      "options": {
+        "cover": {
+          "label": {
+            "en": "Juma runs the stall",
+            "sw": "Juma anaendesha kibanda"
+          },
+          "outcome": {
+            "en": "Juma will cook and sell.",
+            "sw": "Juma atapika na kuuza."
+          }
+        },
+        "close": {
+          "label": {
+            "en": "Close for the week and tell customers",
+            "sw": "Funga wiki hiyo na uwaambie wateja"
+          },
+          "outcome": {
+            "en": "No sales that week. Customers know.",
+            "sw": "Hakuna mauzo wiki hiyo. Wateja wanajua."
+          }
+        },
+        "nothing": {
+          "label": {
+            "en": "Leave it as it is",
+            "sw": "Acha ilivyo"
+          },
+          "outcome": {
+            "en": "Nobody is arranged for week 17.",
+            "sw": "Hakuna aliyepangwa kwa wiki ya 17."
+          }
+        }
+      }
+    },
+    "flour": {
+      "title": {
+        "en": "Flour costs more",
+        "sw": "Unga umepanda bei"
+      },
+      "body": {
+        "en": "From this week a pack costs {amount}, 25% more. Packs you already hold keep their old cost.",
+        "sw": "Kuanzia wiki hii pakiti inauzwa {amount}, asilimia 25 zaidi. Pakiti ulizonazo zinabaki na bei ya zamani."
+      },
+      "options": {
+        "price": {
+          "label": {
+            "en": "Raise your price one step",
+            "sw": "Panda bei hatua moja"
+          },
+          "outcome": {
+            "en": "Your price is higher. Some customers may buy less.",
+            "sw": "Bei yako iko juu. Wateja wengine wanaweza kununua kidogo."
+          }
+        },
+        "smaller": {
+          "label": {
+            "en": "Make smaller pieces",
+            "sw": "Tengeneza vipande vidogo"
+          },
+          "outcome": {
+            "en": "12 pieces per tray. Some customers notice.",
+            "sw": "Vipande 12 kwa trei. Wateja wengine wanaona."
+          }
+        },
+        "renegotiate": {
+          "label": {
+            "en": "Ask the school for a better price",
+            "sw": "Omba shule bei bora"
+          },
+          "outcome": {
+            "en": "You asked the school.",
+            "sw": "Umeiomba shule."
+          }
+        },
+        "keep": {
+          "label": {
+            "en": "Keep the plan",
+            "sw": "Baki na mpango"
+          },
+          "outcome": {
+            "en": "Nothing changes. Your margin is smaller.",
+            "sw": "Hakuna kinachobadilika. Faida yako kwa kipande ni ndogo."
+          }
+        }
+      }
+    }
+  },
+  "extra": {
+    "refused": {
+      "en": "The school said no to the smaller order.",
+      "sw": "Shule imekataa oda ndogo."
+    },
+    "accepted": {
+      "en": "The school agreed to pay {price} a piece.",
+      "sw": "Shule imekubali kulipa {price} kwa kipande."
+    },
+    "declined": {
+      "en": "The school kept the old price.",
+      "sw": "Shule imebaki na bei ya zamani."
+    },
+    "found": {
+      "en": "Your delivery notes show {sent} pieces sent last week and {n} not accepted. They show where the difference is, not why.",
+      "sw": "Maandishi yako ya mizigo yanaonyesha vipande {sent} vilitumwa wiki iliyopita na {n} havikukubaliwa. Yanaonyesha tofauti iko wapi, si kwa nini."
+    },
+    "unclear": {
+      "en": "Without delivery notes it took 3 hours and the cause is still not clear.",
+      "sw": "Bila maandishi ya mizigo ilichukua saa 3 na sababu bado haijulikani."
+    }
+  }
+};
+  const EMBEDDED_CHAPTERS = null;
+  const EMBEDDED_SCENARIOS = {};
+  const EMBEDDED_UI = null;
+
+const fetch = async (input, init) => {
+  const name = String(input).split('/').pop();
+  const value = name === 'season.json' ? EMBEDDED_SEASON : name === 'game.json' ? EMBEDDED_GAME : name === 'ui.json' ? EMBEDDED_UI : name === 'chapters.json' ? EMBEDDED_CHAPTERS : EMBEDDED_SCENARIOS[name];
+  return value ? new Response(JSON.stringify(value), { headers: { 'Content-Type': 'application/json' } }) : globalThis.fetch(input, init);
+};
+
+/* ---- i18n ---- */
+const NS_i18n = (function () {
+
+// Language, strings and plurals.
+//
+// Rules this file exists to enforce (docs/localization.md, "Language"):
+//
+//   1. No user-facing string lives in code. Everything comes from content/ui.json.
+//   2. No sentence is built by concatenation. Word order differs between languages,
+//      so templates carry whole sentences with named placeholders.
+//   3. Plurals go through Intl.PluralRules, never `if (n === 1)`.
+//
+// Strings are stored key-major — { "btn.continue": { en: "...", sw: "..." } } — so a
+// reviewer reads the two languages side by side instead of scrolling between two
+// blocks. Scenario content uses the same shape, which is what `localised()` reads.
+
+const LANGUAGES = [
+  { code: 'en', label: 'English' },
+  { code: 'sw', label: 'Kiswahili' },
+];
+
+const FALLBACK = 'en';
+
+let language = FALLBACK;
+let strings = {};
+
+function loadStrings(table) {
+  strings = table || {};
+}
+
+function setLanguage(code) {
+  if (!LANGUAGES.some((l) => l.code === code)) return language;
+  language = code;
+  if (typeof document !== 'undefined') document.documentElement.lang = code;
+  return language;
+}
+
+function getLanguage() {
+  return language;
+}
+
+
+/**
+ * Pick the right variant out of a localised value.
+ *
+ * Accepts a bare string too, so scenario content can be part-translated during
+ * authoring without the app breaking.
+ */
+function localised(value) {
+  if (value === null || value === undefined) return '';
+  if (typeof value === 'string') return value;
+  if (typeof value !== 'object') return String(value);
+  return value[language] ?? value[FALLBACK] ?? '';
+}
+
+function interpolate(template, params) {
+  if (!params) return template;
+  return template.replace(/\{(\w+)\}/g, (whole, name) => (
+    Object.prototype.hasOwnProperty.call(params, name) ? String(params[name]) : whole
+  ));
+}
+
+/**
+ * Look up a string.
+ *
+ * A missing key returns the key itself rather than an empty string — a visible
+ * `pnl.sales` in the interface gets fixed; a blank space does not get noticed.
+ * scripts/validate-i18n.mjs is what stops that reaching anyone.
+ */
+function t(key, params) {
+  const entry = strings[key];
+  if (entry === undefined) return key;
+
+  const template = typeof entry === 'string'
+    ? entry
+    : (entry[language] ?? entry[FALLBACK]);
+
+  if (template === undefined || template === null) return key;
+  return interpolate(template, params);
+}
+
+/**
+ * Plural-aware lookup. Given `n`, looks for `key.one` / `key.other` and whichever
+ * other categories the language uses, via Intl.PluralRules.
+ *
+ * `{n}` is available to the template automatically, already locale-formatted by the
+ * caller if it needs to be.
+ */
+function tCount(key, n, params = {}) {
+  let category = 'other';
+  try {
+    category = new Intl.PluralRules(language).select(n);
+  } catch {
+    category = n === 1 ? 'one' : 'other';
+  }
+
+  const withCount = { n, ...params };
+  const specific = `${key}.${category}`;
+  if (strings[specific] !== undefined) return t(specific, withCount);
+
+  const other = `${key}.other`;
+  if (strings[other] !== undefined) return t(other, withCount);
+
+  return t(key, withCount);
+}
+
+  return { loadStrings, setLanguage, getLanguage, localised, t, tCount, LANGUAGES };
+})();
+
+/* ---- format ---- */
+const NS_format = (function () {
+const { t, getLanguage } = NS_i18n;
+// Number and currency formatting.
+//
+// Amounts are stored locale-neutral (plain integers) and formatted only at render
+// time — AGENTS.md section 6. Never author a currency symbol into content.
+
+
+let currency = 'TZS';
+
+function setCurrency(nextCurrency) {
+  currency = nextCurrency || currency;
+}
+
+/** Digit grouping follows the interface language. */
+function localeTag() {
+  return getLanguage() === 'sw' ? 'sw-TZ' : 'en-GB';
+}
+
+// Grouped integer, no decimals. Small-business amounts are whole shillings.
+//
+// The currency stays the ISO code in both languages. "TSh" and the local "1,500/="
+// notation are both plausible for Tanzania, but inventing regulatory or commercial
+// detail is exactly what AGENTS.md section 6 forbids — it is logged for local review
+// instead.
+function money(amount) {
+  const n = Math.round(Number(amount) || 0);
+  const sign = n < 0 ? '-' : '';
+  const grouped = Math.abs(n).toLocaleString(localeTag(), { maximumFractionDigits: 0 });
+  return `${sign}${currency} ${grouped}`;
+}
+
+// Compact form for tight spaces (stat tiles, chart axes). Carries the currency, because
+// a bare "150k" sitting next to a unit count is ambiguous.
+function moneyShort(amount) {
+  const n = Math.round(Number(amount) || 0);
+  const abs = Math.abs(n);
+  const sign = n < 0 ? '-' : '';
+  if (abs >= 1000000) return `${sign}${currency} ${(abs / 1000000).toFixed(1)}M`;
+  if (abs >= 1000) return `${sign}${currency} ${Math.round(abs / 1000)}k`;
+  return `${sign}${currency} ${abs}`;
+}
+
+// Without the currency — for axes and anywhere the unit is already established.
+function compact(amount) {
+  const n = Math.round(Number(amount) || 0);
+  const abs = Math.abs(n);
+  const sign = n < 0 ? '-' : '';
+  if (abs >= 1000000) return `${sign}${(abs / 1000000).toFixed(1)}M`;
+  if (abs >= 1000) return `${sign}${Math.round(abs / 1000)}k`;
+  return `${sign}${abs}`;
+}
+
+/** Always signed, for deltas where the direction is the point. */
+function moneySigned(amount) {
+  const n = Math.round(Number(amount) || 0);
+  return n >= 0 ? `+${money(n)}` : money(n);
+}
+
+function count(n) {
+  return Math.round(Number(n) || 0).toLocaleString(localeTag());
+}
+
+// Proportions read more reliably than percentages for this audience —
+// docs/localization.md. Used for prediction accuracy.
+//
+// Built from a template rather than concatenated: "3 of 16" and "3 kati ya 16" do not
+// share a word order, and docs/localization.md rule 2 forbids assembling sentences
+// from fragments.
+function proportion(part, whole) {
+  const p = Math.round(Number(part) || 0);
+  const w = Math.round(Number(whole) || 0);
+  if (w <= 0) return '—';
+  return t('profile.tally', { part: count(p), whole: count(w) });
+}
+
+function percent(fraction) {
+  return `${Math.round((Number(fraction) || 0) * 100)}%`;
+}
+
+/** Long-form date for the printed record — "21 August 2026" / "21 Agosti 2026". */
+function dateLong(iso) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleDateString(localeTag(), { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+  return { setCurrency, money, moneyShort, compact, moneySigned, count, proportion, percent, dateLong };
+})();
+
+/* ---- season ---- */
+const NS_season = (function () {
+
+// One continuous business season (MV-BS-DES-002). Pure, deterministic, integer money.
+// Nothing here touches the DOM, storage or the clock, so Node tests run it directly.
+//
+//   createSeason({ seed }) -> state          week 1, ready plan, nothing to set up
+//   step(state, action) -> { state, result }  the only transition; throws Error(code) if not allowed
+//   replay(seed, actions) -> state            re-applies a recorded action list
+//   can(state, action) -> boolean
+//   quiet(state) -> boolean                   next week is routine: no event, close or shortage
+//   needs(state, pieces) -> order card        cooking, cash and hours an order needs, from this state
+//   capacity(state) -> trays per day and what limits them
+//   limit(result) -> the stage that limited a finished week, or ''
+//   balance(state) -> accounting identity (assets - liabilities === opening + profit - drawings)
+//   facts(state) -> season facts; never a score or a rank
+//
+// Actions: { type: 'plan', patch: { trays, price, pay, buyWeeks, household, check } }
+//   { type: 'run' } { type: 'answer', option } { type: 'buyPot' } { type: 'sellPot' }
+//   { type: 'trainHelper' } { type: 'endHelper' }
+//   { type: 'borrow' } { type: 'repay' } { type: 'chase', who } { type: 'credit', who, on }
+//   { type: 'notebook', on } { type: 'help' } { type: 'goal', goal } { type: 'review' } { type: 'close' }
+// Phases: 'plan' (board), 'event' (state.pending names it), 'review' (month close), 'closed'.
+//
+// Accounting rules: cash and credit sales are revenue when delivered; collection moves a
+// receivable into cash and is never new profit. Packs are stock (an asset, first in first
+// out) until cooked. Borrowing adds equal cash and debt; interest is a cost, principal is
+// not. Household money and dated household payments are drawings, not costs. Equipment
+// is an asset depreciated weekly. Nothing is bought with cash the tin does not hold; an
+// unpaid wage, fee or instalment becomes a dated debt instead.
+//
+// All figures are SAMPLES for review, not verified local prices (AGENTS.md section 6).
+const CALC_VERSION = 1;
+const WEEKS = 24;
+const SAMPLE = {
+  cash: 15000, household: 1500, pack: 300, bulkOff: 15, rise: 75, pieces: 10, smallPieces: 12,
+  price: { low: 40, normal: 50, high: 60 }, demand: { low: 125, normal: 100, high: 75 }, stallDemand: 55,
+  fee: 1200, days: 6, ownerHours: 72, stallHours: 30, trayHours: 3, notebookHours: 2,
+  checkHours: { none: 0, batch: 2, every: 6 }, rejects: { none: 10, batch: 2, every: 0 },
+  pot: { cost: 6000, trays: 5, dep: 250, resale: 3000, max: 3 }, flask: { cost: 5000, dep: 200 },
+  office: { hours: 6, trialCost: 1000, chai: 60, chaiCost: 25, pieces: 2, invited: 20 },
+  school: { full: 60, small: 30, price: 45, better: 50, term: 4, hours: 12, inspection: 3000, pay: 85 },
+  kiosk: { pieces: 30, price: 42, hours: 3, pay: 90 },
+  neighbours: { neema: 85, baraka: 55, zawadi: 75 }, neighbourPieces: 5,
+  supplier: { limit: 6000, term: 2 }, wage: 3000, helperHours: 48, training: 1000, helperTrial: 500,
+  loan: { amount: 10000, principal: 1000, interest: 100 }, payments: [[8, 9000], [20, 9000]], lateFee: 500,
+  awayWeek: 17, riseWeek: 18,
+};
+const P = SAMPLE;
+const STEPS = ['low', 'normal', 'high'];
+const PLAN_LIMITS = { trays: [0, 15], household: [0, 10000] };
+
+// Seeded stream per (seed, keys): call order elsewhere cannot change an outcome.
+function rng(seed, ...keys) {
+  let h = (seed ^ 0x9e3779b9) >>> 0;
+  for (const c of keys.join('|')) h = Math.imul(h ^ c.charCodeAt(0), 2654435761) >>> 0;
+  return () => {
+    h = (h + 0x6d2b79f5) >>> 0;
+    let t = Math.imul(h ^ (h >>> 15), h | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const between = (r, lo, hi) => lo + Math.floor(r() * (hi - lo + 1));
+const pct = (n, p) => Math.floor(n * p / 100);
+const sum = list => list.reduce((a, b) => a + b, 0);
+const fail = code => { throw new Error(code); };
+
+function createSeason({ seed = 1 } = {}) {
+  seed = seed >>> 0;
+  const r = rng(seed, 'setup');
+  const s = {
+    calc: CALC_VERSION, seed, week: 1, phase: 'plan', pending: null, done: {},
+    plan: { trays: 4, price: 'normal', pay: 'cash', buyWeeks: 1, household: P.household, check: 'none' },
+    cash: P.cash, packs: [], pots: 1, flask: false, equipment: [], payables: [], receivables: [],
+    customers: {}, office: null, trial: null, school: null, kiosk: null, loan: null, helper: null,
+    notebook: false, notebookFrom: 0, blocked: false, small: false, competitor: false, investigated: '',
+    payments: P.payments.map(([week, amount]) => ({ week, due: week, amount, status: 'due' })),
+    goal: '', goals: [], help: [], threads: [], history: [],
+    // Hidden, bounded interest: the paid trial shows it once; later weeks vary around it.
+    officeBase: between(r, 4, 9), rainWeek: between(r, 19, 23), helperSkill: between(r, 55, 80),
+    flow: {}, pnl: {}, hours: 0, chased: [],
+    totals: { revenue: 0, profit: 0, drawings: 0 }, opening: P.cash,
+    household: { paid: 0, short: 0, streak: 0 }, away: '', seq: 0,
+  };
+  return s;
+}
+
+const packCost = s => (s.week >= P.riseWeek ? P.pack + P.rise : P.pack) - (s.plan.buyWeeks === 2 ? P.bulkOff : 0);
+const stock = s => sum(s.packs.map(l => l.qty));
+const stockValue = s => sum(s.packs.map(l => l.qty * l.cost));
+const owedToYou = s => sum(s.receivables.map(x => x.amount));
+const owedByYou = s => sum(s.payables.map(x => x.amount)) + (s.loan?.balance || 0);
+const book = s => sum(s.equipment.map(e => e.book));
+const add = (bag, key, n) => { if (n) bag[key] = (bag[key] || 0) + n; };
+const price = s => P.price[s.plan.price];
+const thread = (s, key, params = {}) => s.threads.push({ week: s.week, key, ...params });
+const schoolPrice = s => s.school?.better ? P.school.better : P.school.price;
+const effort = h => h ? (h.trained ? Math.min(95, h.skill + 25) : h.skill) : 0;
+
+function balance(s) {
+  const assets = s.cash + stockValue(s) + owedToYou(s) + book(s);
+  const liabilities = owedByYou(s);
+  return { assets, liabilities, equity: assets - liabilities, expected: s.opening + s.totals.profit - s.totals.drawings };
+}
+
+function awayMode(s) {
+  if (s.week !== P.awayWeek) return '';
+  const choice = s.done.away2 || s.done.away;
+  return choice === 'cover' && s.helper ? 'cover' : choice === 'close' ? 'close' : 'uncovered';
+}
+
+function capacity(s) {
+  const away = awayMode(s);
+  let fixed = away ? 0 : P.stallHours + (s.office ? P.office.hours : 0) + (s.school ? P.school.hours : 0) +
+    (s.kiosk ? P.kiosk.hours : 0) + (s.notebook ? P.notebookHours : 0) + (s.helper ? P.checkHours[s.plan.check] : 0) + s.hours;
+  if (s.trial?.week === s.week) fixed += P.office.hours;
+  const owner = away ? 0 : Math.max(0, Math.floor((P.ownerHours - fixed) / P.trayHours));
+  let helper = s.helper && !s.helper.training ? Math.floor(P.helperHours / P.trayHours * effort(s.helper) / 100) : 0;
+  if (away === 'cover') helper = Math.floor(helper / 2); // Juma also serves the stall.
+  const pots = s.pots * P.pot.trays;
+  const trays = Math.min(pots, owner + helper);
+  return { trays, pots, owner, helper, fixed: away ? 0 : fixed, by: trays === pots && owner + helper > pots ? 'pots' : 'hours' };
+}
+// Owner hours a week for a batch: fixed work plus the trays the helper does not cook.
+const hours = (cap, trays) => cap.fixed + Math.max(0, Math.min(trays, cap.owner + cap.helper) - cap.helper) * P.trayHours;
+
+// Pieces per day that committed customers take before walk-in customers.
+function orders(s) {
+  return (s.school ? s.school.pieces : 0) + (s.trial?.school === s.week ? P.school.small : 0) +
+    (s.kiosk ? P.kiosk.pieces : 0) + (s.office || s.trial?.week === s.week ? (s.history.findLast(r => r.trial)?.trial.paid ?? (s.office ? Math.round(sum((s.history.at(-1)?.days || []).map(d => d.buyers || 0)) / P.days) : 0)) * P.office.pieces : 0) +
+    Object.values(s.customers).filter(c => c.credit).length * P.neighbourPieces;
+}
+
+const committed = s => Math.ceil(orders(s) / pieces_(s));
+function needs(s, pieces) {
+  const extra = Math.ceil(pieces / pieces_(s));
+  const trays = s.plan.trays + extra;
+  const cap = capacity({ ...s, school: { pieces } });
+  const short = Math.max(0, trays - cap.trays);
+  const weekInputs = extra * P.days * packCost(s);
+  return { trays, capacity: cap.trays, short, by: cap.by, weekInputs, term: P.school.term,
+    cash: (weekInputs + (short && !s.helper ? P.wage : 0)) * P.school.term,
+    inspection: P.school.inspection, hours: P.school.hours, available: s.cash };
+}
+const pieces_ = s => s.small ? P.smallPieces : P.pieces;
+
+// ---- events -----------------------------------------------------------------
+
+const payment = s => s.payments.find(p => p.status === 'due' && p.due === s.week);
+const EVENTS = [
+  ['payment', s => payment(s)],
+  ['pot', s => s.week === 2 && s.pots < 2],
+  ['neema', s => s.week === 2],
+  ['notebook', s => s.week === 3 && !s.notebook],
+  ['office', s => s.week === 4 && !s.office],
+  ['office2', s => s.week === 6 && s.done.office === 'later' && !s.office],
+  ['officeResult', s => s.trial && s.trial.week === s.week - 1 && !s.office],
+  ['neighbours', s => s.week === 6 && s.customers.neema?.credit],
+  ['school', s => s.week === 10 && s.office],
+  ['competitor', s => s.week === 10 && !s.office],
+  ['schoolTrial', s => s.week === 11 && s.done.school === 'trial'],
+  ['schoolCounter', s => s.counter === s.week],
+  ['kiosk', s => s.week === 12],
+  ['helper', s => s.week === 13 && !s.helper],
+  ['helperHire', s => s.week === 14 && s.done.helper === 'trial'],
+  ['discrepancy', s => s.week === 15 && s.helper && (s.history.at(-1)?.rejected || 0) > 0],
+  ['away', s => s.week === 15],
+  ['away2', s => s.week === 16 && s.done.away === 'later'],
+  ['flour', s => s.week === P.riseWeek],
+];
+const OPTIONS = {
+  payment: ['pay', 'borrow', 'defer', 'short'], pot: ['buy', 'later'], neema: ['yes', 'no'],
+  notebook: ['start', 'later'], office: ['flask', 'trial', 'later'], office2: ['flask', 'trial', 'no'],
+  officeResult: ['flask', 'no'], neighbours: ['yes', 'no'], school: ['full', 'small', 'trial', 'decline'],
+  competitor: ['lower', 'hold'], schoolTrial: ['full', 'small', 'decline'], schoolCounter: ['full', 'decline'],
+  kiosk: ['yes', 'no'], helper: ['trial', 'hire', 'train', 'later'], helperHire: ['hire', 'train', 'no'],
+  discrepancy: ['records', 'count', 'leave'], away: ['cover', 'close', 'later'], away2: ['cover', 'close', 'nothing'],
+  flour: ['price', 'smaller', 'renegotiate', 'keep'],
+};
+const eventOptions = id => OPTIONS[id] || [];
+
+function arrive(s) {
+  s.phase = 'plan'; s.pending = null;
+  const ev = EVENTS.find(([id, when]) => !s.done[`${id}@${s.week}`] && when(s));
+  if (ev) { s.phase = 'event'; s.pending = ev[0]; }
+}
+
+function spend(s, amount, flowKey) {
+  if (amount > s.cash) fail('cash');
+  s.cash -= amount; add(s.flow, flowKey, -amount);
+}
+function cost(s, amount, line, flowKey = 'costs') { spend(s, amount, flowKey); add(s.pnl, line, amount); s.totals.profit -= amount; }
+function draw(s, amount) { spend(s, amount, 'household'); s.totals.drawings += amount; }
+function buyEquipment(s, kind) {
+  const item = P[kind]; spend(s, item.cost, 'equipment');
+  s.equipment.push({ kind, cost: item.cost, book: item.cost, dep: item.dep, week: s.week });
+  if (kind === 'pot') s.pots++; else s.flask = true;
+}
+const canBorrow = s => !s.loan && !s.payables.some(x => x.who === 'lender');
+function borrow(s) {
+  if (!canBorrow(s)) fail('loan');
+  s.loan = { balance: P.loan.amount, from: s.week };
+  s.cash += P.loan.amount; add(s.flow, 'borrowed', P.loan.amount);
+  thread(s, 'borrowed', { amount: P.loan.amount });
+}
+function startOffice(s) { buyEquipment(s, 'flask'); s.office = { from: s.week }; }
+
+function answer(s, option) {
+  const id = s.pending;
+  if (s.phase !== 'event' || !OPTIONS[id].includes(option)) fail('option');
+  const due = payment(s);
+  const allowed = {
+    payment: { pay: s.cash >= due?.amount, borrow: canBorrow(s), defer: !due?.deferred, short: s.cash < due?.amount },
+    pot: { buy: s.cash >= P.pot.cost && s.pots < P.pot.max }, office: { flask: s.cash >= P.flask.cost, trial: s.cash >= P.office.trialCost },
+    office2: { flask: s.cash >= P.flask.cost, trial: s.cash >= P.office.trialCost }, officeResult: { flask: s.cash >= P.flask.cost },
+    school: { full: s.cash >= P.school.inspection, small: s.cash >= P.school.inspection },
+    schoolTrial: { full: s.cash >= P.school.inspection, small: s.cash >= P.school.inspection },
+    schoolCounter: { full: s.cash >= P.school.inspection },
+    helper: { trial: s.cash >= P.helperTrial, train: s.cash >= P.training }, helperHire: { train: s.cash >= P.training },
+    away: { cover: !!s.helper }, away2: { cover: !!s.helper }, flour: { renegotiate: !!s.school, price: s.plan.price !== 'high' },
+  }[id]?.[option];
+  if (allowed === false) fail('option');
+  const r = rng(s.seed, 'answer', id, s.week);
+  const out = { event: id, option };
+  switch (id) {
+    case 'payment':
+      if (option === 'borrow') borrow(s);
+      if (option === 'pay' || option === 'borrow') {
+        draw(s, due.amount); due.status = 'paid'; due.paid = s.week;
+        thread(s, due.due === due.week ? 'paymentPaid' : 'paymentLate', { amount: due.amount, from: due.week });
+      } else if (option === 'defer') {
+        draw(s, P.lateFee); due.deferred = true; due.due = s.week + 2; out.due = due.due;
+      } else {
+        const part = s.cash; draw(s, part); due.status = 'missed'; due.paidPart = part; out.part = part;
+        thread(s, 'paymentMissed', { amount: due.amount - part, from: due.week });
+      }
+      break;
+    case 'pot': if (option === 'buy') buyEquipment(s, 'pot'); break;
+    case 'neema': if (option === 'yes') s.customers.neema = { credit: true, from: s.week }; break;
+    case 'notebook': if (option === 'start') { s.notebook = true; s.notebookFrom = s.week; } break;
+    case 'office': case 'office2': case 'officeResult':
+      if (option === 'flask') startOffice(s);
+      if (option === 'trial') { cost(s, P.office.trialCost, 'other'); s.trial = { week: s.week }; }
+      break;
+    case 'neighbours':
+      if (option === 'yes') for (const who of ['baraka', 'zawadi']) s.customers[who] = { credit: true, from: s.week };
+      break;
+    case 'school': case 'schoolTrial': case 'schoolCounter':
+      if (option === 'trial') { s.trial = { ...s.trial, school: s.week }; break; }
+      if (option === 'decline') break;
+      if (option === 'small' && r() * 100 >= 70) { s.counter = s.week; out.refused = true; break; }
+      cost(s, P.school.inspection, 'other');
+      s.school = { pieces: option === 'full' ? P.school.full : P.school.small, from: s.week, strikes: 0, late: 0 };
+      thread(s, 'schoolStart', { pieces: s.school.pieces });
+      break;
+    case 'competitor': s.competitor = true; if (option === 'lower') s.plan.price = 'low'; break;
+    case 'kiosk': if (option === 'yes') s.kiosk = { from: s.week, late: 0 }; break;
+    case 'helper': case 'helperHire':
+      if (option === 'trial') { cost(s, P.helperTrial, 'other'); out.skill = s.helperSkill; s.helperKnown = true; }
+      if (option === 'hire' || option === 'train') {
+        s.helper = { skill: s.helperSkill, trained: option === 'train', training: option === 'train', from: s.week, known: !!s.helperKnown };
+        if (option === 'train') cost(s, P.training, 'other');
+      }
+      break;
+    case 'discrepancy': {
+      const last = s.history.at(-1);
+      if (option === 'records' && last.noted) { s.investigated = 'found'; out.found = last.rejected; out.sent = sum(last.days.map(d => d.school)); }
+      else if (option === 'records') { s.hours += 3; s.investigated = 'unclear'; }
+      if (option === 'count') s.plan.check = 'batch';
+      break;
+    }
+    case 'away': case 'away2': s.away = option; break;
+    case 'flour':
+      if (option === 'price') s.plan.price = STEPS[STEPS.indexOf(s.plan.price) + 1];
+      if (option === 'smaller') s.small = true;
+      if (option === 'renegotiate') { out.accepted = r() * 100 < 60; if (out.accepted) s.school.better = true; }
+      break;
+  }
+  s.done[`${id}@${s.week}`] = option; s.done[id] = option;
+  arrive(s);
+  return out;
+}
+
+// ---- trading week -------------------------------------------------------------
+
+function settleReceivables(s, res) {
+  for (const x of [...s.receivables]) {
+    if (x.due > s.week) continue;
+    const chance = (x.who === 'school' ? P.school.pay : x.who === 'kiosk' ? P.kiosk.pay : P.neighbours[x.who]) + 10 * x.late;
+    if (rng(s.seed, 'collect', x.id, s.week)() * 100 < chance) collect(s, x, res);
+    else { x.late++; x.due = s.week + 1; res.late.push(x.who); }
+  }
+}
+function collect(s, x, res) {
+  s.receivables = s.receivables.filter(y => y !== x);
+  s.cash += x.amount; add(s.flow, 'collected', x.amount);
+  res && res.collected.push({ who: x.who, amount: x.amount, from: x.week });
+  thread(s, 'collected', { who: x.who, amount: x.amount, from: x.week });
+}
+
+function payDue(s, res) {
+  for (const x of [...s.payables].sort((a, b) => a.due - b.due)) {
+    if (x.due > s.week) continue;
+    if (s.cash >= x.amount) {
+      s.cash -= x.amount; add(s.flow, x.who === 'bakari' ? 'supplier' : 'arrears', -x.amount);
+      s.payables = s.payables.filter(y => y !== x);
+      if (x.who === 'bakari' && s.blocked && !s.payables.some(y => y.who === 'bakari' && y.due < s.week)) s.blocked = false;
+    } else if (x.who === 'bakari' && !s.blocked) {
+      s.blocked = true; res.notes.push('blocked'); thread(s, 'supplierBlocked', { amount: x.amount, from: x.week });
+    }
+  }
+}
+
+// Pay a weekly cost; what the tin cannot pay becomes a debt due next week.
+function obligation(s, amount, line, who) {
+  if (!amount) return;
+  const paid = Math.min(amount, s.cash);
+  s.cash -= paid; add(s.flow, 'costs', -paid);
+  if (line) { add(s.pnl, line, amount); s.totals.profit -= amount; }
+  if (amount > paid) s.payables.push({ id: ++s.seq, who, amount: amount - paid, due: s.week + 1, week: s.week });
+}
+
+function buy(s, trays, res) {
+  const unit = packCost(s);
+  const want = Math.max(0, trays * P.days * s.plan.buyWeeks - stock(s));
+  let credit = 0;
+  if (s.plan.pay === 'credit' && !s.blocked) {
+    const room = P.supplier.limit - sum(s.payables.filter(x => x.who === 'bakari').map(x => x.amount));
+    credit = Math.min(want, Math.max(0, Math.floor(room / unit)));
+  }
+  const cash = Math.min(want - credit, Math.floor(s.cash / unit));
+  if (cash) { s.cash -= cash * unit; add(s.flow, 'supplies', -cash * unit); }
+  if (credit) s.payables.push({ id: ++s.seq, who: 'bakari', amount: credit * unit, due: s.week + P.supplier.term, week: s.week });
+  if (cash + credit) s.packs.push({ qty: cash + credit, cost: unit });
+  Object.assign(res, { bought: cash + credit, boughtCash: cash, boughtCredit: credit, unit, wanted: want, short: want - cash - credit });
+}
+function use(s, trays) {
+  let left = trays, value = 0;
+  for (const layer of s.packs) {
+    const take = Math.min(left, layer.qty);
+    layer.qty -= take; left -= take; value += take * layer.cost;
+  }
+  s.packs = s.packs.filter(l => l.qty > 0);
+  return { trays: trays - left, value };
+}
+
+function trade(s) {
+  const startCash = s.lastCash ?? P.cash;
+  const res = { week: s.week, days: [], collected: [], late: [], notes: [], invoices: [], rejected: 0, waste: 0 };
+  const away = awayMode(s);
+  const open = away !== 'close' && away !== 'uncovered';
+  const officeOn = open && (s.office || s.trial?.week === s.week);
+  res.away = away;
+  settleReceivables(s, res);
+  payDue(s, res);
+  const cap = capacity(s);
+  const trays = open ? Math.min(s.plan.trays, cap.trays) : 0;
+  Object.assign(res, { planned: s.plan.trays, capacity: cap, trays });
+  buy(s, trays, res);
+  const pp = pieces_(s), unit = price(s), r = rng(s.seed, 'week', s.week);
+  const quality = s.helper ? (s.helper.trained ? pct(P.rejects[s.plan.check], 50) : P.rejects[s.plan.check]) * Math.min(trays, cap.helper) / Math.max(1, trays) : 0;
+  const rev = { stall: 0, office: 0, neighbours: 0, school: 0, kiosk: 0 };
+  const credit = { school: 0, kiosk: 0 }, owe = {};
+  let materials = 0, chai = 0, soldOut = 0;
+  for (let d = 0; d < P.days; d++) {
+    const made = open ? use(s, trays) : { trays: 0, value: 0 };
+    materials += made.value;
+    let avail = made.trays * pp;
+    const day = { made: made.trays, pieces: avail, school: 0, kiosk: 0, office: 0, neighbours: 0, stall: 0, demand: 0, waste: 0, rain: false };
+    const take = n => { const got = Math.min(n, avail); avail -= got; return got; };
+    const school = open && s.school ? s.school.pieces : s.trial?.school === s.week && open ? P.school.small : 0;
+    if (school) {
+      day.school = take(school);
+      const bad = Math.floor(day.school * quality / 100);
+      res.rejected += bad; day.rejected = bad;
+      const value = (day.school - bad) * schoolPrice(s);
+      rev.school += value; if (s.school) credit.school += value;
+      res.schoolShort = (res.schoolShort || 0) + (school - day.school);
+    }
+    if (open && s.kiosk) {
+      day.kiosk = take(P.kiosk.pieces); rev.kiosk += day.kiosk * P.kiosk.price; credit.kiosk += day.kiosk * P.kiosk.price;
+      res.kioskShort = (res.kioskShort || 0) + P.kiosk.pieces - day.kiosk;
+    }
+    if (officeOn) {
+      const buyers = Math.max(0, s.officeBase + between(r, -2, 2));
+      const served = Math.min(buyers, Math.floor(avail / P.office.pieces));
+      day.office = take(served * P.office.pieces); day.buyers = served;
+      rev.office += day.office * unit + served * P.office.chai; chai += served * P.office.chaiCost;
+      if (s.trial?.week === s.week) res.trialPaid = (res.trialPaid || 0) + served;
+    }
+    if (open) for (const [who, c] of Object.entries(s.customers)) {
+      if (!c.credit) continue;
+      const got = take(P.neighbourPieces); day.neighbours += got;
+      owe[who] = (owe[who] || 0) + got * unit; rev.neighbours += got * unit;
+    }
+    if (open) {
+      let demand = pct(pct(P.stallDemand, P.demand[s.plan.price]), between(r, 80, 120));
+      if (s.competitor && s.week <= 15) demand = pct(demand, 80);
+      if (s.small) demand = pct(demand, 90);
+      if (s.week === s.rainWeek && d % 2 === 0) { demand = pct(demand, 60); day.rain = true; }
+      day.demand = demand; day.stall = take(demand); rev.stall += day.stall * unit;
+      if (demand > day.stall) soldOut++;
+    }
+    day.waste = avail; res.waste += avail;
+    res.days.push(day);
+  }
+  // Cash sales go into the tin as the week runs; deliveries on credit become invoices.
+  const cashSales = rev.stall + rev.office + (s.trial?.school === s.week ? rev.school : 0);
+  s.cash += cashSales; add(s.flow, 'sales', cashSales);
+  const invoice = (who, amount, term) => {
+    if (!amount) return;
+    s.receivables.push({ id: ++s.seq, who, amount, week: s.week, due: s.week + term, late: 0, noted: s.notebook });
+    res.invoices.push({ who, amount, due: s.week + term });
+  };
+  invoice('school', credit.school, P.school.term);
+  invoice('kiosk', credit.kiosk, 1);
+  for (const [who, amount] of Object.entries(owe)) invoice(who, amount, 1);
+  const revenue = sum(Object.values(rev));
+  add(s.pnl, 'revenue', revenue); add(s.pnl, 'materials', materials); add(s.pnl, 'chai', chai);
+  s.cash -= chai; add(s.flow, 'costs', -chai);
+  s.totals.revenue += revenue; s.totals.profit += revenue - materials - chai;
+  obligation(s, open ? P.fee : 0, 'fee', 'fee');
+  if (s.helper) { obligation(s, P.wage, 'wages', 'juma'); s.helper.training = false; }
+  if (s.loan) {
+    obligation(s, P.loan.interest, 'interest', 'lender');
+    const principal = Math.min(P.loan.principal, s.loan.balance);
+    const paid = Math.min(principal, s.cash);
+    s.cash -= paid; add(s.flow, 'principal', -paid); s.loan.balance -= principal;
+    if (principal > paid) s.payables.push({ id: ++s.seq, who: 'lender', amount: principal - paid, due: s.week + 1, week: s.week });
+    if (s.loan.balance === 0) { s.loan = null; if (principal === paid && !s.payables.some(x => x.who === 'lender')) thread(s, 'loanRepaid'); }
+  }
+  let dep = 0;
+  for (const e of s.equipment) { const n = Math.min(e.dep, e.book); e.book -= n; dep += n; }
+  add(s.pnl, 'depreciation', dep); s.totals.profit -= dep;
+  // School and kiosk respond to missed deliveries; declined orders never reach here.
+  if (s.school && (res.schoolShort > pct(s.school.pieces * P.days, 20) || away === 'uncovered')) {
+    s.school.strikes++; res.notes.push('schoolShort');
+    if (s.school.strikes >= 2) { s.school = null; res.notes.push('schoolLost'); thread(s, 'schoolLost'); }
+  }
+  if (s.kiosk && (res.kioskShort > pct(P.kiosk.pieces * P.days, 20) || away === 'uncovered')) {
+    s.kiosk.strikes = (s.kiosk.strikes || 0) + 1; res.notes.push('kioskShort');
+    if (s.kiosk.strikes >= 2 || away === 'uncovered') { s.kiosk = null; res.notes.push('kioskLost'); thread(s, 'kioskLost'); }
+  }
+  if (away === 'cover' && revenue > 0) {
+    // Scope: sales happened without the owner while the notebook and a check were in
+    // place. The model does not compare a real count with the tin, so claim no more.
+    s.awayTraded = (s.awayTraded || 0) + 1;
+    s.awayKept = s.notebook && s.plan.check !== 'none';
+    thread(s, 'awayCovered');
+  } else if (away) thread(s, away === 'close' ? 'awayClosed' : 'awayMissed');
+  // Household money last, from what remains.
+  const home = Math.min(s.plan.household, s.cash);
+  s.cash -= home; add(s.flow, 'household', -home); s.totals.drawings += home;
+  if (s.plan.household > 0 && home === s.plan.household) { s.household.paid++; s.household.streak++; }
+  else if (s.plan.household > 0) {
+    s.household.short++; s.household.streak = 0; s.household.unmet = (s.household.unmet || 0) + s.plan.household - home;
+    res.notes.push('householdShort'); res.householdShort = s.plan.household - home;
+  }
+  if (s.trial?.week === s.week && res.trialPaid !== undefined) {
+    res.trial = { paid: Math.round(res.trialPaid / P.days), invited: P.office.invited };
+    thread(s, 'trial', res.trial);
+  }
+  if (s.trial?.school === s.week) thread(s, 'schoolTrialDone', { amount: rev.school });
+  // Result: every tin movement since the last week card, and the profit lines.
+  const pnl = s.pnl, profit = (pnl.revenue || 0) - sum(Object.entries(pnl).filter(([k]) => k !== 'revenue').map(([, v]) => v));
+  Object.assign(res, {
+    revenue: rev, sales: revenue, cashSales, creditSales: revenue - cashSales, profit, pnl: { ...pnl }, flow: { ...s.flow },
+    cashStart: startCash, cashEnd: s.cash, soldOutDays: soldOut, household: home,
+    hours: Math.ceil(hours(cap, sum(res.days.map(d => d.made)) / P.days)), noted: s.notebook, stock: stock(s), owedToYou: owedToYou(s), owedByYou: owedByYou(s),
+  });
+  res.limit = limit(res);
+  s.history.push(res);
+  s.lastCash = s.cash; s.flow = {}; s.pnl = {}; s.hours = 0; s.chased = [];
+  s.week++;
+  if ((s.week - 1) % 4 === 0) { s.phase = 'review'; s.pending = null; } else arrive(s);
+  return res;
+}
+
+// Which stage limited the week, from the result alone.
+function limit(res) {
+  if (!res || !res.trays && !res.planned) return '';
+  if (res.short > 0) return 'buy';
+  if (res.soldOutDays >= 3) return res.planned > res.capacity.trays ? (res.capacity.by === 'pots' ? 'pots' : 'hours') : 'plan';
+  if (res.waste > res.trays * P.days * P.pieces * 15 / 100) return 'demand';
+  if (res.owedToYou > res.cashEnd && res.owedToYou > 0) return 'collect';
+  return '';
+}
+
+// ---- dispatcher -------------------------------------------------------------
+
+function step(state, action) {
+  const s = structuredClone(state);
+  const need = phase => { if (s.phase !== phase && !(phase === 'plan' && s.phase === 'event' && action.type !== 'run')) fail('phase'); };
+  let result = {};
+  switch (action?.type) {
+    case 'plan': {
+      need('plan');
+      const next = { ...s.plan, ...action.patch };
+      for (const [k, [lo, hi]] of Object.entries(PLAN_LIMITS)) if (!Number.isSafeInteger(next[k]) || next[k] < lo || next[k] > hi) fail('plan');
+      if (next.household % 100 || !STEPS.includes(next.price) || !['cash', 'credit'].includes(next.pay) ||
+        ![1, 2].includes(next.buyWeeks) || !(next.check in P.checkHours)) fail('plan');
+      s.plan = next; result = { plan: next };
+      break;
+    }
+    case 'run': need('plan'); result = trade(s); break;
+    case 'answer': result = answer(s, action.option); break;
+    case 'buyPot': need('plan'); if (s.pots >= P.pot.max || s.cash < P.pot.cost) fail('pot'); buyEquipment(s, 'pot'); break;
+    case 'sellPot': {
+      need('plan');
+      const i = s.equipment.findLastIndex(e => e.kind === 'pot');
+      if (i < 0) fail('pot');
+      const [pot] = s.equipment.splice(i, 1); s.pots--;
+      s.cash += P.pot.resale; add(s.flow, 'equipmentSold', P.pot.resale);
+      const loss = pot.book - P.pot.resale; add(s.pnl, 'other', loss); s.totals.profit -= loss;
+      result = { loss };
+      break;
+    }
+    case 'borrow': need('plan'); borrow(s); break;
+    case 'trainHelper': need('plan'); if (!s.helper || s.helper.trained) fail('helper'); cost(s, P.training, 'other'); s.helper.trained = true; s.helper.training = true; break;
+    case 'endHelper': need('plan'); if (!s.helper) fail('helper'); s.helper = null; break;
+    case 'repay': need('plan'); if (!s.loan || s.cash < s.loan.balance) fail('repay'); spend(s, s.loan.balance, 'principal'); s.loan = null; if (!s.payables.some(x => x.who === 'lender')) thread(s, 'loanRepaid'); break;
+    case 'chase': {
+      need('plan');
+      // Only invoices already due: asking early does not shorten agreed payment terms.
+      const mine = s.receivables.filter(x => x.who === action.who && x.due <= s.week);
+      if (!mine.length || s.chased.includes(action.who)) fail('chase');
+      s.chased.push(action.who); s.hours += 1;
+      const base = action.who === 'school' ? P.school.pay : action.who === 'kiosk' ? P.kiosk.pay : P.neighbours[action.who];
+      const paid = rng(s.seed, 'chase', action.who, s.week)() * 100 < base - 20 + 10 * Math.max(...mine.map(x => x.late));
+      if (paid) for (const x of mine) collect(s, x, null);
+      result = { who: action.who, paid, amount: paid ? sum(mine.map(x => x.amount)) : 0 };
+      break;
+    }
+    case 'credit': need('plan'); if (!s.customers[action.who]) fail('who'); s.customers[action.who].credit = !!action.on; break;
+    case 'notebook': need('plan'); s.notebook = !!action.on; if (s.notebook) s.notebookFrom = s.week; break;
+    case 'help': result = { limit: limit(s.history.at(-1)), week: s.week }; s.help.push(s.week); break;
+    case 'goal': if (!['income', 'customers', 'away'].includes(action.goal) || s.week < 5) fail('goal'); s.goal = action.goal; s.goals.push({ week: s.week, goal: action.goal }); break;
+    case 'review': need('review'); if (s.week > WEEKS && !s.finished) { s.finished = true; } arrive(s); break;
+    case 'close': if (s.phase === 'closed') fail('phase'); s.phase = 'closed'; s.pending = null; break;
+    default: fail('action');
+  }
+  return { state: s, result };
+}
+
+function can(state, action) {
+  try { step(state, action); return true; } catch { return false; }
+}
+
+function replay(seed, actions) {
+  let s = createSeason({ seed });
+  for (const a of actions) s = step(s, a).state;
+  return s;
+}
+
+// A routine week: no event or month close waiting, the away week is not next, and the
+// tin covers the planned batch and household money. Events and closes stop the loop.
+function quiet(s) {
+  if (s.phase !== 'plan') return false;
+  const trays = Math.min(s.plan.trays, capacity(s).trays);
+  const cost = Math.max(0, trays * P.days - stock(s)) * packCost(s);
+  return s.cash >= cost + s.plan.household && s.week !== P.awayWeek;
+}
+
+function facts(s) {
+  const last = s.history.slice(-4);
+  const business = ['office', 'school', 'kiosk'].filter(k => s[k] && last.some(r => r.revenue[k] > 0)).length;
+  return {
+    weeks: s.history.length, householdPaid: s.household.paid, householdShort: s.household.short, streak: s.household.streak,
+    householdUnmet: s.household.unmet || 0, paymentsUnmet: sum(s.payments.map(p => p.status === 'missed' ? p.amount - p.paidPart : 0)),
+    buffer: s.plan.household ? Math.floor(s.cash / s.plan.household) : 0,
+    hours: last.length ? Math.round(sum(last.map(r => r.hours)) / last.length) : 0,
+    business, awayTraded: s.awayTraded || 0, awayKept: !!s.awayKept,
+    owedToYou: owedToYou(s), owedByYou: owedByYou(s), people: s.helper ? 1 : 0,
+    sales: s.totals.revenue, profit: s.totals.profit, drawings: s.totals.drawings, cash: s.cash,
+    stock: stock(s), stockValue: stockValue(s), equipment: book(s),
+    payments: s.payments.map(p => ({ week: p.week, amount: p.amount, status: p.status })),
+  };
+}
+
+// Goal progress as facts against the prototype targets; reaching one is not ranked.
+function goalProgress(s) {
+  const f = facts(s);
+  const onTime = ['school', 'kiosk'].every(k => !s[k] || !s.receivables.some(x => x.who === k && x.late));
+  return {
+    income: { now: [Math.min(f.streak, 8), Math.min(f.buffer, 4)], of: [8, 4], reached: f.streak >= 8 && f.buffer >= 4 },
+    customers: { now: [f.business], of: [3], reached: f.business >= 3 && onTime },
+    away: { now: [f.awayTraded && f.awayKept ? 1 : 0], of: [1], reached: !!f.awayTraded && f.awayKept },
+  };
+}
+
+  return { createSeason, balance, capacity, needs, limit, step, can, replay, quiet, facts, goalProgress, CALC_VERSION, WEEKS, SAMPLE, stock, hours, committed, eventOptions };
+})();
+
+/* ---- seasonstore ---- */
+const NS_seasonstore = (function () {
+
+// Season records: a separate IndexedDB database. Legacy saves ('business-simulator'
+// IndexedDB and the intro's localStorage keys) are never read for writing or changed.
+//
+// One record per run: { schema, version, id, run, seed, calc, content, startedAt,
+// updatedAt, rev, log: [{ n, at, week, action }], state }. Each committed action and its
+// resulting state are one put, so a reload shows the result and never repeats it.
+// `rev` guards against a second tab: a write whose expected rev is stale is refused.
+const DB = 'mv-bs-season';
+const SCHEMA = 'mv-bs-season-record';
+const VERSION = 1;
+let db = null;
+
+async function open() {
+  db?.close();
+  db = null;
+  const opened = await new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB, 1);
+    request.onupgradeneeded = () => {
+      request.result.createObjectStore('runs', { keyPath: 'id' });
+      request.result.createObjectStore('meta');
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+    request.onblocked = () => reject(new Error('blocked'));
+  });
+  db = opened;
+  opened.onversionchange = () => { opened.close(); if (db === opened) db = null; };
+}
+
+const tx = (stores, mode, body) => new Promise((resolve, reject) => {
+  if (!db) { reject(new Error('unavailable')); return; }
+  const t = db.transaction(stores, mode);
+  let out;
+  t.oncomplete = () => resolve(out);
+  t.onabort = t.onerror = () => reject(t.error || new Error(out?.error || 'aborted'));
+  out = body(t);
+});
+
+
+async function list() {
+  return tx(['runs'], 'readonly', t => {
+    const out = [];
+    t.objectStore('runs').openCursor().onsuccess = e => {
+      const c = e.target.result;
+      if (c) { const v = c.value; out.push({ id: v.id, run: v.run, week: v.state?.week, updatedAt: v.updatedAt, phase: v.state?.phase }); c.continue(); }
+    };
+    return out;
+  });
+}
+
+async function active() {
+  const id = await tx(['meta'], 'readonly', t => { const r = t.objectStore('meta').get('active'); return r; }).then(r => r.result);
+  return id ? tx(['runs'], 'readonly', t => t.objectStore('runs').get(id)).then(r => r.result || null) : null;
+}
+
+// Compare-and-put. Resolves the new rev; rejects Error('conflict') on a stale tab.
+async function save(record, expected) {
+  const next = { ...record, rev: expected + 1, updatedAt: new Date().toISOString() };
+  let conflict = false;
+  await tx(['runs', 'meta'], 'readwrite', t => {
+    const runs = t.objectStore('runs');
+    const r = runs.get(record.id);
+    r.onsuccess = () => {
+      const stored = r.result?.rev ?? 0;
+      if (stored !== expected) { conflict = true; t.abort(); return; }
+      runs.put(next);
+      t.objectStore('meta').put(record.id, 'active');
+    };
+  }).catch(error => { throw conflict ? new Error('conflict') : error; });
+  return next.rev;
+}
+
+async function activate(id) {
+  await tx(['meta'], 'readwrite', t => { t.objectStore('meta').put(id, 'active'); });
+}
+async function read(id) {
+  return tx(['runs'], 'readonly', t => t.objectStore('runs').get(id)).then(r => r.result || null);
+}
+async function remove(id) {
+  await tx(['runs'], 'readwrite', t => { t.objectStore('runs').delete(id); });
+}
+
+// Detect earlier games without opening them for writing.
+async function legacy() {
+  const keys = ['business-simulator:asha-intro:v3', 'asha-stall-v2', 'business-simulator:v1'];
+  let found = false;
+  try { found = keys.some(k => localStorage.getItem(k)); } catch { /* storage blocked */ }
+  try { found ||= (await indexedDB.databases?.() || []).some(d => d.name === 'business-simulator'); } catch { /* unsupported */ }
+  return found;
+}
+
+  return { open, list, active, save, activate, read, remove, legacy, DB, SCHEMA, VERSION };
+})();
+
+/* ---- seasonscene ---- */
+const NS_seasonscene = (function () {
+
+// The stall as one small SVG. Its parts are drawn from saved state only: pots, packs,
+// trays, helper, customers, tin level, invoices and business buyers. A finished week
+// replays as a short CSS animation of its saved day results; nothing here decides
+// an outcome. Reduced motion or "skip" shows the final picture at once.
+const W = 360;
+const cap = (n, max) => Math.max(0, Math.min(max, n));
+const person = (x, y, body, cls = '') =>
+  `<g class="p ${cls}" transform="translate(${x} ${y})"><circle r="7" cy="-19" fill="#8a5a3b"/><rect x="-8" y="-12" width="16" height="20" rx="6" fill="${body}"/></g>`;
+
+// Tin fill: 0..1 of a sample scale; the label, not the height, carries the amount.
+const level = cash => cap(cash / 40000, 1);
+
+function drawScene(view) {
+  const trays = cap(view.trays, 15), packs = cap(Math.ceil(view.stock / 6), 6);
+  const queue = cap(Math.round(view.queue / 9), 8), papers = cap(view.invoices, 6);
+  const trayRects = Array.from({ length: trays }, (_, i) => {
+    const x = 122 + (i % 5) * 20, y = 132 - Math.floor(i / 5) * 7;
+    return `<rect class="tray" x="${x}" y="${y}" width="18" height="6" rx="2"/><circle cx="${x + 5}" cy="${y}" r="3" class="mz"/><circle cx="${x + 12}" cy="${y}" r="3" class="mz"/>`;
+  }).join('');
+  const pots = Array.from({ length: view.pots }, (_, i) => {
+    const x = 34 + i * 26;
+    return `<g class="pot"><path class="steam" d="M${x + 8} 118 q-4 -8 0 -14 q4 -6 0 -12"/><rect x="${x}" y="122" width="18" height="16" rx="4"/><rect x="${x - 3}" y="119" width="24" height="4" rx="2"/></g>`;
+  }).join('');
+  const sacks = Array.from({ length: packs }, (_, i) =>
+    `<path class="sack" d="M${14 + i * 13} 170 q-2 -14 5 -16 q7 2 5 16 z"/>`).join('');
+  const people = Array.from({ length: queue }, (_, i) =>
+    person(262 + (i % 4) * 22, 172 - Math.floor(i / 4) * 4 + (i % 2) * 3, ['#0f766e', '#b45309', '#7c3aed', '#be123c'][i % 4], 'cust')).join('');
+  const clip = Array.from({ length: papers }, (_, i) =>
+    `<rect class="paper" x="${152 + i * 2}" y="${100 - i * 3}" width="12" height="15" rx="1"/>`).join('');
+  const buildings = [
+    view.office && '<g class="bld"><rect x="252" y="30" width="44" height="62" fill="#cbd5e1"/><rect x="258" y="38" width="10" height="8" fill="#fff"/><rect x="278" y="38" width="10" height="8" fill="#fff"/><rect x="258" y="54" width="10" height="8" fill="#fff"/><rect x="278" y="54" width="10" height="8" fill="#fff"/></g>',
+    view.school && '<g class="bld"><path d="M300 52 l26 -18 l26 18 z" fill="#b91c1c"/><rect x="304" y="52" width="44" height="40" fill="#fde68a"/><rect x="320" y="70" width="12" height="22" fill="#92400e"/></g>',
+    view.kiosk && '<g class="bld"><rect x="206" y="62" width="30" height="30" fill="#bae6fd"/><rect x="202" y="58" width="38" height="6" fill="#0369a1"/></g>',
+  ].filter(Boolean).join('');
+  return `<svg viewBox="0 0 ${W} 200" xmlns="http://www.w3.org/2000/svg" class="${view.rain ? 'rain' : ''}">
+<rect width="${W}" height="200" fill="#ffe8c4"/><circle cx="36" cy="30" r="14" fill="#fbbf24"/>
+${buildings}
+<rect y="150" width="${W}" height="50" fill="#e7cfa6"/><rect y="178" width="${W}" height="6" fill="#d6b98c"/>
+<g class="sacks">${sacks}</g>${view.rise ? '<g class="tag"><rect x="12" y="140" width="40" height="12" rx="3"/><text x="32" y="149">+25%</text></g>' : ''}
+${pots}${view.helper ? person(60, 150, '#2563eb', 'juma') : ''}
+<rect x="110" y="104" width="140" height="46" rx="4" fill="#fff7ea" stroke="#c9a47a"/>
+<path d="M104 90 h152 l-8 16 h-136 z" class="awning"/><path d="M122 90 l-4 16 M146 90 l-2 16 M170 90 v16 M194 90 l2 16 M218 90 l4 16 M242 90 l6 16" stroke="#fff" stroke-width="5" opacity=".7"/>
+${view.owner ? person(190, 104, '#ea580c', 'owner') : ''}
+<g class="trays">${trayRects}</g>
+<g class="clip"><rect x="148" y="96" width="22" height="26" rx="2" fill="#92400e"/>${clip}</g>
+<g class="tin"><rect x="222" y="112" width="24" height="30" rx="3" fill="#374151"/><rect class="fill" x="225" y="113" width="18" height="26" fill="#facc15" style="transform:scaleY(${level(view.cash)})"/></g>
+<g class="bin"><rect x="254" y="136" width="14" height="14" rx="2" fill="#6b7280"/></g>
+${view.closed ? '<rect x="110" y="104" width="140" height="46" fill="#1f2937" opacity=".75"/>' : ''}
+<g class="queue">${people}</g><g id="fx"></g></svg>`;
+}
+
+// One finished week, day by day. Coins fly to the tin for cash sales, a paper flies to
+// the clipboard for sales on credit, customers leave on sold-out days and leftovers go
+// to the bin. Each day takes .5 s; the tin moves from its start to its end amount.
+function animateWeek(host, result, labels) {
+  const fx = host.querySelector('#fx');
+  if (!fx) return 0;
+  const parts = [];
+  if (result.bought) parts.push('<g class="fx arrive" style="--d:0"><path class="sack" d="M14 170 q-2 -14 5 -16 q7 2 5 16 z"/></g>');
+  if (result.flow.collected > 0) parts.push('<circle class="fx collected" cx="170" cy="105" r="4" style="--d:0"/>');
+  const schoolCredit = result.invoices.some(x => x.who === 'school');
+  result.days.forEach((day, d) => {
+    const delay = `style="--d:${d}"`;
+    parts.push(`<text class="fx daylabel" x="180" y="22" ${delay}>${labels.day(d + 1)}</text>`);
+    const cashPieces = day.stall + day.office + (schoolCredit ? 0 : day.school);
+    for (let i = 0; i < cap(Math.ceil(cashPieces / 15), 4); i++)
+      parts.push(`<circle class="fx coin" cx="${270 + i * 14}" cy="150" r="4" style="--d:${d};--i:${i}"/>`);
+    if ((schoolCredit ? day.school : 0) + day.kiosk + day.neighbours) parts.push(`<rect class="fx invoice" x="300" y="120" width="12" height="15" ${delay}/>`);
+    if (day.demand > day.stall) parts.push(`<g class="fx leave" ${delay}>${person(330, 172, '#64748b')}</g><text class="fx soldout" x="300" y="112" ${delay}>${labels.soldOut}</text>`);
+    if (day.waste) parts.push(`<circle class="fx waste" cx="200" cy="130" r="3" ${delay}/>`);
+    if (day.rain) parts.push(`<g class="fx drops" ${delay}><path d="M40 40 v12 M100 30 v12 M160 44 v12 M220 30 v12 M280 44 v12 M330 30 v12"/></g>`);
+  });
+  fx.innerHTML = parts.join('');
+  const fill = host.querySelector('.tin .fill');
+  const set = cash => { fill.style.transform = `scaleY(${level(cash)})`; };
+  set(result.cashStart);
+  host.classList.remove('done'); host.classList.add('playing');
+  requestAnimationFrame(() => requestAnimationFrame(() => set(result.cashEnd)));
+  return result.days.length * 500 + 400;
+}
+
+  return { drawScene, animateWeek };
+})();
+
+/* ---- game ---- */
+const NS_game = (function () {
+const { createSeason, step, can, quiet, capacity, hours, committed, needs, facts, goalProgress, eventOptions, stock, replay, SAMPLE, WEEKS, CALC_VERSION } = NS_season;
+const { loadStrings, setLanguage, getLanguage, t, localised } = NS_i18n;
+const { setCurrency, money, moneySigned } = NS_format;
+const { drawScene, animateWeek } = NS_seasonscene;
+const store = NS_seasonstore;
+// The continuous season: one board, one business, saved after every committed action.
+// season.js decides outcomes; this file shows them and records what the player did.
+// Hooks for tests: data-action (commands), data-field (plan controls), data-testid
+// (cash, profit, sales, week, event, saved, result).
+
+
+
+
+
+const $ = id => document.getElementById(id);
+const P = SAMPLE;
+const LANG = 'mv-bs-season-language';
+const FILE = location.protocol === 'file:';
+const ONLINE = 'https://arnoroh.github.io/business_simulator/';
+let content, rec = null, status = 'ok', blocked = false, busy = false, offline = false, legacyFound = false, runs = [];
+let shown = null; // What the last action showed. Not stored: the record holds the facts.
+let timer = 0;
+const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+const sum = list => list.reduce((a, b) => a + b, 0);
+const fill = (text, params = {}) => text.replace(/\{(\w+)\}/g, (m, k) => (k in params ? params[k] : m));
+const ev = (id, ...path) => localised(path.reduce((node, key) => node?.[key], content.events[id]));
+const who = id => t(`who.${id}`);
+
+function h(tag, props = {}, ...kids) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (v === null || v === undefined || v === false) continue;
+    if (k === 'class') el.className = v;
+    else if (k === 'text') el.textContent = v;
+    else if (k.startsWith('on')) el[k] = v;
+    else el.setAttribute(k, v === true ? '' : v);
+  }
+  el.append(...kids.flat(9).filter(x => x !== null && x !== undefined && x !== false));
+  return el;
+}
+const btn = (label, action, props = {}) => h('button', { type: 'button', 'data-action': action, class: props.class || 'secondary', ...props }, label);
+const rows = pairs => h('dl', { class: 'rows' }, pairs.map(([k, v]) => h('div', {}, h('dt', { text: k }), h('dd', { text: v }))));
+
+// ---- record lifecycle ---------------------------------------------------------
+
+function newRecord(n) {
+  const seed = crypto.getRandomValues(new Uint32Array(1))[0];
+  return { schema: store.SCHEMA, version: store.VERSION, id: crypto.randomUUID(), run: n, seed, calc: CALC_VERSION,
+    content: { id: content.id, version: content.version, snapshot: content }, rules: structuredClone(P), startedAt: new Date().toISOString(), rev: 0, log: [], state: createSeason({ seed }) };
+}
+
+async function persist() {
+  try { rec.rev = await store.save(rec, rec.rev); status = 'ok'; }
+  catch (error) { status = error.message === 'conflict' ? 'conflict' : 'failed'; }
+  renderStatus();
+}
+
+// Apply actions, then save the actions and their result together before showing them.
+async function commit(actions) {
+  if (busy || blocked || status !== 'ok') return null;
+  busy = true;
+  let s = rec.state;
+  const log = [...rec.log], results = [];
+  try {
+    for (const action of actions) {
+      const out = step(s, action);
+      log.push({ n: log.length + 1, at: new Date().toISOString(), week: s.week, language: getLanguage(), phase: s.phase, event: s.pending, automaticHelp: Boolean(document.querySelector('.limit-note')), action, result: out.result });
+      s = out.state; results.push(out.result);
+    }
+  } catch { busy = false; render(); return null; }
+  rec = { ...rec, state: s, log };
+  await persist();
+  await refreshRuns();
+  busy = false;
+  return results;
+}
+
+const act = (action, after) => async () => {
+  const results = await commit([action]);
+  if (!results) return;
+  shown = after ? after(results[0]) : null;
+  render();
+};
+const plan = (patch) => act({ type: 'plan', patch });
+
+async function runWeeks(until) {
+  const actions = [{ type: 'run' }];
+  if (!can(rec.state, actions[0])) return;
+  let s = step(rec.state, actions[0]).state;
+  while (until && quiet(s) && actions.length < 8) { actions.push({ type: 'run' }); s = step(s, { type: 'run' }).state; }
+  const results = await commit(actions);
+  if (!results) return;
+  shown = { kind: 'result', results };
+  render(reduced());
+  play(results.at(-1));
+  if (!reduced()) $('scene').scrollIntoView({ block: 'start', behavior: 'auto' });
+}
+
+function play(result) {
+  const scene = $('scene');
+  clearTimeout(timer);
+  if (reduced()) return;
+  const ms = animateWeek(scene, result, { day: n => t('day', { n }), soldOut: t('soldOut') });
+  $('skip').hidden = false;
+  timer = setTimeout(stop, ms);
+}
+function stop() {
+  clearTimeout(timer);
+  $('scene').classList.remove('playing'); $('scene').classList.add('done');
+  $('skip').hidden = true;
+  if (rec) renderTop();
+}
+
+// ---- top: summary strip, calendar, scene ---------------------------------------
+
+function renderTop() {
+  const s = rec.state, last = s.history.at(-1);
+  $('cash').textContent = money(s.cash);
+  $('profit').textContent = last ? money(last.profit) : '—';
+  $('sales').textContent = last ? money(last.sales) : '—';
+  $('week').textContent = t(s.week > WEEKS ? 'weekExtra' : 'week', { n: s.week, total: WEEKS });
+  const due = s.payments.find(p => p.status === 'due');
+  $('due').textContent = due ? t('nextDue', { amount: money(due.amount), n: due.due }) : '';
+  $('hours').textContent = t('hours', { n: hours(capacity(s), Math.min(s.plan.trays, capacity(s).trays)) });
+  const cal = $('calendar'); cal.replaceChildren();
+  cal.setAttribute('aria-label', t('calendar'));
+  const invoiceWeeks = new Set(s.receivables.map(x => x.due));
+  for (let w = 1; w <= WEEKS; w++) {
+    const marks = [];
+    if (s.payments.some(p => p.status === 'due' && p.due === w)) marks.push('pay');
+    if (w === P.awayWeek) marks.push('away');
+    if (invoiceWeeks.has(w) && w >= s.week) marks.push('invoice');
+    if (w % 4 === 0) marks.push('close');
+    cal.append(h('li', { class: [w < s.week ? 'past' : '', w === s.week ? 'now' : '', ...marks].join(' '),
+      'aria-current': w === s.week ? 'step' : null, title: marks.map(m => t(`cal.${m}`)).join(', ') || null }, h('span', { text: w })));
+  }
+  const cap = capacity(s);
+  const replaying = shown?.kind === 'result' ? shown.results.at(-1) : null;
+  const v = {
+    trays: Math.min(s.plan.trays, cap.trays), stock: stock(s), pots: s.pots, helper: !!s.helper, owner: (replaying?.week ?? s.week) !== P.awayWeek,
+    queue: last ? Math.round(sum(last.days.map(d => d.demand)) / 6) : P.stallDemand, invoices: s.receivables.length,
+    cash: s.cash, office: !!s.office, school: !!s.school, kiosk: !!s.kiosk, rise: s.week >= P.riseWeek,
+    rain: last?.days.some(d => d.rain), closed: s.phase === 'closed' || replaying?.away === 'close' || replaying?.away === 'uncovered',
+  };
+  const scene = $('scene');
+  if (!scene.classList.contains('playing')) scene.innerHTML = drawScene(v);
+  scene.setAttribute('aria-label', t('scene', { pots: s.pots, trays: v.trays, packs: v.stock, papers: v.invoices }));
+}
+
+function renderStatus() {
+  const saved = $('saved');
+  saved.textContent = t(`saved.${status}`);
+  saved.className = status === 'ok' ? 'ok' : 'warn';
+  $('retry').hidden = status !== 'failed'; $('retry').textContent = t('retry');
+  $('reload').hidden = status !== 'conflict'; $('reload').textContent = t('reload');
+  $('offline').textContent = t(offline ? 'offline.ready' : 'offline.no');
+}
+
+// ---- cards --------------------------------------------------------------------
+
+function eventParams(s) {
+  const due = s.payments.find(p => p.status === 'due' && p.due === s.week);
+  return {
+    amount: money(s.pending === 'flour' ? P.pack + P.rise : s.pending === 'pot' ? P.pot.cost : due?.amount || 0),
+    cash: money(s.cash), full: P.school.full, small: P.school.small, pieces: P.kiosk.pieces,
+    price: money(s.pending === 'kiosk' ? P.kiosk.price : P.school.price), wage: money(P.wage), skill: s.helperSkill,
+    n: s.history.at(-1)?.rejected || 0, paid: s.history.findLast(r => r.trial)?.trial.paid ?? '',
+    loan: money(P.loan.amount), fee: money(P.lateFee), flask: money(P.flask.cost), trial: money(P.office.trialCost),
+    helperTrial: money(P.helperTrial), training: money(P.training),
+  };
+}
+
+function eventCard(s) {
+  const id = s.pending, params = eventParams(s);
+  const card = h('section', { class: 'card event', 'data-testid': 'event', 'data-event': id },
+    h('h2', { text: fill(ev(id, 'title'), params) }), h('p', { text: fill(ev(id, 'body'), params) }));
+  if (id.startsWith('school')) {
+    const need = needs(s, P.school.full);
+    card.append(h('div', { class: 'needs' }, h('h3', { text: t('needsTitle') }), h('ul', {},
+      h('li', { text: t('needs.trays', { trays: need.trays, cap: need.capacity }) }),
+      h('li', { text: t('needs.cash', { amount: money(need.cash), n: need.term }) }),
+      h('li', { text: t('needs.hours', { n: need.hours }) }),
+      h('li', { text: t('needs.inspection', { amount: money(need.inspection) }) }),
+      h('li', { text: t('needs.have', { amount: money(s.cash) }) }))));
+  }
+  const options = h('div', { class: 'options' });
+  for (const option of eventOptions(id)) {
+    if (option === 'renegotiate' && !s.school) continue;
+    const ok = can(s, { type: 'answer', option });
+    options.append(h('button', { type: 'button', class: 'choice', 'data-action': 'answer', 'data-option': option, disabled: !ok,
+      onclick: act({ type: 'answer', option }, result => ({ kind: 'outcome', id, result, params })) },
+      h('span', { text: fill(ev(id, 'options', option, 'label'), params) }), ok ? null : h('small', { text: t('unavailable') })));
+  }
+  card.append(options);
+  return card;
+}
+
+function outcomeCard({ id, result, params }) {
+  const extra = result.refused ? 'refused' : result.accepted === true ? 'accepted' : result.accepted === false ? 'declined'
+    : id === 'discrepancy' && result.option === 'records' ? (result.found !== undefined ? 'found' : 'unclear') : '';
+  return h('section', { class: 'card outcome' }, h('p', { class: 'kicker', text: t('outcomeTitle') }),
+    h('h2', { text: fill(ev(id, 'options', result.option, 'label'), params) }),
+    result.refused ? null : h('p', { text: fill(ev(id, 'options', result.option, 'outcome'), params) }),
+    extra ? h('p', { text: fill(localised(content.extra[extra]), { ...params, n: result.found, sent: result.sent, price: money(P.school.better) }) }) : null);
+}
+
+function notes(r) {
+  const out = [];
+  if (r.away) out.push(t('note.away'));
+  if (r.trial) out.push(t('note.trial', r.trial));
+  if (r.soldOutDays) out.push(t('note.soldOut', { n: r.soldOutDays }));
+  if (r.waste) out.push(t('note.waste', { n: r.waste }));
+  if (r.rejected) out.push(t('note.rejected', { n: r.rejected }));
+  for (const c of r.collected) out.push(t('note.collected', { who: who(c.who), amount: money(c.amount), n: c.from }));
+  for (const l of new Set(r.late)) out.push(t('note.late', { who: who(l) }));
+  for (const i of r.invoices) out.push(t('note.invoice', { who: who(i.who), amount: money(i.amount), n: i.due }));
+  for (const n of r.notes) out.push(n === 'householdShort' ? t('note.householdShort', { amount: money(r.householdShort) }) : t(`note.${n}`));
+  return out;
+}
+
+function resultCard(results) {
+  const r = results.at(-1);
+  const change = r.cashEnd - r.cashStart;
+  const lines = notes(r);
+  const pnlOrder = ['materials', 'chai', 'fee', 'wages', 'interest', 'depreciation', 'other'];
+  return h('section', { class: 'card result', 'data-testid': 'result', tabindex: '-1' },
+    results.length > 1 ? h('ul', { class: 'weeks' }, results.map(x => h('li', { text: t('weekLine', { n: x.week, sales: money(x.sales), profit: money(x.profit), cash: money(x.cashEnd) }) }))) : null,
+    h('h2', { text: t('result', { n: r.week }) }),
+    h('p', { class: 'tin', text: t('tin', { start: money(r.cashStart), end: money(r.cashEnd) }) }),
+    h('p', { class: 'compare', text: t('compare', { profit: money(r.profit), change: moneySigned(change) }) }),
+    h('ul', { class: 'notes' }, lines.slice(0, 3).map(text => h('li', { text }))),
+    lines.length > 3 ? h('details', {}, h('summary', { text: t('moreResults', { n: lines.length - 3 }) }), h('ul', { class: 'notes' }, lines.slice(3).map(text => h('li', { text })))) : null,
+    h('details', {}, h('summary', { text: t('whereCash') }),
+      rows(Object.entries(r.flow).map(([k, v]) => [t(`flow.${k}`), moneySigned(v)]))),
+    h('details', {}, h('summary', { text: t('howProfit') }),
+      rows([[t('pnl.revenue'), money(r.pnl.revenue || 0)], ...pnlOrder.filter(k => r.pnl[k]).map(k => [t(`pnl.${k}`), moneySigned(-r.pnl[k])]), [t('f.profit'), money(r.profit)]])),
+    h('details', {}, h('summary', { text: t('byDay') }), h('ol', {}, r.days.map((d, i) =>
+      h('li', { text: t('dayLine', { n: i + 1, made: d.made, sold: d.stall, away: Math.max(0, d.demand - d.stall), waste: d.waste }) })))));
+}
+
+const TILE = { buy: 'buy', pots: 'cook', hours: 'cook', plan: 'cook', demand: 'sell', collect: 'collect' };
+
+function limitCard(s, forced) {
+  const last = s.history.at(-1);
+  if (!last) return null;
+  const auto = s.history.length <= 3;
+  if (!auto && !forced) return null;
+  return h('p', { class: 'card limit-note', role: 'note' }, t(`limit.${last.limit || 'none'}`));
+}
+
+function radios(field, values, current, label) {
+  return h('fieldset', { class: 'seg' }, h('legend', { text: label }), values.map(([value, text]) =>
+    h('label', {}, h('input', { type: 'radio', name: field, value, 'data-field': field, checked: String(current) === String(value),
+      onchange: plan({ [field]: typeof current === 'number' ? Number(value) : value }) }), h('span', { text }))));
+}
+
+function stepper(field, value, stepBy, label, min, max) {
+  const set = n => plan({ [field]: Math.max(min, Math.min(max, n)) });
+  const input = h('input', { type: 'number', id: `f-${field}`, 'data-field': field, value, min, max, step: field === 'household' ? 100 : 1, inputmode: 'numeric' });
+  input.onchange = () => { const n = Math.round(Number(input.value) / (field === 'household' ? 100 : 1)) * (field === 'household' ? 100 : 1); if (Number.isFinite(n)) set(n)(); };
+  return h('div', { class: 'stepper' }, h('label', { for: `f-${field}`, text: label }),
+    h('div', {}, btn('−', 'less', { 'data-for': field, 'aria-label': `${t('less')}: ${label}`, disabled: value <= min, onclick: set(value - stepBy) }),
+      input, btn('+', 'more', { 'data-for': field, 'aria-label': `${t('more')}: ${label}`, disabled: value >= max, onclick: set(value + stepBy) })));
+}
+
+const ICON = {
+  buy: 'M5 20 q-2 -12 7 -14 q9 2 7 14 z', cook: 'M4 10 h16 v7 q0 3 -3 3 h-10 q-3 0 -3 -3 z M2 9 h20',
+  sell: 'M12 3 a9 9 0 1 0 .1 0 z M12 7 v10 M9 9 h5 M9 15 h5', collect: 'M6 3 h12 v18 h-12 z M9 8 h6 M9 12 h6 M9 16 h4',
+  money: 'M3 10 l9 -6 l9 6 v10 h-18 z M10 20 v-6 h4 v6',
+};
+function tile(key, limited, ...body) {
+  return h('details', { class: `tile${limited ? ' limit' : ''}`, 'data-tile': key },
+    h('summary', {}, h('span', { class: 'icon', 'aria-hidden': 'true' }), t(key)), body);
+}
+
+function board(s, highlight) {
+  const cap = capacity(s), unit = P.pack + (s.week >= P.riseWeek ? P.rise : 0) - (s.plan.buyWeeks === 2 ? P.bulkOff : 0);
+  const owedBakari = sum(s.payables.filter(x => x.who === 'bakari').map(x => x.amount));
+  const credit = Object.entries(s.customers);
+  const byWho = Object.groupBy ? Object.groupBy(s.receivables, x => x.who) : s.receivables.reduce((m, x) => ((m[x.who] ||= []).push(x), m), {});
+  const arrears = s.payables.filter(x => x.who !== 'bakari');
+  const tiles = [
+    tile('buy', highlight === 'buy',
+      h('p', { text: t('stock', { n: stock(s) }) }), h('p', { text: t('packPrice', { amount: money(unit) }) }),
+      radios('pay', [['cash', t('pay.cash')], ['credit', t('pay.credit')]], s.plan.pay, t('payWith')),
+      radios('buyWeeks', [[1, t('buyWeeks.1')], [2, t('buyWeeks.2')]], s.plan.buyWeeks, t('buyFor')),
+      owedBakari ? h('p', { text: t('supplierOwed', { amount: money(owedBakari) }) }) : null,
+      s.blocked ? h('p', { class: 'warn', text: t('blocked') }) : null),
+    tile('cook', highlight === 'cook',
+      stepper('trays', s.plan.trays, 1, t('trays'), 0, 15),
+      h('p', { text: t('canCook', { n: cap.trays }) + ' ' + t(`by.${cap.by}`) }),
+      committed(s) ? h('p', { text: t('ordersNeed', { n: committed(s) }) }) : null,
+      h('p', { text: t('pots', { n: s.pots }) }),
+      h('div', { class: 'row' }, btn(t('buyPot', { amount: money(P.pot.cost) }), 'buyPot', { disabled: !can(s, { type: 'buyPot' }), onclick: act({ type: 'buyPot' }) }),
+        s.equipment.some(e => e.kind === 'pot') ? btn(t('sellPot', { amount: money(P.pot.resale) }), 'sellPot', { onclick: act({ type: 'sellPot' }) }) : null),
+      s.helper ? h('p', { text: t('helper', { amount: money(P.wage) }) + (s.helper.training ? ' ' + t('training') : '') }) : null,
+      s.helper ? h('div', { class: 'row' }, btn(t('trainHelper', { amount: money(P.training) }), 'trainHelper', { disabled: !can(s, { type: 'trainHelper' }), onclick: act({ type: 'trainHelper' }) }), btn(t('endHelper'), 'endHelper', { onclick: act({ type: 'endHelper' }) })) : null,
+      s.helper ? radios('check', ['none', 'batch', 'every'].map(k => [k, t(`check.${k}`)]), s.plan.check, t('checks')) : null),
+    tile('sell', highlight === 'sell',
+      radios('price', ['low', 'normal', 'high'].map(k => [k, `${t(`price.${k}`)} ${money(P.price[k])}`]), s.plan.price, t('price')),
+      h('h4', { text: t('buyers') }), h('ul', {}, h('li', { text: t('ch.stall') }), s.office ? h('li', { text: t('ch.office') }) : null,
+        s.school ? h('li', { text: t('ch.school', { n: s.school.pieces }) }) : null, s.kiosk ? h('li', { text: t('ch.kiosk', { n: P.kiosk.pieces }) }) : null,
+        credit.filter(([, c]) => c.credit).map(([id]) => h('li', { text: t('ch.credit', { who: who(id) }) })))),
+    tile('collect', highlight === 'collect',
+      h('h4', { text: t('owed') }),
+      s.receivables.length ? Object.entries(byWho).map(([id, list]) => h('div', { class: 'debtor' },
+        h('p', {}, h('strong', { text: who(id) })),
+        h('ul', {}, list.map(x => h('li', { text: !x.noted ? t('dueUnknown', { amount: money(x.amount) }) : x.late ? t('dueLate', { amount: money(x.amount), n: x.week + (id === 'school' ? P.school.term : 1) }) : t('due', { amount: money(x.amount), n: x.due }) }))),
+        list.some(x => x.due <= s.week) ? btn(t('chase', { who: who(id) }), 'chase', { 'data-who': id, disabled: !can(s, { type: 'chase', who: id }), onclick: act({ type: 'chase', who: id }, r => ({ kind: 'notice', text: t(r.paid ? 'chasePaid' : 'chaseWaiting', { who: who(id), amount: money(r.amount) }) })) }) : null))
+        : h('p', { text: t('nobody') }),
+      credit.map(([id, c]) => btn(t(c.credit ? 'creditOff' : 'creditOn', { who: who(id) }), 'credit', { 'data-who': id, onclick: act({ type: 'credit', who: id, on: !c.credit }) })),
+      h('p', { text: t('notebook') }),
+      btn(t(s.notebook ? 'notebookOff' : 'notebookOn'), 'notebook', { 'aria-pressed': String(s.notebook), onclick: act({ type: 'notebook', on: !s.notebook }) })),
+    tile('money', false,
+      stepper('household', s.plan.household, 500, t('household'), 0, 10000),
+      s.household.unmet ? h('p', { class: 'warn', text: t('unmet', { amount: money(s.household.unmet) }) }) : null,
+      s.loan ? h('p', { text: t('loan', { amount: money(s.loan.balance), principal: money(P.loan.principal), interest: money(P.loan.interest) }) }) : null,
+      s.loan ? btn(t('repay', { amount: money(s.loan.balance) }), 'repay', { disabled: !can(s, { type: 'repay' }), onclick: act({ type: 'repay' }) })
+        : h('div', {}, btn(t('borrow', { amount: money(P.loan.amount) }), 'borrow', { disabled: !can(s, { type: 'borrow' }), onclick: act({ type: 'borrow' }) }),
+          h('p', { class: 'small', text: t('terms', { principal: money(P.loan.principal), interest: money(P.loan.interest) }) })),
+      arrears.map(x => h('p', { class: 'warn', text: t('arrears', { who: who(x.who), amount: money(x.amount), n: x.due }) })),
+      h('details', {}, h('summary', { text: t('closeBiz') }), btn(t('closeBiz'), 'close', { class: 'danger', onclick: () => confirm(t('closeAsk')) && act({ type: 'close' })() }))),
+  ];
+  for (const el of tiles) el.querySelector('.icon').append(icon(el.dataset.tile));
+  return h('div', { class: 'board' }, tiles);
+}
+function icon(key) {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  const path = document.createElementNS(svg.namespaceURI, 'path');
+  path.setAttribute('d', ICON[key]); svg.append(path);
+  return svg;
+}
+
+function reviewCard(s) {
+  const month = (s.week - 1) / 4, season = s.week > WEEKS && !s.finished;
+  const period = s.history.slice(-4), f = facts(s), goals = goalProgress(s);
+  const threads = s.threads.filter(x => x.week > s.week - 5);
+  const card = h('section', { class: 'card review', 'data-testid': 'review' },
+    h('h2', { text: season ? t('seasonReview') : t('review', { n: month }) }),
+    rows([
+      [t('f.sales'), money(sum(period.map(r => r.sales)))], [t('f.profit'), money(sum(period.map(r => r.profit)))],
+      [t('f.cash'), money(f.cash)], [t('f.stock'), `${f.stock} · ${money(f.stockValue)}`],
+      [t('f.owedToYou'), money(f.owedToYou)], [t('f.owedByYou'), money(f.owedByYou)], [t('f.hours'), f.hours],
+      [t('f.household'), `${f.householdPaid} / ${f.weeks}`], [t('f.unmet'), money(f.householdUnmet + f.paymentsUnmet)],
+      ...(season ? [[t('f.business'), f.business], [t('f.away'), f.awayTraded], [t('f.people'), f.people], [t('f.drawings'), money(f.drawings)], [t('f.sales') + ' · ' + WEEKS, money(f.sales)], [t('f.profit') + ' · ' + WEEKS, money(f.profit)]] : []),
+    ]),
+    threads.length ? h('div', {}, h('h3', { text: t('threads') }), h('ul', {}, threads.map(x => h('li', { text: t(`thread.${x.key}`, {
+      ...x, who: x.who ? who(x.who) : '', amount: x.amount !== undefined ? money(x.amount) : '' }) })))) : null,
+    h('h3', { text: t('goal') }),
+    h('div', { class: 'goals' }, ['income', 'customers', 'away'].map(g => {
+      const p = goals[g];
+      return h('button', { type: 'button', class: `goal${s.goal === g ? ' chosen' : ''}`, 'data-action': 'goal', 'data-goal': g, 'aria-pressed': String(s.goal === g),
+        onclick: act({ type: 'goal', goal: g }) }, h('strong', { text: t(`goal.${g}`) }),
+        h('span', { text: t(`goalNow.${g}`, { a: p.now[0], b: p.now[1] ?? '' }) }), p.reached ? h('em', { text: t('reached') }) : null);
+    })),
+    h('p', { class: 'small', text: t('limits') }),
+    btn(t('continue'), 'review', { class: 'primary', onclick: act({ type: 'review' }) }));
+  return card;
+}
+
+function render(focusResult = false) {
+  const expanded = [...document.querySelectorAll('.tile[open]')].map(el => el.dataset.tile);
+  const active = document.activeElement;
+  const focused = active?.dataset.field ? `[data-field="${active.dataset.field}"]${active.type === 'radio' ? `[value="${active.value}"]` : ''}` : active?.dataset.for ? `[data-action="${active.dataset.action}"][data-for="${active.dataset.for}"]` : null;
+  document.title = t('title');
+  $('title').textContent = t('title'); $('sub').textContent = t('sub');
+  for (const el of document.querySelectorAll('[data-i18n]')) el.textContent = t(el.dataset.i18n);
+  $('lang').textContent = t('otherLang'); $('lang').lang = getLanguage() === 'en' ? 'sw' : 'en';
+  const main = $('main');
+  main.replaceChildren();
+  renderStatus();
+  if (blocked) {
+    main.append(h('section', { class: 'card' }, h('p', { text: t('unreadable') }), btn(t('export'), 'export', { class: 'primary', onclick: exportRecord }),
+      btn(t('newRun'), 'new', { onclick: newRun })));
+    renderFoot(); return;
+  }
+  renderTop();
+  const s = rec.state;
+  if (shown?.kind === 'notice') main.append(h('p', { class: 'card', role: 'status', text: shown.text }));
+  if (s.phase === 'closed') {
+    const f = facts(s);
+    main.append(h('section', { class: 'card' }, h('p', { text: t('closed') }),
+      rows([[t('f.cash'), money(f.cash)], [t('f.profit'), money(f.profit)], [t('f.owedToYou'), money(f.owedToYou)], [t('f.owedByYou'), money(f.owedByYou)], [t('f.drawings'), money(f.drawings)]]),
+      h('p', { class: 'small', text: t('limits') }), btn(t('newRun'), 'new', { class: 'primary', onclick: newRun })));
+  }
+  else if (s.phase === 'event') { if (shown?.kind === 'outcome') main.append(outcomeCard(shown)); if (shown?.kind === 'result') main.append(resultCard(shown.results)); main.append(eventCard(s), board(s, '')); }
+  else if (s.phase === 'review') { if (shown?.kind === 'result') main.append(h('details', {}, h('summary', { text: t('result', { n: s.week - 1 }) }), resultCard(shown.results))); main.append(reviewCard(s)); }
+  else {
+    if (shown?.kind === 'result') main.append(resultCard(shown.results));
+    if (shown?.kind === 'outcome') main.append(outcomeCard(shown));
+    if (!s.history.length) main.append(h('p', { class: 'small', text: t('goalLine') }));
+    if (s.goal) main.append(h('p', { class: 'goal-line', text: t('yourGoal', { goal: t(`goal.${s.goal}`) }) }));
+    const forced = shown?.kind === 'help';
+    const hint = limitCard(s, forced); if (hint) main.append(hint);
+    const last = s.history.at(-1);
+    const highlight = last && (s.history.length <= 3 || forced) ? TILE[last.limit] : '';
+    const controls = board(s, highlight);
+    const trays = Math.min(s.plan.trays, capacity(s).trays);
+    const warn = s.cash < Math.max(0, trays * P.days - stock(s)) * (P.pack + (s.week >= P.riseWeek ? P.rise : 0)) + s.plan.household;
+    main.append(h('p', { class: 'plan-summary', text: t('standingPlan', { trays: s.plan.trays, price: money(P.price[s.plan.price]), home: money(s.plan.household) }) }));
+    main.append(h('div', { class: 'run' },
+      warn ? h('p', { class: 'warn', role: 'alert', text: t('cashWarning') }) : null,
+      btn(t('run', { n: s.week }), 'run', { class: 'primary', onclick: () => runWeeks(false) }),
+      btn(t('runUntil'), 'runUntil', { onclick: () => runWeeks(true) }),
+      s.history.length > 3 ? btn(t('help'), 'help', { class: 'link', onclick: act({ type: 'help' }, () => ({ kind: 'help' })) }) : null,
+      s.history.length > 3 ? h('p', { class: 'small', text: t('helpNote') }) : null));
+    main.append(controls);
+  }
+  for (const key of expanded) main.querySelector(`[data-tile="${key}"]`)?.setAttribute('open', '');
+  if (focused) main.querySelector(focused)?.focus({ preventScroll: true });
+  if (status !== 'ok') for (const control of main.querySelectorAll('button, input')) control.disabled = true;
+  renderFoot();
+  if (focusResult) main.querySelector('[data-testid="result"]')?.focus({ preventScroll: false });
+}
+
+// ---- footer: records, earlier games, offline ------------------------------------
+
+function renderFoot() {
+  $('records-tools').textContent = t('recordsTools');
+  $('export').textContent = t('export'); $('export').onclick = exportRecord;
+  $('runs-title').textContent = t('runs');
+  const list = $('runs'); list.replaceChildren();
+  for (const r of runs.sort((a, b) => a.run - b.run)) {
+    const current = r.id === rec?.id;
+    list.append(h('li', {}, h('span', { text: t('runLabel', { n: r.run, w: Math.min(r.week, WEEKS) }) + (current ? ' ✓' : '') }),
+      current ? null : btn(t('open'), 'open-run', { onclick: () => openRun(r.id) }),
+      current ? null : btn(t('delete'), 'delete-run', { class: 'link', onclick: () => deleteRun(r.id) })));
+  }
+  list.append(h('li', {}, btn(t('newRun'), 'new', { onclick: newRun })));
+  $('earlier-title').textContent = t('earlier');
+  $('earlier-found').textContent = legacyFound ? t('earlierFound') : '';
+  $('intro-link').textContent = t('intro'); $('intro-link').href = (FILE ? ONLINE : './') + 'intro.html';
+  $('chapters-link').textContent = t('chapters'); $('chapters-link').href = (FILE ? ONLINE : './') + 'practice.html';
+  $('offline-file').textContent = t('offlineFile'); $('offline-file').hidden = FILE;
+  $('sample').textContent = t('sample'); $('draft').textContent = getLanguage() === 'sw' ? t('draft') : '';
+  $('privacy').textContent = t('privacy');
+  $('skip').textContent = t('skip');
+}
+
+function exportRecord() {
+  const data = { ...rec, exportedAt: new Date().toISOString(), completion: rec.state?.finished ? 'season-reviewed' : rec.state?.phase === 'closed' ? 'closed-early' : 'partial', level: 'simulated', limitations: { en: content.ui.limits.en, sw: content.ui.limits.sw } };
+  const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+  const a = h('a', { href: url, download: `MV-BS-SEASON-record-run${rec.run || 0}.json` });
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+async function refreshRuns() { try { runs = await store.list(); } catch { runs = rec ? [{ id: rec.id, run: rec.run, week: rec.state.week }] : []; } }
+
+async function newRun() {
+  if (status !== 'ok' && rec && !confirm(t('unsavedLeave'))) return;
+  if (rec && !blocked && !confirm(t('newRunAsk'))) return;
+  await refreshRuns();
+  rec = newRecord(Math.max(0, ...runs.map(r => r.run)) + 1);
+  blocked = false; shown = null; status = 'ok';
+  await persist(); await refreshRuns(); render();
+}
+async function openRun(id) {
+  if (status !== 'ok' && !confirm(t('unsavedLeave'))) return;
+  const r = await store.read(id);
+  if (!r) return;
+  status = 'ok'; load(r); await store.activate(id).catch(() => {}); render();
+}
+async function deleteRun(id) {
+  if (!confirm(t('deleteAsk'))) return;
+  await store.remove(id).catch(() => {}); await refreshRuns(); render();
+}
+
+// Reopen a saved run only if its actions reproduce its saved state under these rules.
+function load(r) {
+  rec = r;
+  try { blocked = r.schema !== store.SCHEMA || r.version !== store.VERSION || r.content?.id !== content.id || r.content?.version !== content.version || r.calc !== CALC_VERSION || JSON.stringify(replay(r.seed, r.log.map(e => e.action))) !== JSON.stringify(r.state); }
+  catch { blocked = true; }
+  if (!blocked) { const last = r.state.history.at(-1); shown = last && r.log.at(-1)?.action.type === 'run' ? { kind: 'result', results: [last] } : null; }
+}
+
+async function checkOffline() {
+  if (FILE) { offline = true; return renderStatus(); }
+  if (!('serviceWorker' in navigator) || !self.caches) return;
+  await navigator.serviceWorker.ready;
+  const files = ['./index.html', './js/game.js', './js/season.js', './js/seasonscene.js', './js/seasonstore.js', './content/season.json', './css/season.css'];
+  for (let i = 0; i < 40 && !offline; i++) {
+    offline = (await Promise.all(files.map(f => caches.match(f)))).every(Boolean);
+    if (!offline) await new Promise(resolve => setTimeout(resolve, 500));
+  }
+  renderStatus();
+}
+
+async function init() {
+  const response = await fetch('./content/season.json');
+  if (!response.ok) throw new Error('content');
+  content = await response.json();
+  loadStrings(content.ui); setCurrency(content.currency);
+  try { setLanguage(localStorage.getItem(LANG) || localStorage.getItem('asha-language') || 'en'); } catch { setLanguage('en'); }
+  $('lang').onclick = () => {
+    setLanguage(getLanguage() === 'en' ? 'sw' : 'en');
+    try { localStorage.setItem(LANG, getLanguage()); } catch { /* language still works without storage */ }
+    render();
+  };
+  $('retry').onclick = async () => { try { await store.open(); } catch { /* persist shows the error */ } await persist(); render(); };
+  $('reload').onclick = () => location.reload();
+  $('skip').onclick = stop;
+  let saved = null;
+  try { await store.open(); saved = await store.active(); } catch { status = 'failed'; }
+  if (saved) load(saved);
+  else { rec = newRecord(1); await persist(); }
+  await refreshRuns();
+  legacyFound = await store.legacy();
+  render();
+  checkOffline().catch(() => {});
+}
+init().catch(() => { $('main').textContent = 'Could not open the game. Reconnect and reload. / Mchezo haujafunguka. Unganisha intaneti na upakie upya.'; });
+
+  return {  };
+})();
+})();
+</script>

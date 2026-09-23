@@ -9,9 +9,10 @@ will not resolve on a public checkout.
 
 Start with the background note. Everything else is downstream of it.
 
-**Current redesign draft:** [MV-BS-DES-002 — one continuous business](./MV-BS-DES-002-continuous-business-pipeline.md).
-This consolidated proposal and ADR-0014 await owner review. The existing game-design
-and arc documents below describe the inherited experience; the new design is not implemented.
+**Current design:** [MV-BS-DES-002 — one continuous business](./MV-BS-DES-002-continuous-business-pipeline.md).
+The owner accepted this direction under ADR-0014. A local implementation has passed its software checks. The earlier chapter documents remain for their preserved games.
+[ADR-0015](./adr/0015-season-records-and-preserved-games.md) specifies the separate
+season record and its limits. No learner or deployment acceptance follows from this build.
 
 | # | Document | What it covers |
 |---|---|---|

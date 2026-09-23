@@ -16,6 +16,7 @@ const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
 const entry = JSON.parse(read('app/content/game.json'));
 const strings = JSON.parse(read('app/content/ui.json'));
 const entryStrings = entry.ui;
+const seasonStrings = JSON.parse(read('app/content/season.json')).ui;
 
 // Every chapter in the manifest, not one hardcoded file (ADR-0007). A chapter that has
 // not been authored yet is reported and skipped rather than crashing the check — the
@@ -37,7 +38,7 @@ const fail = (msg) => { console.log(`  FAIL ${msg}`); problems += 1; };
 // --- every entry carries every language ----------------------------------
 
 console.log('\nui.json — language coverage:');
-const allStrings = { ...strings, ...entryStrings };
+const allStrings = { ...strings, ...entryStrings, ...seasonStrings };
 const keys = Object.keys(allStrings).filter((k) => !k.startsWith('_'));
 for (const key of keys) {
   const entry = allStrings[key];
@@ -87,7 +88,7 @@ const known = new Set(keys);
 const pluralCategories = ['one', 'other', 'zero', 'two', 'few', 'many'];
 
 for (const [key, file] of requested) {
-  const table = file === 'entry.js' ? entryStrings : strings;
+  const table = file === 'game.js' ? seasonStrings : file === 'entry.js' ? entryStrings : strings;
   if (Object.hasOwn(table, key)) continue;
   if (pluralCategories.some((c) => known.has(`${key}.${c}`))) continue;
   fail(`${file} asks for "${key}", which ui.json does not define`);

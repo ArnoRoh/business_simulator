@@ -1,0 +1,1703 @@
+{
+  "_comment": "Continuous season text (MV-BS-DES-002). Numbers live in app/js/season.js SAMPLE and are unverified samples. Kiswahili is a draft for native review (Q-044).",
+  "id": "mandazi-season",
+  "version": 1,
+  "currency": "TZS",
+  "unverified": true,
+  "ui": {
+    "title": {
+      "en": "The mandazi stall",
+      "sw": "Kibanda cha mandazi"
+    },
+    "sub": {
+      "en": "One season · sample figures",
+      "sw": "Msimu mmoja · takwimu za mfano"
+    },
+    "otherLang": {
+      "en": "Kiswahili",
+      "sw": "English"
+    },
+    "cash": {
+      "en": "Cash",
+      "sw": "Pesa"
+    },
+    "profit": {
+      "en": "Last profit",
+      "sw": "Faida iliyopita"
+    },
+    "sales": {
+      "en": "Last sales",
+      "sw": "Mauzo yaliyopita"
+    },
+    "week": {
+      "en": "Week {n} of {total}",
+      "sw": "Wiki {n} kati ya {total}"
+    },
+    "hours": {
+      "en": "Your hours: {n} a week",
+      "sw": "Saa zako: {n} kwa wiki"
+    },
+    "nextDue": {
+      "en": "Home: {amount} · week {n}",
+      "sw": "Nyumbani: {amount} · wiki {n}"
+    },
+    "calendar": {
+      "en": "Season calendar",
+      "sw": "Kalenda ya msimu"
+    },
+    "cal.pay": {
+      "en": "Household payment",
+      "sw": "Malipo ya nyumbani"
+    },
+    "cal.away": {
+      "en": "You travel",
+      "sw": "Unasafiri"
+    },
+    "cal.close": {
+      "en": "Month review",
+      "sw": "Tathmini ya mwezi"
+    },
+    "cal.invoice": {
+      "en": "Money due to you",
+      "sw": "Pesa unayodai inafika"
+    },
+    "scene": {
+      "en": "Stall: {pots} pots, {trays} trays a day, {packs} packs in stock, {papers} unpaid invoices.",
+      "sw": "Kibanda: sufuria {pots}, trei {trays} kwa siku, pakiti {packs} stoo, ankara {papers} hazijalipwa."
+    },
+    "buy": {
+      "en": "Buy",
+      "sw": "Nunua"
+    },
+    "cook": {
+      "en": "Cook",
+      "sw": "Pika"
+    },
+    "sell": {
+      "en": "Sell",
+      "sw": "Uza"
+    },
+    "collect": {
+      "en": "Collect",
+      "sw": "Kusanya"
+    },
+    "money": {
+      "en": "Household and loans",
+      "sw": "Nyumbani na mikopo"
+    },
+    "stock": {
+      "en": "{n} packs in stock. One pack makes one tray.",
+      "sw": "Pakiti {n} stoo. Pakiti moja ni trei moja."
+    },
+    "packPrice": {
+      "en": "Pack price now: {amount}",
+      "sw": "Bei ya pakiti sasa: {amount}"
+    },
+    "payWith": {
+      "en": "Pay for packs",
+      "sw": "Lipia pakiti"
+    },
+    "pay.cash": {
+      "en": "Cash",
+      "sw": "Taslimu"
+    },
+    "pay.credit": {
+      "en": "Supplier credit, pay in 2 weeks",
+      "sw": "Mkopo wa msambazaji, lipa baada ya wiki 2"
+    },
+    "buyFor": {
+      "en": "Keep stock for",
+      "sw": "Weka stoo ya"
+    },
+    "buyWeeks.1": {
+      "en": "1 week",
+      "sw": "Wiki 1"
+    },
+    "buyWeeks.2": {
+      "en": "2 weeks, cheaper packs",
+      "sw": "Wiki 2, pakiti nafuu"
+    },
+    "supplierOwed": {
+      "en": "You owe Mzee Bakari {amount}.",
+      "sw": "Unadaiwa na Mzee Bakari {amount}."
+    },
+    "blocked": {
+      "en": "Mzee Bakari gives no credit until he is paid.",
+      "sw": "Mzee Bakari hatoi mkopo hadi alipwe."
+    },
+    "trays": {
+      "en": "Trays a day",
+      "sw": "Trei kwa siku"
+    },
+    "less": {
+      "en": "Less",
+      "sw": "Punguza"
+    },
+    "more": {
+      "en": "More",
+      "sw": "Ongeza"
+    },
+    "canCook": {
+      "en": "You can cook up to {n} trays a day.",
+      "sw": "Unaweza kupika hadi trei {n} kwa siku."
+    },
+    "by.pots": {
+      "en": "Your pots set this limit.",
+      "sw": "Sufuria zako zinaweka kikomo hiki."
+    },
+    "by.hours": {
+      "en": "Cooking hours set this limit.",
+      "sw": "Saa za kupika zinaweka kikomo hiki."
+    },
+    "ordersNeed": {
+      "en": "Your regular buyers take {n} trays a day.",
+      "sw": "Wateja wako wa kawaida wanachukua trei {n} kwa siku."
+    },
+    "pots": {
+      "en": "Pots: {n}",
+      "sw": "Sufuria: {n}"
+    },
+    "buyPot": {
+      "en": "Buy a pot ({amount})",
+      "sw": "Nunua sufuria ({amount})"
+    },
+    "sellPot": {
+      "en": "Sell a pot for {amount}",
+      "sw": "Uza sufuria kwa {amount}"
+    },
+    "helper": {
+      "en": "Juma cooks at dawn. Wage {amount} a week.",
+      "sw": "Juma anapika alfajiri. Mshahara {amount} kwa wiki."
+    },
+    "training": {
+      "en": "Juma is training this week.",
+      "sw": "Juma yuko mafunzoni wiki hii."
+    },
+    "checks": {
+      "en": "Checks on Juma's work",
+      "sw": "Ukaguzi wa kazi ya Juma"
+    },
+    "check.none": {
+      "en": "No check",
+      "sw": "Bila ukaguzi"
+    },
+    "check.batch": {
+      "en": "Count each batch (2 h)",
+      "sw": "Hesabu kila kundi (saa 2)"
+    },
+    "check.every": {
+      "en": "Check every piece (6 h)",
+      "sw": "Kagua kila kipande (saa 6)"
+    },
+    "price": {
+      "en": "Price per piece",
+      "sw": "Bei kwa kipande"
+    },
+    "price.low": {
+      "en": "Low",
+      "sw": "Chini"
+    },
+    "price.normal": {
+      "en": "Normal",
+      "sw": "Kawaida"
+    },
+    "price.high": {
+      "en": "High",
+      "sw": "Juu"
+    },
+    "buyers": {
+      "en": "Who buys",
+      "sw": "Wanaonunua"
+    },
+    "ch.stall": {
+      "en": "Walk-in customers at the bus stand",
+      "sw": "Wateja wa stendi ya basi"
+    },
+    "ch.office": {
+      "en": "Office: chai and mandazi at 10:00, cash",
+      "sw": "Ofisi: chai na mandazi saa 4, taslimu"
+    },
+    "ch.school": {
+      "en": "School: {n} pieces a day, paid 4 weeks later",
+      "sw": "Shule: vipande {n} kwa siku, malipo baada ya wiki 4"
+    },
+    "ch.kiosk": {
+      "en": "Kiosk: {n} pieces a day, paid next week",
+      "sw": "Kioski: vipande {n} kwa siku, malipo wiki ijayo"
+    },
+    "ch.credit": {
+      "en": "{who}: 5 pieces a day on credit",
+      "sw": "{who}: vipande 5 kwa siku kwa mkopo"
+    },
+    "owed": {
+      "en": "Owed to you",
+      "sw": "Unaodai"
+    },
+    "nobody": {
+      "en": "Nobody owes you money.",
+      "sw": "Hakuna anayekudai."
+    },
+    "due": {
+      "en": "{amount}, due week {n}",
+      "sw": "{amount}, inalipwa wiki ya {n}"
+    },
+    "dueLate": {
+      "en": "{amount}, late since week {n}",
+      "sw": "{amount}, imechelewa tangu wiki ya {n}"
+    },
+    "dueUnknown": {
+      "en": "{amount}, date not written down",
+      "sw": "{amount}, tarehe haikuandikwa"
+    },
+    "chase": {
+      "en": "Ask {who} to pay (1 h)",
+      "sw": "Mwombe {who} alipe (saa 1)"
+    },
+    "creditOff": {
+      "en": "Stop credit for {who}",
+      "sw": "Sitisha mkopo kwa {who}"
+    },
+    "creditOn": {
+      "en": "Allow credit for {who}",
+      "sw": "Ruhusu mkopo kwa {who}"
+    },
+    "notebook": {
+      "en": "Notebook: customers, dates, deliveries. 2 evening hours a week.",
+      "sw": "Daftari: wateja, tarehe, mizigo. Saa 2 za jioni kwa wiki."
+    },
+    "notebookOn": {
+      "en": "Keep the notebook",
+      "sw": "Tunza daftari"
+    },
+    "notebookOff": {
+      "en": "Stop the notebook",
+      "sw": "Acha daftari"
+    },
+    "household": {
+      "en": "Household money each week",
+      "sw": "Pesa ya nyumbani kila wiki"
+    },
+    "unmet": {
+      "en": "Household money not paid so far: {amount}",
+      "sw": "Pesa ya nyumbani isiyolipwa hadi sasa: {amount}"
+    },
+    "loan": {
+      "en": "Loan: {amount} left. Each week {principal} plus {interest} interest.",
+      "sw": "Mkopo: {amount} umebaki. Kila wiki {principal} pamoja na riba {interest}."
+    },
+    "borrow": {
+      "en": "Borrow {amount} from the savings group",
+      "sw": "Kopa {amount} kutoka kikundi cha akiba"
+    },
+    "terms": {
+      "en": "Sample terms: repay {principal} a week plus {interest} interest.",
+      "sw": "Masharti ya mfano: lipa {principal} kwa wiki pamoja na riba {interest}."
+    },
+    "repay": {
+      "en": "Repay the loan now ({amount})",
+      "sw": "Lipa mkopo sasa ({amount})"
+    },
+    "arrears": {
+      "en": "Unpaid: {who} {amount}, due week {n}",
+      "sw": "Deni: {who} {amount}, linalipwa wiki ya {n}"
+    },
+    "closeBiz": {
+      "en": "Close the business",
+      "sw": "Funga biashara"
+    },
+    "closeAsk": {
+      "en": "Close the business for good? Its account stays in your record.",
+      "sw": "Funga biashara kabisa? Hesabu zake zitabaki kwenye rekodi yako."
+    },
+    "closed": {
+      "en": "The business is closed. Its full account stays in your record.",
+      "sw": "Biashara imefungwa. Hesabu zake zote zinabaki kwenye rekodi yako."
+    },
+    "run": {
+      "en": "Run week {n}",
+      "sw": "Endesha wiki ya {n}"
+    },
+    "runUntil": {
+      "en": "Run until something needs me",
+      "sw": "Endesha hadi kitu kinihitaji"
+    },
+    "help": {
+      "en": "What limited last week?",
+      "sw": "Nini kilizuia wiki iliyopita?"
+    },
+    "helpNote": {
+      "en": "Using help is noted in your record. It is not a penalty.",
+      "sw": "Msaada unaotumia unaandikwa kwenye rekodi. Si adhabu."
+    },
+    "limit.buy": {
+      "en": "Buying: the tin and credit could not pay for all the packs.",
+      "sw": "Kununua: pesa na mkopo havikutosha kwa pakiti zote."
+    },
+    "limit.pots": {
+      "en": "Cooking: your pots were full. Customers left without food.",
+      "sw": "Kupika: sufuria zilijaa. Wateja waliondoka bila chakula."
+    },
+    "limit.hours": {
+      "en": "Cooking: nobody had more hours to cook.",
+      "sw": "Kupika: hakuna aliyekuwa na saa zaidi za kupika."
+    },
+    "limit.plan": {
+      "en": "Cooking: customers wanted more than you planned to cook.",
+      "sw": "Kupika: wateja walitaka zaidi ya ulichopanga kupika."
+    },
+    "limit.demand": {
+      "en": "Selling: food was left over. Fewer people wanted it at this price.",
+      "sw": "Kuuza: chakula kilibaki. Watu wachache walikitaka kwa bei hii."
+    },
+    "limit.collect": {
+      "en": "Collecting: customers owe you more than the tin holds.",
+      "sw": "Kukusanya: wateja wanadaiwa zaidi ya pesa iliyo kwenye kopo."
+    },
+    "limit.none": {
+      "en": "No single stage held the business back last week.",
+      "sw": "Hakuna hatua moja iliyozuia biashara wiki iliyopita."
+    },
+    "start": {
+      "en": "Your stall, one pot. Earn a living and meet your promises.",
+      "sw": "Kibanda chako, sufuria moja. Pata riziki na timiza ahadi zako."
+    },
+    "goalLine": {
+      "en": "Earn a living and meet your promises.",
+      "sw": "Pata riziki na timiza ahadi zako."
+    },
+    "weekLine": {
+      "en": "Week {n}: sales {sales}, profit {profit}, tin {cash}",
+      "sw": "Wiki {n}: mauzo {sales}, faida {profit}, kopo {cash}"
+    },
+    "result": {
+      "en": "Week {n} result",
+      "sw": "Matokeo ya wiki ya {n}"
+    },
+    "tin": {
+      "en": "Tin: {start} to {end}",
+      "sw": "Kopo: {start} hadi {end}"
+    },
+    "compare": {
+      "en": "Profit {profit}. The tin changed by {change}.",
+      "sw": "Faida {profit}. Kopo limebadilika kwa {change}."
+    },
+    "whereCash": {
+      "en": "Where the cash went",
+      "sw": "Pesa ilikwenda wapi"
+    },
+    "howProfit": {
+      "en": "How the profit was made",
+      "sw": "Faida ilipatikanaje"
+    },
+    "byDay": {
+      "en": "Day by day",
+      "sw": "Siku kwa siku"
+    },
+    "day": {
+      "en": "Day {n}",
+      "sw": "Siku {n}"
+    },
+    "dayLine": {
+      "en": "Day {n}: cooked {made} trays, sold {sold} at the stall, {away} customers turned away, {waste} pieces left over.",
+      "sw": "Siku {n}: trei {made} zimepikwa, {sold} zimeuzwa kibandani, wateja {away} wamekosa, vipande {waste} vimebaki."
+    },
+    "soldOut": {
+      "en": "Sold out",
+      "sw": "Imeisha"
+    },
+    "skip": {
+      "en": "Skip",
+      "sw": "Ruka"
+    },
+    "flow.sales": {
+      "en": "Cash sales",
+      "sw": "Mauzo ya taslimu"
+    },
+    "flow.collected": {
+      "en": "Customers paid what they owed",
+      "sw": "Wateja walilipa madeni"
+    },
+    "flow.borrowed": {
+      "en": "Borrowed",
+      "sw": "Mkopo uliopokelewa"
+    },
+    "flow.equipmentSold": {
+      "en": "Equipment sold",
+      "sw": "Vifaa vilivyouzwa"
+    },
+    "flow.supplies": {
+      "en": "Packs paid in cash",
+      "sw": "Pakiti zilizolipwa taslimu"
+    },
+    "flow.supplier": {
+      "en": "Paid to Mzee Bakari",
+      "sw": "Malipo kwa Mzee Bakari"
+    },
+    "flow.arrears": {
+      "en": "Old unpaid bills paid",
+      "sw": "Madeni ya zamani yamelipwa"
+    },
+    "flow.costs": {
+      "en": "Costs paid",
+      "sw": "Gharama zilizolipwa"
+    },
+    "flow.equipment": {
+      "en": "Equipment bought",
+      "sw": "Vifaa vilivyonunuliwa"
+    },
+    "flow.principal": {
+      "en": "Loan repaid",
+      "sw": "Mkopo uliolipwa"
+    },
+    "flow.household": {
+      "en": "Household money",
+      "sw": "Pesa ya nyumbani"
+    },
+    "pnl.revenue": {
+      "en": "Sales, paid or not",
+      "sw": "Mauzo, yaliyolipwa au la"
+    },
+    "pnl.materials": {
+      "en": "Packs cooked",
+      "sw": "Pakiti zilizopikwa"
+    },
+    "pnl.chai": {
+      "en": "Tea and cups",
+      "sw": "Chai na vikombe"
+    },
+    "pnl.fee": {
+      "en": "Stall fee and fuel",
+      "sw": "Ada ya kibanda na mafuta"
+    },
+    "pnl.wages": {
+      "en": "Wages",
+      "sw": "Mishahara"
+    },
+    "pnl.interest": {
+      "en": "Interest",
+      "sw": "Riba"
+    },
+    "pnl.depreciation": {
+      "en": "Equipment wear",
+      "sw": "Uchakavu wa vifaa"
+    },
+    "pnl.other": {
+      "en": "Other costs",
+      "sw": "Gharama nyingine"
+    },
+    "note.soldOut": {
+      "en": "Sold out on {n} of 6 days.",
+      "sw": "Imeisha siku {n} kati ya 6."
+    },
+    "note.waste": {
+      "en": "{n} pieces left over and thrown away.",
+      "sw": "Vipande {n} vilibaki na kutupwa."
+    },
+    "note.invoice": {
+      "en": "{who} owes {amount} for this week, due week {n}.",
+      "sw": "{who} anadaiwa {amount} kwa wiki hii, inalipwa wiki ya {n}."
+    },
+    "note.collected": {
+      "en": "{who} paid {amount} for week {n}.",
+      "sw": "{who} amelipa {amount} ya wiki ya {n}."
+    },
+    "note.late": {
+      "en": "{who} did not pay on time.",
+      "sw": "{who} hakulipa kwa wakati."
+    },
+    "note.householdShort": {
+      "en": "The tin could not pay all the household money: {amount} short.",
+      "sw": "Kopo halikutosha pesa yote ya nyumbani: pungufu {amount}."
+    },
+    "note.blocked": {
+      "en": "Mzee Bakari was not paid on time and stopped credit.",
+      "sw": "Mzee Bakari hakulipwa kwa wakati akasitisha mkopo."
+    },
+    "note.schoolShort": {
+      "en": "The school got less than it ordered.",
+      "sw": "Shule ilipata chini ya ilichoagiza."
+    },
+    "note.schoolLost": {
+      "en": "The school stopped ordering.",
+      "sw": "Shule iliacha kuagiza."
+    },
+    "note.kioskShort": {
+      "en": "The kiosk got less than it ordered.",
+      "sw": "Kioski kilipata chini ya kilichoagiza."
+    },
+    "note.kioskLost": {
+      "en": "The kiosk stopped ordering.",
+      "sw": "Kioski kiliacha kuagiza."
+    },
+    "note.rejected": {
+      "en": "The school did not accept {n} pieces.",
+      "sw": "Shule haikukubali vipande {n}."
+    },
+    "note.trial": {
+      "en": "Office trial: on a usual day {paid} of the {invited} people who were interested paid.",
+      "sw": "Jaribio la ofisi: siku ya kawaida watu {paid} kati ya {invited} waliopendezwa walilipa."
+    },
+    "note.away": {
+      "en": "You were away this week.",
+      "sw": "Hukuwepo wiki hii."
+    },
+    "cashWarning": {
+      "en": "The tin cannot pay for next week's packs and household money.",
+      "sw": "Kopo haliwezi kulipia pakiti za wiki ijayo na pesa ya nyumbani."
+    },
+    "outcomeTitle": {
+      "en": "You chose",
+      "sw": "Umechagua"
+    },
+    "unavailable": {
+      "en": "Not possible now",
+      "sw": "Haiwezekani sasa"
+    },
+    "needsTitle": {
+      "en": "What this order needs",
+      "sw": "Oda hii inahitaji nini"
+    },
+    "needs.trays": {
+      "en": "Trays a day with this order: {trays}. You can cook {cap} now.",
+      "sw": "Trei kwa siku na oda hii: {trays}. Sasa unaweza kupika {cap}."
+    },
+    "needs.cash": {
+      "en": "Extra packs, and a wage if you need help, before the first payment: about {amount} over {n} weeks. Your other costs and payments continue.",
+      "sw": "Pakiti za ziada, na mshahara ukihitaji msaada, kabla ya malipo ya kwanza: karibu {amount} kwa wiki {n}. Gharama na malipo yako mengine yanaendelea."
+    },
+    "needs.hours": {
+      "en": "Delivery: {n} of your hours a week.",
+      "sw": "Kupeleka: saa zako {n} kwa wiki."
+    },
+    "needs.inspection": {
+      "en": "Food-hygiene inspection {amount}. Sample figure, not a checked local rule.",
+      "sw": "Ukaguzi wa usafi wa chakula {amount}. Takwimu ya mfano, si kanuni iliyohakikiwa."
+    },
+    "needs.have": {
+      "en": "In the tin now: {amount}.",
+      "sw": "Kwenye kopo sasa: {amount}."
+    },
+    "review": {
+      "en": "Month {n} review",
+      "sw": "Tathmini ya mwezi {n}"
+    },
+    "seasonReview": {
+      "en": "Season review",
+      "sw": "Tathmini ya msimu"
+    },
+    "continue": {
+      "en": "Continue trading",
+      "sw": "Endelea kufanya biashara"
+    },
+    "threads": {
+      "en": "What led to what",
+      "sw": "Nini kilileta nini"
+    },
+    "goal": {
+      "en": "Choose a goal. You can change it at any month review. No goal is worth more than another.",
+      "sw": "Chagua lengo. Unaweza kulibadilisha kila tathmini ya mwezi. Hakuna lengo lenye thamani zaidi."
+    },
+    "goal.income": {
+      "en": "Steady money for home",
+      "sw": "Pesa ya nyumbani kila wiki"
+    },
+    "goal.customers": {
+      "en": "Regular business customers",
+      "sw": "Wateja wa kibiashara wa kudumu"
+    },
+    "goal.away": {
+      "en": "A business that runs without you",
+      "sw": "Biashara inayoendelea bila wewe"
+    },
+    "goalNow.income": {
+      "en": "{a} of 8 full weekly payments; cash equals {b} of 4 household payments before business bills.",
+      "sw": "Malipo {a} kati ya 8 ya wiki yametimizwa; pesa ni sawa na malipo {b} kati ya 4 ya nyumbani kabla ya madeni ya biashara."
+    },
+    "goalNow.customers": {
+      "en": "{a} of 3 business customers buying.",
+      "sw": "Wateja {a} kati ya 3 wa kibiashara wananunua."
+    },
+    "goalNow.away": {
+      "en": "{a} of 1 week with sales while you were away, with the notebook kept and Juma's work checked.",
+      "sw": "Wiki {a} kati ya 1 yenye mauzo ukiwa safarini, daftari likitunzwa na kazi ya Juma ikikaguliwa."
+    },
+    "reached": {
+      "en": "Reached",
+      "sw": "Limefikiwa"
+    },
+    "yourGoal": {
+      "en": "Your goal: {goal}",
+      "sw": "Lengo lako: {goal}"
+    },
+    "f.sales": {
+      "en": "Sales",
+      "sw": "Mauzo"
+    },
+    "f.profit": {
+      "en": "Profit",
+      "sw": "Faida"
+    },
+    "f.cash": {
+      "en": "Cash in the tin",
+      "sw": "Pesa kwenye kopo"
+    },
+    "f.stock": {
+      "en": "Packs in stock (value)",
+      "sw": "Pakiti stoo (thamani)"
+    },
+    "f.owedToYou": {
+      "en": "Owed to you",
+      "sw": "Unaodai"
+    },
+    "f.owedByYou": {
+      "en": "You owe",
+      "sw": "Unadaiwa"
+    },
+    "f.household": {
+      "en": "Weeks household money paid in full",
+      "sw": "Wiki pesa ya nyumbani ililipwa kamili"
+    },
+    "f.unmet": {
+      "en": "Household money and payments not met",
+      "sw": "Pesa ya nyumbani na malipo yasiyotimizwa"
+    },
+    "f.hours": {
+      "en": "Your hours a week, last 4 weeks",
+      "sw": "Saa zako kwa wiki, wiki 4 zilizopita"
+    },
+    "f.business": {
+      "en": "Business customers",
+      "sw": "Wateja wa kibiashara"
+    },
+    "f.away": {
+      "en": "Weeks traded without you",
+      "sw": "Wiki za biashara bila wewe"
+    },
+    "f.people": {
+      "en": "Helpers hired (unpaid wages appear in debts)",
+      "sw": "Wasaidizi walioajiriwa (mishahara isiyolipwa inaonyeshwa kwenye madeni)"
+    },
+    "f.drawings": {
+      "en": "Taken home in total",
+      "sw": "Jumla uliyopeleka nyumbani"
+    },
+    "limits": {
+      "en": "These are facts from this game, not a score. Sample figures. They do not predict how a real business will do.",
+      "sw": "Hizi ni taarifa kutoka mchezo huu, si alama. Takwimu za mfano. Hazitabiri biashara halisi itakavyokwenda."
+    },
+    "thread.collected": {
+      "en": "Week {from} sale: {who} paid {amount} in week {week}.",
+      "sw": "Mauzo ya wiki ya {from}: {who} alilipa {amount} wiki ya {week}."
+    },
+    "thread.trial": {
+      "en": "Week {week}: in the office trial {paid} of {invited} people paid on a usual day.",
+      "sw": "Wiki ya {week}: katika jaribio la ofisi watu {paid} kati ya {invited} walilipa siku ya kawaida."
+    },
+    "thread.borrowed": {
+      "en": "Week {week}: you borrowed {amount}.",
+      "sw": "Wiki ya {week}: ulikopa {amount}."
+    },
+    "thread.loanRepaid": {
+      "en": "Week {week}: the loan was repaid.",
+      "sw": "Wiki ya {week}: mkopo ulilipwa."
+    },
+    "thread.paymentPaid": {
+      "en": "Week {week}: the household payment of {amount} was paid on time.",
+      "sw": "Wiki ya {week}: malipo ya nyumbani {amount} yalilipwa kwa wakati."
+    },
+    "thread.paymentLate": {
+      "en": "Week {week}: the household payment due in week {from} was paid late.",
+      "sw": "Wiki ya {week}: malipo ya nyumbani ya wiki ya {from} yalilipwa kwa kuchelewa."
+    },
+    "thread.paymentMissed": {
+      "en": "Week {week}: {amount} of the household payment was not met.",
+      "sw": "Wiki ya {week}: {amount} ya malipo ya nyumbani hayakutimizwa."
+    },
+    "thread.supplierBlocked": {
+      "en": "Week {week}: a bill to Mzee Bakari from week {from} was unpaid, so he stopped credit.",
+      "sw": "Wiki ya {week}: deni la Mzee Bakari la wiki ya {from} halikulipwa, akasitisha mkopo."
+    },
+    "thread.schoolStart": {
+      "en": "Week {week}: the school order began, {pieces} pieces a day.",
+      "sw": "Wiki ya {week}: oda ya shule ilianza, vipande {pieces} kwa siku."
+    },
+    "thread.schoolTrialDone": {
+      "en": "Week {week}: the school paid {amount} for the trial week.",
+      "sw": "Wiki ya {week}: shule ililipa {amount} kwa wiki ya majaribio."
+    },
+    "thread.schoolLost": {
+      "en": "Week {week}: after short deliveries, the school stopped ordering.",
+      "sw": "Wiki ya {week}: baada ya kupeleka pungufu, shule iliacha kuagiza."
+    },
+    "thread.kioskLost": {
+      "en": "Week {week}: the kiosk stopped ordering.",
+      "sw": "Wiki ya {week}: kioski kiliacha kuagiza."
+    },
+    "thread.awayCovered": {
+      "en": "Week {week}: the business traded while you were away.",
+      "sw": "Wiki ya {week}: biashara iliendelea ukiwa safarini."
+    },
+    "thread.awayClosed": {
+      "en": "Week {week}: you closed while away and told customers.",
+      "sw": "Wiki ya {week}: ulifunga ukiwa safarini na uliwaambia wateja."
+    },
+    "thread.awayMissed": {
+      "en": "Week {week}: nobody ran the stall while you were away.",
+      "sw": "Wiki ya {week}: hakuna aliyeendesha kibanda ukiwa safarini."
+    },
+    "who.neema": {
+      "en": "Mama Neema",
+      "sw": "Mama Neema"
+    },
+    "who.baraka": {
+      "en": "Baraka",
+      "sw": "Baraka"
+    },
+    "who.zawadi": {
+      "en": "Bi Zawadi",
+      "sw": "Bi Zawadi"
+    },
+    "who.school": {
+      "en": "The school",
+      "sw": "Shule"
+    },
+    "who.kiosk": {
+      "en": "The kiosk",
+      "sw": "Kioski"
+    },
+    "who.bakari": {
+      "en": "Mzee Bakari",
+      "sw": "Mzee Bakari"
+    },
+    "who.juma": {
+      "en": "Juma's wage",
+      "sw": "Mshahara wa Juma"
+    },
+    "who.lender": {
+      "en": "Savings group",
+      "sw": "Kikundi cha akiba"
+    },
+    "who.fee": {
+      "en": "Stall fee",
+      "sw": "Ada ya kibanda"
+    },
+    "saved.ok": {
+      "en": "Saved on this phone",
+      "sw": "Imehifadhiwa kwenye simu hii"
+    },
+    "saved.failed": {
+      "en": "Not saved. Your last step is still on screen.",
+      "sw": "Haijahifadhiwa. Hatua yako ya mwisho bado iko kwenye skrini."
+    },
+    "saved.conflict": {
+      "en": "This run changed in another tab. Reload to continue.",
+      "sw": "Mchezo huu umebadilika kwenye kichupo kingine. Pakia upya kuendelea."
+    },
+    "retry": {
+      "en": "Try saving again",
+      "sw": "Jaribu kuhifadhi tena"
+    },
+    "reload": {
+      "en": "Reload",
+      "sw": "Pakia upya"
+    },
+    "unreadable": {
+      "en": "This record does not match this version of the game. It is kept. Download it, or start a new run.",
+      "sw": "Rekodi hii hailingani na toleo hili la mchezo. Imehifadhiwa. Ipakue, au anza mchezo mpya."
+    },
+    "offline.ready": {
+      "en": "Ready to play offline",
+      "sw": "Tayari kucheza bila intaneti"
+    },
+    "offline.no": {
+      "en": "Offline play is not ready yet",
+      "sw": "Kucheza bila intaneti bado hakuko tayari"
+    },
+    "export": {
+      "en": "Download my record",
+      "sw": "Pakua rekodi yangu"
+    },
+    "runs": {
+      "en": "My runs on this phone",
+      "sw": "Michezo yangu kwenye simu hii"
+    },
+    "runLabel": {
+      "en": "Run {n}: week {w}",
+      "sw": "Mchezo {n}: wiki {w}"
+    },
+    "open": {
+      "en": "Open",
+      "sw": "Fungua"
+    },
+    "delete": {
+      "en": "Delete",
+      "sw": "Futa"
+    },
+    "deleteAsk": {
+      "en": "Delete this run from this phone? This cannot be undone.",
+      "sw": "Futa mchezo huu kwenye simu hii? Haiwezi kurudishwa."
+    },
+    "newRun": {
+      "en": "Start a new run",
+      "sw": "Anza mchezo mpya"
+    },
+    "newRunAsk": {
+      "en": "Start a new run? This run stays saved. A later run is different evidence, because you know the game.",
+      "sw": "Anza mchezo mpya? Huu utabaki. Mchezo wa baadaye ni ushahidi tofauti, kwa sababu unaujua mchezo."
+    },
+    "earlier": {
+      "en": "Earlier games",
+      "sw": "Michezo ya awali"
+    },
+    "earlierFound": {
+      "en": "An earlier game is saved on this phone. It is kept and you can continue it.",
+      "sw": "Mchezo wa awali umehifadhiwa kwenye simu hii. Umetunzwa na unaweza kuuendeleza."
+    },
+    "intro": {
+      "en": "The 5-day introduction",
+      "sw": "Utangulizi wa siku 5"
+    },
+    "chapters": {
+      "en": "The four chapters",
+      "sw": "Sura nne"
+    },
+    "offlineFile": {
+      "en": "Download the offline file",
+      "sw": "Pakua faili la nje ya mtandao"
+    },
+    "sample": {
+      "en": "Sample figures for testing. They are not checked local prices.",
+      "sw": "Takwimu za mfano kwa majaribio. Si bei za eneo zilizohakikiwa."
+    },
+    "draft": {
+      "en": "The Kiswahili text is a draft for review.",
+      "sw": "Maandishi ya Kiswahili ni rasimu ya kukaguliwa."
+    },
+    "privacy": {
+      "en": "Your record stays on this phone. Nothing is sent.",
+      "sw": "Rekodi yako inabaki kwenye simu hii. Hakuna kinachotumwa."
+    },
+    "error": {
+      "en": "Could not open the game. Reconnect and reload.",
+      "sw": "Mchezo haujafunguka. Unganisha intaneti na upakie upya."
+    },
+    "standingPlan": {
+      "en": "Daily: {trays} trays at {price} a piece. Home: {home} a week.",
+      "sw": "Kila siku: trei {trays}, {price} kwa kipande. Nyumbani: {home} kwa wiki."
+    },
+    "unsavedLeave": {
+      "en": "This step is not saved. Download your record before leaving. Leave it now?",
+      "sw": "Hatua hii haijahifadhiwa. Pakua rekodi kabla ya kuondoka. Uondoke sasa?"
+    },
+    "chasePaid": {
+      "en": "{who} paid {amount}. Following up took one hour.",
+      "sw": "{who} amelipa {amount}. Ufuatiliaji ulichukua saa moja."
+    },
+    "chaseWaiting": {
+      "en": "{who} has not paid. Following up took one hour; the amount is still owed.",
+      "sw": "{who} hajalipa. Ufuatiliaji ulichukua saa moja; deni bado lipo."
+    },
+    "recordsTools": {
+      "en": "Records, offline file and earlier games",
+      "sw": "Rekodi, faili la nje ya mtandao na michezo ya awali"
+    },
+    "trainHelper": {
+      "en": "Train Juma this week ({amount})",
+      "sw": "Mfundishe Juma wiki hii ({amount})"
+    },
+    "endHelper": {
+      "en": "End future shifts; keep wages owed",
+      "sw": "Sitisha zamu zijazo; deni la mshahara linabaki"
+    },
+    "weekExtra": {
+      "en": "Week {n} · continuing after the season",
+      "sw": "Wiki {n} · unaendelea baada ya msimu"
+    },
+    "moreResults": {
+      "en": "More deliveries and payments ({n})",
+      "sw": "Mizigo na malipo mengine ({n})"
+    }
+  },
+  "events": {
+    "payment": {
+      "title": {
+        "en": "A household payment is due",
+        "sw": "Malipo ya nyumbani yanadaiwa"
+      },
+      "body": {
+        "en": "This week the household must pay {amount}. The tin has {cash}.",
+        "sw": "Wiki hii nyumbani lazima walipe {amount}. Kopo lina {cash}."
+      },
+      "options": {
+        "pay": {
+          "label": {
+            "en": "Pay it from the tin",
+            "sw": "Lipa kutoka kopo"
+          },
+          "outcome": {
+            "en": "Paid. The tin is lower for next week's packs.",
+            "sw": "Imelipwa. Kopo limepungua kwa pakiti za wiki ijayo."
+          }
+        },
+        "borrow": {
+          "label": {
+            "en": "Borrow {loan} and pay",
+            "sw": "Kopa {loan} ulipe"
+          },
+          "outcome": {
+            "en": "Paid with a loan. Weekly repayments start now.",
+            "sw": "Imelipwa kwa mkopo. Marejesho ya kila wiki yanaanza sasa."
+          }
+        },
+        "defer": {
+          "label": {
+            "en": "Ask for 2 more weeks (fee {fee})",
+            "sw": "Omba wiki 2 zaidi (ada {fee})"
+          },
+          "outcome": {
+            "en": "Agreed. The payment is now due in 2 weeks.",
+            "sw": "Imekubaliwa. Malipo sasa ni baada ya wiki 2."
+          }
+        },
+        "short": {
+          "label": {
+            "en": "Pay what the tin has",
+            "sw": "Lipa kilichopo kwenye kopo"
+          },
+          "outcome": {
+            "en": "Part was paid. The rest was not met.",
+            "sw": "Sehemu imelipwa. Iliyobaki haikutimizwa."
+          }
+        }
+      }
+    },
+    "pot": {
+      "title": {
+        "en": "A second pot",
+        "sw": "Sufuria ya pili"
+      },
+      "body": {
+        "en": "The shop has a second pot for {amount}. One pot cooks at most 5 trays a day.",
+        "sw": "Duka lina sufuria ya pili kwa {amount}. Sufuria moja inapika trei 5 kwa siku zaidi."
+      },
+      "options": {
+        "buy": {
+          "label": {
+            "en": "Buy it",
+            "sw": "Inunue"
+          },
+          "outcome": {
+            "en": "You have two pots. Raise the trays when you want.",
+            "sw": "Una sufuria mbili. Ongeza trei ukitaka."
+          }
+        },
+        "later": {
+          "label": {
+            "en": "Not now",
+            "sw": "Si sasa"
+          },
+          "outcome": {
+            "en": "You can buy a pot from the Cook tile at any time.",
+            "sw": "Unaweza kununua sufuria kwenye sehemu ya Pika wakati wowote."
+          }
+        }
+      }
+    },
+    "neema": {
+      "title": {
+        "en": "Mama Neema asks for credit",
+        "sw": "Mama Neema anaomba mkopo"
+      },
+      "body": {
+        "en": "Your neighbour asks to take 5 mandazi a day and pay next week.",
+        "sw": "Jirani yako anaomba kuchukua mandazi 5 kwa siku na kulipa wiki ijayo."
+      },
+      "options": {
+        "yes": {
+          "label": {
+            "en": "Yes",
+            "sw": "Ndiyo"
+          },
+          "outcome": {
+            "en": "She takes 5 a day. It is a sale now; the money comes later.",
+            "sw": "Anachukua 5 kwa siku. Ni mauzo sasa; pesa itakuja baadaye."
+          }
+        },
+        "no": {
+          "label": {
+            "en": "No",
+            "sw": "Hapana"
+          },
+          "outcome": {
+            "en": "Only cash sales for now.",
+            "sw": "Mauzo ya taslimu tu kwa sasa."
+          }
+        }
+      }
+    },
+    "notebook": {
+      "title": {
+        "en": "Keep a notebook?",
+        "sw": "Tunza daftari?"
+      },
+      "body": {
+        "en": "A notebook keeps each customer's amount, date and delivery. It takes 2 evening hours a week. Totals stay on screen either way.",
+        "sw": "Daftari linatunza kiasi, tarehe na mzigo wa kila mteja. Linachukua saa 2 za jioni kwa wiki. Jumla zinabaki kwenye skrini hata hivyo."
+      },
+      "options": {
+        "start": {
+          "label": {
+            "en": "Start the notebook",
+            "sw": "Anza daftari"
+          },
+          "outcome": {
+            "en": "From now on, new sales on credit have dates and details.",
+            "sw": "Kuanzia sasa, mauzo mapya ya mkopo yana tarehe na maelezo."
+          }
+        },
+        "later": {
+          "label": {
+            "en": "Not now",
+            "sw": "Si sasa"
+          },
+          "outcome": {
+            "en": "You can start it from the Collect tile.",
+            "sw": "Unaweza kuanza kwenye sehemu ya Kusanya."
+          }
+        }
+      }
+    },
+    "office": {
+      "title": {
+        "en": "The office across the road",
+        "sw": "Ofisi ng'ambo ya barabara"
+      },
+      "body": {
+        "en": "20 office workers say: 'We would all buy chai and mandazi at 10:00 every day.' Saying is not paying.",
+        "sw": "Wafanyakazi 20 wa ofisi wanasema: 'Sote tungenunua chai na mandazi saa 4 kila siku.' Kusema si kulipa."
+      },
+      "options": {
+        "flask": {
+          "label": {
+            "en": "Buy a flask and cups ({flask}) and start",
+            "sw": "Nunua chupa ya chai na vikombe ({flask}) uanze"
+          },
+          "outcome": {
+            "en": "The office round starts. It takes 1 hour a day.",
+            "sw": "Mzunguko wa ofisi umeanza. Unachukua saa 1 kwa siku."
+          }
+        },
+        "trial": {
+          "label": {
+            "en": "Paid trial for one week ({trial})",
+            "sw": "Jaribio la kulipwa kwa wiki moja ({trial})"
+          },
+          "outcome": {
+            "en": "This week you sell there with a borrowed flask. You will see who pays.",
+            "sw": "Wiki hii unauza huko kwa chupa ya kuazima. Utaona nani analipa."
+          }
+        },
+        "later": {
+          "label": {
+            "en": "Not now",
+            "sw": "Si sasa"
+          },
+          "outcome": {
+            "en": "The offer stays open for two weeks.",
+            "sw": "Ofa inabaki wazi kwa wiki mbili."
+          }
+        }
+      }
+    },
+    "office2": {
+      "title": {
+        "en": "The office asks again",
+        "sw": "Ofisi inauliza tena"
+      },
+      "body": {
+        "en": "The office workers still talk about chai at 10:00. This is the last time they ask.",
+        "sw": "Wafanyakazi wa ofisi bado wanazungumzia chai saa 4. Hii ni mara ya mwisho wanauliza."
+      },
+      "options": {
+        "flask": {
+          "label": {
+            "en": "Buy a flask and cups ({flask}) and start",
+            "sw": "Nunua chupa ya chai na vikombe ({flask}) uanze"
+          },
+          "outcome": {
+            "en": "The office round starts.",
+            "sw": "Mzunguko wa ofisi umeanza."
+          }
+        },
+        "trial": {
+          "label": {
+            "en": "Paid trial for one week ({trial})",
+            "sw": "Jaribio la kulipwa kwa wiki moja ({trial})"
+          },
+          "outcome": {
+            "en": "This week you sell there. You will see who pays.",
+            "sw": "Wiki hii unauza huko. Utaona nani analipa."
+          }
+        },
+        "no": {
+          "label": {
+            "en": "No, stay with the stall",
+            "sw": "Hapana, baki na kibanda"
+          },
+          "outcome": {
+            "en": "You keep to the stall.",
+            "sw": "Unabaki na kibanda."
+          }
+        }
+      }
+    },
+    "officeResult": {
+      "title": {
+        "en": "After the office trial",
+        "sw": "Baada ya jaribio la ofisi"
+      },
+      "body": {
+        "en": "On a usual trial day {paid} of the 20 people paid. That was one week at one price. Later weeks can differ.",
+        "sw": "Siku ya kawaida ya jaribio watu {paid} kati ya 20 walilipa. Ilikuwa wiki moja kwa bei moja. Wiki zijazo zinaweza kutofautiana."
+      },
+      "options": {
+        "flask": {
+          "label": {
+            "en": "Buy a flask ({flask}) and keep going",
+            "sw": "Nunua chupa ({flask}) uendelee"
+          },
+          "outcome": {
+            "en": "The office round is now every day.",
+            "sw": "Mzunguko wa ofisi sasa ni kila siku."
+          }
+        },
+        "no": {
+          "label": {
+            "en": "Stop here",
+            "sw": "Acha hapa"
+          },
+          "outcome": {
+            "en": "You tested it and chose the stall.",
+            "sw": "Ulijaribu na ukachagua kibanda."
+          }
+        }
+      }
+    },
+    "neighbours": {
+      "title": {
+        "en": "More neighbours ask for credit",
+        "sw": "Majirani zaidi wanaomba mkopo"
+      },
+      "body": {
+        "en": "Baraka and Bi Zawadi heard about Mama Neema. They ask for the same terms.",
+        "sw": "Baraka na Bi Zawadi wamesikia kuhusu Mama Neema. Wanaomba masharti hayo hayo."
+      },
+      "options": {
+        "yes": {
+          "label": {
+            "en": "Yes to both",
+            "sw": "Ndiyo kwa wote"
+          },
+          "outcome": {
+            "en": "Three neighbours now buy on credit.",
+            "sw": "Majirani watatu sasa wananunua kwa mkopo."
+          }
+        },
+        "no": {
+          "label": {
+            "en": "No",
+            "sw": "Hapana"
+          },
+          "outcome": {
+            "en": "Only Mama Neema buys on credit.",
+            "sw": "Mama Neema pekee ananunua kwa mkopo."
+          }
+        }
+      }
+    },
+    "school": {
+      "title": {
+        "en": "The school cook",
+        "sw": "Mpishi wa shule"
+      },
+      "body": {
+        "en": "The office manager told the school about you. The school asks for {full} pieces a day at {price} each, paid 4 weeks after each week's delivery.",
+        "sw": "Meneja wa ofisi aliiambia shule kuhusu wewe. Shule inaomba vipande {full} kwa siku kwa {price} kila kimoja, malipo wiki 4 baada ya mzigo wa kila wiki."
+      },
+      "options": {
+        "full": {
+          "label": {
+            "en": "Accept the full order",
+            "sw": "Kubali oda yote"
+          },
+          "outcome": {
+            "en": "The order starts. Check your trays and cash.",
+            "sw": "Oda imeanza. Angalia trei na pesa zako."
+          }
+        },
+        "small": {
+          "label": {
+            "en": "Offer {small} pieces a day",
+            "sw": "Pendekeza vipande {small} kwa siku"
+          },
+          "outcome": {
+            "en": "The school agreed to the smaller order.",
+            "sw": "Shule imekubali oda ndogo."
+          }
+        },
+        "trial": {
+          "label": {
+            "en": "Offer one paid trial week",
+            "sw": "Pendekeza wiki moja ya majaribio ya kulipwa"
+          },
+          "outcome": {
+            "en": "This week you deliver {small} a day. The school pays at the end of the week.",
+            "sw": "Wiki hii unapeleka {small} kwa siku. Shule inalipa mwisho wa wiki."
+          }
+        },
+        "decline": {
+          "label": {
+            "en": "Decline",
+            "sw": "Kataa"
+          },
+          "outcome": {
+            "en": "You declined. That is a normal choice.",
+            "sw": "Umekataa. Ni uamuzi wa kawaida."
+          }
+        }
+      }
+    },
+    "schoolTrial": {
+      "title": {
+        "en": "After the school trial",
+        "sw": "Baada ya majaribio ya shule"
+      },
+      "body": {
+        "en": "The school paid for the trial week. It now asks for a regular order, paid 4 weeks after delivery.",
+        "sw": "Shule imelipa wiki ya majaribio. Sasa inaomba oda ya kawaida, malipo wiki 4 baada ya mzigo."
+      },
+      "options": {
+        "full": {
+          "label": {
+            "en": "Accept {full} pieces a day",
+            "sw": "Kubali vipande {full} kwa siku"
+          },
+          "outcome": {
+            "en": "The order starts.",
+            "sw": "Oda imeanza."
+          }
+        },
+        "small": {
+          "label": {
+            "en": "Offer {small} pieces a day",
+            "sw": "Pendekeza vipande {small} kwa siku"
+          },
+          "outcome": {
+            "en": "The school agreed to the smaller order.",
+            "sw": "Shule imekubali oda ndogo."
+          }
+        },
+        "decline": {
+          "label": {
+            "en": "Decline",
+            "sw": "Kataa"
+          },
+          "outcome": {
+            "en": "You declined after the trial.",
+            "sw": "Umekataa baada ya majaribio."
+          }
+        }
+      }
+    },
+    "schoolCounter": {
+      "title": {
+        "en": "The school says no to a smaller order",
+        "sw": "Shule imekataa oda ndogo"
+      },
+      "body": {
+        "en": "The cook needs {full} pieces a day from one supplier.",
+        "sw": "Mpishi anahitaji vipande {full} kwa siku kutoka kwa msambazaji mmoja."
+      },
+      "options": {
+        "full": {
+          "label": {
+            "en": "Accept the full order",
+            "sw": "Kubali oda yote"
+          },
+          "outcome": {
+            "en": "The order starts.",
+            "sw": "Oda imeanza."
+          }
+        },
+        "decline": {
+          "label": {
+            "en": "Decline",
+            "sw": "Kataa"
+          },
+          "outcome": {
+            "en": "You declined.",
+            "sw": "Umekataa."
+          }
+        }
+      }
+    },
+    "competitor": {
+      "title": {
+        "en": "A new stall opens",
+        "sw": "Kibanda kipya kimefunguliwa"
+      },
+      "body": {
+        "en": "Another mandazi seller opens near the bus stand. Some customers try her stall.",
+        "sw": "Muuzaji mwingine wa mandazi amefungua karibu na stendi. Wateja wengine wanajaribu kibanda chake."
+      },
+      "options": {
+        "lower": {
+          "label": {
+            "en": "Lower your price",
+            "sw": "Punguza bei yako"
+          },
+          "outcome": {
+            "en": "Your price is now low. Watch your profit per piece.",
+            "sw": "Bei yako sasa iko chini. Angalia faida kwa kila kipande."
+          }
+        },
+        "hold": {
+          "label": {
+            "en": "Keep your price",
+            "sw": "Baki na bei yako"
+          },
+          "outcome": {
+            "en": "You keep your price. Fewer people may come for a while.",
+            "sw": "Unabaki na bei yako. Watu wachache wanaweza kuja kwa muda."
+          }
+        }
+      }
+    },
+    "kiosk": {
+      "title": {
+        "en": "A kiosk wants mandazi",
+        "sw": "Kioski kinataka mandazi"
+      },
+      "body": {
+        "en": "The kiosk by the market asks for {pieces} pieces a day at {price}, paid the next week.",
+        "sw": "Kioski karibu na soko kinaomba vipande {pieces} kwa siku kwa {price}, malipo wiki inayofuata."
+      },
+      "options": {
+        "yes": {
+          "label": {
+            "en": "Accept",
+            "sw": "Kubali"
+          },
+          "outcome": {
+            "en": "The kiosk order starts. It takes 3 of your hours a week.",
+            "sw": "Oda ya kioski imeanza. Inachukua saa zako 3 kwa wiki."
+          }
+        },
+        "no": {
+          "label": {
+            "en": "Decline",
+            "sw": "Kataa"
+          },
+          "outcome": {
+            "en": "You declined the kiosk.",
+            "sw": "Umekataa kioski."
+          }
+        }
+      }
+    },
+    "helper": {
+      "title": {
+        "en": "Juma offers to help",
+        "sw": "Juma anajitolea kusaidia"
+      },
+      "body": {
+        "en": "Juma offers to cook at dawn for {wage} a week. His name does not tell you what he can do.",
+        "sw": "Juma anajitolea kupika alfajiri kwa {wage} kwa wiki. Jina lake halikuambii anachoweza kufanya."
+      },
+      "options": {
+        "trial": {
+          "label": {
+            "en": "Pay for one trial morning ({helperTrial})",
+            "sw": "Lipia asubuhi moja ya majaribio ({helperTrial})"
+          },
+          "outcome": {
+            "en": "Juma cooked {skill} of 100 pieces to your standard.",
+            "sw": "Juma alipika vipande {skill} kati ya 100 kwa kiwango chako."
+          }
+        },
+        "hire": {
+          "label": {
+            "en": "Hire him now",
+            "sw": "Mwajiri sasa"
+          },
+          "outcome": {
+            "en": "Juma starts. You have not seen his work yet.",
+            "sw": "Juma ameanza. Bado hujaona kazi yake."
+          }
+        },
+        "train": {
+          "label": {
+            "en": "Hire and train him for a week ({training})",
+            "sw": "Mwajiri na umfundishe kwa wiki ({training})"
+          },
+          "outcome": {
+            "en": "This week he learns. From next week he cooks.",
+            "sw": "Wiki hii anajifunza. Kuanzia wiki ijayo anapika."
+          }
+        },
+        "later": {
+          "label": {
+            "en": "Not now",
+            "sw": "Si sasa"
+          },
+          "outcome": {
+            "en": "You keep working alone.",
+            "sw": "Unaendelea kufanya kazi peke yako."
+          }
+        }
+      }
+    },
+    "helperHire": {
+      "title": {
+        "en": "After Juma's trial morning",
+        "sw": "Baada ya asubuhi ya majaribio ya Juma"
+      },
+      "body": {
+        "en": "Juma cooked {skill} of 100 pieces to your standard. Training can raise that.",
+        "sw": "Juma alipika vipande {skill} kati ya 100 kwa kiwango chako. Mafunzo yanaweza kuongeza."
+      },
+      "options": {
+        "hire": {
+          "label": {
+            "en": "Hire him",
+            "sw": "Mwajiri"
+          },
+          "outcome": {
+            "en": "Juma starts.",
+            "sw": "Juma ameanza."
+          }
+        },
+        "train": {
+          "label": {
+            "en": "Hire and train him for a week ({training})",
+            "sw": "Mwajiri na umfundishe kwa wiki ({training})"
+          },
+          "outcome": {
+            "en": "This week he learns. From next week he cooks.",
+            "sw": "Wiki hii anajifunza. Kuanzia wiki ijayo anapika."
+          }
+        },
+        "no": {
+          "label": {
+            "en": "Do not hire",
+            "sw": "Usimwajiri"
+          },
+          "outcome": {
+            "en": "You keep working alone.",
+            "sw": "Unaendelea kufanya kazi peke yako."
+          }
+        }
+      }
+    },
+    "discrepancy": {
+      "title": {
+        "en": "Fewer pieces accepted",
+        "sw": "Vipande vichache vimekubaliwa"
+      },
+      "body": {
+        "en": "Last week the school did not accept {n} pieces that were sent.",
+        "sw": "Wiki iliyopita shule haikukubali vipande {n} vilivyotumwa."
+      },
+      "options": {
+        "records": {
+          "label": {
+            "en": "Look at the delivery records",
+            "sw": "Angalia kumbukumbu za mizigo"
+          },
+          "outcome": {
+            "en": "You looked into it.",
+            "sw": "Umelifuatilia."
+          }
+        },
+        "count": {
+          "label": {
+            "en": "Agree a count for each batch with Juma",
+            "sw": "Kubaliana na Juma kuhesabu kila kundi"
+          },
+          "outcome": {
+            "en": "Juma counts each batch. It takes 2 of your hours a week.",
+            "sw": "Juma anahesabu kila kundi. Inachukua saa zako 2 kwa wiki."
+          }
+        },
+        "leave": {
+          "label": {
+            "en": "Leave it",
+            "sw": "Acha"
+          },
+          "outcome": {
+            "en": "Nothing changes.",
+            "sw": "Hakuna kinachobadilika."
+          }
+        }
+      }
+    },
+    "away": {
+      "title": {
+        "en": "You travel in week 17",
+        "sw": "Unasafiri wiki ya 17"
+      },
+      "body": {
+        "en": "You will be away for five days in week 17. Decide now or next week.",
+        "sw": "Utakuwa safarini siku tano wiki ya 17. Amua sasa au wiki ijayo."
+      },
+      "options": {
+        "cover": {
+          "label": {
+            "en": "Juma runs the stall",
+            "sw": "Juma anaendesha kibanda"
+          },
+          "outcome": {
+            "en": "Juma will cook and sell. He can cook less while he also sells.",
+            "sw": "Juma atapika na kuuza. Atapika kidogo kwa kuwa pia anauza."
+          }
+        },
+        "close": {
+          "label": {
+            "en": "Close for the week and tell customers",
+            "sw": "Funga wiki hiyo na uwaambie wateja"
+          },
+          "outcome": {
+            "en": "No sales that week. Customers know.",
+            "sw": "Hakuna mauzo wiki hiyo. Wateja wanajua."
+          }
+        },
+        "later": {
+          "label": {
+            "en": "Decide next week",
+            "sw": "Amua wiki ijayo"
+          },
+          "outcome": {
+            "en": "You will be asked again next week.",
+            "sw": "Utaulizwa tena wiki ijayo."
+          }
+        }
+      }
+    },
+    "away2": {
+      "title": {
+        "en": "Next week you are away",
+        "sw": "Wiki ijayo uko safarini"
+      },
+      "body": {
+        "en": "Who runs the business in week 17?",
+        "sw": "Nani ataendesha biashara wiki ya 17?"
+      },
+      "options": {
+        "cover": {
+          "label": {
+            "en": "Juma runs the stall",
+            "sw": "Juma anaendesha kibanda"
+          },
+          "outcome": {
+            "en": "Juma will cook and sell.",
+            "sw": "Juma atapika na kuuza."
+          }
+        },
+        "close": {
+          "label": {
+            "en": "Close for the week and tell customers",
+            "sw": "Funga wiki hiyo na uwaambie wateja"
+          },
+          "outcome": {
+            "en": "No sales that week. Customers know.",
+            "sw": "Hakuna mauzo wiki hiyo. Wateja wanajua."
+          }
+        },
+        "nothing": {
+          "label": {
+            "en": "Leave it as it is",
+            "sw": "Acha ilivyo"
+          },
+          "outcome": {
+            "en": "Nobody is arranged for week 17.",
+            "sw": "Hakuna aliyepangwa kwa wiki ya 17."
+          }
+        }
+      }
+    },
+    "flour": {
+      "title": {
+        "en": "Flour costs more",
+        "sw": "Unga umepanda bei"
+      },
+      "body": {
+        "en": "From this week a pack costs {amount}, 25% more. Packs you already hold keep their old cost.",
+        "sw": "Kuanzia wiki hii pakiti inauzwa {amount}, asilimia 25 zaidi. Pakiti ulizonazo zinabaki na bei ya zamani."
+      },
+      "options": {
+        "price": {
+          "label": {
+            "en": "Raise your price one step",
+            "sw": "Panda bei hatua moja"
+          },
+          "outcome": {
+            "en": "Your price is higher. Some customers may buy less.",
+            "sw": "Bei yako iko juu. Wateja wengine wanaweza kununua kidogo."
+          }
+        },
+        "smaller": {
+          "label": {
+            "en": "Make smaller pieces",
+            "sw": "Tengeneza vipande vidogo"
+          },
+          "outcome": {
+            "en": "12 pieces per tray. Some customers notice.",
+            "sw": "Vipande 12 kwa trei. Wateja wengine wanaona."
+          }
+        },
+        "renegotiate": {
+          "label": {
+            "en": "Ask the school for a better price",
+            "sw": "Omba shule bei bora"
+          },
+          "outcome": {
+            "en": "You asked the school.",
+            "sw": "Umeiomba shule."
+          }
+        },
+        "keep": {
+          "label": {
+            "en": "Keep the plan",
+            "sw": "Baki na mpango"
+          },
+          "outcome": {
+            "en": "Nothing changes. Your margin is smaller.",
+            "sw": "Hakuna kinachobadilika. Faida yako kwa kipande ni ndogo."
+          }
+        }
+      }
+    }
+  },
+  "extra": {
+    "refused": {
+      "en": "The school said no to the smaller order.",
+      "sw": "Shule imekataa oda ndogo."
+    },
+    "accepted": {
+      "en": "The school agreed to pay {price} a piece.",
+      "sw": "Shule imekubali kulipa {price} kwa kipande."
+    },
+    "declined": {
+      "en": "The school kept the old price.",
+      "sw": "Shule imebaki na bei ya zamani."
+    },
+    "found": {
+      "en": "Your delivery notes show {sent} pieces sent last week and {n} not accepted. They show where the difference is, not why.",
+      "sw": "Maandishi yako ya mizigo yanaonyesha vipande {sent} vilitumwa wiki iliyopita na {n} havikukubaliwa. Yanaonyesha tofauti iko wapi, si kwa nini."
+    },
+    "unclear": {
+      "en": "Without delivery notes it took 3 hours and the cause is still not clear.",
+      "sw": "Bila maandishi ya mizigo ilichukua saa 3 na sababu bado haijulikani."
+    }
+  }
+}

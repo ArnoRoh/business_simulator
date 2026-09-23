@@ -987,6 +987,7 @@ button:disabled { opacity:.6; cursor:not-allowed; }
   },
   "nextBatchCost": 4000
 };
+  const EMBEDDED_SEASON = null;
   const EMBEDDED_CHAPTERS = {
   "_comment": "Chapter manifest (ADR-0007). Titles and blurbs live here so the select screen costs one small fetch rather than four scenario files — learners pay per megabyte (AGENTS.md section 3). Chapters are never locked: order is a suggestion, not a gate (ADR-0005, D-008).",
   "chapters": [
@@ -1073,7 +1074,7 @@ button:disabled { opacity:.6; cursor:not-allowed; }
 
 const fetch = async (input, init) => {
   const name = String(input).split('/').pop();
-  const value = name === 'game.json' ? EMBEDDED_GAME : name === 'ui.json' ? EMBEDDED_UI : name === 'chapters.json' ? EMBEDDED_CHAPTERS : EMBEDDED_SCENARIOS[name];
+  const value = name === 'season.json' ? EMBEDDED_SEASON : name === 'game.json' ? EMBEDDED_GAME : name === 'ui.json' ? EMBEDDED_UI : name === 'chapters.json' ? EMBEDDED_CHAPTERS : EMBEDDED_SCENARIOS[name];
   return value ? new Response(JSON.stringify(value), { headers: { 'Content-Type': 'application/json' } }) : globalThis.fetch(input, init);
 };
 

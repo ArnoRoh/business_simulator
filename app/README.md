@@ -1,15 +1,13 @@
 # The app
 
-Start with thirteen untimed steps in Asha’s five-day introduction. English and
-Kiswahili work throughout. Cash, stock, customer debts and repayments follow your
-choices. The introduction is practice; it does not qualify anyone for a grant.
+The main page runs one continuous mandazi business. English and Kiswahili are available
+throughout. Standing plans carry across a candidate 24-week season. Customers, stock,
+cash, profit, debt and owner time change with your decisions. Monthly reviews preserve
+context. The scene uses native SVG and CSS; motion is optional and skippable.
 
-Open `practice.html` at any time for existing records and the deeper game:
-
-Four unlocked business chapters in English and Kiswahili. Each has twenty decisions in
-four short missions. Tap an action or price, watch its result and read a short takeaway.
-Normal play asks for no profit estimate. Each chapter ends with a story transition. The figures and translation remain unverified by local reviewers.
-See [game design](../docs/game-design.md) for current behaviour and its limits.
+Earlier games remain at `intro.html` and `practice.html`, with their original records.
+The new game is not connected to the separate programme portal. Sample figures,
+Kiswahili and physical-device performance need local review.
 
 ## Run it
 
@@ -24,12 +22,13 @@ interface but does not verify service-worker support.
 
 ## Standalone distribution
 
-Open `standalone.html` directly or share the file. It embeds every chapter and needs no
-content download. Edit source files and regenerate it with:
+Open `season-standalone.html` directly or share the file. It contains the new game
+and needs no content download. `standalone.html` retains the four chapters. Edit source files and regenerate it with:
 
 ```bash
 node scripts/build-single-file.mjs
 node scripts/build-single-file.mjs --entry
+node scripts/build-single-file.mjs --season
 ```
 
 `intro-standalone.html` is the smaller, self-contained introduction. Its link to
@@ -37,11 +36,21 @@ the full game needs a connection. Introduction progress is one active attempt pe
 browser; download it before replacing it. The full game retains separate attempts
 and learner profiles. Old prototype saves remain untouched.
 
-The served PWA downloads chapters on demand. Compressed artifact budgets are 150 KiB for
+The served PWA caches the complete new game core, about 47 KB compressed. Earlier
+games and chapters download when used. Previously downloaded chapters survive updates. Compressed artifact budgets are 150 KiB for
 the shell plus first chapter and 60 KiB per additional chapter. `smoke-app.mjs` checks
 these budgets. Actual transfer depends on hosting compression and browser caching.
 
 ## State and privacy
+
+The new season uses IndexedDB `mv-bs-season`, separate from all earlier stores. Each
+save contains its action log and result, a revision, sample rules and bilingual content.
+Several attempts can remain on the phone. Failed or conflicting writes are visible.
+Download a partial or complete JSON record at any point. There is no background upload,
+record import or new-game account service. The local run number does not verify identity
+or independent play. See [ADR-0015](../docs/adr/0015-season-records-and-preserved-games.md).
+
+The following record details apply to the preserved chapter game.
 
 The game has no runtime dependency. The separate [programme portal](../docs/MV-BS-RUN-001-programme-portal.md) uses a Node service with native SQLite. IndexedDB holds separate local
 profiles and attempts, including drafts, results, recovery positions and scenario

@@ -1,6 +1,13 @@
 # Game design
 
-**Status:** The public entry is a short introduction. The full four-chapter game is
+**Current source:** One continuous business season, under
+[ADR-0014](./adr/0014-continuous-business.md). See
+[MV-BS-DES-002](./MV-BS-DES-002-continuous-business-pipeline.md) for the current design.
+The 24-week setting is a prototype, not a validated duration. Plans persist. Decisions
+change cash, stock, debt, customers, capacity and owner time. Native SVG/CSS motion
+shows the saved week's outcomes and can be skipped.
+
+**Earlier games, preserved:** The previous public entry is a short introduction. The full four-chapter game is
 at `practice.html`. Field acceptance remains a separate check. See
 [ADR-0013](./adr/0013-short-introduction-and-preserved-chapters.md).
 

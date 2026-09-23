@@ -4,52 +4,51 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
-<meta name="description" content="Run Asha's mandazi stall — a 5-day game about running a real business.">
-<title>Asha's Stall — Business Game</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23ff7a18'/%3E%3Ccircle cx='32' cy='20' r='8' fill='%23fff' opacity='.9'/%3E%3Crect x='16' y='34' width='32' height='18' rx='4' fill='%23fff'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="./css/entry.css">
+<meta name="description" content="Run one mandazi business through a full season. Sample figures, no timer.">
+<title>The mandazi stall</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f766e'/%3E%3Ccircle cx='32' cy='30' r='14' fill='%23fbbf24'/%3E%3Crect x='14' y='44' width='36' height='8' rx='4' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="./css/season.css">
 <link rel="manifest" href="./manifest.webmanifest">
-<meta name="theme-color" content="#ff7a18">
+<meta name="theme-color" content="#0f766e">
 </head>
 <body>
-<div class="phone">
-  <header class="topbar">
-    <div class="brand">
-      <span class="brand-mark">◉</span>
-      <span id="brand-name" class="brand-name">Asha's Stall</span>
-      <span id="brand-sub" class="brand-sub">5 days • play anywhere</span>
-    </div>
-    <div class="topbar-right">
-      <button id="lang-btn" class="lang-btn" type="button">SW</button>
-    </div>
+<div class="app">
+  <header class="top">
+    <div><h1 id="title">The mandazi stall</h1><p id="sub"></p></div>
+    <button id="lang" type="button" data-action="lang" class="secondary">Kiswahili</button>
   </header>
-
-  <div id="progress" class="progress"></div>
-
-  <div id="scene-wrap" class="scene-wrap">
-    <div id="scene" class="scene" aria-hidden="true"></div>
-    <div id="hud" class="hud"></div>
+  <section class="strip" aria-live="polite">
+    <div><span class="label" data-i18n="cash"></span><strong id="cash" data-testid="cash"></strong></div>
+    <div><span class="label" data-i18n="profit"></span><strong id="profit" data-testid="profit"></strong></div>
+    <div><span class="label" data-i18n="sales"></span><strong id="sales" data-testid="sales"></strong></div>
+    <p class="meta"><span id="week" data-testid="week"></span> <span id="due"></span> <span id="hours"></span></p>
+  </section>
+  <ol id="calendar" class="calendar"></ol>
+  <div class="scene-wrap">
+    <div id="scene" class="scene" role="img"></div>
+    <button id="skip" type="button" data-action="skip" class="skip" hidden></button>
   </div>
-
-  <main id="main" class="main">
-    <div id="card" class="card" tabindex="-1"><p>Opening the game… / Mchezo unafunguka…</p></div>
-    <div id="mini" class="mini"></div>
-  </main>
+  <main id="main" class="main"><p>Opening the game… / Mchezo unafunguka…</p></main>
   <footer class="foot">
-    <p id="sample"></p>
-    <p id="save-status" role="status"></p>
-    <button id="retry" class="ghost" hidden></button>
-    <p id="offline-status" role="status"></p>
-    <button id="old-download" class="ghost" hidden></button>
-    <button id="download" class="ghost"></button>
-    <a id="offline-file" class="ghost" href="./intro-standalone.html" download="MV-BS-INTRO-game.html"></a>
-    <a id="practice" class="ghost" href="./practice.html"></a>
+    <p><span id="saved" data-testid="saved" role="status"></span>
+      <button id="retry" type="button" data-action="retry" class="secondary" hidden></button>
+      <button id="reload" type="button" data-action="reload" class="secondary" hidden></button></p>
+    <p id="offline" role="status"></p>
+    <details><summary id="records-tools"></summary>
+    <button id="export" type="button" data-action="export" class="secondary"></button>
+    <details><summary id="runs-title"></summary><ul id="runs" class="runs"></ul></details>
+    <h2 id="earlier-title"></h2>
+    <p id="earlier-found"></p>
+    <p class="links"><a id="intro-link" href="./intro.html"></a> <a id="chapters-link" href="./practice.html"></a>
+      <a id="offline-file" href="./season-standalone.html" download="MV-BS-SEASON-game.html"></a></p>
+    </details>
+    <p id="sample" class="small"></p><p id="draft" class="small"></p><p id="privacy" class="small"></p>
   </footer>
 </div>
-<script type="module" src="./js/entry.js"></script>
+<script type="module" src="./js/game.js"></script>
 <script>
   if ('serviceWorker' in navigator) {
-    addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+    addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
   }
 </script>
 </body>

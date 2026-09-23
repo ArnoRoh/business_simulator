@@ -58,6 +58,8 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Verify before publishing
         run: |
+          node scripts/test-season.mjs
+          node scripts/test-season-browser.mjs
           node scripts/test-asha-entry.mjs
           node scripts/test-corrections.mjs
           node scripts/browser-checks.mjs
@@ -101,6 +103,7 @@ jobs:
         run: |
           node scripts/build-single-file.mjs
           node scripts/build-single-file.mjs --entry
+          node scripts/build-single-file.mjs --season
 
       - uses: actions/upload-pages-artifact@v3
         with:

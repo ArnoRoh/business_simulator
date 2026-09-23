@@ -1,10 +1,10 @@
-# ADR-0014 — Propose one continuous business
+# ADR-0014 — Adopt one continuous business
 
-**Status:** Proposed
+**Status:** Accepted for implementation, 2026-09-23
 
 **Date:** 2026-09-23
 
-**Deciders:** Project owner; awaiting review of the proposed design
+**Deciders:** Project owner
 
 **Related:** [Consolidated design proposal](../MV-BS-DES-002-continuous-business-pipeline.md),
 [ADR-0007](./0007-four-chapter-arc.md),
@@ -18,12 +18,13 @@ introduction. Links to four separate chapters do not solve this. The current tas
 for design before implementation, with freedom to replace the game structure.
 
 Two parallel proposals and a review now form one current draft, MV-BS-DES-002.
-MV-BS-DES-001 remains a historical proposal. Agreement between the reviewing agents
-does not constitute owner acceptance. This ADR remains Proposed.
+MV-BS-DES-001 remains a historical proposal. On 2026-09-23 the owner accepted the
+consolidated direction and requested implementation with Opus 5.5, including animations.
+Learner, local-commercial and native-language acceptance remain unestablished.
 
-## Proposed decision
+## Decision
 
-Use the linked design as the candidate for review: one business with continuous cash,
+Implement the linked design: one business with continuous cash,
 stock, orders, staff and obligations. Progress comes from operating consequences and
 player goals. Separate simulated events, intentions, reported activity and verified
 real activity. Preserve existing learner records and their historical meanings.
@@ -36,9 +37,9 @@ Paid trials give limited observations; neither changing a plan nor changing it f
 is inherently better. The 24-week prototype schedule is provisional and must leave
 time to observe the consequences of major commitments.
 
-Acceptance would supersede the four-chapter structure in ADR-0007 and the experience
-structure in ADR-0012/0013. It would require a new record contract and a review of the
-portal's chapter-based intake. This proposal does not change a deployed programme gate,
+This supersedes the four-chapter structure in ADR-0007 and the experience
+structure in ADR-0012/0013 for the new game. It requires a new record contract and a review of the
+portal's chapter-based intake. This decision does not change a deployed programme gate,
 authorise funding decisions or establish learner acceptance.
 
 ## Consequences

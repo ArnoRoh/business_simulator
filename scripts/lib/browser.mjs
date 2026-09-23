@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { resolve, extname } from 'node:path';
 import { chromium } from 'playwright';
+// entry: false = four chapters, true = introduction (intro.html), 'season' = the new main game.
 export async function browserApp(entry = false) {
   const root = fileURLToPath(new URL('../../app/', import.meta.url));
   let workerVersion = 'test-a';
@@ -21,7 +22,7 @@ export async function browserApp(entry = false) {
   });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   const browser = await chromium.launch({ headless: true, args: ['--no-sandbox'] });
-  return { browser, url: `http://127.0.0.1:${server.address().port}/${entry ? '' : 'practice.html'}`,
+  return { browser, url: `http://127.0.0.1:${server.address().port}/${entry === 'season' ? '' : entry ? 'intro.html' : 'practice.html'}`,
     failContent: status => { contentFailure = status; },
     updateWorker: () => { workerVersion = 'test-b'; },
     close: async () => { await browser.close(); await new Promise(resolve => server.close(resolve)); },

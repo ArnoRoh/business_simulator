@@ -263,8 +263,9 @@ Smaller decisions go straight to `memory/DECISIONS.md` with no ADR.
 
 ## 9. Current stage
 
-A vanilla JavaScript PWA implements four chapters. The approved next version adds
-short episodes, practical tasks and durable local attempts. A separate programme portal
+The source entry is a continuous business season under ADR-0014. The introduction and
+four chapters remain at separate URLs with their original records. ADR-0015 describes
+the separate season record. Production remains the earlier release until deployed. A separate programme portal
 and configurable AI judge are implemented locally; see
 `docs/MV-BS-RUN-001-programme-portal.md`. Participant deployment and judge validation
 remain open. `memory/PROJECT_STATE.md` holds verification and deployment

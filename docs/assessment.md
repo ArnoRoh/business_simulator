@@ -1,5 +1,21 @@
 # Assessment and the behavioural record
 
+The current source entry is a continuous season. Its separate record retains simulated
+actions and results, sample rules, content, language, help and chosen goals. It records
+cash, sales, profit, stock, debts, deliveries and owner hours over time. A maintained
+notebook preserves delivery detail. Selecting it is not independent bookkeeping.
+Hiring a helper is not verified employment; wages can remain unpaid. Choosing a goal
+is a preference, not a founder classification. No speed score or composite score exists.
+
+See [the design](./MV-BS-DES-002-continuous-business-pipeline.md) and
+[the season record contract](./adr/0015-season-records-and-preserved-games.md).
+The season is not connected to programme intake. A paid trial in it is simulated.
+A later written intention, reported task and verified execution remain separate evidence
+levels. No simulation record predicts real business performance without validation.
+
+The following sections describe the preserved earlier games. Their observations must
+not be merged with season observations as if the tasks or calculations were the same.
+
 The five-day introduction uses a separate record. It records simulated choices, cash
 transactions and an optional unverified plan. It does not measure founder type, verify
 real activity or qualify a learner for a grant. No timer or speed score is used.
