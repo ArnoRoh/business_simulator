@@ -12,6 +12,18 @@ transaction. Feedback follows the selected language. Payment delays and broken
 commitments stay visible above routine trading notes. Automatic trading stops at
 these setbacks so the player can respond. A new action ends any previous animation.
 
+Four controls below the stall open buying, cooking, selling and collection. The weekly
+trading button stays in reach while the player reads results or changes the plan.
+Each result shows pieces sold, wasted or rejected, plus cash and credit sales. The
+credit segment uses a pattern as well as colour. The figures come from completed play.
+
+The business history compares weekly sales, weekly profit and cash at each week end
+on the same money scale. A week selector gives exact figures, the decisions made before
+trading and the full result. It does not change the current plan or replay a transaction.
+The history remains available offline and without the notebook. It is learning feedback,
+not a delivery record that the simulated buyer accepts as proof. Unknown future demand
+and payment outcomes remain unknown.
+
 **Earlier games, preserved:** The previous public entry is a short introduction. The full four-chapter game is
 at `practice.html`. Field acceptance remains a separate check. See
 [ADR-0013](./adr/0013-short-introduction-and-preserved-chapters.md).

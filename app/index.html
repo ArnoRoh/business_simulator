@@ -28,6 +28,8 @@
     <div id="scene" class="scene" role="img"></div>
     <button id="skip" type="button" data-action="skip" class="skip" hidden></button>
   </div>
+  <nav id="desk" class="desk"></nav>
+  <button id="history-open" type="button" class="history-open secondary" hidden></button>
   <main id="main" class="main"><p>Opening the game… / Mchezo unafunguka…</p></main>
   <footer class="foot">
     <p><span id="saved" data-testid="saved" role="status"></span>
@@ -44,6 +46,10 @@
     </details>
     <p id="sample" class="small"></p><p id="draft" class="small"></p><p id="privacy" class="small"></p>
   </footer>
+  <dialog id="history" aria-labelledby="history-title">
+    <header class="history-head"><h2 id="history-title"></h2><button id="history-close" type="button" class="secondary" autofocus></button></header>
+    <div id="history-body"></div>
+  </dialog>
 </div>
 <script type="module" src="./js/game.js"></script>
 <script>

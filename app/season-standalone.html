@@ -176,6 +176,57 @@ button, summary, .links a { overflow-wrap: anywhere; max-width: 100%; }
 .board { grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)); }
 .tile:not([open]) .icon { display: none; }
 
+/* The stall leads straight to its controls. All targets remain keyboard controls. */
+.desk { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 4rem), 1fr)); gap: 4px; margin-top: 6px; }
+.desk:empty { display: none; }
+.desk button { padding: 6px 0; font-size: .78rem; border-width: 1px; }
+.history-open { width: 100%; margin-top: 6px; font-size: .88rem; }
+.history-open[hidden] { display: none; }
+.tile { scroll-margin-top: 170px; }
+.trading-picture { margin: 10px 0; }
+.split-bar { display: flex; height: 12px; overflow: hidden; border-radius: 6px; background: #eee; margin: 4px 0; }
+.split-bar .sold, .split-bar .paid { background: var(--teal); }
+.split-bar .waste { background: #92400e; }
+.split-bar .rejected { background: var(--red); }
+.split-bar .credit { background: repeating-linear-gradient(135deg, #b45309 0 4px, #fcd34d 4px 8px); }
+.bar-key { display: flex; flex-wrap: wrap; gap: 3px 12px; font-size: .82rem; }
+.bar-key .sold, .bar-key .paid { color: var(--teal-dark); }
+.bar-key .waste, .bar-key .credit { color: #92400e; }
+.bar-key .rejected { color: var(--red); }
+dialog { width: min(560px, calc(100% - 16px)); max-width: calc(100% - 16px); max-height: calc(100% - 24px); padding: 12px; border: 1px solid var(--line); border-radius: 14px; color: var(--ink); background: var(--paper); overflow-wrap: anywhere; }
+dialog::backdrop { background: rgb(31 22 14 / .65); }
+.history-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; position: sticky; top: -12px; background: var(--paper); padding: 8px 0; z-index: 1; }
+.history-head h2 { flex: 1 1 130px; }
+.history-head button { font-size: .88rem; }
+.history-chart { margin: 12px 0; }
+.history-chart svg { display: block; width: 100%; }
+.history-chart polyline { fill: none; stroke-width: 2; }
+.history-chart circle { fill: var(--paper); stroke-width: 2; }
+.history-chart .sales { stroke: #b45309; }
+.history-chart .profit { stroke: #7c3aed; stroke-dasharray: 2 3; }
+.history-chart .cashEnd { stroke: var(--teal); stroke-dasharray: 8 3; }
+.history-chart .zero { stroke: #9a8977; }
+.history-chart .selected-week { stroke: #9a8977; stroke-dasharray: 2 3; }
+.chart-key { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: .8rem; }
+.chart-key span::before { content: ''; display: inline-block; width: 20px; border-top: 3px solid; margin-right: 4px; vertical-align: middle; }
+.chart-key .sales { color: #b45309; }
+.chart-key .profit { color: #7c3aed; }
+.chart-key .profit::before { border-top-style: dotted; }
+.chart-key .cashEnd { color: var(--teal-dark); }
+.chart-key .cashEnd::before { border-top-style: dashed; }
+.history-controls { display: flex; align-items: end; gap: 8px; }
+.history-controls > div { flex: 1; min-width: 0; }
+.history-controls label { display: block; }
+.history-controls select { width: 100%; min-height: 48px; font: inherit; border: 1px solid var(--teal); border-radius: 8px; color: var(--ink); background: white; }
+.history-controls button { flex: 0 0 48px; padding: 8px 2px; }
+select:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
+
+/* A routine week remains one tap even while its results or controls are in view. */
+.trading .app { padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px)); }
+.trading .run > .primary { position: fixed; bottom: max(8px, env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); width: min(536px, calc(100% - 24px)); z-index: 3; box-shadow: 0 2px 16px rgb(31 22 14 / .25); }
+.tall-summary .strip { position: static; }
+.tall-summary .run > .primary { position: static; transform: none; width: 100%; }
+
 </style>
 
 <div class="app">
@@ -194,6 +245,8 @@ button, summary, .links a { overflow-wrap: anywhere; max-width: 100%; }
     <div id="scene" class="scene" role="img"></div>
     <button id="skip" type="button" data-action="skip" class="skip" hidden></button>
   </div>
+  <nav id="desk" class="desk"></nav>
+  <button id="history-open" type="button" class="history-open secondary" hidden></button>
   <main id="main" class="main"><p>Opening the game… / Mchezo unafunguka…</p></main>
   <footer class="foot">
     <p><span id="saved" data-testid="saved" role="status"></span>
@@ -210,6 +263,10 @@ button, summary, .links a { overflow-wrap: anywhere; max-width: 100%; }
     </details>
     <p id="sample" class="small"></p><p id="draft" class="small"></p><p id="privacy" class="small"></p>
   </footer>
+  <dialog id="history" aria-labelledby="history-title">
+    <header class="history-head"><h2 id="history-title"></h2><button id="history-close" type="button" class="secondary" autofocus></button></header>
+    <div id="history-body"></div>
+  </dialog>
 </div>
 <script>
   if ('serviceWorker' in navigator) {
@@ -1105,8 +1162,8 @@ button, summary, .links a { overflow-wrap: anywhere; max-width: 100%; }
       "sw": "Mchezo haujafunguka. Unganisha intaneti na upakie upya."
     },
     "standingPlan": {
-      "en": "Daily: {trays} trays at {price} a piece. Home: {home} a week.",
-      "sw": "Kila siku: trei {trays}, {price} kwa kipande. Nyumbani: {home} kwa wiki."
+      "en": "{trays} trays a day · {price} a piece",
+      "sw": "Trei {trays} kwa siku · {price} kwa kipande"
     },
     "unsavedLeave": {
       "en": "This step is not saved. Download your record before leaving. Leave it now?",
@@ -1139,6 +1196,102 @@ button, summary, .links a { overflow-wrap: anywhere; max-width: 100%; }
     "moreResults": {
       "en": "More deliveries and payments ({n})",
       "sw": "Mizigo na malipo mengine ({n})"
+    },
+    "desk": {
+      "en": "Business controls",
+      "sw": "Vidhibiti vya biashara"
+    },
+    "history.open": {
+      "en": "See how your business is changing",
+      "sw": "Ona jinsi biashara yako inavyobadilika"
+    },
+    "history.title": {
+      "en": "Your business over time",
+      "sw": "Biashara yako kwa muda"
+    },
+    "history.back": {
+      "en": "Back to business",
+      "sw": "Rudi kwenye biashara"
+    },
+    "history.note": {
+      "en": "Compare completed weeks. Your current plan stays in place.",
+      "sw": "Linganisha wiki zilizokamilika. Mpango wako wa sasa unabaki kama ulivyo."
+    },
+    "history.week": {
+      "en": "Week {n}",
+      "sw": "Wiki ya {n}"
+    },
+    "history.prev": {
+      "en": "Previous week",
+      "sw": "Wiki iliyopita"
+    },
+    "history.next": {
+      "en": "Next week",
+      "sw": "Wiki inayofuata"
+    },
+    "history.choose": {
+      "en": "Inspect a week",
+      "sw": "Angalia wiki"
+    },
+    "history.range": {
+      "en": "Weeks {first}–{last} · same money scale",
+      "sw": "Wiki {first}–{last} · kipimo sawa cha pesa"
+    },
+    "history.sales": {
+      "en": "Weekly sales",
+      "sw": "Mauzo ya wiki"
+    },
+    "history.profit": {
+      "en": "Weekly profit",
+      "sw": "Faida ya wiki"
+    },
+    "history.cashEnd": {
+      "en": "Cash at week end",
+      "sw": "Pesa mwishoni mwa wiki"
+    },
+    "trade.made": {
+      "en": "{n} pieces made",
+      "sw": "Vipande {n} vimetengenezwa"
+    },
+    "trade.sold": {
+      "en": "{n} sold",
+      "sw": "{n} vimeuzwa"
+    },
+    "trade.waste": {
+      "en": "{n} wasted",
+      "sw": "{n} vimetupwa"
+    },
+    "trade.rejected": {
+      "en": "{n} rejected",
+      "sw": "{n} vimekataliwa"
+    },
+    "trade.unfilled": {
+      "en": "Walk-in demand unfilled: {n} pieces",
+      "sw": "Mahitaji ya wateja wa kibandani yasiyotimizwa: vipande {n}"
+    },
+    "trade.sales": {
+      "en": "Sales: {amount}",
+      "sw": "Mauzo: {amount}"
+    },
+    "trade.paid": {
+      "en": "Paid now: {amount}",
+      "sw": "Yamelipwa sasa: {amount}"
+    },
+    "trade.credit": {
+      "en": "Owed from these sales: {amount}",
+      "sw": "Yanayodaiwa kwa mauzo haya: {amount}"
+    },
+    "history.decisions": {
+      "en": "Decisions before trading",
+      "sw": "Maamuzi kabla ya biashara"
+    },
+    "history.unchanged": {
+      "en": "You used the standing plan.",
+      "sw": "Ulitumia mpango uliopo."
+    },
+    "history.hours": {
+      "en": "Your hours this week",
+      "sw": "Saa zako za kazi wiki hii"
     }
   },
   "events": {
@@ -3136,9 +3289,6 @@ function notes(r) {
   for (const l of new Set(r.late)) out.push(t('note.late', { who: who(l) }));
   if (r.away) out.push(t('note.away'));
   if (r.trial) out.push(t('note.trial', r.trial));
-  if (r.soldOutDays) out.push(t('note.soldOut', { n: r.soldOutDays }));
-  if (r.waste) out.push(t('note.waste', { n: r.waste }));
-  if (r.rejected) out.push(t('note.rejected', { n: r.rejected }));
   for (const c of r.collected) out.push(t('note.collected', { who: who(c.who), amount: money(c.amount), n: c.from }));
   for (const i of r.invoices) out.push(t('note.invoice', { who: who(i.who), amount: money(i.amount), n: i.due }));
   return out;
@@ -3153,6 +3303,7 @@ function resultCard(results) {
   return h('section', { class: 'card result', 'data-testid': 'result', tabindex: '-1' },
     results.length > 1 ? h('ul', { class: 'weeks' }, results.map(x => h('li', { text: t('weekLine', { n: x.week, sales: money(x.sales), profit: money(x.profit), cash: money(x.cashEnd) }) }))) : null,
     h('h2', { text: t('result', { n: r.week }) }),
+    tradingPicture(r),
     h('p', { class: 'tin', text: t('tin', { start: money(r.cashStart), end: money(r.cashEnd) }) }),
     h('p', { class: 'compare', text: t('compare', { profit: money(r.profit), change: moneySigned(change) }) }),
     h('ul', { class: 'notes' }, lines.slice(0, visible).map(text => h('li', { text }))),
@@ -3163,6 +3314,115 @@ function resultCard(results) {
       rows([[t('pnl.revenue'), money(r.pnl.revenue || 0)], ...pnlOrder.filter(k => r.pnl[k]).map(k => [t(`pnl.${k}`), moneySigned(-r.pnl[k])]), [t('f.profit'), money(r.profit)]])),
     h('details', {}, h('summary', { text: t('byDay') }), h('ol', {}, r.days.map((d, i) =>
       h('li', { text: t('dayLine', { n: i + 1, made: d.made, sold: d.stall, away: Math.max(0, d.demand - d.stall), waste: d.waste }) })))));
+}
+
+// Bars show quantities from a completed week, never a forecast or a score.
+function splitBar(parts) {
+  const total = sum(parts.map(p => p.value));
+  return h('div', { class: 'split-bar', 'aria-hidden': 'true' }, parts.map(p =>
+    h('span', { class: p.key, style: `flex:${total ? p.value : 0}` })));
+}
+
+function tradingPicture(r) {
+  const made = sum(r.days.map(d => d.pieces));
+  const sold = made - r.waste - r.rejected;
+  const lost = sum(r.days.map(d => Math.max(0, d.demand - d.stall)));
+  const pieces = [{ key: 'sold', value: sold }, { key: 'waste', value: r.waste }, { key: 'rejected', value: r.rejected }];
+  const sales = [{ key: 'paid', value: r.cashSales }, { key: 'credit', value: r.creditSales }];
+  return h('div', { class: 'trading-picture' },
+    h('p', { class: 'small', text: t('trade.made', { n: made }) }), splitBar(pieces),
+    h('div', { class: 'bar-key' }, pieces.filter(p => p.value || p.key === 'sold').map(p => h('span', { class: p.key, text: t(`trade.${p.key}`, { n: p.value }) }))),
+    lost ? h('p', { class: 'small', text: t('trade.unfilled', { n: lost }) }) : null,
+    h('p', { class: 'small', text: t('trade.sales', { amount: money(r.sales) }) }), splitBar(sales),
+    h('div', { class: 'bar-key' }, sales.map(p => h('span', { class: p.key, text: t(`trade.${p.key}`, { amount: money(p.value) }) }))));
+}
+
+function openTile(key) {
+  stop();
+  const tile = document.querySelector(`[data-tile="${key}"]`);
+  if (!tile) return;
+  tile.open = true;
+  tile.querySelector('summary').focus({ preventScroll: true });
+  tile.scrollIntoView({ block: 'start', behavior: reduced() ? 'auto' : 'smooth' });
+}
+
+// The complete audit is learning feedback. It does not fabricate business receipts
+// for the notebook mechanic and does not record a view as independent bookkeeping.
+function showHistory(week = rec.state.history.at(-1)?.week) {
+  if (!week || blocked) return;
+  const history = rec.state.history, r = history.find(x => x.week === week);
+  if (!r) return;
+  stop();
+  const dialog = $('history'), body = $('history-body');
+  const focusAction = document.activeElement?.dataset.action;
+  $('history-title').textContent = t('history.title');
+  $('history-close').textContent = t('history.back');
+  $('history-close').onclick = () => dialog.close();
+  const select = h('select', { id: 'history-week', onchange: e => showHistory(Number(e.target.value)) },
+    history.map(x => h('option', { value: x.week, selected: x.week === week, text: t('history.week', { n: x.week }) })));
+  body.replaceChildren(h('p', { class: 'small', text: t('history.note') }),
+    historyChart(history, week),
+    h('div', { class: 'history-controls' },
+      btn('←', 'history-prev', { 'aria-label': t('history.prev'), disabled: week === history[0].week, onclick: () => showHistory(week - 1) }),
+      h('div', {}, h('label', { for: 'history-week', text: t('history.choose') }), select),
+      btn('→', 'history-next', { 'aria-label': t('history.next'), disabled: week === history.at(-1).week, onclick: () => showHistory(week + 1) })),
+    rows([[t('f.sales'), money(r.sales)], [t('f.profit'), money(r.profit)], [t('history.cashEnd'), money(r.cashEnd)],
+      [t('f.owedToYou'), money(r.owedToYou)], [t('f.owedByYou'), money(r.owedByYou)], [t('history.hours'), r.hours]]),
+    historyDecisions(week), resultCard([r]));
+  if (!dialog.open) dialog.showModal();
+  else (body.querySelector(`[data-action="${focusAction}"]:not(:disabled)`) || select).focus({ preventScroll: true });
+  dialog.scrollTop = 0;
+}
+
+function historyDecisions(week) {
+  let state = createSeason({ seed: rec.seed });
+  const choices = [];
+  for (const entry of rec.log) {
+    if (state.week > week) break;
+    const a = entry.action;
+    if (state.week === week) {
+      if (a.type === 'answer') choices.push(fill(ev(state.pending, 'title'), eventParams(state)) + ' — ' + fill(ev(state.pending, 'options', a.option, 'label'), eventParams(state)));
+      if (a.type === 'plan') for (const [key, value] of Object.entries(a.patch)) {
+        if (value === state.plan[key]) continue;
+        const label = { trays: 'trays', price: 'price', household: 'household', pay: 'payWith', buyWeeks: 'buyFor', check: 'checks' }[key];
+        const text = key === 'price' ? money(P.price[value]) : key === 'household' ? money(value) : key === 'trays' ? value : t(`${key}.${value}`);
+        choices.push(`${t(label)}: ${text}`);
+      }
+      if (['buyPot', 'sellPot', 'borrow', 'repay', 'trainHelper', 'endHelper'].includes(a.type)) {
+        const amount = { buyPot: P.pot.cost, sellPot: P.pot.resale, borrow: P.loan.amount, repay: state.loan?.balance, trainHelper: P.training }[a.type];
+        choices.push(t(a.type, { amount: money(amount) }));
+      }
+      if (a.type === 'chase') choices.push(t('chase', { who: who(a.who) }));
+      if (a.type === 'credit') choices.push(t(a.on ? 'creditOn' : 'creditOff', { who: who(a.who) }));
+      if (a.type === 'notebook') choices.push(t(a.on ? 'notebookOn' : 'notebookOff'));
+    }
+    if (state.week === week && a.type === 'run') break;
+    state = step(state, a).state;
+  }
+  return h('details', { class: 'history-decisions' }, h('summary', { text: t('history.decisions') }),
+    choices.length ? h('ul', {}, choices.map(text => h('li', { text }))) : h('p', { text: t('history.unchanged') }));
+}
+
+function historyChart(history, week) {
+  const keys = ['sales', 'profit', 'cashEnd'];
+  const values = history.flatMap(r => keys.map(k => r[k]));
+  const lo = Math.min(0, ...values), hi = Math.max(1, ...values);
+  const x = i => 12 + i / Math.max(1, history.length - 1) * 276;
+  const y = v => 116 - (v - lo) / (hi - lo) * 104;
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', '0 0 300 130'); svg.setAttribute('aria-hidden', 'true');
+  const line = (tag, attrs) => { const el = document.createElementNS(ns, tag); for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v); svg.append(el); };
+  line('line', { x1: 12, x2: 288, y1: y(0), y2: y(0), class: 'zero' });
+  line('line', { x1: x(week - 1), x2: x(week - 1), y1: 8, y2: 120, class: 'selected-week' });
+  for (const key of keys) {
+    line('polyline', { points: history.map((r, i) => `${x(i)},${y(r[key])}`).join(' '), class: key });
+    line('circle', { cx: x(week - 1), cy: y(history[week - 1][key]), r: 3, class: key });
+  }
+  return h('figure', { class: 'history-chart' },
+    h('figcaption', { text: t('history.range', { first: history[0].week, last: history.at(-1).week }) }),
+    h('p', { class: 'small', text: `${money(lo)} — ${money(hi)}` }), svg,
+    h('div', { class: 'chart-key' }, keys.map(key => h('span', { class: key, text: t(`history.${key}`) }))));
 }
 
 const TILE = { buy: 'buy', pots: 'cook', hours: 'cook', plan: 'cook', demand: 'sell', collect: 'collect' };
@@ -3298,15 +3558,24 @@ function render(focusResult = false) {
   for (const el of document.querySelectorAll('[data-i18n]')) el.textContent = t(el.dataset.i18n);
   $('lang').textContent = t('otherLang'); $('lang').lang = getLanguage() === 'en' ? 'sw' : 'en';
   const main = $('main');
+  document.body.classList.toggle('trading', !blocked && rec.state.phase === 'plan');
   main.replaceChildren();
   renderStatus();
   if (blocked) {
+    $('desk').replaceChildren(); $('history-open').hidden = true;
     main.append(h('section', { class: 'card' }, h('p', { text: t('unreadable') }), btn(t('export'), 'export', { class: 'primary', onclick: exportRecord }),
       btn(t('newRun'), 'new', { onclick: newRun })));
     renderFoot(); return;
   }
   renderTop();
   const s = rec.state;
+  const desk = $('desk'); desk.replaceChildren(); desk.setAttribute('aria-label', t('desk'));
+  if (s.phase === 'plan' || s.phase === 'event') for (const key of ['buy', 'cook', 'sell', 'collect']) {
+    desk.append(btn(t(key), 'open-tile', { 'data-target': key, onclick: () => openTile(key) }));
+  }
+  $('history-open').hidden = !s.history.length;
+  $('history-open').textContent = t('history.open');
+  $('history-open').onclick = () => showHistory();
   if (shown?.kind === 'notice') {
     const r = shown.result;
     main.append(h('p', { class: 'card', role: 'status', text: t(r.paid ? 'chasePaid' : 'chaseWaiting', { who: who(r.who), amount: money(r.amount) }) }));
@@ -3441,6 +3710,11 @@ async function init() {
   $('retry').onclick = async () => { try { await store.open(); } catch { /* persist shows the error */ } await persist(); render(); };
   $('reload').onclick = () => location.reload();
   $('skip').onclick = stop;
+  $('history').addEventListener('close', () => $('history-body').replaceChildren());
+  // Large text must not leave the controls trapped between two fixed panels.
+  const fitSummary = () => document.body.classList.toggle('tall-summary', document.querySelector('.strip').offsetHeight > innerHeight / 3);
+  new ResizeObserver(fitSummary).observe(document.querySelector('.strip'));
+  addEventListener('resize', fitSummary);
   let saved = null;
   try { await store.open(); saved = await store.active(); } catch { status = 'failed'; }
   if (saved) load(saved);

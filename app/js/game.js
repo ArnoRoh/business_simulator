@@ -216,9 +216,6 @@ function notes(r) {
   for (const l of new Set(r.late)) out.push(t('note.late', { who: who(l) }));
   if (r.away) out.push(t('note.away'));
   if (r.trial) out.push(t('note.trial', r.trial));
-  if (r.soldOutDays) out.push(t('note.soldOut', { n: r.soldOutDays }));
-  if (r.waste) out.push(t('note.waste', { n: r.waste }));
-  if (r.rejected) out.push(t('note.rejected', { n: r.rejected }));
   for (const c of r.collected) out.push(t('note.collected', { who: who(c.who), amount: money(c.amount), n: c.from }));
   for (const i of r.invoices) out.push(t('note.invoice', { who: who(i.who), amount: money(i.amount), n: i.due }));
   return out;
@@ -233,6 +230,7 @@ function resultCard(results) {
   return h('section', { class: 'card result', 'data-testid': 'result', tabindex: '-1' },
     results.length > 1 ? h('ul', { class: 'weeks' }, results.map(x => h('li', { text: t('weekLine', { n: x.week, sales: money(x.sales), profit: money(x.profit), cash: money(x.cashEnd) }) }))) : null,
     h('h2', { text: t('result', { n: r.week }) }),
+    tradingPicture(r),
     h('p', { class: 'tin', text: t('tin', { start: money(r.cashStart), end: money(r.cashEnd) }) }),
     h('p', { class: 'compare', text: t('compare', { profit: money(r.profit), change: moneySigned(change) }) }),
     h('ul', { class: 'notes' }, lines.slice(0, visible).map(text => h('li', { text }))),
@@ -243,6 +241,115 @@ function resultCard(results) {
       rows([[t('pnl.revenue'), money(r.pnl.revenue || 0)], ...pnlOrder.filter(k => r.pnl[k]).map(k => [t(`pnl.${k}`), moneySigned(-r.pnl[k])]), [t('f.profit'), money(r.profit)]])),
     h('details', {}, h('summary', { text: t('byDay') }), h('ol', {}, r.days.map((d, i) =>
       h('li', { text: t('dayLine', { n: i + 1, made: d.made, sold: d.stall, away: Math.max(0, d.demand - d.stall), waste: d.waste }) })))));
+}
+
+// Bars show quantities from a completed week, never a forecast or a score.
+function splitBar(parts) {
+  const total = sum(parts.map(p => p.value));
+  return h('div', { class: 'split-bar', 'aria-hidden': 'true' }, parts.map(p =>
+    h('span', { class: p.key, style: `flex:${total ? p.value : 0}` })));
+}
+
+function tradingPicture(r) {
+  const made = sum(r.days.map(d => d.pieces));
+  const sold = made - r.waste - r.rejected;
+  const lost = sum(r.days.map(d => Math.max(0, d.demand - d.stall)));
+  const pieces = [{ key: 'sold', value: sold }, { key: 'waste', value: r.waste }, { key: 'rejected', value: r.rejected }];
+  const sales = [{ key: 'paid', value: r.cashSales }, { key: 'credit', value: r.creditSales }];
+  return h('div', { class: 'trading-picture' },
+    h('p', { class: 'small', text: t('trade.made', { n: made }) }), splitBar(pieces),
+    h('div', { class: 'bar-key' }, pieces.filter(p => p.value || p.key === 'sold').map(p => h('span', { class: p.key, text: t(`trade.${p.key}`, { n: p.value }) }))),
+    lost ? h('p', { class: 'small', text: t('trade.unfilled', { n: lost }) }) : null,
+    h('p', { class: 'small', text: t('trade.sales', { amount: money(r.sales) }) }), splitBar(sales),
+    h('div', { class: 'bar-key' }, sales.map(p => h('span', { class: p.key, text: t(`trade.${p.key}`, { amount: money(p.value) }) }))));
+}
+
+function openTile(key) {
+  stop();
+  const tile = document.querySelector(`[data-tile="${key}"]`);
+  if (!tile) return;
+  tile.open = true;
+  tile.querySelector('summary').focus({ preventScroll: true });
+  tile.scrollIntoView({ block: 'start', behavior: reduced() ? 'auto' : 'smooth' });
+}
+
+// The complete audit is learning feedback. It does not fabricate business receipts
+// for the notebook mechanic and does not record a view as independent bookkeeping.
+function showHistory(week = rec.state.history.at(-1)?.week) {
+  if (!week || blocked) return;
+  const history = rec.state.history, r = history.find(x => x.week === week);
+  if (!r) return;
+  stop();
+  const dialog = $('history'), body = $('history-body');
+  const focusAction = document.activeElement?.dataset.action;
+  $('history-title').textContent = t('history.title');
+  $('history-close').textContent = t('history.back');
+  $('history-close').onclick = () => dialog.close();
+  const select = h('select', { id: 'history-week', onchange: e => showHistory(Number(e.target.value)) },
+    history.map(x => h('option', { value: x.week, selected: x.week === week, text: t('history.week', { n: x.week }) })));
+  body.replaceChildren(h('p', { class: 'small', text: t('history.note') }),
+    historyChart(history, week),
+    h('div', { class: 'history-controls' },
+      btn('←', 'history-prev', { 'aria-label': t('history.prev'), disabled: week === history[0].week, onclick: () => showHistory(week - 1) }),
+      h('div', {}, h('label', { for: 'history-week', text: t('history.choose') }), select),
+      btn('→', 'history-next', { 'aria-label': t('history.next'), disabled: week === history.at(-1).week, onclick: () => showHistory(week + 1) })),
+    rows([[t('f.sales'), money(r.sales)], [t('f.profit'), money(r.profit)], [t('history.cashEnd'), money(r.cashEnd)],
+      [t('f.owedToYou'), money(r.owedToYou)], [t('f.owedByYou'), money(r.owedByYou)], [t('history.hours'), r.hours]]),
+    historyDecisions(week), resultCard([r]));
+  if (!dialog.open) dialog.showModal();
+  else (body.querySelector(`[data-action="${focusAction}"]:not(:disabled)`) || select).focus({ preventScroll: true });
+  dialog.scrollTop = 0;
+}
+
+function historyDecisions(week) {
+  let state = createSeason({ seed: rec.seed });
+  const choices = [];
+  for (const entry of rec.log) {
+    if (state.week > week) break;
+    const a = entry.action;
+    if (state.week === week) {
+      if (a.type === 'answer') choices.push(fill(ev(state.pending, 'title'), eventParams(state)) + ' — ' + fill(ev(state.pending, 'options', a.option, 'label'), eventParams(state)));
+      if (a.type === 'plan') for (const [key, value] of Object.entries(a.patch)) {
+        if (value === state.plan[key]) continue;
+        const label = { trays: 'trays', price: 'price', household: 'household', pay: 'payWith', buyWeeks: 'buyFor', check: 'checks' }[key];
+        const text = key === 'price' ? money(P.price[value]) : key === 'household' ? money(value) : key === 'trays' ? value : t(`${key}.${value}`);
+        choices.push(`${t(label)}: ${text}`);
+      }
+      if (['buyPot', 'sellPot', 'borrow', 'repay', 'trainHelper', 'endHelper'].includes(a.type)) {
+        const amount = { buyPot: P.pot.cost, sellPot: P.pot.resale, borrow: P.loan.amount, repay: state.loan?.balance, trainHelper: P.training }[a.type];
+        choices.push(t(a.type, { amount: money(amount) }));
+      }
+      if (a.type === 'chase') choices.push(t('chase', { who: who(a.who) }));
+      if (a.type === 'credit') choices.push(t(a.on ? 'creditOn' : 'creditOff', { who: who(a.who) }));
+      if (a.type === 'notebook') choices.push(t(a.on ? 'notebookOn' : 'notebookOff'));
+    }
+    if (state.week === week && a.type === 'run') break;
+    state = step(state, a).state;
+  }
+  return h('details', { class: 'history-decisions' }, h('summary', { text: t('history.decisions') }),
+    choices.length ? h('ul', {}, choices.map(text => h('li', { text }))) : h('p', { text: t('history.unchanged') }));
+}
+
+function historyChart(history, week) {
+  const keys = ['sales', 'profit', 'cashEnd'];
+  const values = history.flatMap(r => keys.map(k => r[k]));
+  const lo = Math.min(0, ...values), hi = Math.max(1, ...values);
+  const x = i => 12 + i / Math.max(1, history.length - 1) * 276;
+  const y = v => 116 - (v - lo) / (hi - lo) * 104;
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', '0 0 300 130'); svg.setAttribute('aria-hidden', 'true');
+  const line = (tag, attrs) => { const el = document.createElementNS(ns, tag); for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v); svg.append(el); };
+  line('line', { x1: 12, x2: 288, y1: y(0), y2: y(0), class: 'zero' });
+  line('line', { x1: x(week - 1), x2: x(week - 1), y1: 8, y2: 120, class: 'selected-week' });
+  for (const key of keys) {
+    line('polyline', { points: history.map((r, i) => `${x(i)},${y(r[key])}`).join(' '), class: key });
+    line('circle', { cx: x(week - 1), cy: y(history[week - 1][key]), r: 3, class: key });
+  }
+  return h('figure', { class: 'history-chart' },
+    h('figcaption', { text: t('history.range', { first: history[0].week, last: history.at(-1).week }) }),
+    h('p', { class: 'small', text: `${money(lo)} — ${money(hi)}` }), svg,
+    h('div', { class: 'chart-key' }, keys.map(key => h('span', { class: key, text: t(`history.${key}`) }))));
 }
 
 const TILE = { buy: 'buy', pots: 'cook', hours: 'cook', plan: 'cook', demand: 'sell', collect: 'collect' };
@@ -378,15 +485,24 @@ function render(focusResult = false) {
   for (const el of document.querySelectorAll('[data-i18n]')) el.textContent = t(el.dataset.i18n);
   $('lang').textContent = t('otherLang'); $('lang').lang = getLanguage() === 'en' ? 'sw' : 'en';
   const main = $('main');
+  document.body.classList.toggle('trading', !blocked && rec.state.phase === 'plan');
   main.replaceChildren();
   renderStatus();
   if (blocked) {
+    $('desk').replaceChildren(); $('history-open').hidden = true;
     main.append(h('section', { class: 'card' }, h('p', { text: t('unreadable') }), btn(t('export'), 'export', { class: 'primary', onclick: exportRecord }),
       btn(t('newRun'), 'new', { onclick: newRun })));
     renderFoot(); return;
   }
   renderTop();
   const s = rec.state;
+  const desk = $('desk'); desk.replaceChildren(); desk.setAttribute('aria-label', t('desk'));
+  if (s.phase === 'plan' || s.phase === 'event') for (const key of ['buy', 'cook', 'sell', 'collect']) {
+    desk.append(btn(t(key), 'open-tile', { 'data-target': key, onclick: () => openTile(key) }));
+  }
+  $('history-open').hidden = !s.history.length;
+  $('history-open').textContent = t('history.open');
+  $('history-open').onclick = () => showHistory();
   if (shown?.kind === 'notice') {
     const r = shown.result;
     main.append(h('p', { class: 'card', role: 'status', text: t(r.paid ? 'chasePaid' : 'chaseWaiting', { who: who(r.who), amount: money(r.amount) }) }));
@@ -521,6 +637,11 @@ async function init() {
   $('retry').onclick = async () => { try { await store.open(); } catch { /* persist shows the error */ } await persist(); render(); };
   $('reload').onclick = () => location.reload();
   $('skip').onclick = stop;
+  $('history').addEventListener('close', () => $('history-body').replaceChildren());
+  // Large text must not leave the controls trapped between two fixed panels.
+  const fitSummary = () => document.body.classList.toggle('tall-summary', document.querySelector('.strip').offsetHeight > innerHeight / 3);
+  new ResizeObserver(fitSummary).observe(document.querySelector('.strip'));
+  addEventListener('resize', fitSummary);
   let saved = null;
   try { await store.open(); saved = await store.active(); } catch { status = 'failed'; }
   if (saved) load(saved);

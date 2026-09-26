@@ -163,3 +163,54 @@ button, summary, .links a { overflow-wrap: anywhere; max-width: 100%; }
 
 .board { grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)); }
 .tile:not([open]) .icon { display: none; }
+
+/* The stall leads straight to its controls. All targets remain keyboard controls. */
+.desk { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 4rem), 1fr)); gap: 4px; margin-top: 6px; }
+.desk:empty { display: none; }
+.desk button { padding: 6px 0; font-size: .78rem; border-width: 1px; }
+.history-open { width: 100%; margin-top: 6px; font-size: .88rem; }
+.history-open[hidden] { display: none; }
+.tile { scroll-margin-top: 170px; }
+.trading-picture { margin: 10px 0; }
+.split-bar { display: flex; height: 12px; overflow: hidden; border-radius: 6px; background: #eee; margin: 4px 0; }
+.split-bar .sold, .split-bar .paid { background: var(--teal); }
+.split-bar .waste { background: #92400e; }
+.split-bar .rejected { background: var(--red); }
+.split-bar .credit { background: repeating-linear-gradient(135deg, #b45309 0 4px, #fcd34d 4px 8px); }
+.bar-key { display: flex; flex-wrap: wrap; gap: 3px 12px; font-size: .82rem; }
+.bar-key .sold, .bar-key .paid { color: var(--teal-dark); }
+.bar-key .waste, .bar-key .credit { color: #92400e; }
+.bar-key .rejected { color: var(--red); }
+dialog { width: min(560px, calc(100% - 16px)); max-width: calc(100% - 16px); max-height: calc(100% - 24px); padding: 12px; border: 1px solid var(--line); border-radius: 14px; color: var(--ink); background: var(--paper); overflow-wrap: anywhere; }
+dialog::backdrop { background: rgb(31 22 14 / .65); }
+.history-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; position: sticky; top: -12px; background: var(--paper); padding: 8px 0; z-index: 1; }
+.history-head h2 { flex: 1 1 130px; }
+.history-head button { font-size: .88rem; }
+.history-chart { margin: 12px 0; }
+.history-chart svg { display: block; width: 100%; }
+.history-chart polyline { fill: none; stroke-width: 2; }
+.history-chart circle { fill: var(--paper); stroke-width: 2; }
+.history-chart .sales { stroke: #b45309; }
+.history-chart .profit { stroke: #7c3aed; stroke-dasharray: 2 3; }
+.history-chart .cashEnd { stroke: var(--teal); stroke-dasharray: 8 3; }
+.history-chart .zero { stroke: #9a8977; }
+.history-chart .selected-week { stroke: #9a8977; stroke-dasharray: 2 3; }
+.chart-key { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: .8rem; }
+.chart-key span::before { content: ''; display: inline-block; width: 20px; border-top: 3px solid; margin-right: 4px; vertical-align: middle; }
+.chart-key .sales { color: #b45309; }
+.chart-key .profit { color: #7c3aed; }
+.chart-key .profit::before { border-top-style: dotted; }
+.chart-key .cashEnd { color: var(--teal-dark); }
+.chart-key .cashEnd::before { border-top-style: dashed; }
+.history-controls { display: flex; align-items: end; gap: 8px; }
+.history-controls > div { flex: 1; min-width: 0; }
+.history-controls label { display: block; }
+.history-controls select { width: 100%; min-height: 48px; font: inherit; border: 1px solid var(--teal); border-radius: 8px; color: var(--ink); background: white; }
+.history-controls button { flex: 0 0 48px; padding: 8px 2px; }
+select:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
+
+/* A routine week remains one tap even while its results or controls are in view. */
+.trading .app { padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px)); }
+.trading .run > .primary { position: fixed; bottom: max(8px, env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); width: min(536px, calc(100% - 24px)); z-index: 3; box-shadow: 0 2px 16px rgb(31 22 14 / .25); }
+.tall-summary .strip { position: static; }
+.tall-summary .run > .primary { position: static; transform: none; width: 100%; }

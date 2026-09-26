@@ -882,8 +882,8 @@
       "sw": "Mchezo haujafunguka. Unganisha intaneti na upakie upya."
     },
     "standingPlan": {
-      "en": "Daily: {trays} trays at {price} a piece. Home: {home} a week.",
-      "sw": "Kila siku: trei {trays}, {price} kwa kipande. Nyumbani: {home} kwa wiki."
+      "en": "{trays} trays a day · {price} a piece",
+      "sw": "Trei {trays} kwa siku · {price} kwa kipande"
     },
     "unsavedLeave": {
       "en": "This step is not saved. Download your record before leaving. Leave it now?",
@@ -916,6 +916,102 @@
     "moreResults": {
       "en": "More deliveries and payments ({n})",
       "sw": "Mizigo na malipo mengine ({n})"
+    },
+    "desk": {
+      "en": "Business controls",
+      "sw": "Vidhibiti vya biashara"
+    },
+    "history.open": {
+      "en": "See how your business is changing",
+      "sw": "Ona jinsi biashara yako inavyobadilika"
+    },
+    "history.title": {
+      "en": "Your business over time",
+      "sw": "Biashara yako kwa muda"
+    },
+    "history.back": {
+      "en": "Back to business",
+      "sw": "Rudi kwenye biashara"
+    },
+    "history.note": {
+      "en": "Compare completed weeks. Your current plan stays in place.",
+      "sw": "Linganisha wiki zilizokamilika. Mpango wako wa sasa unabaki kama ulivyo."
+    },
+    "history.week": {
+      "en": "Week {n}",
+      "sw": "Wiki ya {n}"
+    },
+    "history.prev": {
+      "en": "Previous week",
+      "sw": "Wiki iliyopita"
+    },
+    "history.next": {
+      "en": "Next week",
+      "sw": "Wiki inayofuata"
+    },
+    "history.choose": {
+      "en": "Inspect a week",
+      "sw": "Angalia wiki"
+    },
+    "history.range": {
+      "en": "Weeks {first}–{last} · same money scale",
+      "sw": "Wiki {first}–{last} · kipimo sawa cha pesa"
+    },
+    "history.sales": {
+      "en": "Weekly sales",
+      "sw": "Mauzo ya wiki"
+    },
+    "history.profit": {
+      "en": "Weekly profit",
+      "sw": "Faida ya wiki"
+    },
+    "history.cashEnd": {
+      "en": "Cash at week end",
+      "sw": "Pesa mwishoni mwa wiki"
+    },
+    "trade.made": {
+      "en": "{n} pieces made",
+      "sw": "Vipande {n} vimetengenezwa"
+    },
+    "trade.sold": {
+      "en": "{n} sold",
+      "sw": "{n} vimeuzwa"
+    },
+    "trade.waste": {
+      "en": "{n} wasted",
+      "sw": "{n} vimetupwa"
+    },
+    "trade.rejected": {
+      "en": "{n} rejected",
+      "sw": "{n} vimekataliwa"
+    },
+    "trade.unfilled": {
+      "en": "Walk-in demand unfilled: {n} pieces",
+      "sw": "Mahitaji ya wateja wa kibandani yasiyotimizwa: vipande {n}"
+    },
+    "trade.sales": {
+      "en": "Sales: {amount}",
+      "sw": "Mauzo: {amount}"
+    },
+    "trade.paid": {
+      "en": "Paid now: {amount}",
+      "sw": "Yamelipwa sasa: {amount}"
+    },
+    "trade.credit": {
+      "en": "Owed from these sales: {amount}",
+      "sw": "Yanayodaiwa kwa mauzo haya: {amount}"
+    },
+    "history.decisions": {
+      "en": "Decisions before trading",
+      "sw": "Maamuzi kabla ya biashara"
+    },
+    "history.unchanged": {
+      "en": "You used the standing plan.",
+      "sw": "Ulitumia mpango uliopo."
+    },
+    "history.hours": {
+      "en": "Your hours this week",
+      "sw": "Saa zako za kazi wiki hii"
     }
   },
   "events": {

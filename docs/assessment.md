@@ -7,6 +7,11 @@ notebook preserves delivery detail. Selecting it is not independent bookkeeping.
 Hiring a helper is not verified employment; wages can remain unpaid. Choosing a goal
 is a preference, not a founder classification. No speed score or composite score exists.
 
+The game displays production and payment splits and a browsable history of completed
+weeks. These are calculated learning feedback, not figures independently calculated by
+the learner. History views are not logged; do not infer investigation from them. Reading
+this history does not establish bookkeeping ability or create missing delivery records.
+
 See [the design](./MV-BS-DES-002-continuous-business-pipeline.md) and
 [the season record contract](./adr/0015-season-records-and-preserved-games.md).
 The season is not connected to programme intake. A paid trial in it is simulated.
