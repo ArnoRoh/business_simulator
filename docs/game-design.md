@@ -7,6 +7,11 @@ The 24-week setting is a prototype, not a validated duration. Plans persist. Dec
 change cash, stock, debt, customers, capacity and owner time. Native SVG/CSS motion
 shows the saved week's outcomes and can be skipped.
 
+Reopening a season restores the last decision or collection feedback without another
+transaction. Feedback follows the selected language. Payment delays and broken
+commitments stay visible above routine trading notes. Automatic trading stops at
+these setbacks so the player can respond. A new action ends any previous animation.
+
 **Earlier games, preserved:** The previous public entry is a short introduction. The full four-chapter game is
 at `practice.html`. Field acceptance remains a separate check. See
 [ADR-0013](./adr/0013-short-introduction-and-preserved-chapters.md).

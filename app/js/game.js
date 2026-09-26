@@ -61,6 +61,7 @@ async function commit(actions) {
     for (const action of actions) {
       const out = step(s, action);
       log.push({ n: log.length + 1, at: new Date().toISOString(), week: s.week, language: getLanguage(), phase: s.phase, event: s.pending, automaticHelp: Boolean(document.querySelector('.limit-note')), action, result: out.result });
+      shown = feedback(action, out.result, s);
       s = out.state; results.push(out.result);
     }
   } catch { busy = false; render(); return null; }
@@ -71,10 +72,18 @@ async function commit(actions) {
   return results;
 }
 
-const act = (action, after) => async () => {
+// Live play and reopening a record show the same facts, translated at render time.
+function feedback(action, result, before) {
+  if (action.type === 'run') return { kind: 'result', results: [result] };
+  if (action.type === 'answer') return { kind: 'outcome', id: before.pending, result, before };
+  if (action.type === 'chase') return { kind: 'notice', result };
+  if (action.type === 'help') return { kind: 'help' };
+  return null;
+}
+
+const act = action => async () => {
   const results = await commit([action]);
   if (!results) return;
-  shown = after ? after(results[0]) : null;
   render();
 };
 const plan = (patch) => act({ type: 'plan', patch });
@@ -83,7 +92,7 @@ async function runWeeks(until) {
   const actions = [{ type: 'run' }];
   if (!can(rec.state, actions[0])) return;
   let s = step(rec.state, actions[0]).state;
-  while (until && quiet(s) && actions.length < 8) { actions.push({ type: 'run' }); s = step(s, { type: 'run' }).state; }
+  while (until && quiet(s) && !s.history.at(-1).late.length && !s.history.at(-1).notes.length && actions.length < 8) { actions.push({ type: 'run' }); s = step(s, { type: 'run' }).state; }
   const results = await commit(actions);
   if (!results) return;
   shown = { kind: 'result', results };
@@ -184,14 +193,15 @@ function eventCard(s) {
     if (option === 'renegotiate' && !s.school) continue;
     const ok = can(s, { type: 'answer', option });
     options.append(h('button', { type: 'button', class: 'choice', 'data-action': 'answer', 'data-option': option, disabled: !ok,
-      onclick: act({ type: 'answer', option }, result => ({ kind: 'outcome', id, result, params })) },
+      onclick: act({ type: 'answer', option }) },
       h('span', { text: fill(ev(id, 'options', option, 'label'), params) }), ok ? null : h('small', { text: t('unavailable') })));
   }
   card.append(options);
   return card;
 }
 
-function outcomeCard({ id, result, params }) {
+function outcomeCard({ id, result, before }) {
+  const params = eventParams(before);
   const extra = result.refused ? 'refused' : result.accepted === true ? 'accepted' : result.accepted === false ? 'declined'
     : id === 'discrepancy' && result.option === 'records' ? (result.found !== undefined ? 'found' : 'unclear') : '';
   return h('section', { class: 'card outcome' }, h('p', { class: 'kicker', text: t('outcomeTitle') }),
@@ -202,15 +212,15 @@ function outcomeCard({ id, result, params }) {
 
 function notes(r) {
   const out = [];
+  for (const n of r.notes) out.push(n === 'householdShort' ? t('note.householdShort', { amount: money(r.householdShort) }) : t(`note.${n}`));
+  for (const l of new Set(r.late)) out.push(t('note.late', { who: who(l) }));
   if (r.away) out.push(t('note.away'));
   if (r.trial) out.push(t('note.trial', r.trial));
   if (r.soldOutDays) out.push(t('note.soldOut', { n: r.soldOutDays }));
   if (r.waste) out.push(t('note.waste', { n: r.waste }));
   if (r.rejected) out.push(t('note.rejected', { n: r.rejected }));
   for (const c of r.collected) out.push(t('note.collected', { who: who(c.who), amount: money(c.amount), n: c.from }));
-  for (const l of new Set(r.late)) out.push(t('note.late', { who: who(l) }));
   for (const i of r.invoices) out.push(t('note.invoice', { who: who(i.who), amount: money(i.amount), n: i.due }));
-  for (const n of r.notes) out.push(n === 'householdShort' ? t('note.householdShort', { amount: money(r.householdShort) }) : t(`note.${n}`));
   return out;
 }
 
@@ -218,14 +228,15 @@ function resultCard(results) {
   const r = results.at(-1);
   const change = r.cashEnd - r.cashStart;
   const lines = notes(r);
+  const visible = Math.max(3, r.notes.length + new Set(r.late).size);
   const pnlOrder = ['materials', 'chai', 'fee', 'wages', 'interest', 'depreciation', 'other'];
   return h('section', { class: 'card result', 'data-testid': 'result', tabindex: '-1' },
     results.length > 1 ? h('ul', { class: 'weeks' }, results.map(x => h('li', { text: t('weekLine', { n: x.week, sales: money(x.sales), profit: money(x.profit), cash: money(x.cashEnd) }) }))) : null,
     h('h2', { text: t('result', { n: r.week }) }),
     h('p', { class: 'tin', text: t('tin', { start: money(r.cashStart), end: money(r.cashEnd) }) }),
     h('p', { class: 'compare', text: t('compare', { profit: money(r.profit), change: moneySigned(change) }) }),
-    h('ul', { class: 'notes' }, lines.slice(0, 3).map(text => h('li', { text }))),
-    lines.length > 3 ? h('details', {}, h('summary', { text: t('moreResults', { n: lines.length - 3 }) }), h('ul', { class: 'notes' }, lines.slice(3).map(text => h('li', { text })))) : null,
+    h('ul', { class: 'notes' }, lines.slice(0, visible).map(text => h('li', { text }))),
+    lines.length > visible ? h('details', {}, h('summary', { text: t('moreResults', { n: lines.length - visible }) }), h('ul', { class: 'notes' }, lines.slice(visible).map(text => h('li', { text })))) : null,
     h('details', {}, h('summary', { text: t('whereCash') }),
       rows(Object.entries(r.flow).map(([k, v]) => [t(`flow.${k}`), moneySigned(v)]))),
     h('details', {}, h('summary', { text: t('howProfit') }),
@@ -302,7 +313,7 @@ function board(s, highlight) {
       s.receivables.length ? Object.entries(byWho).map(([id, list]) => h('div', { class: 'debtor' },
         h('p', {}, h('strong', { text: who(id) })),
         h('ul', {}, list.map(x => h('li', { text: !x.noted ? t('dueUnknown', { amount: money(x.amount) }) : x.late ? t('dueLate', { amount: money(x.amount), n: x.week + (id === 'school' ? P.school.term : 1) }) : t('due', { amount: money(x.amount), n: x.due }) }))),
-        list.some(x => x.due <= s.week) ? btn(t('chase', { who: who(id) }), 'chase', { 'data-who': id, disabled: !can(s, { type: 'chase', who: id }), onclick: act({ type: 'chase', who: id }, r => ({ kind: 'notice', text: t(r.paid ? 'chasePaid' : 'chaseWaiting', { who: who(id), amount: money(r.amount) }) })) }) : null))
+        list.some(x => x.due <= s.week) ? btn(t('chase', { who: who(id) }), 'chase', { 'data-who': id, disabled: !can(s, { type: 'chase', who: id }), onclick: act({ type: 'chase', who: id }) }) : null))
         : h('p', { text: t('nobody') }),
       credit.map(([id, c]) => btn(t(c.credit ? 'creditOff' : 'creditOn', { who: who(id) }), 'credit', { 'data-who': id, onclick: act({ type: 'credit', who: id, on: !c.credit }) })),
       h('p', { text: t('notebook') }),
@@ -356,6 +367,9 @@ function reviewCard(s) {
 }
 
 function render(focusResult = false) {
+  clearTimeout(timer);
+  $('scene').classList.remove('playing');
+  $('skip').hidden = true;
   const expanded = [...document.querySelectorAll('.tile[open]')].map(el => el.dataset.tile);
   const active = document.activeElement;
   const focused = active?.dataset.field ? `[data-field="${active.dataset.field}"]${active.type === 'radio' ? `[value="${active.value}"]` : ''}` : active?.dataset.for ? `[data-action="${active.dataset.action}"][data-for="${active.dataset.for}"]` : null;
@@ -373,7 +387,10 @@ function render(focusResult = false) {
   }
   renderTop();
   const s = rec.state;
-  if (shown?.kind === 'notice') main.append(h('p', { class: 'card', role: 'status', text: shown.text }));
+  if (shown?.kind === 'notice') {
+    const r = shown.result;
+    main.append(h('p', { class: 'card', role: 'status', text: t(r.paid ? 'chasePaid' : 'chaseWaiting', { who: who(r.who), amount: money(r.amount) }) }));
+  }
   if (s.phase === 'closed') {
     const f = facts(s);
     main.append(h('section', { class: 'card' }, h('p', { text: t('closed') }),
@@ -399,7 +416,7 @@ function render(focusResult = false) {
       warn ? h('p', { class: 'warn', role: 'alert', text: t('cashWarning') }) : null,
       btn(t('run', { n: s.week }), 'run', { class: 'primary', onclick: () => runWeeks(false) }),
       btn(t('runUntil'), 'runUntil', { onclick: () => runWeeks(true) }),
-      s.history.length > 3 ? btn(t('help'), 'help', { class: 'link', onclick: act({ type: 'help' }, () => ({ kind: 'help' })) }) : null,
+      s.history.length > 3 ? btn(t('help'), 'help', { class: 'link', onclick: act({ type: 'help' }) }) : null,
       s.history.length > 3 ? h('p', { class: 'small', text: t('helpNote') }) : null));
     main.append(controls);
   }
@@ -466,9 +483,16 @@ async function deleteRun(id) {
 // Reopen a saved run only if its actions reproduce its saved state under these rules.
 function load(r) {
   rec = r;
-  try { blocked = r.schema !== store.SCHEMA || r.version !== store.VERSION || r.content?.id !== content.id || r.content?.version !== content.version || r.calc !== CALC_VERSION || JSON.stringify(replay(r.seed, r.log.map(e => e.action))) !== JSON.stringify(r.state); }
+  shown = null;
+  try {
+    blocked = r.schema !== store.SCHEMA || r.version !== store.VERSION || r.content?.id !== content.id || r.content?.version !== content.version || r.calc !== CALC_VERSION;
+    if (blocked) return;
+    const last = r.log.at(-1), before = replay(r.seed, r.log.slice(0, -1).map(e => e.action));
+    const out = last ? step(before, last.action) : { state: before };
+    blocked = JSON.stringify(out.state) !== JSON.stringify(r.state);
+    if (!blocked && last) shown = feedback(last.action, out.result, before);
+  }
   catch { blocked = true; }
-  if (!blocked) { const last = r.state.history.at(-1); shown = last && r.log.at(-1)?.action.type === 'run' ? { kind: 'result', results: [last] } : null; }
 }
 
 async function checkOffline() {
