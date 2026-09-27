@@ -87,3 +87,25 @@ export function animateWeek(host, result, labels) {
   requestAnimationFrame(() => requestAnimationFrame(() => set(result.cashEnd)));
   return result.days.length * 500 + 400;
 }
+
+// Who or what an event is about, drawn small for its card. Pictures carry meaning for
+// readers who skip text; the card text still states everything.
+const face = (body, extra = '') => `<circle cx="32" cy="22" r="11" fill="#8a5a3b"/><rect x="18" y="35" width="28" height="26" rx="10" fill="${body}"/>${extra}`;
+const PORTRAIT = {
+  household: '<path d="M10 30 l22 -18 l22 18 v26 h-44 z" fill="#fde68a" stroke="#92400e" stroke-width="2"/><rect x="27" y="40" width="10" height="16" fill="#92400e"/>',
+  shop: '<rect x="18" y="34" width="28" height="20" rx="5" fill="#475569"/><rect x="14" y="30" width="36" height="6" rx="3" fill="#475569"/><path d="M26 26 q-4 -8 0 -14 M38 26 q4 -8 0 -14" stroke="#94a3b8" stroke-width="2" fill="none"/>',
+  neema: face('#7c3aed', '<path d="M20 18 q12 -14 24 0 v-4 q-12 -10 -24 0 z" fill="#c4b5fd"/>'),
+  people: face('#b45309') + '<g transform="translate(-16 6) scale(.8)">' + face('#0f766e') + '</g><g transform="translate(28 6) scale(.8)">' + face('#be123c') + '</g>',
+  book: '<rect x="14" y="12" width="36" height="42" rx="3" fill="#1d4ed8"/><path d="M22 22 h20 M22 30 h20 M22 38 h14" stroke="#fff" stroke-width="2"/>',
+  office: '<rect x="14" y="8" width="36" height="50" fill="#cbd5e1"/><path d="M20 16 h8 v6 h-8 z M36 16 h8 v6 h-8 z M20 30 h8 v6 h-8 z M36 30 h8 v6 h-8 z" fill="#fff"/>',
+  school: '<path d="M8 26 l24 -16 l24 16 z" fill="#b91c1c"/><rect x="12" y="26" width="40" height="30" fill="#fde68a"/><rect x="27" y="40" width="10" height="16" fill="#92400e"/>',
+  kiosk: '<rect x="14" y="24" width="36" height="32" fill="#bae6fd"/><rect x="10" y="18" width="44" height="8" fill="#0369a1"/>',
+  rival: face('#dc2626', '<path d="M22 14 h20 l-4 -6 h-12 z" fill="#fbbf24"/>'),
+  juma: face('#2563eb'),
+  travel: '<rect x="12" y="22" width="40" height="30" rx="4" fill="#92400e"/><path d="M24 22 v-6 h16 v6" stroke="#92400e" stroke-width="3" fill="none"/>',
+  bakari: face('#475569', '<path d="M21 16 q11 -10 22 0 z" fill="#fff"/><path d="M26 30 q6 4 12 0" stroke="#e5e7eb" stroke-width="3" fill="none"/>'),
+};
+const EVENT_PORTRAIT = { payment: 'household', pot: 'shop', neema: 'neema', notebook: 'book', office: 'office', office2: 'office', officeResult: 'office',
+  neighbours: 'people', school: 'school', schoolTrial: 'school', schoolCounter: 'school', discrepancy: 'school', competitor: 'rival', kiosk: 'kiosk',
+  helper: 'juma', helperHire: 'juma', away: 'travel', away2: 'travel', flour: 'bakari' };
+export const portrait = event => `<svg viewBox="0 0 64 64" aria-hidden="true">${PORTRAIT[EVENT_PORTRAIT[event]] || ''}</svg>`;

@@ -6,7 +6,7 @@ import { createSeason, step, can, quiet, capacity, hours, committed, needs, fact
 import { loadStrings, setLanguage, getLanguage, t, localised } from './i18n.js';
 import { setCurrency, money, moneySigned } from './format.js';
 import * as store from './seasonstore.js';
-import { drawScene, animateWeek, level } from './seasonscene.js';
+import { drawScene, animateWeek, level, portrait } from './seasonscene.js';
 
 const $ = id => document.getElementById(id);
 const P = SAMPLE;
@@ -196,7 +196,8 @@ function eventCard(s) {
   const id = s.pending, params = eventParams(s);
   const card = h('section', { class: 'card event', 'data-testid': 'event', 'data-event': id, id: 'next-step', tabindex: '-1' },
     h('p', { class: 'kicker', text: t('next.event') }),
-    h('h2', { text: fill(ev(id, 'title'), params) }), h('p', { text: fill(ev(id, 'body'), params) }));
+    h('div', { class: 'event-head' }, h('span', { class: 'portrait' }), h('h2', { text: fill(ev(id, 'title'), params) })), h('p', { text: fill(ev(id, 'body'), params) }));
+  card.querySelector('.portrait').innerHTML = portrait(id);
   if (id.startsWith('school')) {
     const need = needs(s, P.school.full);
     card.append(h('div', { class: 'needs' }, h('h3', { text: t('needsTitle') }), h('ul', {},
@@ -230,12 +231,12 @@ function outcomeCard({ id, result, before }) {
 
 function notes(r) {
   const out = [];
-  for (const n of r.notes) out.push(n === 'householdShort' ? t('note.householdShort', { amount: money(r.householdShort) }) : t(`note.${n}`));
-  for (const l of new Set(r.late)) out.push(t('note.late', { who: who(l) }));
-  if (r.away) out.push(t('note.away'));
-  if (r.trial) out.push(t('note.trial', r.trial));
-  for (const c of r.collected) out.push(t('note.collected', { who: who(c.who), amount: money(c.amount), n: c.from }));
-  for (const i of r.invoices) out.push(t('note.invoice', { who: who(i.who), amount: money(i.amount), n: i.due }));
+  for (const n of r.notes) out.push([NOTE_ICON[n] || 'paper', n === 'householdShort' ? t('note.householdShort', { amount: money(r.householdShort) }) : t(`note.${n}`)]);
+  for (const l of new Set(r.late)) out.push(['clock', t('note.late', { who: who(l) })]);
+  if (r.away) out.push(['travel', t('note.away')]);
+  if (r.trial) out.push(['office', t('note.trial', r.trial)]);
+  for (const c of r.collected) out.push(['coin', t('note.collected', { who: who(c.who), amount: money(c.amount), n: c.from })]);
+  for (const i of r.invoices) out.push(['paper', t('note.invoice', { who: who(i.who), amount: money(i.amount), n: i.due })]);
   return out;
 }
 
@@ -254,8 +255,8 @@ function resultCard(results, compact = false) {
         ['sales', money(r.sales), t('receipt.sales', { cash: money(r.cashSales), credit: money(r.creditSales) })],
         ['profit', money(r.profit), t('receipt.profit', { sales: money(r.sales), costs: money(sum(Object.entries(r.pnl).filter(([k]) => k !== 'revenue').map(([, v]) => v))) })],
         ['cash', money(r.cashEnd), t('receipt.cash', { start: money(r.cashStart), received: money(sum(Object.values(r.flow).filter(v => v > 0))), paid: money(-sum(Object.values(r.flow).filter(v => v < 0))) })],
-      ].map(([key, amount, explanation]) => h('div', {}, h('dt', { text: t(key) }), h('dd', {}, h('strong', { text: amount }), h('p', { class: 'small', text: explanation }))))),
-      h('ul', { class: 'notes' }, lines.slice(0, Math.max(1, r.notes.length + new Set(r.late).size)).map(text => h('li', { text }))),
+      ].map(([key, amount, explanation]) => h('div', {}, h('dt', {}, pic({ sales: 'coin', profit: 'profit', cash: 'money' }[key]), t(key)), h('dd', {}, h('strong', { text: amount }), h('p', { class: 'small', text: explanation }))))),
+      h('ul', { class: 'notes' }, lines.slice(0, Math.max(1, r.notes.length + new Set(r.late).size)).map(noteItem)),
       h('details', {}, h('summary', { text: t('recap.details') }), full),
       btn(t(`next.${rec.state.phase === 'event' ? 'choice' : rec.state.phase === 'review' ? 'review' : 'plan'}`, { n: rec.state.week }), 'next-step', { class: 'primary', onclick: () => $('next-step')?.focus() }));
   }
@@ -267,8 +268,8 @@ function resultCard(results, compact = false) {
     tradingPicture(r),
     h('p', { class: 'tin', text: t('tin', { start: money(r.cashStart), end: money(r.cashEnd) }) }),
     h('p', { class: 'compare', text: t('compare', { profit: money(r.profit), change: moneySigned(change) }) }),
-    h('ul', { class: 'notes' }, lines.slice(0, visible).map(text => h('li', { text }))),
-    lines.length > visible ? h('details', {}, h('summary', { text: t('moreResults', { n: lines.length - visible }) }), h('ul', { class: 'notes' }, lines.slice(visible).map(text => h('li', { text })))) : null,
+    h('ul', { class: 'notes' }, lines.slice(0, visible).map(noteItem)),
+    lines.length > visible ? h('details', {}, h('summary', { text: t('moreResults', { n: lines.length - visible }) }), h('ul', { class: 'notes' }, lines.slice(visible).map(noteItem))) : null,
     h('details', {}, h('summary', { text: t('whereCash') }),
       rows(Object.entries(r.flow).map(([k, v]) => [t(`flow.${k}`), moneySigned(v)]))),
     h('details', {}, h('summary', { text: t('howProfit') }),
@@ -405,10 +406,19 @@ function stepper(field, value, stepBy, label, min, max) {
 }
 
 const ICON = {
-  buy: 'M5 20 q-2 -12 7 -14 q9 2 7 14 z', cook: 'M4 10 h16 v7 q0 3 -3 3 h-10 q-3 0 -3 -3 z M2 9 h20',
-  sell: 'M12 3 a9 9 0 1 0 .1 0 z M12 7 v10 M9 9 h5 M9 15 h5', collect: 'M6 3 h12 v18 h-12 z M9 8 h6 M9 12 h6 M9 16 h4',
-  money: 'M3 10 l9 -6 l9 6 v10 h-18 z M10 20 v-6 h4 v6',
+  buy: 'M5 21 q-2 -12 7 -14 q9 2 7 14 z M9 7 l3 -3 l3 3', cook: 'M4 10 h16 v7 q0 3 -3 3 h-10 q-3 0 -3 -3 z M2 9 h20',
+  sell: 'M12 3 a3.5 3.5 0 1 0 .1 0 z M5 21 v-3 a7 7 0 0 1 14 0 v3', collect: 'M6 3 h12 v18 h-12 z M9 8 h6 M9 12 h6 M9 16 h4',
+  money: 'M5 8 h14 v12 h-14 z M5 8 l2 -4 h10 l2 4 M10 13 h4', home: 'M3 10 l9 -6 l9 6 v10 h-18 z M10 20 v-6 h4 v6',
+  coin: 'M12 3 a9 9 0 1 0 .1 0 z M12 7 v10 M9 9 h5 M9 15 h5', paper: 'M6 3 h9 l3 3 v15 h-12 z M9 10 h6 M9 14 h6',
+  bin: 'M5 7 h14 M9 7 v-3 h6 v3 M6 7 l1 14 h10 l1 -14', leave: 'M9 4 a3 3 0 1 0 .1 0 z M4 21 v-3 a5 5 0 0 1 10 0 v3 M16 12 h6 M19 9 l3 3 l-3 3',
+  clock: 'M12 3 a9 9 0 1 0 .1 0 z M12 7 v5 l3 3', cross: 'M12 3 a9 9 0 1 0 .1 0 z M6 6 l12 12',
+  school: 'M3 10 l9 -6 l9 6 z M5 10 v10 h14 v-10 M10 20 v-5 h4 v5', kiosk: 'M5 5 h14 l1 4 h-16 z M6 9 v11 h12 v-11',
+  office: 'M6 3 h12 v18 h-12 z M9 7 h2 M13 7 h2 M9 11 h2 M13 11 h2 M9 15 h2 M13 15 h2', travel: 'M4 8 h16 v12 h-16 z M9 8 v-3 h6 v3',
+  profit: 'M3 12 h7 M6.5 8.5 v7 M14 12 h7',
 };
+const NOTE_ICON = { soldOut: 'leave', waste: 'bin', rejected: 'cross', blocked: 'cross', schoolShort: 'school', schoolLost: 'school', kioskShort: 'kiosk', kioskLost: 'kiosk', householdShort: 'home' };
+const pic = key => h('span', { class: 'icon', 'aria-hidden': 'true' }, icon(key));
+const noteItem = ([key, text]) => h('li', { class: 'pic' }, pic(key), h('span', { text }));
 
 function dailyPlan(s) {
   const cap = capacity(s);

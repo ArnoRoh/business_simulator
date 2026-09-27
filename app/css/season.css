@@ -256,3 +256,12 @@ select:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
 @keyframes cashout { 0% { opacity: 1; } 100% { opacity: 0; transform: translate(-110px, -40px); } }
 .stage .strip strong { font-size: .9rem; }
 .stage .strip .meta { font-size: .76rem; }
+
+/* Pictures beside results and on event cards. */
+.notes li.pic { list-style: none; display: flex; gap: 8px; align-items: flex-start; margin: 4px 0 4px -1.1em; }
+.notes .icon svg, .receipt dt .icon svg { width: 20px; height: 20px; }
+.notes .icon { flex: 0 0 20px; margin-top: 2px; }
+.receipt dt { display: flex; gap: 6px; align-items: flex-start; }
+.event-head { display: flex; gap: 10px; align-items: center; }
+.portrait { flex: 0 0 56px; }
+.portrait svg { display: block; width: 56px; height: 56px; border-radius: 12px; background: #ffe8c4; }
