@@ -484,6 +484,35 @@ export function limit(res) {
   return '';
 }
 
+// ---- why things happened ------------------------------------------------------
+// A week can raise two questions: what held trading back, and why the tin moved
+// differently from profit. Each answer comes from the saved week. A topic is explained
+// outright the first two times it appears; after that the learner is asked first and
+// the answer is recorded (D-067). A topic repeated from the week before is not raised.
+const HELD = { buy: 'buy', pots: 'cook', hours: 'cook', plan: 'plan', demand: 'demand', collect: 'collect' };
+export const WHY = { held: ['buy', 'cook', 'plan', 'demand', 'collect'], gap: ['credit', 'household', 'stock', 'other'] };
+export function gapParts(r) {
+  const f = k => r.flow[k] || 0;
+  const credit = r.creditSales - f('collected'), household = -f('household');
+  const stock = -f('supplies') - f('supplier') - (r.pnl.materials || 0);
+  return { credit, household, stock, other: r.profit - (r.cashEnd - r.cashStart) - credit - household - stock };
+}
+function topic(r, kind) {
+  if (kind === 'held') return HELD[r.limit] || '';
+  if (Math.abs(r.profit - (r.cashEnd - r.cashStart)) < Math.max(1000, r.sales / 5)) return '';
+  return Object.entries(gapParts(r)).sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))[0][0];
+}
+export function causes(history) {
+  const r = history.at(-1);
+  if (!r) return [];
+  return Object.keys(WHY).flatMap(kind => {
+    const key = topic(r, kind);
+    if (!key || (history.length > 1 && topic(history.at(-2), kind) === key)) return [];
+    const starts = history.slice(0, -1).filter((x, i) => topic(x, kind) === key && (i === 0 || topic(history[i - 1], kind) !== key)).length;
+    return [{ kind, key, week: r.week, ask: starts >= 2 }];
+  });
+}
+
 // ---- dispatcher -------------------------------------------------------------
 
 export function step(state, action) {
@@ -531,6 +560,13 @@ export function step(state, action) {
     }
     case 'credit': need('plan'); if (!s.customers[action.who]) fail('who'); s.customers[action.who].credit = !!action.on; break;
     case 'notebook': need('plan'); s.notebook = !!action.on; if (s.notebook) s.notebookFrom = s.week; break;
+    case 'why': {
+      const c = causes(s.history).find(x => x.kind === action.kind);
+      if (s.phase === 'closed' || !c?.ask || s.whys?.some(w => w.week === c.week && w.kind === c.kind) || ![...WHY[c.kind], 'unsure'].includes(action.pick)) fail('why');
+      result = { week: c.week, kind: c.kind, key: c.key, pick: action.pick, matched: action.pick === c.key };
+      (s.whys ||= []).push(result); // Absent from older records, so they still replay exactly.
+      break;
+    }
     case 'help': result = { limit: limit(s.history.at(-1)), week: s.week }; s.help.push(s.week); break;
     case 'goal': if (!['income', 'customers', 'away'].includes(action.goal) || s.week < 5) fail('goal'); s.goal = action.goal; s.goals.push({ week: s.week, goal: action.goal }); break;
     case 'review': need('review'); if (s.week > WEEKS && !s.finished) { s.finished = true; } arrive(s); break;

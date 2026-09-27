@@ -1,5 +1,5 @@
 // Shell updates wait for existing tabs to close. Downloaded chapters survive updates.
-const CACHE = 'business-simulator-preview-20260927-stall-menu'; // Deploy-stamped shell version.
+const CACHE = 'business-simulator-preview-20260927-why'; // Deploy-stamped shell version.
 const SCOPE = new URL(self.registration.scope).pathname;
 const PREFIX = `business-simulator:${SCOPE}:`;
 const SHELL_CACHE = PREFIX + CACHE;

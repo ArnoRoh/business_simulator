@@ -1,7 +1,7 @@
 // Financial identities, dated effects and reachable complete seasons; no browser needed.
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { createSeason, step, can, eventOptions, replay, balance, capacity, hours, facts, goalProgress, SAMPLE as P } from '../app/js/season.js';
+import { createSeason, step, can, eventOptions, replay, balance, capacity, hours, facts, goalProgress, causes, gapParts, WHY, SAMPLE as P } from '../app/js/season.js';
 const next = (s, type, extra = {}) => step(s, { type, ...extra }).state;
 const balanced = s => { const b = balance(s); assert.equal(b.equity, b.expected); assert(s.cash >= 0); };
 const fresh = () => createSeason({ seed: 1 });
@@ -76,4 +76,25 @@ function translated(o, path = '') {
 }
 translated(content);
 for (const event of ['payment', 'office', 'school', 'helper', 'away', 'flour']) assert([...coverage].some(x => x.startsWith(event + ':')), event);
-console.log(`Season: 300 complete runs, ${transitions} reconciled transitions, ${coverage.size} event choices, ${strings} bilingual strings; debt, stock, assets, hours and replay passed.`);
+// Why questions: intro topics cannot be answered, asked ones once; picks leave the business unchanged.
+let asked = 0, intros = 0;
+for (let seed = 1; seed <= 40; seed++) {
+ let w = createSeason({ seed });
+ for (let i = 0; i < 80 && w.week <= 24; i++) {
+  if (w.phase === 'event') { w = next(w, 'answer', { option: eventOptions(w.pending).find(o => can(w, { type: 'answer', option: o })) }); continue; }
+  if (w.phase === 'review') { w = next(w, 'review'); continue; }
+  w = next(next(w, 'plan', { patch: { trays: 1 + (seed * 7 + i) % 12 } }), 'run');
+  const r = w.history.at(-1), g = gapParts(r);
+  assert.equal(g.credit + g.household + g.stock + g.other, r.profit - (r.cashEnd - r.cashStart));
+  for (const c of causes(w.history)) {
+   assert(WHY[c.kind].includes(c.key));
+   if (!c.ask) { intros++; assert(!can(w, { type: 'why', kind: c.kind, pick: c.key })); continue; }
+   const pick = asked++ % 2 ? c.key : 'unsure', out = step(w, { type: 'why', kind: c.kind, pick });
+   assert.equal(out.result.matched, pick === c.key);
+   assert.deepEqual({ ...out.state, whys: undefined }, { ...w, whys: undefined });
+   w = out.state; assert(!can(w, { type: 'why', kind: c.kind, pick: c.key }));
+  }
+ }
+}
+assert(asked > 40 && intros > 40, `why coverage ${asked}/${intros}`);
+console.log(`Season: 300 complete runs, ${transitions} reconciled transitions, ${coverage.size} event choices, ${strings} bilingual strings, ${asked} why answers; debt, stock, assets, hours and replay passed.`);

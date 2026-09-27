@@ -1152,6 +1152,158 @@
     "openPanel": {
       "en": "Open: {name}",
       "sw": "Fungua: {name}"
+    },
+    "why.kicker": {
+      "en": "Why? Choose first",
+      "sw": "Kwa nini? Chagua kwanza"
+    },
+    "why.intro": {
+      "en": "New: why this happened",
+      "sw": "Jipya: kwa nini hili lilitokea"
+    },
+    "why.q.held": {
+      "en": "What held the business back most last week?",
+      "sw": "Nini kilizuia biashara zaidi wiki iliyopita?"
+    },
+    "why.q.gap": {
+      "en": "Profit was {profit}, but the tin changed by {change}. What explains most of the difference?",
+      "sw": "Faida ilikuwa {profit}, lakini kopo lilibadilika kwa {change}. Nini kinaeleza sehemu kubwa ya tofauti?"
+    },
+    "why.held.buy": {
+      "en": "Not enough packs",
+      "sw": "Mifuko haikutosha"
+    },
+    "why.held.cook": {
+      "en": "Could not cook more",
+      "sw": "Haikuwezekana kupika zaidi"
+    },
+    "why.held.plan": {
+      "en": "Cooked fewer than people wanted",
+      "sw": "Ulipika chini ya walichotaka watu"
+    },
+    "why.held.demand": {
+      "en": "Too few buyers",
+      "sw": "Wanunuzi wachache mno"
+    },
+    "why.held.collect": {
+      "en": "Customers owe too much",
+      "sw": "Wateja wanadaiwa mno"
+    },
+    "why.held.unsure": {
+      "en": "Not sure: show me",
+      "sw": "Sina uhakika: nionyeshe"
+    },
+    "why.gap.credit": {
+      "en": "Sales on credit",
+      "sw": "Mauzo ya mkopo"
+    },
+    "why.gap.household": {
+      "en": "Home money",
+      "sw": "Pesa za nyumbani"
+    },
+    "why.gap.stock": {
+      "en": "Packs bought or used",
+      "sw": "Mifuko iliyonunuliwa au kutumika"
+    },
+    "why.gap.other": {
+      "en": "Equipment, loans or bills",
+      "sw": "Vifaa, mikopo au bili"
+    },
+    "why.gap.unsure": {
+      "en": "Not sure: show me",
+      "sw": "Sina uhakika: nionyeshe"
+    },
+    "why.matched": {
+      "en": "You chose: {pick}. The records agree.",
+      "sw": "Ulichagua: {pick}. Kumbukumbu zinakubali."
+    },
+    "why.other": {
+      "en": "You chose: {pick}. The records show another reason:",
+      "sw": "Ulichagua: {pick}. Kumbukumbu zinaonyesha sababu nyingine:"
+    },
+    "why.c.buy.1": {
+      "en": "You planned {planned} trays a day: {wanted} packs for the week.",
+      "sw": "Ulipanga trei {planned} kwa siku: mifuko {wanted} kwa wiki."
+    },
+    "why.c.buy.2": {
+      "en": "The tin and supplier credit paid for {bought} packs.",
+      "sw": "Kopo na mkopo wa msambazaji vililipia mifuko {bought}."
+    },
+    "why.c.buy.3": {
+      "en": "{short} packs short, so fewer trays were cooked. {lost} customers went away.",
+      "sw": "Mifuko {short} ilipungua, hivyo trei chache zilipikwa. Wateja {lost} waliondoka."
+    },
+    "why.c.cook.1": {
+      "en": "You planned {planned} trays a day.",
+      "sw": "Ulipanga trei {planned} kwa siku."
+    },
+    "why.c.cook.2": {
+      "en": "You could cook only {cap} a day. {by}",
+      "sw": "Uliweza kupika {cap} tu kwa siku. {by}"
+    },
+    "why.c.cook.3": {
+      "en": "{lost} customers went away without food.",
+      "sw": "Wateja {lost} waliondoka bila chakula."
+    },
+    "why.c.plan.1": {
+      "en": "You cooked {trays} trays a day: {made} pieces in the week.",
+      "sw": "Ulipika trei {trays} kwa siku: vipande {made} kwa wiki."
+    },
+    "why.c.plan.2": {
+      "en": "{demand} people came to buy at the stall.",
+      "sw": "Watu {demand} walikuja kununua kibandani."
+    },
+    "why.c.plan.3": {
+      "en": "{lost} went away without food. Your pots and hours allow up to {cap} trays a day.",
+      "sw": "{lost} waliondoka bila chakula. Sufuria na saa zako zinaruhusu hadi trei {cap} kwa siku."
+    },
+    "why.c.demand.1": {
+      "en": "You made {made} pieces.",
+      "sw": "Ulitengeneza vipande {made}."
+    },
+    "why.c.demand.2": {
+      "en": "{sold} were sold.",
+      "sw": "Vipande {sold} viliuzwa."
+    },
+    "why.c.demand.3": {
+      "en": "{waste} were thrown away. Their packs were paid for but earned nothing.",
+      "sw": "Vipande {waste} vilitupwa. Mifuko yake ililipwa lakini haikuleta mapato."
+    },
+    "why.c.collect.1": {
+      "en": "Customers owe you {owed}.",
+      "sw": "Wateja wanadaiwa {owed}."
+    },
+    "why.c.collect.2": {
+      "en": "The tin holds {cash}.",
+      "sw": "Kopo lina {cash}."
+    },
+    "why.c.collect.3": {
+      "en": "Money earned on credit cannot pay bills until it is collected.",
+      "sw": "Pesa za mauzo ya mkopo haziwezi kulipa bili hadi zikusanywe."
+    },
+    "why.c.gap": {
+      "en": "Profit: {profit}. Change in the tin: {change}.",
+      "sw": "Faida: {profit}. Mabadiliko ya kopo: {change}."
+    },
+    "why.c.credit": {
+      "en": "Sold on credit this week: {credit}. Paid in from earlier credit: {collected}. Credit sales count in profit when sold, but reach the tin only when paid.",
+      "sw": "Mauzo ya mkopo wiki hii: {credit}. Malipo ya mikopo ya zamani: {collected}. Mauzo ya mkopo yanahesabiwa kwenye faida yanapouzwa, lakini yanafika koponi yanapolipwa tu."
+    },
+    "why.c.household": {
+      "en": "{amount} went home. Home money is not a business cost: profit stays the same, but the tin has less.",
+      "sw": "{amount} zilienda nyumbani. Pesa za nyumbani si gharama ya biashara: faida inabaki ileile, lakini kopo lina kidogo."
+    },
+    "why.c.stock": {
+      "en": "Paid for packs this week: {paid}. Packs used in cooking: {used}. Profit counts packs when they are used; the tin pays when they are bought.",
+      "sw": "Malipo ya mifuko wiki hii: {paid}. Mifuko iliyotumika kupika: {used}. Faida inahesabu mifuko inapotumika; kopo linalipa inaponunuliwa."
+    },
+    "why.c.other": {
+      "en": "Equipment, loans and bills paid or still owed moved the tin by {amount} more or less than profit.",
+      "sw": "Vifaa, mikopo na bili zilizolipwa au zinazodaiwa zilibadilisha kopo kwa {amount} tofauti na faida."
+    },
+    "why.done": {
+      "en": "Why?",
+      "sw": "Kwa nini?"
     }
   },
   "events": {

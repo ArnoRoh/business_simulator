@@ -265,3 +265,15 @@ select:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
 .event-head { display: flex; gap: 10px; align-items: center; }
 .portrait { flex: 0 0 56px; }
 .portrait svg { display: block; width: 56px; height: 56px; border-radius: 12px; background: #ffe8c4; }
+
+/* Why it happened: a question, then the reasons from the saved week. */
+.why { border-top: 2px dashed var(--line); margin-top: 10px; padding-top: 8px; }
+.why:focus { outline: 3px solid var(--teal); }
+.why h3 { font-size: 1rem; }
+.why .options { margin-top: 6px; }
+.why .answer, .why .pick { display: flex; gap: 8px; align-items: center; margin: 6px 0; }
+.why .pick { color: var(--red); } .why .pick.matched { color: var(--teal-dark); }
+.why .pick .icon svg { stroke: currentColor; }
+.chain { list-style: none; padding: 0; margin: 4px 0; display: grid; gap: 4px; }
+.chain li { background: #fff7ed; border-radius: 10px 10px 10px 2px; padding: 6px 10px; font-size: .92rem; position: relative; }
+.chain li + li::before { content: "↓"; position: absolute; top: -12px; left: 14px; color: var(--muted); font-size: .8rem; }

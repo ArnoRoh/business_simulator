@@ -2,7 +2,7 @@
 // season.js decides outcomes; this file shows them and records what the player did.
 // Hooks for tests: data-action (commands), data-field (plan controls), data-testid
 // (cash, profit, sales, week, event, saved, result).
-import { createSeason, step, can, quiet, capacity, hours, committed, needs, facts, goalProgress, eventOptions, stock, replay, SAMPLE, WEEKS, CALC_VERSION } from './season.js';
+import { createSeason, step, can, causes, gapParts, WHY, quiet, capacity, hours, committed, needs, facts, goalProgress, eventOptions, stock, replay, SAMPLE, WEEKS, CALC_VERSION } from './season.js';
 import { loadStrings, setLanguage, getLanguage, t, localised } from './i18n.js';
 import { setCurrency, money, moneySigned } from './format.js';
 import * as store from './seasonstore.js';
@@ -82,6 +82,7 @@ function feedback(action, result, before) {
   if (action.type === 'answer') return { kind: 'outcome', id: before.pending, result, before };
   if (action.type === 'chase') return { kind: 'notice', result };
   if (action.type === 'help') return { kind: 'help' };
+  if (action.type === 'why') return { kind: 'result', results: [before.history.at(-1)] };
   return null;
 }
 
@@ -257,6 +258,7 @@ function resultCard(results, compact = false) {
         ['cash', money(r.cashEnd), t('receipt.cash', { start: money(r.cashStart), received: money(sum(Object.values(r.flow).filter(v => v > 0))), paid: money(-sum(Object.values(r.flow).filter(v => v < 0))) })],
       ].map(([key, amount, explanation]) => h('div', {}, h('dt', {}, pic({ sales: 'coin', profit: 'profit', cash: 'money' }[key]), t(key)), h('dd', {}, h('strong', { text: amount }), h('p', { class: 'small', text: explanation }))))),
       h('ul', { class: 'notes' }, lines.slice(0, Math.max(1, r.notes.length + new Set(r.late).size)).map(noteItem)),
+      r.week === rec.state.history.at(-1)?.week ? causes(rec.state.history).map(c => whyBox(c, r)) : null,
       h('details', {}, h('summary', { text: t('recap.details') }), full),
       btn(t(`next.${rec.state.phase === 'event' ? 'choice' : rec.state.phase === 'review' ? 'review' : 'plan'}`, { n: rec.state.week }), 'next-step', { class: 'primary', onclick: () => $('next-step')?.focus() }));
   }
@@ -276,6 +278,35 @@ function resultCard(results, compact = false) {
       rows([[t('pnl.revenue'), money(r.pnl.revenue || 0)], ...pnlOrder.filter(k => r.pnl[k]).map(k => [t(`pnl.${k}`), moneySigned(-r.pnl[k])]), [t('f.profit'), money(r.profit)]])),
     h('details', {}, h('summary', { text: t('byDay') }), h('ol', {}, r.days.map((d, i) =>
       h('li', { text: t('dayLine', { n: i + 1, made: d.made, sold: d.stall, away: Math.max(0, d.demand - d.stall), waste: d.waste }) })))));
+}
+
+// Why it happened, from the saved week. Intro topics show the reasons at once; later
+// ones ask first. The pick is recorded as an action; reading an intro is not.
+function whyChain(c, r) {
+  const made = sum(r.days.map(d => d.pieces)), lost = sum(r.days.map(d => Math.max(0, d.demand - d.stall)));
+  const p = { planned: r.planned, wanted: r.wanted, bought: r.bought, short: r.short, lost, cap: r.capacity.trays, by: t(`by.${r.capacity.by}`),
+    trays: r.trays, made, demand: sum(r.days.map(d => d.demand)), sold: made - r.waste - r.rejected, waste: r.waste,
+    owed: money(r.owedToYou), cash: money(r.cashEnd) };
+  if (c.kind === 'held') return [1, 2, 3].map(n => t(`why.c.${c.key}.${n}`, p));
+  const g = gapParts(r), f = k => r.flow[k] || 0;
+  return [t('why.c.gap', { profit: money(r.profit), change: moneySigned(r.cashEnd - r.cashStart) }), t(`why.c.${c.key}`, {
+    credit: money(r.creditSales), collected: money(f('collected')), amount: money(Math.abs(g[c.key])),
+    paid: money(-f('supplies') - f('supplier')), used: money(r.pnl.materials || 0) })];
+}
+function whyBox(c, r) {
+  const done = rec.state.whys?.find(w => w.week === c.week && w.kind === c.kind);
+  const box = h('section', { class: 'why', 'data-why': c.kind, tabindex: '-1' }, h('p', { class: 'kicker', text: t(!c.ask ? 'why.intro' : done ? 'why.done' : 'why.kicker') }),
+    h('h3', { text: t(`why.q.${c.kind}`, { profit: money(r.profit), change: moneySigned(r.cashEnd - r.cashStart) }) }));
+  if (c.ask && !done) {
+    box.append(h('div', { class: 'options' }, [...WHY[c.kind], 'unsure'].map(k => btn(t(`why.${c.kind}.${k}`), 'why', { class: 'choice', 'data-pick': k,
+      onclick: async () => { await act({ type: 'why', kind: c.kind, pick: k })(); $('main').querySelector(`[data-why="${c.kind}"]`)?.focus(); } }))));
+    return box;
+  }
+  if (done && done.pick !== 'unsure') box.append(h('p', { class: `pick ${done.matched ? 'matched' : ''}` }, pic(done.matched ? 'check' : 'cross'),
+    h('span', { text: t(done.matched ? 'why.matched' : 'why.other', { pick: t(`why.${c.kind}.${done.pick}`) }) })));
+  box.append(h('p', { class: 'answer' }, pic(c.kind === 'held' ? { buy: 'buy', cook: 'cook', plan: 'cook', demand: 'bin', collect: 'collect' }[c.key] : { credit: 'paper', household: 'home', stock: 'buy', other: 'money' }[c.key]),
+    h('strong', { text: t(`why.${c.kind}.${c.key}`) })), h('ol', { class: 'chain' }, whyChain(c, r).map(text => h('li', { text }))));
+  return box;
 }
 
 // Bars show quantities from a completed week, never a forecast or a score.
@@ -383,8 +414,7 @@ const TILE = { buy: 'buy', pots: 'cook', hours: 'cook', plan: 'cook', demand: 's
 function limitCard(s, forced) {
   const last = s.history.at(-1);
   if (!last) return null;
-  const auto = s.history.length <= 3;
-  if (!auto && !forced) return null;
+  if (!forced) return null;
   const key = TILE[last.limit];
   return h('div', { class: 'card limit-note', role: 'note' }, h('p', { text: t(`limit.${last.limit || 'none'}`) }),
     key ? btn(t('openPanel', { name: t(`manage.${key}`) }), 'open-panel', { class: 'link', onclick: () => openSheet(key) }) : null);
@@ -414,7 +444,7 @@ const ICON = {
   clock: 'M12 3 a9 9 0 1 0 .1 0 z M12 7 v5 l3 3', cross: 'M12 3 a9 9 0 1 0 .1 0 z M6 6 l12 12',
   school: 'M3 10 l9 -6 l9 6 z M5 10 v10 h14 v-10 M10 20 v-5 h4 v5', kiosk: 'M5 5 h14 l1 4 h-16 z M6 9 v11 h12 v-11',
   office: 'M6 3 h12 v18 h-12 z M9 7 h2 M13 7 h2 M9 11 h2 M13 11 h2 M9 15 h2 M13 15 h2', travel: 'M4 8 h16 v12 h-16 z M9 8 v-3 h6 v3',
-  profit: 'M3 12 h7 M6.5 8.5 v7 M14 12 h7',
+  profit: 'M3 12 h7 M6.5 8.5 v7 M14 12 h7', check: 'M12 3 a9 9 0 1 0 .1 0 z M7 12 l3 3 l7 -7',
 };
 const NOTE_ICON = { soldOut: 'leave', waste: 'bin', rejected: 'cross', blocked: 'cross', schoolShort: 'school', schoolLost: 'school', kioskShort: 'kiosk', kioskLost: 'kiosk', householdShort: 'home' };
 const pic = key => h('span', { class: 'icon', 'aria-hidden': 'true' }, icon(key));
@@ -595,7 +625,9 @@ function render(focusResult = false) {
     const forced = shown?.kind === 'help';
     const hint = limitCard(s, forced); if (hint) main.append(hint);
     const last = s.history.at(-1);
-    const highlight = last && (s.history.length <= 3 || forced) ? TILE[last.limit] : '';
+    const held = causes(s.history).find(c => c.kind === 'held');
+    const shownWhy = held && (!held.ask || s.whys?.some(w => w.week === held.week && w.kind === 'held'));
+    const highlight = last && (shownWhy || forced) ? TILE[last.limit] : '';
     const trays = Math.min(s.plan.trays, capacity(s).trays);
     const warn = s.cash < Math.max(0, trays * P.days - stock(s)) * (P.pack + (s.week >= P.riseWeek ? P.rise : 0)) + s.plan.household;
     const daily = dailyPlan(s);

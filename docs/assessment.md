@@ -12,6 +12,12 @@ weeks. These are calculated learning feedback, not figures independently calcula
 the learner. History views are not logged; do not infer investigation from them. Reading
 this history does not establish bookkeeping ability or create missing delivery records.
 
+A "why" pick is a recorded action: the week, the topic, the pick and whether it matched
+the reason calculated from the saved week (D-067). It is an observation of one
+multiple-choice explanation after the result was shown. It is not a score. It does
+not show that the learner can explain the cause unaided, and "not sure" is not a
+failure. Introductory explanations that show at once are not logged.
+
 See [the design](./MV-BS-DES-002-continuous-business-pipeline.md) and
 [the season record contract](./adr/0015-season-records-and-preserved-games.md).
 The season is not connected to programme intake. A paid trial in it is simulated.

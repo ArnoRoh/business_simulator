@@ -24,7 +24,20 @@ It waits for an edited batch to save before it trades. There is no forecast ques
 Automatic multi-week trading appears after the first completed week.
 
 Management panels are named for their contents: ingredients/supplier, equipment/people,
-customers/orders, money owed and household/borrowing. The calendar and historical
+customers/orders, money owed and household/borrowing. The stall picture is the menu:
+round signs on the sacks, pots, customers, clipboard and cash tin open each panel as a
+sheet on the lower screen. The summary and stall stay at the top, so the learner sees
+each action change the picture: trays, pots, sacks, helper, notebook and price enter
+with short motion, and cash moved outside trading flies into or out of the tin. Event
+cards show who the event is about; result lines and receipt figures have small icons.
+All pictures are inline SVG.
+
+After each week, a "why" section can explain what held trading back (the stage from
+`limit`) and why the tin moved differently from profit (credit, home money, stock, or
+equipment/loans/bills). It uses only the saved week. The first two times a topic
+appears, the reasons show at once. After that, the learner chooses a reason first,
+or "not sure", and then sees the reasons. A topic repeated from the week before is not
+raised again. The calendar and historical
 accounts sit below play. A short weekly recap shows quantities sold, waste, profit,
 cash and payment/commitment problems. A receipt separates cash and credit sales,
 shows sales less business costs, and reconciles opening cash with receipts and payments.

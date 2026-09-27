@@ -278,6 +278,18 @@ select:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
 .portrait { flex: 0 0 56px; }
 .portrait svg { display: block; width: 56px; height: 56px; border-radius: 12px; background: #ffe8c4; }
 
+/* Why it happened: a question, then the reasons from the saved week. */
+.why { border-top: 2px dashed var(--line); margin-top: 10px; padding-top: 8px; }
+.why:focus { outline: 3px solid var(--teal); }
+.why h3 { font-size: 1rem; }
+.why .options { margin-top: 6px; }
+.why .answer, .why .pick { display: flex; gap: 8px; align-items: center; margin: 6px 0; }
+.why .pick { color: var(--red); } .why .pick.matched { color: var(--teal-dark); }
+.why .pick .icon svg { stroke: currentColor; }
+.chain { list-style: none; padding: 0; margin: 4px 0; display: grid; gap: 4px; }
+.chain li { background: #fff7ed; border-radius: 10px 10px 10px 2px; padding: 6px 10px; font-size: .92rem; position: relative; }
+.chain li + li::before { content: "↓"; position: absolute; top: -12px; left: 14px; color: var(--muted); font-size: .8rem; }
+
 </style>
 
 <div class="app">
@@ -1502,6 +1514,158 @@ select:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
     "openPanel": {
       "en": "Open: {name}",
       "sw": "Fungua: {name}"
+    },
+    "why.kicker": {
+      "en": "Why? Choose first",
+      "sw": "Kwa nini? Chagua kwanza"
+    },
+    "why.intro": {
+      "en": "New: why this happened",
+      "sw": "Jipya: kwa nini hili lilitokea"
+    },
+    "why.q.held": {
+      "en": "What held the business back most last week?",
+      "sw": "Nini kilizuia biashara zaidi wiki iliyopita?"
+    },
+    "why.q.gap": {
+      "en": "Profit was {profit}, but the tin changed by {change}. What explains most of the difference?",
+      "sw": "Faida ilikuwa {profit}, lakini kopo lilibadilika kwa {change}. Nini kinaeleza sehemu kubwa ya tofauti?"
+    },
+    "why.held.buy": {
+      "en": "Not enough packs",
+      "sw": "Mifuko haikutosha"
+    },
+    "why.held.cook": {
+      "en": "Could not cook more",
+      "sw": "Haikuwezekana kupika zaidi"
+    },
+    "why.held.plan": {
+      "en": "Cooked fewer than people wanted",
+      "sw": "Ulipika chini ya walichotaka watu"
+    },
+    "why.held.demand": {
+      "en": "Too few buyers",
+      "sw": "Wanunuzi wachache mno"
+    },
+    "why.held.collect": {
+      "en": "Customers owe too much",
+      "sw": "Wateja wanadaiwa mno"
+    },
+    "why.held.unsure": {
+      "en": "Not sure: show me",
+      "sw": "Sina uhakika: nionyeshe"
+    },
+    "why.gap.credit": {
+      "en": "Sales on credit",
+      "sw": "Mauzo ya mkopo"
+    },
+    "why.gap.household": {
+      "en": "Home money",
+      "sw": "Pesa za nyumbani"
+    },
+    "why.gap.stock": {
+      "en": "Packs bought or used",
+      "sw": "Mifuko iliyonunuliwa au kutumika"
+    },
+    "why.gap.other": {
+      "en": "Equipment, loans or bills",
+      "sw": "Vifaa, mikopo au bili"
+    },
+    "why.gap.unsure": {
+      "en": "Not sure: show me",
+      "sw": "Sina uhakika: nionyeshe"
+    },
+    "why.matched": {
+      "en": "You chose: {pick}. The records agree.",
+      "sw": "Ulichagua: {pick}. Kumbukumbu zinakubali."
+    },
+    "why.other": {
+      "en": "You chose: {pick}. The records show another reason:",
+      "sw": "Ulichagua: {pick}. Kumbukumbu zinaonyesha sababu nyingine:"
+    },
+    "why.c.buy.1": {
+      "en": "You planned {planned} trays a day: {wanted} packs for the week.",
+      "sw": "Ulipanga trei {planned} kwa siku: mifuko {wanted} kwa wiki."
+    },
+    "why.c.buy.2": {
+      "en": "The tin and supplier credit paid for {bought} packs.",
+      "sw": "Kopo na mkopo wa msambazaji vililipia mifuko {bought}."
+    },
+    "why.c.buy.3": {
+      "en": "{short} packs short, so fewer trays were cooked. {lost} customers went away.",
+      "sw": "Mifuko {short} ilipungua, hivyo trei chache zilipikwa. Wateja {lost} waliondoka."
+    },
+    "why.c.cook.1": {
+      "en": "You planned {planned} trays a day.",
+      "sw": "Ulipanga trei {planned} kwa siku."
+    },
+    "why.c.cook.2": {
+      "en": "You could cook only {cap} a day. {by}",
+      "sw": "Uliweza kupika {cap} tu kwa siku. {by}"
+    },
+    "why.c.cook.3": {
+      "en": "{lost} customers went away without food.",
+      "sw": "Wateja {lost} waliondoka bila chakula."
+    },
+    "why.c.plan.1": {
+      "en": "You cooked {trays} trays a day: {made} pieces in the week.",
+      "sw": "Ulipika trei {trays} kwa siku: vipande {made} kwa wiki."
+    },
+    "why.c.plan.2": {
+      "en": "{demand} people came to buy at the stall.",
+      "sw": "Watu {demand} walikuja kununua kibandani."
+    },
+    "why.c.plan.3": {
+      "en": "{lost} went away without food. Your pots and hours allow up to {cap} trays a day.",
+      "sw": "{lost} waliondoka bila chakula. Sufuria na saa zako zinaruhusu hadi trei {cap} kwa siku."
+    },
+    "why.c.demand.1": {
+      "en": "You made {made} pieces.",
+      "sw": "Ulitengeneza vipande {made}."
+    },
+    "why.c.demand.2": {
+      "en": "{sold} were sold.",
+      "sw": "Vipande {sold} viliuzwa."
+    },
+    "why.c.demand.3": {
+      "en": "{waste} were thrown away. Their packs were paid for but earned nothing.",
+      "sw": "Vipande {waste} vilitupwa. Mifuko yake ililipwa lakini haikuleta mapato."
+    },
+    "why.c.collect.1": {
+      "en": "Customers owe you {owed}.",
+      "sw": "Wateja wanadaiwa {owed}."
+    },
+    "why.c.collect.2": {
+      "en": "The tin holds {cash}.",
+      "sw": "Kopo lina {cash}."
+    },
+    "why.c.collect.3": {
+      "en": "Money earned on credit cannot pay bills until it is collected.",
+      "sw": "Pesa za mauzo ya mkopo haziwezi kulipa bili hadi zikusanywe."
+    },
+    "why.c.gap": {
+      "en": "Profit: {profit}. Change in the tin: {change}.",
+      "sw": "Faida: {profit}. Mabadiliko ya kopo: {change}."
+    },
+    "why.c.credit": {
+      "en": "Sold on credit this week: {credit}. Paid in from earlier credit: {collected}. Credit sales count in profit when sold, but reach the tin only when paid.",
+      "sw": "Mauzo ya mkopo wiki hii: {credit}. Malipo ya mikopo ya zamani: {collected}. Mauzo ya mkopo yanahesabiwa kwenye faida yanapouzwa, lakini yanafika koponi yanapolipwa tu."
+    },
+    "why.c.household": {
+      "en": "{amount} went home. Home money is not a business cost: profit stays the same, but the tin has less.",
+      "sw": "{amount} zilienda nyumbani. Pesa za nyumbani si gharama ya biashara: faida inabaki ileile, lakini kopo lina kidogo."
+    },
+    "why.c.stock": {
+      "en": "Paid for packs this week: {paid}. Packs used in cooking: {used}. Profit counts packs when they are used; the tin pays when they are bought.",
+      "sw": "Malipo ya mifuko wiki hii: {paid}. Mifuko iliyotumika kupika: {used}. Faida inahesabu mifuko inapotumika; kopo linalipa inaponunuliwa."
+    },
+    "why.c.other": {
+      "en": "Equipment, loans and bills paid or still owed moved the tin by {amount} more or less than profit.",
+      "sw": "Vifaa, mikopo na bili zilizolipwa au zinazodaiwa zilibadilisha kopo kwa {amount} tofauti na faida."
+    },
+    "why.done": {
+      "en": "Why?",
+      "sw": "Kwa nini?"
     }
   },
   "events": {
@@ -2986,6 +3150,35 @@ function limit(res) {
   return '';
 }
 
+// ---- why things happened ------------------------------------------------------
+// A week can raise two questions: what held trading back, and why the tin moved
+// differently from profit. Each answer comes from the saved week. A topic is explained
+// outright the first two times it appears; after that the learner is asked first and
+// the answer is recorded (D-067). A topic repeated from the week before is not raised.
+const HELD = { buy: 'buy', pots: 'cook', hours: 'cook', plan: 'plan', demand: 'demand', collect: 'collect' };
+const WHY = { held: ['buy', 'cook', 'plan', 'demand', 'collect'], gap: ['credit', 'household', 'stock', 'other'] };
+function gapParts(r) {
+  const f = k => r.flow[k] || 0;
+  const credit = r.creditSales - f('collected'), household = -f('household');
+  const stock = -f('supplies') - f('supplier') - (r.pnl.materials || 0);
+  return { credit, household, stock, other: r.profit - (r.cashEnd - r.cashStart) - credit - household - stock };
+}
+function topic(r, kind) {
+  if (kind === 'held') return HELD[r.limit] || '';
+  if (Math.abs(r.profit - (r.cashEnd - r.cashStart)) < Math.max(1000, r.sales / 5)) return '';
+  return Object.entries(gapParts(r)).sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))[0][0];
+}
+function causes(history) {
+  const r = history.at(-1);
+  if (!r) return [];
+  return Object.keys(WHY).flatMap(kind => {
+    const key = topic(r, kind);
+    if (!key || (history.length > 1 && topic(history.at(-2), kind) === key)) return [];
+    const starts = history.slice(0, -1).filter((x, i) => topic(x, kind) === key && (i === 0 || topic(history[i - 1], kind) !== key)).length;
+    return [{ kind, key, week: r.week, ask: starts >= 2 }];
+  });
+}
+
 // ---- dispatcher -------------------------------------------------------------
 
 function step(state, action) {
@@ -3033,6 +3226,13 @@ function step(state, action) {
     }
     case 'credit': need('plan'); if (!s.customers[action.who]) fail('who'); s.customers[action.who].credit = !!action.on; break;
     case 'notebook': need('plan'); s.notebook = !!action.on; if (s.notebook) s.notebookFrom = s.week; break;
+    case 'why': {
+      const c = causes(s.history).find(x => x.kind === action.kind);
+      if (s.phase === 'closed' || !c?.ask || s.whys?.some(w => w.week === c.week && w.kind === c.kind) || ![...WHY[c.kind], 'unsure'].includes(action.pick)) fail('why');
+      result = { week: c.week, kind: c.kind, key: c.key, pick: action.pick, matched: action.pick === c.key };
+      (s.whys ||= []).push(result); // Absent from older records, so they still replay exactly.
+      break;
+    }
     case 'help': result = { limit: limit(s.history.at(-1)), week: s.week }; s.help.push(s.week); break;
     case 'goal': if (!['income', 'customers', 'away'].includes(action.goal) || s.week < 5) fail('goal'); s.goal = action.goal; s.goals.push({ week: s.week, goal: action.goal }); break;
     case 'review': need('review'); if (s.week > WEEKS && !s.finished) { s.finished = true; } arrive(s); break;
@@ -3088,7 +3288,7 @@ function goalProgress(s) {
   };
 }
 
-  return { createSeason, balance, capacity, needs, limit, step, can, replay, quiet, facts, goalProgress, CALC_VERSION, WEEKS, SAMPLE, stock, hours, committed, eventOptions };
+  return { createSeason, balance, capacity, needs, limit, gapParts, causes, step, can, replay, quiet, facts, goalProgress, CALC_VERSION, WEEKS, SAMPLE, stock, hours, committed, eventOptions, WHY };
 })();
 
 /* ---- seasonstore ---- */
@@ -3308,7 +3508,7 @@ const portrait = event => `<svg viewBox="0 0 64 64" aria-hidden="true">${PORTRAI
 
 /* ---- game ---- */
 const NS_game = (function () {
-const { createSeason, step, can, quiet, capacity, hours, committed, needs, facts, goalProgress, eventOptions, stock, replay, SAMPLE, WEEKS, CALC_VERSION } = NS_season;
+const { createSeason, step, can, causes, gapParts, WHY, quiet, capacity, hours, committed, needs, facts, goalProgress, eventOptions, stock, replay, SAMPLE, WEEKS, CALC_VERSION } = NS_season;
 const { loadStrings, setLanguage, getLanguage, t, localised } = NS_i18n;
 const { setCurrency, money, moneySigned } = NS_format;
 const { drawScene, animateWeek, level, portrait } = NS_seasonscene;
@@ -3396,6 +3596,7 @@ function feedback(action, result, before) {
   if (action.type === 'answer') return { kind: 'outcome', id: before.pending, result, before };
   if (action.type === 'chase') return { kind: 'notice', result };
   if (action.type === 'help') return { kind: 'help' };
+  if (action.type === 'why') return { kind: 'result', results: [before.history.at(-1)] };
   return null;
 }
 
@@ -3571,6 +3772,7 @@ function resultCard(results, compact = false) {
         ['cash', money(r.cashEnd), t('receipt.cash', { start: money(r.cashStart), received: money(sum(Object.values(r.flow).filter(v => v > 0))), paid: money(-sum(Object.values(r.flow).filter(v => v < 0))) })],
       ].map(([key, amount, explanation]) => h('div', {}, h('dt', {}, pic({ sales: 'coin', profit: 'profit', cash: 'money' }[key]), t(key)), h('dd', {}, h('strong', { text: amount }), h('p', { class: 'small', text: explanation }))))),
       h('ul', { class: 'notes' }, lines.slice(0, Math.max(1, r.notes.length + new Set(r.late).size)).map(noteItem)),
+      r.week === rec.state.history.at(-1)?.week ? causes(rec.state.history).map(c => whyBox(c, r)) : null,
       h('details', {}, h('summary', { text: t('recap.details') }), full),
       btn(t(`next.${rec.state.phase === 'event' ? 'choice' : rec.state.phase === 'review' ? 'review' : 'plan'}`, { n: rec.state.week }), 'next-step', { class: 'primary', onclick: () => $('next-step')?.focus() }));
   }
@@ -3590,6 +3792,35 @@ function resultCard(results, compact = false) {
       rows([[t('pnl.revenue'), money(r.pnl.revenue || 0)], ...pnlOrder.filter(k => r.pnl[k]).map(k => [t(`pnl.${k}`), moneySigned(-r.pnl[k])]), [t('f.profit'), money(r.profit)]])),
     h('details', {}, h('summary', { text: t('byDay') }), h('ol', {}, r.days.map((d, i) =>
       h('li', { text: t('dayLine', { n: i + 1, made: d.made, sold: d.stall, away: Math.max(0, d.demand - d.stall), waste: d.waste }) })))));
+}
+
+// Why it happened, from the saved week. Intro topics show the reasons at once; later
+// ones ask first. The pick is recorded as an action; reading an intro is not.
+function whyChain(c, r) {
+  const made = sum(r.days.map(d => d.pieces)), lost = sum(r.days.map(d => Math.max(0, d.demand - d.stall)));
+  const p = { planned: r.planned, wanted: r.wanted, bought: r.bought, short: r.short, lost, cap: r.capacity.trays, by: t(`by.${r.capacity.by}`),
+    trays: r.trays, made, demand: sum(r.days.map(d => d.demand)), sold: made - r.waste - r.rejected, waste: r.waste,
+    owed: money(r.owedToYou), cash: money(r.cashEnd) };
+  if (c.kind === 'held') return [1, 2, 3].map(n => t(`why.c.${c.key}.${n}`, p));
+  const g = gapParts(r), f = k => r.flow[k] || 0;
+  return [t('why.c.gap', { profit: money(r.profit), change: moneySigned(r.cashEnd - r.cashStart) }), t(`why.c.${c.key}`, {
+    credit: money(r.creditSales), collected: money(f('collected')), amount: money(Math.abs(g[c.key])),
+    paid: money(-f('supplies') - f('supplier')), used: money(r.pnl.materials || 0) })];
+}
+function whyBox(c, r) {
+  const done = rec.state.whys?.find(w => w.week === c.week && w.kind === c.kind);
+  const box = h('section', { class: 'why', 'data-why': c.kind, tabindex: '-1' }, h('p', { class: 'kicker', text: t(!c.ask ? 'why.intro' : done ? 'why.done' : 'why.kicker') }),
+    h('h3', { text: t(`why.q.${c.kind}`, { profit: money(r.profit), change: moneySigned(r.cashEnd - r.cashStart) }) }));
+  if (c.ask && !done) {
+    box.append(h('div', { class: 'options' }, [...WHY[c.kind], 'unsure'].map(k => btn(t(`why.${c.kind}.${k}`), 'why', { class: 'choice', 'data-pick': k,
+      onclick: async () => { await act({ type: 'why', kind: c.kind, pick: k })(); $('main').querySelector(`[data-why="${c.kind}"]`)?.focus(); } }))));
+    return box;
+  }
+  if (done && done.pick !== 'unsure') box.append(h('p', { class: `pick ${done.matched ? 'matched' : ''}` }, pic(done.matched ? 'check' : 'cross'),
+    h('span', { text: t(done.matched ? 'why.matched' : 'why.other', { pick: t(`why.${c.kind}.${done.pick}`) }) })));
+  box.append(h('p', { class: 'answer' }, pic(c.kind === 'held' ? { buy: 'buy', cook: 'cook', plan: 'cook', demand: 'bin', collect: 'collect' }[c.key] : { credit: 'paper', household: 'home', stock: 'buy', other: 'money' }[c.key]),
+    h('strong', { text: t(`why.${c.kind}.${c.key}`) })), h('ol', { class: 'chain' }, whyChain(c, r).map(text => h('li', { text }))));
+  return box;
 }
 
 // Bars show quantities from a completed week, never a forecast or a score.
@@ -3697,8 +3928,7 @@ const TILE = { buy: 'buy', pots: 'cook', hours: 'cook', plan: 'cook', demand: 's
 function limitCard(s, forced) {
   const last = s.history.at(-1);
   if (!last) return null;
-  const auto = s.history.length <= 3;
-  if (!auto && !forced) return null;
+  if (!forced) return null;
   const key = TILE[last.limit];
   return h('div', { class: 'card limit-note', role: 'note' }, h('p', { text: t(`limit.${last.limit || 'none'}`) }),
     key ? btn(t('openPanel', { name: t(`manage.${key}`) }), 'open-panel', { class: 'link', onclick: () => openSheet(key) }) : null);
@@ -3728,7 +3958,7 @@ const ICON = {
   clock: 'M12 3 a9 9 0 1 0 .1 0 z M12 7 v5 l3 3', cross: 'M12 3 a9 9 0 1 0 .1 0 z M6 6 l12 12',
   school: 'M3 10 l9 -6 l9 6 z M5 10 v10 h14 v-10 M10 20 v-5 h4 v5', kiosk: 'M5 5 h14 l1 4 h-16 z M6 9 v11 h12 v-11',
   office: 'M6 3 h12 v18 h-12 z M9 7 h2 M13 7 h2 M9 11 h2 M13 11 h2 M9 15 h2 M13 15 h2', travel: 'M4 8 h16 v12 h-16 z M9 8 v-3 h6 v3',
-  profit: 'M3 12 h7 M6.5 8.5 v7 M14 12 h7',
+  profit: 'M3 12 h7 M6.5 8.5 v7 M14 12 h7', check: 'M12 3 a9 9 0 1 0 .1 0 z M7 12 l3 3 l7 -7',
 };
 const NOTE_ICON = { soldOut: 'leave', waste: 'bin', rejected: 'cross', blocked: 'cross', schoolShort: 'school', schoolLost: 'school', kioskShort: 'kiosk', kioskLost: 'kiosk', householdShort: 'home' };
 const pic = key => h('span', { class: 'icon', 'aria-hidden': 'true' }, icon(key));
@@ -3909,7 +4139,9 @@ function render(focusResult = false) {
     const forced = shown?.kind === 'help';
     const hint = limitCard(s, forced); if (hint) main.append(hint);
     const last = s.history.at(-1);
-    const highlight = last && (s.history.length <= 3 || forced) ? TILE[last.limit] : '';
+    const held = causes(s.history).find(c => c.kind === 'held');
+    const shownWhy = held && (!held.ask || s.whys?.some(w => w.week === held.week && w.kind === 'held'));
+    const highlight = last && (shownWhy || forced) ? TILE[last.limit] : '';
     const trays = Math.min(s.plan.trays, capacity(s).trays);
     const warn = s.cash < Math.max(0, trays * P.days - stock(s)) * (P.pack + (s.week >= P.riseWeek ? P.rise : 0)) + s.plan.household;
     const daily = dailyPlan(s);

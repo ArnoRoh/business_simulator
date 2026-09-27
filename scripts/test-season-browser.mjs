@@ -66,7 +66,7 @@ try {
   await page.keyboard.press('Escape');
   await page.waitForFunction(() => document.activeElement.dataset.spot === 'buy'); // Closing a panel returns to its stall part.
   await clickSaved(page, page.locator('[data-action=more][data-for=trays]'));
-  let screens = 0;
+  let screens = 0, whyChecked = false;
   while ((await record(page)).state.week <= 24) {
    const s = (await record(page)).state;
    if (s.phase === 'event') {
@@ -112,6 +112,14 @@ try {
     const last = (await record(page)).state.history.at(-1);
     const cashReceipt = await page.locator('#main .receipt dd').last().innerText();
     assert(cashReceipt.includes(content.ui['receipt.cash'][lang].split('{')[0]), 'Cash receipt explains opening cash and movements');
+    if (s.week === 1) assert(await page.locator('#main .why .chain li').count() >= 3, 'The first bottleneck is explained without a question');
+    const ask = page.locator('#main [data-action=why]');
+    if (!whyChecked && await ask.count()) {
+     whyChecked = true;
+     await clickSaved(page, ask.last());
+     assert.equal((await record(page)).log.at(-1).action.type, 'why');
+     await page.reload(); await page.locator('#main .why .chain').first().waitFor(); // The pick and reasons survive reload.
+    }
     const beforeNext = await record(page);
     await page.locator('[data-action=next-step]').click();
     assert.equal(await page.evaluate(() => document.activeElement.id), 'next-step');
@@ -131,6 +139,7 @@ try {
    assert(!/\{\w+\}/.test(await page.locator('#main').innerText()), `Unfilled placeholder ${s.week}`);
    assert(++screens < 100);
   }
+  assert(whyChecked, 'A later topic asks before explaining');
   await page.locator('[data-testid=review]').waitFor();
   const beforeHistory = await record(page);
   await page.locator('#history-open').click(); await page.locator('#history[open]').waitFor();
