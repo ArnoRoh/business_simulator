@@ -65,7 +65,7 @@ p { margin: .35em 0; }
 @keyframes steam { 50% { transform: translateY(-3px); opacity: .3; } }
 @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
 
-.main { display: grid; gap: 10px; margin-top: 10px; }
+.main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; margin-top: 10px; }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
 .card:focus { outline: 3px solid var(--teal); }
 .result, .outcome, .event { animation: rise .3s ease; }
@@ -103,8 +103,8 @@ button:disabled { opacity: .55; cursor: not-allowed; }
 button:focus-visible, a:focus-visible, input:focus-visible + span, summary:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
 .run { display: grid; gap: 8px; }
 
-.seg { border: 0; padding: 0; margin: 8px 0; display: flex; flex-wrap: wrap; gap: 6px; }
-.seg legend { font-weight: 600; margin-bottom: 4px; padding: 0; }
+.seg { min-width: 0; border: 0; padding: 0; margin: 8px 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.seg legend { max-width: 100%; overflow-wrap: anywhere; font-weight: 600; margin-bottom: 4px; padding: 0; }
 .seg label { position: relative; }
 .seg input { position: absolute; opacity: 0; inset: 0; margin: 0; }
 .seg span { display: flex; align-items: center; min-height: 48px; padding: 6px 12px; border: 2px solid var(--line); border-radius: 10px; background: #fff; }
@@ -215,6 +215,22 @@ select:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
 .daily-plan .stepper { margin: 4px 0; }
 .recap .compare { font-size: .95rem; }
 .recap details .result { padding: 0; border: 0; }
-.board { grid-template-columns: 1fr; }
+.board { grid-template-columns: minmax(0, 1fr); }
 
 .strip .meta[hidden] { display: none; }
+
+.top-controls { display: flex; gap: 8px; }
+.top-controls button { flex: 1; font-size: .82rem; padding: 5px 8px; }
+.guide-steps { padding-left: 1.5rem; }
+.guide-steps li { margin: .65rem 0; padding-left: .25rem; }
+.guide-steps li::marker { color: var(--teal-dark); font-weight: 700; }
+.guide-steps p { font-size: .9rem; }
+#guide-close { width: 100%; margin-top: 12px; position: sticky; bottom: 0; }
+.receipt { margin: 10px 0; overflow-wrap: anywhere; }
+.receipt > div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 8px; padding: 8px 0; border-top: 1px solid var(--line); }
+.receipt dt { font-weight: 600; }
+.receipt dd { margin: 0; }
+.receipt .small { font-size: .82rem; }
+.recap > button { width: 100%; margin-top: 12px; }
+#next-step { scroll-margin-top: 150px; }
+.tall-summary #next-step { scroll-margin-top: 12px; }

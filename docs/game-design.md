@@ -12,6 +12,12 @@ transaction. Feedback follows the selected language. Payment delays and broken
 commitments stay visible above routine trading notes. Automatic trading stops at
 these setbacks so the player can respond. A new action ends any previous animation.
 
+A short controls dialog introduces the role, daily batch, price and trading button.
+It appears once per browser, can be dismissed and reopened with **How to play**, and
+has its own language control. Its dismissal is a local interface preference, separate
+from all learner records. It does not recommend a business decision or count as evidence.
+Existing runs receive the same introduction without a reset.
+
 The opening shows the daily batch, its piece count and the selling price together.
 The trade button explains that it buys ingredients, then cooks and sells for six days.
 It waits for an edited batch to save before it trades. There is no forecast question.
@@ -20,7 +26,12 @@ Automatic multi-week trading appears after the first completed week.
 Management panels are named for their contents: ingredients/supplier, equipment/people,
 customers/orders, money owed and household/borrowing. The calendar and historical
 accounts sit below play. A short weekly recap shows quantities sold, waste, profit,
-cash change and payment/commitment problems. Full production/payment graphics and
+cash and payment/commitment problems. A receipt separates cash and credit sales,
+shows sales less business costs, and reconciles opening cash with receipts and payments.
+These totals come from the saved result. They do not infer motives or a correct next
+choice. A next-action button moves focus to the current plan, event or review without
+committing a decision. Events say that a response is needed before trading; reviews
+explain how to continue. Full production/payment graphics and
 receipts remain available in its details. These displays use completed results.
 
 The business history compares weekly sales, weekly profit and cash at each week end

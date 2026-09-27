@@ -26,17 +26,33 @@ try {
   const page = await ctx.newPage(), errors = [];
   page.on('pageerror', e => errors.push(e.message));
   await page.goto(app.url); await page.locator('[data-action=run]').waitFor();
-  if (lang === 'sw') await page.locator('#lang').click();
+  await page.locator('#guide[open]').waitFor();
+  const beforeGuide = await record(page);
+  if (lang === 'sw') await page.locator('#guide-lang').click();
+  assert.equal(await page.locator('#guide-title').textContent(), content.ui['guide.title'][lang]);
+  await page.screenshot({ path: `/tmp/MV-BS-SEASON-controls-${lang}.png`, fullPage: true });
+  await page.locator('#guide-close').click();
+  await page.reload(); await page.locator('[data-action=run]').waitFor();
+  assert.equal(await page.locator('#guide[open]').count(), 0, 'Dismissal survives an immediate reload');
+  await page.locator('#guide-open').click();
+  await page.keyboard.press('Escape');
+  assert.equal(await page.evaluate(() => document.activeElement.id), 'guide-open');
+  assert.deepEqual(await record(page), beforeGuide, 'Controls help does not alter the learner record');
   await page.waitForFunction(() => document.querySelector('#offline').textContent.startsWith('Ready') || document.querySelector('#offline').textContent.startsWith('Tayari'));
   await page.screenshot({ path: `/tmp/MV-BS-SEASON-opening-${lang}.png`, fullPage: true });
   const runBox = await page.locator('[data-action=run]').boundingBox(); assert(runBox.y + runBox.height <= 740, `First action must fit on the small screen: ${JSON.stringify(runBox)}`);
   const enlarged = await page.addStyleTag({ content: 'html { font-size: 34px !important; }' });
+  await page.locator('#guide-open').click();
+  assert(await page.evaluate(() => document.querySelector('#guide').scrollWidth <= document.querySelector('#guide').clientWidth), 'Controls guide fits at 200% text');
+  await page.locator('#guide-close').click();
   await page.locator('[data-tile=collect] > summary').click();
   assert(await page.locator('[data-tile=collect]').getAttribute('open') !== null, 'Large-text controls are not covered by fixed panels');
   await page.locator('[data-tile=collect] > summary').click();
   await enlarged.evaluate(el => el.remove()); await page.evaluate(() => scrollTo(0, 0));
   await page.screenshot({ path: `/tmp/MV-BS-SEASON-opening-${lang}.png`, fullPage: true });
   await ctx.setOffline(true); await page.reload(); await page.locator('[data-action=run]').waitFor();
+  assert.equal(await page.locator('#guide[open]').count(), 0, 'Dismissed controls guide stays dismissed offline');
+  await page.locator('#guide-open').click(); await page.locator('#guide-close').click();
   // The two daily decisions are usable without opening any settings.
   assert(await page.locator('[data-field=trays]').isVisible());
   assert(await page.locator('[data-field=price]').first().isVisible());
@@ -88,6 +104,12 @@ try {
      assert.equal(typed.state.history.at(-1).planned, 8, `Trade uses the typed plan: ${JSON.stringify(typed.log.slice(-5).map(x => x.action))}`);
     }
     const last = (await record(page)).state.history.at(-1);
+    const cashReceipt = await page.locator('#main .receipt dd').last().innerText();
+    assert(cashReceipt.includes(content.ui['receipt.cash'][lang].split('{')[0]), 'Cash receipt explains opening cash and movements');
+    const beforeNext = await record(page);
+    await page.locator('[data-action=next-step]').click();
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'next-step');
+    assert.deepEqual(await record(page), beforeNext, 'Next points to the decision without making it');
     await page.getByRole('heading', { name: content.ui.result[lang].replace('{n}', last.week), exact: true, includeHidden: true }).waitFor({ state: 'attached' });
     const visibleNotes = await page.locator('[data-testid=result] > .notes').textContent();
     for (const id of last.notes) assert(visibleNotes.includes(content.ui[`note.${id}`][lang].split('{')[0]), `Show ${id} without opening more results`);
@@ -154,6 +176,7 @@ try {
  assert(target, 'Reach a payment setback while routine trading could continue');
  const pauseCtx = await app.browser.newContext({ reducedMotion: 'reduce' }), pause = await pauseCtx.newPage();
  await pause.goto(app.url); await pause.locator('[data-action=run]').waitFor();
+ await pause.locator('#guide-close').click();
  await pause.evaluate(async target => { const store = await import('./js/seasonstore.js'); const r = await store.active(); Object.assign(r, target); await store.save(r, r.rev); }, target);
  await pause.reload(); await pause.locator('[data-action=runUntil]').waitFor();
  await clickSaved(pause, pause.locator('[data-action=runUntil]'));
@@ -162,6 +185,7 @@ try {
  // Real motion, stale tabs, save failure and separate attempts.
  const ctx = await app.browser.newContext({ viewport: { width: 360, height: 800 }, acceptDownloads: true });
  const a = await ctx.newPage(); await a.goto(app.url); await a.locator('[data-action=run]').waitFor();
+ await a.locator('#guide-close').click();
  const b = await ctx.newPage(); await b.goto(app.url); await b.locator('[data-action=run]').waitFor();
  await clickSaved(a, a.locator('[data-action=run]')); assert(await a.locator('#scene').evaluate(el => el.classList.contains('playing')));
  assert(await a.locator('.fx.coin').count() > 0);
@@ -209,6 +233,7 @@ try {
  await old.waitForFunction(async () => Boolean(await (await import('./js/storage.js')).load()));
  const earlierId = await old.evaluate(async () => (await (await import('./js/storage.js')).load()).id);
  const newPage = await upgrade.newPage(); await newPage.goto(app.url); await newPage.locator('[data-action=run]').waitFor();
+ await newPage.locator('#guide-close').click();
  app.updateWorker();
  await newPage.evaluate(async () => (await navigator.serviceWorker.getRegistration()).update());
  await newPage.waitForFunction(async () => Boolean((await navigator.serviceWorker.getRegistration()).waiting));
@@ -223,6 +248,7 @@ try {
  // Generated file is also playable without a server or network.
  const fileCtx = await app.browser.newContext({ reducedMotion: 'reduce' }); const file = await fileCtx.newPage();
  await file.goto(new URL('../app/season-standalone.html', import.meta.url).href); await file.locator('[data-action=run]').waitFor();
+ await file.locator('#guide-close').click();
  await file.locator('[data-action=run]').click(); await file.locator('[data-testid=result]').waitFor();
  const cash = await file.locator('#cash').innerText(); await file.reload(); await file.locator('[data-testid=result]').waitFor(); assert.equal(await file.locator('#cash').innerText(), cash);
  await fileCtx.close();

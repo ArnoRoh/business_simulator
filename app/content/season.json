@@ -1017,10 +1017,6 @@
       "en": "Plan week {n}",
       "sw": "Panga wiki ya {n}"
     },
-    "plan.start": {
-      "en": "Choose what to cook each day and set your price.",
-      "sw": "Chagua kiasi cha kupika kila siku na weka bei yako."
-    },
     "plan.pieces": {
       "en": "{n} pieces planned each day · {per} per tray",
       "sw": "Vipande {n} vimepangwa kwa siku · {per} kwa trei"
@@ -1060,6 +1056,90 @@
     "manage.money": {
       "en": "Home money and borrowing",
       "sw": "Pesa za nyumbani na kukopa"
+    },
+    "guide.open": {
+      "en": "How to play",
+      "sw": "Jinsi ya kucheza"
+    },
+    "guide.title": {
+      "en": "Your mandazi business",
+      "sw": "Biashara yako ya mandazi"
+    },
+    "guide.role": {
+      "en": "Run this stall. Earn money for home and keep enough cash for next week.",
+      "sw": "Endesha kibanda hiki. Pata fedha za nyumbani na ubaki na fedha za wiki inayofuata."
+    },
+    "guide.batch": {
+      "en": "Set the daily batch",
+      "sw": "Chagua kiasi cha kupika kila siku"
+    },
+    "guide.batchBody": {
+      "en": "Use − and +, or type a number of trays. See the piece count below.",
+      "sw": "Tumia − na +, au andika idadi ya trei. Idadi ya mandazi ipo chini."
+    },
+    "guide.price": {
+      "en": "Tap a selling price",
+      "sw": "Gusa bei ya kuuza"
+    },
+    "guide.priceBody": {
+      "en": "Choose one of three prices for each mandazi.",
+      "sw": "Chagua bei moja kati ya tatu kwa kila andazi."
+    },
+    "guide.trade": {
+      "en": "Tap Trade week",
+      "sw": "Gusa Fanya biashara wiki"
+    },
+    "guide.tradeBody": {
+      "en": "Trade buys ingredients, cooks and sells for six days. Read the result, then decide again. No timer.",
+      "sw": "Mchezo unanunua malighafi, unapika na kuuza kwa siku sita. Soma matokeo, kisha amua tena. Hakuna kikomo cha muda."
+    },
+    "guide.manage": {
+      "en": "Open panels below your plan for stock, staff and debts. Your plan stays until you change it.",
+      "sw": "Fungua sehemu chini ya mpango kwa akiba, wafanyakazi na madeni. Mpango unadumu hadi uubadilishe."
+    },
+    "guide.accounts": {
+      "en": "What do the three money figures mean?",
+      "sw": "Takwimu tatu za fedha zina maana gani?"
+    },
+    "guide.accountsBody": {
+      "en": "Sales: what customers bought, including credit. Profit: sales minus business costs. Cash: money available now. A loan adds cash, not profit. Taking money home reduces cash, not profit.",
+      "sw": "Mauzo: walichonunua wateja, pamoja na mauzo ya mkopo. Faida: mauzo ukitoa gharama za biashara. Fedha: kiasi kinachopatikana sasa. Mkopo unaongeza fedha, si faida. Kupeleka fedha nyumbani kunapunguza fedha, si faida."
+    },
+    "guide.start": {
+      "en": "Go to my business",
+      "sw": "Nenda kwenye biashara yangu"
+    },
+    "next.event": {
+      "en": "Next: choose a response before trading",
+      "sw": "Hatua inayofuata: chagua jibu kabla ya kufanya biashara"
+    },
+    "next.choice": {
+      "en": "Next: make a decision ↓",
+      "sw": "Endelea: fanya uamuzi ↓"
+    },
+    "next.review": {
+      "en": "Next: review your business ↓",
+      "sw": "Endelea: pitia biashara yako ↓"
+    },
+    "next.plan": {
+      "en": "Next: plan week {n} ↓",
+      "sw": "Endelea: panga wiki {n} ↓"
+    },
+    "next.reviewHint": {
+      "en": "Review these four weeks, then tap Continue. Choosing a goal is optional.",
+      "sw": "Pitia wiki hizi nne, kisha gusa Endelea. Si lazima kuchagua lengo."
+    },
+    "receipt.sales": {
+      "en": "{cash} paid now · {credit} sold on credit.",
+      "sw": "{cash} zimelipwa sasa · {credit} ni mauzo ya mkopo."
+    },
+    "receipt.profit": {
+      "en": "{sales} sales − {costs} business costs.",
+      "sw": "{sales} mauzo − {costs} gharama za biashara."
+    },
+    "receipt.cash": {
+      "en": "Started with {start} + {received} received − {paid} paid out.",
+      "sw": "Mwanzo {start} + {received} zilizopokelewa − {paid} zilizotumika."
     }
   },
   "events": {

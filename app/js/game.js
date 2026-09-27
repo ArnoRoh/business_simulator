@@ -11,6 +11,7 @@ import { drawScene, animateWeek } from './seasonscene.js';
 const $ = id => document.getElementById(id);
 const P = SAMPLE;
 const LANG = 'mv-bs-season-language';
+const GUIDE = 'mv-bs-season-controls-seen';
 const FILE = location.protocol === 'file:';
 const ONLINE = 'https://arnoroh.github.io/business_simulator/';
 let content, rec = null, status = 'ok', blocked = false, busy = false, offline = false, legacyFound = false, runs = [];
@@ -112,10 +113,12 @@ function play(result) {
   timer = setTimeout(stop, ms);
 }
 function stop() {
+  const playing = $('scene').classList.contains('playing');
   clearTimeout(timer);
   $('scene').classList.remove('playing'); $('scene').classList.add('done');
   $('skip').hidden = true;
   if (rec) renderTop();
+  if (playing) document.querySelector('#main [data-testid=result]')?.focus();
 }
 
 // ---- top: summary strip, calendar, scene ---------------------------------------
@@ -180,7 +183,8 @@ function eventParams(s) {
 
 function eventCard(s) {
   const id = s.pending, params = eventParams(s);
-  const card = h('section', { class: 'card event', 'data-testid': 'event', 'data-event': id },
+  const card = h('section', { class: 'card event', 'data-testid': 'event', 'data-event': id, id: 'next-step', tabindex: '-1' },
+    h('p', { class: 'kicker', text: t('next.event') }),
     h('h2', { text: fill(ev(id, 'title'), params) }), h('p', { text: fill(ev(id, 'body'), params) }));
   if (id.startsWith('school')) {
     const need = needs(s, P.school.full);
@@ -235,9 +239,14 @@ function resultCard(results, compact = false) {
     return h('section', { class: 'card result recap', 'data-testid': 'result', tabindex: '-1' },
       h('h2', { text: t('result', { n: r.week }) }),
       h('p', { text: t('recap.sold', { sold, waste: r.waste }) }),
-      h('p', { class: 'compare', text: t('compare', { profit: money(r.profit), change: moneySigned(change) }) }),
+      h('dl', { class: 'receipt' }, [
+        ['sales', money(r.sales), t('receipt.sales', { cash: money(r.cashSales), credit: money(r.creditSales) })],
+        ['profit', money(r.profit), t('receipt.profit', { sales: money(r.sales), costs: money(sum(Object.entries(r.pnl).filter(([k]) => k !== 'revenue').map(([, v]) => v))) })],
+        ['cash', money(r.cashEnd), t('receipt.cash', { start: money(r.cashStart), received: money(sum(Object.values(r.flow).filter(v => v > 0))), paid: money(-sum(Object.values(r.flow).filter(v => v < 0))) })],
+      ].map(([key, amount, explanation]) => h('div', {}, h('dt', { text: t(key) }), h('dd', {}, h('strong', { text: amount }), h('p', { class: 'small', text: explanation }))))),
       h('ul', { class: 'notes' }, lines.slice(0, Math.max(1, r.notes.length + new Set(r.late).size)).map(text => h('li', { text }))),
-      h('details', {}, h('summary', { text: t('recap.details') }), full));
+      h('details', {}, h('summary', { text: t('recap.details') }), full),
+      btn(t(`next.${rec.state.phase === 'event' ? 'choice' : rec.state.phase === 'review' ? 'review' : 'plan'}`, { n: rec.state.week }), 'next-step', { class: 'primary', onclick: () => $('next-step')?.focus() }));
   }
   const visible = Math.max(3, r.notes.length + new Set(r.late).size);
   const pnlOrder = ['materials', 'chai', 'fee', 'wages', 'interest', 'depreciation', 'other'];
@@ -396,7 +405,6 @@ function dailyPlan(s) {
   const cap = capacity(s);
   return h('section', { class: 'card daily-plan', 'data-testid': 'daily-plan' },
     h('h2', { text: t('plan.title', { n: s.week }) }),
-    !s.history.length ? h('p', { class: 'small', text: t('plan.start') }) : null,
     stepper('trays', s.plan.trays, 1, t('trays'), 0, 15),
     h('p', { class: 'small', text: t('plan.pieces', { n: s.plan.trays * (s.small ? P.smallPieces : P.pieces), per: s.small ? P.smallPieces : P.pieces }) }),
     s.plan.trays > cap.trays ? h('p', { class: 'warn', text: t('canCook', { n: cap.trays }) }) : null,
@@ -464,7 +472,8 @@ function reviewCard(s) {
   const month = (s.week - 1) / 4, season = s.week > WEEKS && !s.finished;
   const period = s.history.slice(-4), f = facts(s), goals = goalProgress(s);
   const threads = s.threads.filter(x => x.week > s.week - 5);
-  const card = h('section', { class: 'card review', 'data-testid': 'review' },
+  const card = h('section', { class: 'card review', 'data-testid': 'review', id: 'next-step', tabindex: '-1' },
+    h('p', { class: 'kicker', text: t('next.reviewHint') }),
     h('h2', { text: season ? t('seasonReview') : t('review', { n: month }) }),
     rows([
       [t('f.sales'), money(sum(period.map(r => r.sales)))], [t('f.profit'), money(sum(period.map(r => r.profit)))],
@@ -499,6 +508,7 @@ function render(focusResult = false) {
   $('title').textContent = t('title'); $('sub').textContent = t('sub');
   for (const el of document.querySelectorAll('[data-i18n]')) el.textContent = t(el.dataset.i18n);
   $('lang').textContent = t('otherLang'); $('lang').lang = getLanguage() === 'en' ? 'sw' : 'en';
+  $('guide-lang').textContent = t('otherLang'); $('guide-lang').lang = $('lang').lang;
   const main = $('main');
   document.body.classList.toggle('opening', !blocked && !rec.state.history.length);
   main.replaceChildren();
@@ -530,7 +540,7 @@ function render(focusResult = false) {
     if (shown?.kind === 'outcome') main.append(outcomeCard(shown));
     main.append(h('details', { 'data-testid': 'plan-editor', open: planOpen }, h('summary', { text: t('plan.change') }), dailyPlan(s)), board(s, ''));
   }
-  else if (s.phase === 'review') { if (shown?.kind === 'result') main.append(h('details', {}, h('summary', { text: t('result', { n: s.week - 1 }) }), resultCard(shown.results))); main.append(reviewCard(s)); }
+  else if (s.phase === 'review') { if (shown?.kind === 'result') main.append(resultCard(shown.results, true)); main.append(reviewCard(s)); }
   else {
     if (shown?.kind === 'result') main.append(resultCard(shown.results, true));
     if (shown?.kind === 'outcome') main.append(outcomeCard(shown));
@@ -543,6 +553,7 @@ function render(focusResult = false) {
     const trays = Math.min(s.plan.trays, capacity(s).trays);
     const warn = s.cash < Math.max(0, trays * P.days - stock(s)) * (P.pack + (s.week >= P.riseWeek ? P.rise : 0)) + s.plan.household;
     const daily = dailyPlan(s);
+    daily.id = 'next-step'; daily.tabIndex = -1;
     daily.append(h('div', { class: 'run' },
       warn ? h('p', { class: 'warn', role: 'alert', text: t('cashWarning') }) : null,
       h('p', { class: 'small', text: t('plan.trade', { n: P.days }) }),
@@ -651,6 +662,16 @@ async function init() {
     try { localStorage.setItem(LANG, getLanguage()); } catch { /* language still works without storage */ }
     render();
   };
+  $('guide-lang').onclick = $('lang').onclick;
+  $('guide-open').onclick = () => $('guide').showModal();
+  const rememberGuide = () => {
+    try { localStorage.setItem(GUIDE, '1'); } catch { /* Controls still work without preferences. */ }
+  };
+  $('guide-close').onclick = () => { rememberGuide(); $('guide').close(); };
+  $('guide').addEventListener('cancel', rememberGuide);
+  $('guide').addEventListener('close', () => {
+    $('guide-open').focus({ preventScroll: true });
+  });
   $('retry').onclick = async () => { try { await store.open(); } catch { /* persist shows the error */ } await persist(); render(); };
   $('reload').onclick = () => location.reload();
   $('skip').onclick = stop;
@@ -666,6 +687,9 @@ async function init() {
   await refreshRuns();
   legacyFound = await store.legacy();
   render();
+  let guideSeen = false;
+  try { guideSeen = localStorage.getItem(GUIDE) === '1'; } catch { /* Show the guide without storage. */ }
+  if (!blocked && !guideSeen) $('guide').showModal();
   checkOffline().catch(() => {});
 }
 init().catch(() => { $('main').textContent = 'Could not open the game. Reconnect and reload. / Mchezo haujafunguka. Unganisha intaneti na upakie upya.'; });

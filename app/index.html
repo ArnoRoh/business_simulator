@@ -15,7 +15,8 @@
 <div class="app">
   <header class="top">
     <div><h1 id="title">The mandazi stall</h1><p id="sub"></p></div>
-    <button id="lang" type="button" data-action="lang" class="secondary">Kiswahili</button>
+    <div class="top-controls"><button id="lang" type="button" data-action="lang" class="secondary">Kiswahili</button>
+      <button id="guide-open" type="button" class="link" data-i18n="guide.open"></button></div>
   </header>
   <section class="strip" aria-live="polite">
     <div><span class="label" data-i18n="cash"></span><strong id="cash" data-testid="cash"></strong></div>
@@ -45,6 +46,18 @@
     </details>
     <p id="sample" class="small"></p><p id="draft" class="small"></p><p id="privacy" class="small"></p>
   </footer>
+  <dialog id="guide" aria-labelledby="guide-title">
+    <header class="history-head"><h2 id="guide-title" data-i18n="guide.title" tabindex="-1" autofocus></h2><button id="guide-lang" type="button" class="secondary"></button></header>
+    <p data-i18n="guide.role"></p>
+    <ol class="guide-steps">
+      <li><strong data-i18n="guide.batch"></strong><p data-i18n="guide.batchBody"></p></li>
+      <li><strong data-i18n="guide.price"></strong><p data-i18n="guide.priceBody"></p></li>
+      <li><strong data-i18n="guide.trade"></strong><p data-i18n="guide.tradeBody"></p></li>
+    </ol>
+    <p class="small" data-i18n="guide.manage"></p>
+    <details><summary data-i18n="guide.accounts"></summary><p data-i18n="guide.accountsBody"></p></details>
+    <button id="guide-close" type="button" class="primary" data-i18n="guide.start"></button>
+  </dialog>
   <dialog id="history" aria-labelledby="history-title">
     <header class="history-head"><h2 id="history-title"></h2><button id="history-close" type="button" class="secondary" autofocus></button></header>
     <div id="history-body"></div>
