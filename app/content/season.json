@@ -1094,8 +1094,8 @@
       "sw": "Mchezo unanunua malighafi, unapika na kuuza kwa siku sita. Soma matokeo, kisha amua tena. Hakuna kikomo cha muda."
     },
     "guide.manage": {
-      "en": "Open panels below your plan for stock, staff and debts. Your plan stays until you change it.",
-      "sw": "Fungua sehemu chini ya mpango kwa akiba, wafanyakazi na madeni. Mpango unadumu hadi uubadilishe."
+      "en": "Tap the round signs on the stall: sacks for stock, pots for equipment and people, customers for orders, the clipboard for debts, the tin for home money and loans.",
+      "sw": "Gusa alama za duara kwenye kibanda: magunia kwa akiba, sufuria kwa vifaa na watu, wateja kwa oda, ubao wa karatasi kwa madeni, kopo kwa pesa za nyumbani na mikopo."
     },
     "guide.accounts": {
       "en": "What do the three money figures mean?",
@@ -1140,6 +1140,18 @@
     "receipt.cash": {
       "en": "Started with {start} + {received} received − {paid} paid out.",
       "sw": "Mwanzo {start} + {received} zilizopokelewa − {paid} zilizotumika."
+    },
+    "sheet.done": {
+      "en": "Back to the stall",
+      "sw": "Rudi kibandani"
+    },
+    "spots": {
+      "en": "Stall controls",
+      "sw": "Vidhibiti vya kibanda"
+    },
+    "openPanel": {
+      "en": "Open: {name}",
+      "sw": "Fungua: {name}"
     }
   },
   "events": {

@@ -18,6 +18,7 @@
     <div class="top-controls"><button id="lang" type="button" data-action="lang" class="secondary">Kiswahili</button>
       <button id="guide-open" type="button" class="link" data-i18n="guide.open"></button></div>
   </header>
+  <div class="stage">
   <section class="strip" aria-live="polite">
     <div><span class="label" data-i18n="cash"></span><strong id="cash" data-testid="cash"></strong></div>
     <div><span class="label" data-i18n="profit"></span><strong id="profit" data-testid="profit"></strong></div>
@@ -26,7 +27,9 @@
   </section>
   <div class="scene-wrap">
     <div id="scene" class="scene" role="img"></div>
+    <nav id="spots" class="spots"></nav>
     <button id="skip" type="button" data-action="skip" class="skip" hidden></button>
+  </div>
   </div>
   <main id="main" class="main"><p>Opening the game… / Mchezo unafunguka…</p></main>
   <footer class="foot">
@@ -57,6 +60,10 @@
     <p class="small" data-i18n="guide.manage"></p>
     <details><summary data-i18n="guide.accounts"></summary><p data-i18n="guide.accountsBody"></p></details>
     <button id="guide-close" type="button" class="primary" data-i18n="guide.start"></button>
+  </dialog>
+  <dialog id="sheet" class="sheet" aria-labelledby="sheet-title">
+    <header class="history-head"><h2 id="sheet-title" tabindex="-1"></h2><button id="sheet-close" type="button" class="secondary"></button></header>
+    <div id="sheet-body"></div>
   </dialog>
   <dialog id="history" aria-labelledby="history-title">
     <header class="history-head"><h2 id="history-title"></h2><button id="history-close" type="button" class="secondary" autofocus></button></header>

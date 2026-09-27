@@ -6,7 +6,7 @@ import { createSeason, step, can, quiet, capacity, hours, committed, needs, fact
 import { loadStrings, setLanguage, getLanguage, t, localised } from './i18n.js';
 import { setCurrency, money, moneySigned } from './format.js';
 import * as store from './seasonstore.js';
-import { drawScene, animateWeek } from './seasonscene.js';
+import { drawScene, animateWeek, level } from './seasonscene.js';
 
 const $ = id => document.getElementById(id);
 const P = SAMPLE;
@@ -17,6 +17,8 @@ const ONLINE = 'https://arnoroh.github.io/business_simulator/';
 let content, rec = null, status = 'ok', blocked = false, busy = false, offline = false, legacyFound = false, runs = [];
 let shown = null; // What the last action showed. Not stored: the record holds the facts.
 let timer = 0;
+let lastView = null, motion = false; // The previous stall picture; motion: the last action may animate.
+let sheetKey = null; // The stall part whose panel is open.
 let saving = Promise.resolve();
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const sum = list => list.reduce((a, b) => a + b, 0);
@@ -86,6 +88,7 @@ function feedback(action, result, before) {
 const act = action => async () => {
   const results = await commit([action]);
   if (!results) return;
+  motion = true;
   render();
 };
 const plan = (patch) => act({ type: 'plan', patch });
@@ -152,9 +155,17 @@ function renderTop() {
     queue: last ? Math.round(sum(last.days.map(d => d.demand)) / 6) : P.stallDemand, invoices: s.receivables.length,
     cash: s.cash, office: !!s.office, school: !!s.school, kiosk: !!s.kiosk, rise: s.week >= P.riseWeek,
     rain: last?.days.some(d => d.rain), closed: s.phase === 'closed' || replaying?.away === 'close' || replaying?.away === 'uncovered',
+    price: money(P.price[s.plan.price]), notebook: s.notebook,
   };
   const scene = $('scene');
-  if (!scene.classList.contains('playing')) scene.innerHTML = drawScene(v);
+  const prev = motion && !reduced() ? lastView : null;
+  motion = false;
+  if (!scene.classList.contains('playing')) {
+    scene.innerHTML = drawScene(v, prev);
+    const fill = scene.querySelector('.tin .fill');
+    if (prev && prev.cash !== v.cash) requestAnimationFrame(() => requestAnimationFrame(() => { fill.style.transform = `scaleY(${level(v.cash)})`; }));
+    lastView = v;
+  }
   scene.setAttribute('aria-label', t('scene', { pots: s.pots, trays: v.trays, packs: v.stock, papers: v.invoices }));
 }
 
@@ -373,7 +384,9 @@ function limitCard(s, forced) {
   if (!last) return null;
   const auto = s.history.length <= 3;
   if (!auto && !forced) return null;
-  return h('p', { class: 'card limit-note', role: 'note' }, t(`limit.${last.limit || 'none'}`));
+  const key = TILE[last.limit];
+  return h('div', { class: 'card limit-note', role: 'note' }, h('p', { text: t(`limit.${last.limit || 'none'}`) }),
+    key ? btn(t('openPanel', { name: t(`manage.${key}`) }), 'open-panel', { class: 'link', onclick: () => openSheet(key) }) : null);
 }
 
 function radios(field, values, current, label) {
@@ -396,10 +409,6 @@ const ICON = {
   sell: 'M12 3 a9 9 0 1 0 .1 0 z M12 7 v10 M9 9 h5 M9 15 h5', collect: 'M6 3 h12 v18 h-12 z M9 8 h6 M9 12 h6 M9 16 h4',
   money: 'M3 10 l9 -6 l9 6 v10 h-18 z M10 20 v-6 h4 v6',
 };
-function tile(key, limited, ...body) {
-  return h('details', { class: `tile${limited ? ' limit' : ''}`, 'data-tile': key },
-    h('summary', {}, h('span', { class: 'icon', 'aria-hidden': 'true' }), t(`manage.${key}`)), body);
-}
 
 function dailyPlan(s) {
   const cap = capacity(s);
@@ -411,20 +420,21 @@ function dailyPlan(s) {
     radios('price', ['low', 'normal', 'high'].map(k => [k, money(P.price[k])]), s.plan.price, t('price')));
 }
 
-function board(s, highlight) {
+// The five operating panels. Each opens from its part of the stall picture.
+function panels(s) {
   const cap = capacity(s), unit = P.pack + (s.week >= P.riseWeek ? P.rise : 0) - (s.plan.buyWeeks === 2 ? P.bulkOff : 0);
   const owedBakari = sum(s.payables.filter(x => x.who === 'bakari').map(x => x.amount));
   const credit = Object.entries(s.customers);
   const byWho = Object.groupBy ? Object.groupBy(s.receivables, x => x.who) : s.receivables.reduce((m, x) => ((m[x.who] ||= []).push(x), m), {});
   const arrears = s.payables.filter(x => x.who !== 'bakari');
-  const tiles = [
-    tile('buy', highlight === 'buy',
+  return {
+    buy: [
       h('p', { text: t('stock', { n: stock(s) }) }), h('p', { text: t('packPrice', { amount: money(unit) }) }),
       radios('pay', [['cash', t('pay.cash')], ['credit', t('pay.credit')]], s.plan.pay, t('payWith')),
       radios('buyWeeks', [[1, t('buyWeeks.1')], [2, t('buyWeeks.2')]], s.plan.buyWeeks, t('buyFor')),
       owedBakari ? h('p', { text: t('supplierOwed', { amount: money(owedBakari) }) }) : null,
-      s.blocked ? h('p', { class: 'warn', text: t('blocked') }) : null),
-    tile('cook', highlight === 'cook',
+      s.blocked ? h('p', { class: 'warn', text: t('blocked') }) : null],
+    cook: [
       h('p', { text: t('canCook', { n: cap.trays }) + ' ' + t(`by.${cap.by}`) }),
       committed(s) ? h('p', { text: t('ordersNeed', { n: committed(s) }) }) : null,
       h('p', { text: t('pots', { n: s.pots }) }),
@@ -432,12 +442,12 @@ function board(s, highlight) {
         s.equipment.some(e => e.kind === 'pot') ? btn(t('sellPot', { amount: money(P.pot.resale) }), 'sellPot', { onclick: act({ type: 'sellPot' }) }) : null),
       s.helper ? h('p', { text: t('helper', { amount: money(P.wage) }) + (s.helper.training ? ' ' + t('training') : '') }) : null,
       s.helper ? h('div', { class: 'row' }, btn(t('trainHelper', { amount: money(P.training) }), 'trainHelper', { disabled: !can(s, { type: 'trainHelper' }), onclick: act({ type: 'trainHelper' }) }), btn(t('endHelper'), 'endHelper', { onclick: act({ type: 'endHelper' }) })) : null,
-      s.helper ? radios('check', ['none', 'batch', 'every'].map(k => [k, t(`check.${k}`)]), s.plan.check, t('checks')) : null),
-    tile('sell', highlight === 'sell',
+      s.helper ? radios('check', ['none', 'batch', 'every'].map(k => [k, t(`check.${k}`)]), s.plan.check, t('checks')) : null],
+    sell: [
       h('h4', { text: t('buyers') }), h('ul', {}, h('li', { text: t('ch.stall') }), s.office ? h('li', { text: t('ch.office') }) : null,
         s.school ? h('li', { text: t('ch.school', { n: s.school.pieces }) }) : null, s.kiosk ? h('li', { text: t('ch.kiosk', { n: P.kiosk.pieces }) }) : null,
-        credit.filter(([, c]) => c.credit).map(([id]) => h('li', { text: t('ch.credit', { who: who(id) }) })))),
-    tile('collect', highlight === 'collect',
+        credit.filter(([, c]) => c.credit).map(([id]) => h('li', { text: t('ch.credit', { who: who(id) }) })))],
+    collect: [
       h('h4', { text: t('owed') }),
       s.receivables.length ? Object.entries(byWho).map(([id, list]) => h('div', { class: 'debtor' },
         h('p', {}, h('strong', { text: who(id) })),
@@ -446,8 +456,8 @@ function board(s, highlight) {
         : h('p', { text: t('nobody') }),
       credit.map(([id, c]) => btn(t(c.credit ? 'creditOff' : 'creditOn', { who: who(id) }), 'credit', { 'data-who': id, onclick: act({ type: 'credit', who: id, on: !c.credit }) })),
       h('p', { text: t('notebook') }),
-      btn(t(s.notebook ? 'notebookOff' : 'notebookOn'), 'notebook', { 'aria-pressed': String(s.notebook), onclick: act({ type: 'notebook', on: !s.notebook }) })),
-    tile('money', false,
+      btn(t(s.notebook ? 'notebookOff' : 'notebookOn'), 'notebook', { 'aria-pressed': String(s.notebook), onclick: act({ type: 'notebook', on: !s.notebook }) })],
+    money: [
       stepper('household', s.plan.household, 500, t('household'), 0, 10000),
       s.household.unmet ? h('p', { class: 'warn', text: t('unmet', { amount: money(s.household.unmet) }) }) : null,
       s.loan ? h('p', { text: t('loan', { amount: money(s.loan.balance), principal: money(P.loan.principal), interest: money(P.loan.interest) }) }) : null,
@@ -455,10 +465,35 @@ function board(s, highlight) {
         : h('div', {}, btn(t('borrow', { amount: money(P.loan.amount) }), 'borrow', { disabled: !can(s, { type: 'borrow' }), onclick: act({ type: 'borrow' }) }),
           h('p', { class: 'small', text: t('terms', { principal: money(P.loan.principal), interest: money(P.loan.interest) }) })),
       arrears.map(x => h('p', { class: 'warn', text: t('arrears', { who: who(x.who), amount: money(x.amount), n: x.due }) })),
-      h('details', {}, h('summary', { text: t('closeBiz') }), btn(t('closeBiz'), 'close', { class: 'danger', onclick: () => confirm(t('closeAsk')) && act({ type: 'close' })() }))),
-  ];
-  for (const el of tiles) el.querySelector('.icon').append(icon(el.dataset.tile));
-  return h('div', { class: 'board' }, tiles);
+      h('details', {}, h('summary', { text: t('closeBiz') }), btn(t('closeBiz'), 'close', { class: 'danger', onclick: () => confirm(t('closeAsk')) && act({ type: 'close' })() }))],
+  };
+}
+
+// The stall is the menu: sacks, pots, customers, clipboard and tin open their panel in a
+// sheet over the lower screen, so the picture above shows what each action changes.
+const SPOTS = ['buy', 'cook', 'collect', 'money', 'sell'];
+function renderSpots(highlight) {
+  const nav = $('spots'), s = rec.state;
+  nav.setAttribute('aria-label', t('spots'));
+  nav.hidden = blocked || !['plan', 'event'].includes(s.phase);
+  nav.replaceChildren(...SPOTS.map(key => h('button', { type: 'button', class: `spot${highlight === key ? ' limit' : ''}`, 'data-spot': key,
+    'aria-label': t(`manage.${key}`), title: t(`manage.${key}`), 'aria-haspopup': 'dialog', onclick: () => openSheet(key) }, h('span', { class: 'badge' }, icon(key)))));
+  if (nav.hidden && $('sheet').open) $('sheet').close();
+}
+function openSheet(key) {
+  sheetKey = key;
+  if (document.querySelector('.stage').getBoundingClientRect().top < 0) scrollTo(0, 0);
+  const sheet = $('sheet');
+  sheet.style.maxHeight = `${Math.max(innerHeight / 2, innerHeight - document.querySelector('.stage').getBoundingClientRect().bottom - 4)}px`;
+  fillSheet();
+  if (!sheet.open) sheet.showModal();
+  $('sheet-title').focus({ preventScroll: true });
+}
+function fillSheet() {
+  $('sheet-title').replaceChildren(h('span', { class: 'icon', 'aria-hidden': 'true' }, icon(sheetKey)), t(`manage.${sheetKey}`));
+  $('sheet-close').textContent = t('sheet.done');
+  $('sheet-body').replaceChildren(h('div', { 'data-panel': sheetKey }, panels(rec.state)[sheetKey]));
+  if (status !== 'ok') for (const control of $('sheet-body').querySelectorAll('button, input')) control.disabled = true;
 }
 function icon(key) {
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -500,21 +535,23 @@ function render(focusResult = false) {
   clearTimeout(timer);
   $('scene').classList.remove('playing');
   $('skip').hidden = true;
-  const expanded = [...document.querySelectorAll('.tile[open]')].map(el => el.dataset.tile);
   const planOpen = document.querySelector('[data-testid=plan-editor]')?.open;
   const active = document.activeElement;
-  const focused = active?.dataset.field ? `[data-field="${active.dataset.field}"]${active.type === 'radio' ? `[value="${active.value}"]` : ''}` : active?.dataset.for ? `[data-action="${active.dataset.action}"][data-for="${active.dataset.for}"]` : null;
+  const focused = active?.dataset.field ? `[data-field="${active.dataset.field}"]${active.type === 'radio' ? `[value="${active.value}"]` : ''}` : active?.dataset.for ? `[data-action="${active.dataset.action}"][data-for="${active.dataset.for}"]`
+    : active?.dataset.action && $('sheet').contains(active) ? `[data-action="${active.dataset.action}"]${active.dataset.who ? `[data-who="${active.dataset.who}"]` : ''}` : null;
   document.title = t('title');
   $('title').textContent = t('title'); $('sub').textContent = t('sub');
   for (const el of document.querySelectorAll('[data-i18n]')) el.textContent = t(el.dataset.i18n);
   $('lang').textContent = t('otherLang'); $('lang').lang = getLanguage() === 'en' ? 'sw' : 'en';
   $('guide-lang').textContent = t('otherLang'); $('guide-lang').lang = $('lang').lang;
   const main = $('main');
+  let spotHighlight = '';
   document.body.classList.toggle('opening', !blocked && !rec.state.history.length);
   main.replaceChildren();
   renderStatus();
   if (blocked) {
     $('history-open').hidden = true;
+    renderSpots('');
     main.append(h('section', { class: 'card' }, h('p', { text: t('unreadable') }), btn(t('export'), 'export', { class: 'primary', onclick: exportRecord }),
       btn(t('newRun'), 'new', { onclick: newRun })));
     renderFoot(); return;
@@ -538,7 +575,7 @@ function render(focusResult = false) {
     if (shown?.kind === 'result') main.append(resultCard(shown.results, true));
     main.append(eventCard(s));
     if (shown?.kind === 'outcome') main.append(outcomeCard(shown));
-    main.append(h('details', { 'data-testid': 'plan-editor', open: planOpen }, h('summary', { text: t('plan.change') }), dailyPlan(s)), board(s, ''));
+    main.append(h('details', { 'data-testid': 'plan-editor', open: planOpen }, h('summary', { text: t('plan.change') }), dailyPlan(s)));
   }
   else if (s.phase === 'review') { if (shown?.kind === 'result') main.append(resultCard(shown.results, true)); main.append(reviewCard(s)); }
   else {
@@ -549,7 +586,6 @@ function render(focusResult = false) {
     const hint = limitCard(s, forced); if (hint) main.append(hint);
     const last = s.history.at(-1);
     const highlight = last && (s.history.length <= 3 || forced) ? TILE[last.limit] : '';
-    const controls = board(s, highlight);
     const trays = Math.min(s.plan.trays, capacity(s).trays);
     const warn = s.cash < Math.max(0, trays * P.days - stock(s)) * (P.pack + (s.week >= P.riseWeek ? P.rise : 0)) + s.plan.household;
     const daily = dailyPlan(s);
@@ -562,10 +598,11 @@ function render(focusResult = false) {
       s.history.length > 3 ? btn(t('help'), 'help', { class: 'link', onclick: act({ type: 'help' }) }) : null,
       s.history.length > 3 ? h('p', { class: 'small', text: t('helpNote') }) : null));
     main.append(daily);
-    main.append(controls);
+    spotHighlight = highlight;
   }
-  for (const key of expanded) main.querySelector(`[data-tile="${key}"]`)?.setAttribute('open', '');
-  if (focused) main.querySelector(focused)?.focus({ preventScroll: true });
+  renderSpots(spotHighlight);
+  if ($('sheet').open) fillSheet();
+  if (focused) (main.querySelector(focused) || $('sheet-body').querySelector(focused))?.focus({ preventScroll: true });
   if (status !== 'ok') for (const control of main.querySelectorAll('button, input')) control.disabled = true;
   renderFoot();
   if (focusResult) main.querySelector('[data-testid="result"]')?.focus({ preventScroll: false });
@@ -676,9 +713,11 @@ async function init() {
   $('reload').onclick = () => location.reload();
   $('skip').onclick = stop;
   $('history').addEventListener('close', () => $('history-body').replaceChildren());
-  // Large text must not let the summary cover the operating controls.
-  const fitSummary = () => document.body.classList.toggle('tall-summary', document.querySelector('.strip').offsetHeight > innerHeight / 3);
-  new ResizeObserver(fitSummary).observe(document.querySelector('.strip'));
+  $('sheet-close').onclick = () => $('sheet').close();
+  $('sheet').addEventListener('close', () => { const key = sheetKey; sheetKey = null; $('sheet-body').replaceChildren(); document.querySelector(`[data-spot="${key}"]`)?.focus({ preventScroll: true }); });
+  // Large text must not let the summary and stall cover the operating controls.
+  const fitSummary = () => document.body.classList.toggle('tall-summary', document.querySelector('.stage').offsetHeight > innerHeight * .45);
+  new ResizeObserver(fitSummary).observe(document.querySelector('.stage'));
   addEventListener('resize', fitSummary);
   let saved = null;
   try { await store.open(); saved = await store.active(); } catch { status = 'failed'; }

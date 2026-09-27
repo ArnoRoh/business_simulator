@@ -80,12 +80,7 @@ p { margin: .35em 0; }
 .limit-note { border-left: 6px solid var(--orange); font-weight: 600; }
 .goal-line { margin: 0; font-weight: 600; color: var(--teal-dark); }
 
-.board { display: grid; gap: 10px; }
-.tile { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; }
-.tile.limit { border: 3px solid var(--orange); box-shadow: 0 0 0 3px #fed7aa; }
-.tile h3 { display: flex; align-items: center; gap: 8px; }
 .icon svg { width: 24px; height: 24px; fill: none; stroke: var(--teal); stroke-width: 2; stroke-linejoin: round; display: block; }
-.tile ul { padding-left: 1.1em; margin: .2em 0; }
 .debtor { border-top: 1px solid var(--line); padding-top: 6px; margin-top: 6px; }
 .row { display: flex; flex-wrap: wrap; gap: 8px; }
 
@@ -129,22 +124,15 @@ details { margin: 6px 0; } summary { min-height: 44px; display: flex; align-item
 .links a { display: inline-flex; align-items: center; border: 2px solid var(--teal); color: var(--teal-dark); text-decoration: none; font-weight: 600; }
 .links a[hidden] { display: none; }
 
-@media (min-width: 640px) { .board { grid-template-columns: 1fr 1fr; } .tile[data-tile="money"] { grid-column: 1 / -1; } }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 
-.tile > summary { gap: 10px; }
-.tile[open] > summary { margin-bottom: 8px; }
 .scene { scroll-margin-top: 120px; }
 .plan-summary { font-weight: 600; }
 .strip strong { white-space: normal; overflow-wrap: anywhere; }
 @media (max-width: 359px) { .calendar { grid-template-columns: repeat(12, 1fr); } }
 
-.board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.tile[open], .tile[data-tile="money"] { grid-column: 1 / -1; }
-.tile > summary::after { content: "+"; margin-left: auto; }
-.tile[open] > summary::after { content: "−"; }
 
 .top { flex-wrap: wrap; }
 .top > div { flex: 1 1 160px; }
@@ -161,12 +149,9 @@ button, summary, .links a { overflow-wrap: anywhere; max-width: 100%; }
 .playing .collected { animation-name: collected; }
 @keyframes collected { from { opacity: 1; } to { opacity: 0; transform: translate(64px, 15px); } }
 
-.board { grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)); }
-.tile:not([open]) .icon { display: none; }
 
 .history-open { width: 100%; margin-top: 6px; font-size: .88rem; }
 .history-open[hidden] { display: none; }
-.tile { scroll-margin-top: 170px; }
 .trading-picture { margin: 10px 0; }
 .split-bar { display: flex; height: 12px; overflow: hidden; border-radius: 6px; background: #eee; margin: 4px 0; }
 .split-bar .sold, .split-bar .paid { background: var(--teal); }
@@ -215,7 +200,6 @@ select:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
 .daily-plan .stepper { margin: 4px 0; }
 .recap .compare { font-size: .95rem; }
 .recap details .result { padding: 0; border: 0; }
-.board { grid-template-columns: minmax(0, 1fr); }
 
 .strip .meta[hidden] { display: none; }
 
@@ -234,3 +218,41 @@ select:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
 .recap > button { width: 100%; margin-top: 12px; }
 #next-step { scroll-margin-top: 150px; }
 .tall-summary #next-step { scroll-margin-top: 12px; }
+
+/* The stage: summary and stall stay on screen; the stall parts open the panels. */
+.stage { position: sticky; top: 0; z-index: 2; background: var(--paper); padding-bottom: 4px; }
+.stage .strip { position: static; }
+.tall-summary .stage { position: static; }
+.spots { position: absolute; inset: 0; pointer-events: none; }
+.spots[hidden], .scene.playing + .spots { display: none; }
+.spot { position: absolute; pointer-events: auto; transform: translate(-50%, -50%); min-height: 44px; width: 44px; height: 44px; padding: 0; border: 0; background: none; display: grid; place-items: center; }
+.spot .badge { width: 32px; height: 32px; border-radius: 50%; background: #fff; border: 2px solid var(--teal); display: grid; place-items: center; box-shadow: 0 1px 3px rgb(0 0 0 / .3); }
+.spot .badge svg { width: 18px; height: 18px; fill: none; stroke: var(--teal-dark); stroke-width: 2; stroke-linejoin: round; }
+.spot.limit .badge { border-color: var(--orange); box-shadow: 0 0 0 4px #fed7aa; animation: pulse 1.4s ease-in-out 3; }
+.spot:focus-visible { outline: 3px solid var(--orange); border-radius: 50%; }
+[data-spot=buy] { left: 9%; top: 82%; } [data-spot=cook] { left: 14%; top: 50%; } [data-spot=collect] { left: 44%; top: 46%; }
+[data-spot=money] { left: 65%; top: 58%; } [data-spot=sell] { left: 83%; top: 78%; }
+@keyframes pulse { 50% { transform: scale(1.15); } }
+.sheet { margin: auto auto 0; width: min(560px, 100%); max-width: 100%; border-radius: 14px 14px 0 0; border-bottom: 0; animation: sheet .25s ease; }
+.sheet::backdrop { background: rgb(31 22 14 / .2); }
+#sheet-title { display: flex; align-items: center; gap: 8px; }
+@keyframes sheet { from { transform: translateY(40%); opacity: 0; } }
+.limit-note .link { min-height: 40px; }
+
+/* What an action changed enters with a short motion; cash moves to or from the tin. */
+.scene .price rect { fill: var(--teal-dark); } .scene .price text { fill: #fff; font: 700 7px system-ui; text-anchor: middle; }
+.scene .book rect { fill: #1d4ed8; } .scene .book path { stroke: #fff; }
+.scene .new { transform-box: fill-box; transform-origin: 50% 100%; animation: enter .6s ease-out both; }
+.scene .price.new { transform-origin: 50% 50%; animation-name: flip; }
+.scene .juma.new { animation-name: walk; }
+.scene .cashin, .scene .cashout { fill: var(--gold); stroke: #a16207; opacity: 0; animation: .7s ease-in both; animation-delay: calc(var(--i) * .12s); }
+.scene .cashin { animation-name: cashin; } .scene .cashout { animation-name: cashout; }
+.scene .fill { transition-duration: .9s; }
+.playing .fill { transition-duration: 3s; }
+@keyframes enter { from { opacity: 0; transform: translateY(-14px) scale(.6); } }
+@keyframes flip { 40% { transform: scaleY(0); } }
+@keyframes walk { from { opacity: 0; transform: translateX(-50px); } }
+@keyframes cashin { 0% { opacity: 1; } 100% { opacity: 1; transform: translate(114px, 64px) scale(.6); } }
+@keyframes cashout { 0% { opacity: 1; } 100% { opacity: 0; transform: translate(-110px, -40px); } }
+.stage .strip strong { font-size: .9rem; }
+.stage .strip .meta { font-size: .76rem; }

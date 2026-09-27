@@ -92,12 +92,7 @@ p { margin: .35em 0; }
 .limit-note { border-left: 6px solid var(--orange); font-weight: 600; }
 .goal-line { margin: 0; font-weight: 600; color: var(--teal-dark); }
 
-.board { display: grid; gap: 10px; }
-.tile { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; }
-.tile.limit { border: 3px solid var(--orange); box-shadow: 0 0 0 3px #fed7aa; }
-.tile h3 { display: flex; align-items: center; gap: 8px; }
 .icon svg { width: 24px; height: 24px; fill: none; stroke: var(--teal); stroke-width: 2; stroke-linejoin: round; display: block; }
-.tile ul { padding-left: 1.1em; margin: .2em 0; }
 .debtor { border-top: 1px solid var(--line); padding-top: 6px; margin-top: 6px; }
 .row { display: flex; flex-wrap: wrap; gap: 8px; }
 
@@ -141,22 +136,15 @@ details { margin: 6px 0; } summary { min-height: 44px; display: flex; align-item
 .links a { display: inline-flex; align-items: center; border: 2px solid var(--teal); color: var(--teal-dark); text-decoration: none; font-weight: 600; }
 .links a[hidden] { display: none; }
 
-@media (min-width: 640px) { .board { grid-template-columns: 1fr 1fr; } .tile[data-tile="money"] { grid-column: 1 / -1; } }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 
-.tile > summary { gap: 10px; }
-.tile[open] > summary { margin-bottom: 8px; }
 .scene { scroll-margin-top: 120px; }
 .plan-summary { font-weight: 600; }
 .strip strong { white-space: normal; overflow-wrap: anywhere; }
 @media (max-width: 359px) { .calendar { grid-template-columns: repeat(12, 1fr); } }
 
-.board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.tile[open], .tile[data-tile="money"] { grid-column: 1 / -1; }
-.tile > summary::after { content: "+"; margin-left: auto; }
-.tile[open] > summary::after { content: "−"; }
 
 .top { flex-wrap: wrap; }
 .top > div { flex: 1 1 160px; }
@@ -173,12 +161,9 @@ button, summary, .links a { overflow-wrap: anywhere; max-width: 100%; }
 .playing .collected { animation-name: collected; }
 @keyframes collected { from { opacity: 1; } to { opacity: 0; transform: translate(64px, 15px); } }
 
-.board { grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)); }
-.tile:not([open]) .icon { display: none; }
 
 .history-open { width: 100%; margin-top: 6px; font-size: .88rem; }
 .history-open[hidden] { display: none; }
-.tile { scroll-margin-top: 170px; }
 .trading-picture { margin: 10px 0; }
 .split-bar { display: flex; height: 12px; overflow: hidden; border-radius: 6px; background: #eee; margin: 4px 0; }
 .split-bar .sold, .split-bar .paid { background: var(--teal); }
@@ -227,7 +212,6 @@ select:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
 .daily-plan .stepper { margin: 4px 0; }
 .recap .compare { font-size: .95rem; }
 .recap details .result { padding: 0; border: 0; }
-.board { grid-template-columns: minmax(0, 1fr); }
 
 .strip .meta[hidden] { display: none; }
 
@@ -247,6 +231,44 @@ select:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
 #next-step { scroll-margin-top: 150px; }
 .tall-summary #next-step { scroll-margin-top: 12px; }
 
+/* The stage: summary and stall stay on screen; the stall parts open the panels. */
+.stage { position: sticky; top: 0; z-index: 2; background: var(--paper); padding-bottom: 4px; }
+.stage .strip { position: static; }
+.tall-summary .stage { position: static; }
+.spots { position: absolute; inset: 0; pointer-events: none; }
+.spots[hidden], .scene.playing + .spots { display: none; }
+.spot { position: absolute; pointer-events: auto; transform: translate(-50%, -50%); min-height: 44px; width: 44px; height: 44px; padding: 0; border: 0; background: none; display: grid; place-items: center; }
+.spot .badge { width: 32px; height: 32px; border-radius: 50%; background: #fff; border: 2px solid var(--teal); display: grid; place-items: center; box-shadow: 0 1px 3px rgb(0 0 0 / .3); }
+.spot .badge svg { width: 18px; height: 18px; fill: none; stroke: var(--teal-dark); stroke-width: 2; stroke-linejoin: round; }
+.spot.limit .badge { border-color: var(--orange); box-shadow: 0 0 0 4px #fed7aa; animation: pulse 1.4s ease-in-out 3; }
+.spot:focus-visible { outline: 3px solid var(--orange); border-radius: 50%; }
+[data-spot=buy] { left: 9%; top: 82%; } [data-spot=cook] { left: 14%; top: 50%; } [data-spot=collect] { left: 44%; top: 46%; }
+[data-spot=money] { left: 65%; top: 58%; } [data-spot=sell] { left: 83%; top: 78%; }
+@keyframes pulse { 50% { transform: scale(1.15); } }
+.sheet { margin: auto auto 0; width: min(560px, 100%); max-width: 100%; border-radius: 14px 14px 0 0; border-bottom: 0; animation: sheet .25s ease; }
+.sheet::backdrop { background: rgb(31 22 14 / .2); }
+#sheet-title { display: flex; align-items: center; gap: 8px; }
+@keyframes sheet { from { transform: translateY(40%); opacity: 0; } }
+.limit-note .link { min-height: 40px; }
+
+/* What an action changed enters with a short motion; cash moves to or from the tin. */
+.scene .price rect { fill: var(--teal-dark); } .scene .price text { fill: #fff; font: 700 7px system-ui; text-anchor: middle; }
+.scene .book rect { fill: #1d4ed8; } .scene .book path { stroke: #fff; }
+.scene .new { transform-box: fill-box; transform-origin: 50% 100%; animation: enter .6s ease-out both; }
+.scene .price.new { transform-origin: 50% 50%; animation-name: flip; }
+.scene .juma.new { animation-name: walk; }
+.scene .cashin, .scene .cashout { fill: var(--gold); stroke: #a16207; opacity: 0; animation: .7s ease-in both; animation-delay: calc(var(--i) * .12s); }
+.scene .cashin { animation-name: cashin; } .scene .cashout { animation-name: cashout; }
+.scene .fill { transition-duration: .9s; }
+.playing .fill { transition-duration: 3s; }
+@keyframes enter { from { opacity: 0; transform: translateY(-14px) scale(.6); } }
+@keyframes flip { 40% { transform: scaleY(0); } }
+@keyframes walk { from { opacity: 0; transform: translateX(-50px); } }
+@keyframes cashin { 0% { opacity: 1; } 100% { opacity: 1; transform: translate(114px, 64px) scale(.6); } }
+@keyframes cashout { 0% { opacity: 1; } 100% { opacity: 0; transform: translate(-110px, -40px); } }
+.stage .strip strong { font-size: .9rem; }
+.stage .strip .meta { font-size: .76rem; }
+
 </style>
 
 <div class="app">
@@ -255,6 +277,7 @@ select:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
     <div class="top-controls"><button id="lang" type="button" data-action="lang" class="secondary">Kiswahili</button>
       <button id="guide-open" type="button" class="link" data-i18n="guide.open"></button></div>
   </header>
+  <div class="stage">
   <section class="strip" aria-live="polite">
     <div><span class="label" data-i18n="cash"></span><strong id="cash" data-testid="cash"></strong></div>
     <div><span class="label" data-i18n="profit"></span><strong id="profit" data-testid="profit"></strong></div>
@@ -263,7 +286,9 @@ select:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
   </section>
   <div class="scene-wrap">
     <div id="scene" class="scene" role="img"></div>
+    <nav id="spots" class="spots"></nav>
     <button id="skip" type="button" data-action="skip" class="skip" hidden></button>
+  </div>
   </div>
   <main id="main" class="main"><p>Opening the game… / Mchezo unafunguka…</p></main>
   <footer class="foot">
@@ -294,6 +319,10 @@ select:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
     <p class="small" data-i18n="guide.manage"></p>
     <details><summary data-i18n="guide.accounts"></summary><p data-i18n="guide.accountsBody"></p></details>
     <button id="guide-close" type="button" class="primary" data-i18n="guide.start"></button>
+  </dialog>
+  <dialog id="sheet" class="sheet" aria-labelledby="sheet-title">
+    <header class="history-head"><h2 id="sheet-title" tabindex="-1"></h2><button id="sheet-close" type="button" class="secondary"></button></header>
+    <div id="sheet-body"></div>
   </dialog>
   <dialog id="history" aria-labelledby="history-title">
     <header class="history-head"><h2 id="history-title"></h2><button id="history-close" type="button" class="secondary" autofocus></button></header>
@@ -1406,8 +1435,8 @@ select:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
       "sw": "Mchezo unanunua malighafi, unapika na kuuza kwa siku sita. Soma matokeo, kisha amua tena. Hakuna kikomo cha muda."
     },
     "guide.manage": {
-      "en": "Open panels below your plan for stock, staff and debts. Your plan stays until you change it.",
-      "sw": "Fungua sehemu chini ya mpango kwa akiba, wafanyakazi na madeni. Mpango unadumu hadi uubadilishe."
+      "en": "Tap the round signs on the stall: sacks for stock, pots for equipment and people, customers for orders, the clipboard for debts, the tin for home money and loans.",
+      "sw": "Gusa alama za duara kwenye kibanda: magunia kwa akiba, sufuria kwa vifaa na watu, wateja kwa oda, ubao wa karatasi kwa madeni, kopo kwa pesa za nyumbani na mikopo."
     },
     "guide.accounts": {
       "en": "What do the three money figures mean?",
@@ -1452,6 +1481,18 @@ select:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
     "receipt.cash": {
       "en": "Started with {start} + {received} received − {paid} paid out.",
       "sw": "Mwanzo {start} + {received} zilizopokelewa − {paid} zilizotumika."
+    },
+    "sheet.done": {
+      "en": "Back to the stall",
+      "sw": "Rudi kibandani"
+    },
+    "spots": {
+      "en": "Stall controls",
+      "sw": "Vidhibiti vya kibanda"
+    },
+    "openPanel": {
+      "en": "Open: {name}",
+      "sw": "Fungua: {name}"
     }
   },
   "events": {
@@ -3145,6 +3186,8 @@ const NS_seasonscene = (function () {
 // trays, helper, customers, tin level, invoices and business buyers. A finished week
 // replays as a short CSS animation of its saved day results; nothing here decides
 // an outcome. Reduced motion or "skip" shows the final picture at once.
+// With the previous picture (prev), parts that were added enter with a short motion and
+// cash moved outside trading flies into or out of the tin, so every action is seen.
 const W = 360;
 const cap = (n, max) => Math.max(0, Math.min(max, n));
 const person = (x, y, body, cls = '') =>
@@ -3153,43 +3196,50 @@ const person = (x, y, body, cls = '') =>
 // Tin fill: 0..1 of a sample scale; the label, not the height, carries the amount.
 const level = cash => cap(cash / 40000, 1);
 
-function drawScene(view) {
+function drawScene(view, prev = null) {
+  const fresh = (i, before) => prev && i >= before ? ' new' : '';
   const trays = cap(view.trays, 15), packs = cap(Math.ceil(view.stock / 6), 6);
   const queue = cap(Math.round(view.queue / 9), 8), papers = cap(view.invoices, 6);
   const trayRects = Array.from({ length: trays }, (_, i) => {
     const x = 122 + (i % 5) * 20, y = 132 - Math.floor(i / 5) * 7;
-    return `<rect class="tray" x="${x}" y="${y}" width="18" height="6" rx="2"/><circle cx="${x + 5}" cy="${y}" r="3" class="mz"/><circle cx="${x + 12}" cy="${y}" r="3" class="mz"/>`;
+    return `<g class="tray-g${fresh(i, prev?.trays)}"><rect class="tray" x="${x}" y="${y}" width="18" height="6" rx="2"/><circle cx="${x + 5}" cy="${y}" r="3" class="mz"/><circle cx="${x + 12}" cy="${y}" r="3" class="mz"/></g>`;
   }).join('');
   const pots = Array.from({ length: view.pots }, (_, i) => {
     const x = 34 + i * 26;
-    return `<g class="pot"><path class="steam" d="M${x + 8} 118 q-4 -8 0 -14 q4 -6 0 -12"/><rect x="${x}" y="122" width="18" height="16" rx="4"/><rect x="${x - 3}" y="119" width="24" height="4" rx="2"/></g>`;
+    return `<g class="pot${fresh(i, prev?.pots)}"><path class="steam" d="M${x + 8} 118 q-4 -8 0 -14 q4 -6 0 -12"/><rect x="${x}" y="122" width="18" height="16" rx="4"/><rect x="${x - 3}" y="119" width="24" height="4" rx="2"/></g>`;
   }).join('');
   const sacks = Array.from({ length: packs }, (_, i) =>
-    `<path class="sack" d="M${14 + i * 13} 170 q-2 -14 5 -16 q7 2 5 16 z"/>`).join('');
+    `<path class="sack${fresh(i, prev && Math.ceil(prev.stock / 6))}" d="M${14 + i * 13} 170 q-2 -14 5 -16 q7 2 5 16 z"/>`).join('');
   const people = Array.from({ length: queue }, (_, i) =>
     person(262 + (i % 4) * 22, 172 - Math.floor(i / 4) * 4 + (i % 2) * 3, ['#0f766e', '#b45309', '#7c3aed', '#be123c'][i % 4], 'cust')).join('');
   const clip = Array.from({ length: papers }, (_, i) =>
-    `<rect class="paper" x="${152 + i * 2}" y="${100 - i * 3}" width="12" height="15" rx="1"/>`).join('');
+    `<rect class="paper${fresh(i, prev?.invoices)}" x="${152 + i * 2}" y="${100 - i * 3}" width="12" height="15" rx="1"/>`).join('');
   const buildings = [
-    view.office && '<g class="bld"><rect x="252" y="30" width="44" height="62" fill="#cbd5e1"/><rect x="258" y="38" width="10" height="8" fill="#fff"/><rect x="278" y="38" width="10" height="8" fill="#fff"/><rect x="258" y="54" width="10" height="8" fill="#fff"/><rect x="278" y="54" width="10" height="8" fill="#fff"/></g>',
-    view.school && '<g class="bld"><path d="M300 52 l26 -18 l26 18 z" fill="#b91c1c"/><rect x="304" y="52" width="44" height="40" fill="#fde68a"/><rect x="320" y="70" width="12" height="22" fill="#92400e"/></g>',
-    view.kiosk && '<g class="bld"><rect x="206" y="62" width="30" height="30" fill="#bae6fd"/><rect x="202" y="58" width="38" height="6" fill="#0369a1"/></g>',
+    view.office && `<g class="bld${prev && !prev.office ? ' new' : ''}"><rect x="252" y="30" width="44" height="62" fill="#cbd5e1"/><rect x="258" y="38" width="10" height="8" fill="#fff"/><rect x="278" y="38" width="10" height="8" fill="#fff"/><rect x="258" y="54" width="10" height="8" fill="#fff"/><rect x="278" y="54" width="10" height="8" fill="#fff"/></g>`,
+    view.school && `<g class="bld${prev && !prev.school ? ' new' : ''}"><path d="M300 52 l26 -18 l26 18 z" fill="#b91c1c"/><rect x="304" y="52" width="44" height="40" fill="#fde68a"/><rect x="320" y="70" width="12" height="22" fill="#92400e"/></g>`,
+    view.kiosk && `<g class="bld${prev && !prev.kiosk ? ' new' : ''}"><rect x="206" y="62" width="30" height="30" fill="#bae6fd"/><rect x="202" y="58" width="38" height="6" fill="#0369a1"/></g>`,
   ].filter(Boolean).join('');
-  return `<svg viewBox="0 0 ${W} 200" xmlns="http://www.w3.org/2000/svg" class="${view.rain ? 'rain' : ''}">
+  // Cash moved by a plan action (loan, pot, wage, collection): coins to or from the tin.
+  const moved = prev && view.cash !== prev.cash ? Array.from({ length: 3 }, (_, i) =>
+    `<circle class="fx ${view.cash > prev.cash ? 'cashin' : 'cashout'}" cx="${view.cash > prev.cash ? 120 : 234}" cy="${view.cash > prev.cash ? 60 : 120}" r="4" style="--i:${i}"/>`).join('') : '';
+  // The top of the sky is cropped so the stall stays large on a small screen.
+  return `<svg viewBox="0 28 ${W} 172" xmlns="http://www.w3.org/2000/svg" class="${view.rain ? 'rain' : ''}">
 <rect width="${W}" height="200" fill="#ffe8c4"/><circle cx="36" cy="30" r="14" fill="#fbbf24"/>
 ${buildings}
 <rect y="150" width="${W}" height="50" fill="#e7cfa6"/><rect y="178" width="${W}" height="6" fill="#d6b98c"/>
 <g class="sacks">${sacks}</g>${view.rise ? '<g class="tag"><rect x="12" y="140" width="40" height="12" rx="3"/><text x="32" y="149">+25%</text></g>' : ''}
-${pots}${view.helper ? person(60, 150, '#2563eb', 'juma') : ''}
+${pots}${view.helper ? person(60, 150, '#2563eb', `juma${prev && !prev.helper ? ' new' : ''}`) : ''}
 <rect x="110" y="104" width="140" height="46" rx="4" fill="#fff7ea" stroke="#c9a47a"/>
 <path d="M104 90 h152 l-8 16 h-136 z" class="awning"/><path d="M122 90 l-4 16 M146 90 l-2 16 M170 90 v16 M194 90 l2 16 M218 90 l4 16 M242 90 l6 16" stroke="#fff" stroke-width="5" opacity=".7"/>
 ${view.owner ? person(190, 104, '#ea580c', 'owner') : ''}
 <g class="trays">${trayRects}</g>
+<g class="price${prev && prev.price !== view.price ? ' new' : ''}"><rect x="112" y="140" width="46" height="9" rx="2"/><text x="135" y="147.5">${view.price || ''}</text></g>
+${view.notebook ? `<g class="book${prev && !prev.notebook ? ' new' : ''}"><rect x="124" y="104" width="14" height="10" rx="1"/><path d="M131 104 v10"/></g>` : ''}
 <g class="clip"><rect x="148" y="96" width="22" height="26" rx="2" fill="#92400e"/>${clip}</g>
-<g class="tin"><rect x="222" y="112" width="24" height="30" rx="3" fill="#374151"/><rect class="fill" x="225" y="113" width="18" height="26" fill="#facc15" style="transform:scaleY(${level(view.cash)})"/></g>
+<g class="tin"><rect x="222" y="112" width="24" height="30" rx="3" fill="#374151"/><rect class="fill" x="225" y="113" width="18" height="26" fill="#facc15" style="transform:scaleY(${level(prev ? prev.cash : view.cash)})"/></g>
 <g class="bin"><rect x="254" y="136" width="14" height="14" rx="2" fill="#6b7280"/></g>
 ${view.closed ? '<rect x="110" y="104" width="140" height="46" fill="#1f2937" opacity=".75"/>' : ''}
-<g class="queue">${people}</g><g id="fx"></g></svg>`;
+<g class="queue">${people}</g><g id="fx">${moved}</g></svg>`;
 }
 
 // One finished week, day by day. Coins fly to the tin for cash sales, a paper flies to
@@ -3204,7 +3254,7 @@ function animateWeek(host, result, labels) {
   const schoolCredit = result.invoices.some(x => x.who === 'school');
   result.days.forEach((day, d) => {
     const delay = `style="--d:${d}"`;
-    parts.push(`<text class="fx daylabel" x="180" y="22" ${delay}>${labels.day(d + 1)}</text>`);
+    parts.push(`<text class="fx daylabel" x="180" y="44" ${delay}>${labels.day(d + 1)}</text>`);
     const cashPieces = day.stall + day.office + (schoolCredit ? 0 : day.school);
     for (let i = 0; i < cap(Math.ceil(cashPieces / 15), 4); i++)
       parts.push(`<circle class="fx coin" cx="${270 + i * 14}" cy="150" r="4" style="--d:${d};--i:${i}"/>`);
@@ -3222,7 +3272,7 @@ function animateWeek(host, result, labels) {
   return result.days.length * 500 + 400;
 }
 
-  return { drawScene, animateWeek };
+  return { drawScene, animateWeek, level };
 })();
 
 /* ---- game ---- */
@@ -3230,7 +3280,7 @@ const NS_game = (function () {
 const { createSeason, step, can, quiet, capacity, hours, committed, needs, facts, goalProgress, eventOptions, stock, replay, SAMPLE, WEEKS, CALC_VERSION } = NS_season;
 const { loadStrings, setLanguage, getLanguage, t, localised } = NS_i18n;
 const { setCurrency, money, moneySigned } = NS_format;
-const { drawScene, animateWeek } = NS_seasonscene;
+const { drawScene, animateWeek, level } = NS_seasonscene;
 const store = NS_seasonstore;
 // The continuous season: one board, one business, saved after every committed action.
 // season.js decides outcomes; this file shows them and records what the player did.
@@ -3250,6 +3300,8 @@ const ONLINE = 'https://arnoroh.github.io/business_simulator/';
 let content, rec = null, status = 'ok', blocked = false, busy = false, offline = false, legacyFound = false, runs = [];
 let shown = null; // What the last action showed. Not stored: the record holds the facts.
 let timer = 0;
+let lastView = null, motion = false; // The previous stall picture; motion: the last action may animate.
+let sheetKey = null; // The stall part whose panel is open.
 let saving = Promise.resolve();
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const sum = list => list.reduce((a, b) => a + b, 0);
@@ -3319,6 +3371,7 @@ function feedback(action, result, before) {
 const act = action => async () => {
   const results = await commit([action]);
   if (!results) return;
+  motion = true;
   render();
 };
 const plan = (patch) => act({ type: 'plan', patch });
@@ -3385,9 +3438,17 @@ function renderTop() {
     queue: last ? Math.round(sum(last.days.map(d => d.demand)) / 6) : P.stallDemand, invoices: s.receivables.length,
     cash: s.cash, office: !!s.office, school: !!s.school, kiosk: !!s.kiosk, rise: s.week >= P.riseWeek,
     rain: last?.days.some(d => d.rain), closed: s.phase === 'closed' || replaying?.away === 'close' || replaying?.away === 'uncovered',
+    price: money(P.price[s.plan.price]), notebook: s.notebook,
   };
   const scene = $('scene');
-  if (!scene.classList.contains('playing')) scene.innerHTML = drawScene(v);
+  const prev = motion && !reduced() ? lastView : null;
+  motion = false;
+  if (!scene.classList.contains('playing')) {
+    scene.innerHTML = drawScene(v, prev);
+    const fill = scene.querySelector('.tin .fill');
+    if (prev && prev.cash !== v.cash) requestAnimationFrame(() => requestAnimationFrame(() => { fill.style.transform = `scaleY(${level(v.cash)})`; }));
+    lastView = v;
+  }
   scene.setAttribute('aria-label', t('scene', { pots: s.pots, trays: v.trays, packs: v.stock, papers: v.invoices }));
 }
 
@@ -3606,7 +3667,9 @@ function limitCard(s, forced) {
   if (!last) return null;
   const auto = s.history.length <= 3;
   if (!auto && !forced) return null;
-  return h('p', { class: 'card limit-note', role: 'note' }, t(`limit.${last.limit || 'none'}`));
+  const key = TILE[last.limit];
+  return h('div', { class: 'card limit-note', role: 'note' }, h('p', { text: t(`limit.${last.limit || 'none'}`) }),
+    key ? btn(t('openPanel', { name: t(`manage.${key}`) }), 'open-panel', { class: 'link', onclick: () => openSheet(key) }) : null);
 }
 
 function radios(field, values, current, label) {
@@ -3629,10 +3692,6 @@ const ICON = {
   sell: 'M12 3 a9 9 0 1 0 .1 0 z M12 7 v10 M9 9 h5 M9 15 h5', collect: 'M6 3 h12 v18 h-12 z M9 8 h6 M9 12 h6 M9 16 h4',
   money: 'M3 10 l9 -6 l9 6 v10 h-18 z M10 20 v-6 h4 v6',
 };
-function tile(key, limited, ...body) {
-  return h('details', { class: `tile${limited ? ' limit' : ''}`, 'data-tile': key },
-    h('summary', {}, h('span', { class: 'icon', 'aria-hidden': 'true' }), t(`manage.${key}`)), body);
-}
 
 function dailyPlan(s) {
   const cap = capacity(s);
@@ -3644,20 +3703,21 @@ function dailyPlan(s) {
     radios('price', ['low', 'normal', 'high'].map(k => [k, money(P.price[k])]), s.plan.price, t('price')));
 }
 
-function board(s, highlight) {
+// The five operating panels. Each opens from its part of the stall picture.
+function panels(s) {
   const cap = capacity(s), unit = P.pack + (s.week >= P.riseWeek ? P.rise : 0) - (s.plan.buyWeeks === 2 ? P.bulkOff : 0);
   const owedBakari = sum(s.payables.filter(x => x.who === 'bakari').map(x => x.amount));
   const credit = Object.entries(s.customers);
   const byWho = Object.groupBy ? Object.groupBy(s.receivables, x => x.who) : s.receivables.reduce((m, x) => ((m[x.who] ||= []).push(x), m), {});
   const arrears = s.payables.filter(x => x.who !== 'bakari');
-  const tiles = [
-    tile('buy', highlight === 'buy',
+  return {
+    buy: [
       h('p', { text: t('stock', { n: stock(s) }) }), h('p', { text: t('packPrice', { amount: money(unit) }) }),
       radios('pay', [['cash', t('pay.cash')], ['credit', t('pay.credit')]], s.plan.pay, t('payWith')),
       radios('buyWeeks', [[1, t('buyWeeks.1')], [2, t('buyWeeks.2')]], s.plan.buyWeeks, t('buyFor')),
       owedBakari ? h('p', { text: t('supplierOwed', { amount: money(owedBakari) }) }) : null,
-      s.blocked ? h('p', { class: 'warn', text: t('blocked') }) : null),
-    tile('cook', highlight === 'cook',
+      s.blocked ? h('p', { class: 'warn', text: t('blocked') }) : null],
+    cook: [
       h('p', { text: t('canCook', { n: cap.trays }) + ' ' + t(`by.${cap.by}`) }),
       committed(s) ? h('p', { text: t('ordersNeed', { n: committed(s) }) }) : null,
       h('p', { text: t('pots', { n: s.pots }) }),
@@ -3665,12 +3725,12 @@ function board(s, highlight) {
         s.equipment.some(e => e.kind === 'pot') ? btn(t('sellPot', { amount: money(P.pot.resale) }), 'sellPot', { onclick: act({ type: 'sellPot' }) }) : null),
       s.helper ? h('p', { text: t('helper', { amount: money(P.wage) }) + (s.helper.training ? ' ' + t('training') : '') }) : null,
       s.helper ? h('div', { class: 'row' }, btn(t('trainHelper', { amount: money(P.training) }), 'trainHelper', { disabled: !can(s, { type: 'trainHelper' }), onclick: act({ type: 'trainHelper' }) }), btn(t('endHelper'), 'endHelper', { onclick: act({ type: 'endHelper' }) })) : null,
-      s.helper ? radios('check', ['none', 'batch', 'every'].map(k => [k, t(`check.${k}`)]), s.plan.check, t('checks')) : null),
-    tile('sell', highlight === 'sell',
+      s.helper ? radios('check', ['none', 'batch', 'every'].map(k => [k, t(`check.${k}`)]), s.plan.check, t('checks')) : null],
+    sell: [
       h('h4', { text: t('buyers') }), h('ul', {}, h('li', { text: t('ch.stall') }), s.office ? h('li', { text: t('ch.office') }) : null,
         s.school ? h('li', { text: t('ch.school', { n: s.school.pieces }) }) : null, s.kiosk ? h('li', { text: t('ch.kiosk', { n: P.kiosk.pieces }) }) : null,
-        credit.filter(([, c]) => c.credit).map(([id]) => h('li', { text: t('ch.credit', { who: who(id) }) })))),
-    tile('collect', highlight === 'collect',
+        credit.filter(([, c]) => c.credit).map(([id]) => h('li', { text: t('ch.credit', { who: who(id) }) })))],
+    collect: [
       h('h4', { text: t('owed') }),
       s.receivables.length ? Object.entries(byWho).map(([id, list]) => h('div', { class: 'debtor' },
         h('p', {}, h('strong', { text: who(id) })),
@@ -3679,8 +3739,8 @@ function board(s, highlight) {
         : h('p', { text: t('nobody') }),
       credit.map(([id, c]) => btn(t(c.credit ? 'creditOff' : 'creditOn', { who: who(id) }), 'credit', { 'data-who': id, onclick: act({ type: 'credit', who: id, on: !c.credit }) })),
       h('p', { text: t('notebook') }),
-      btn(t(s.notebook ? 'notebookOff' : 'notebookOn'), 'notebook', { 'aria-pressed': String(s.notebook), onclick: act({ type: 'notebook', on: !s.notebook }) })),
-    tile('money', false,
+      btn(t(s.notebook ? 'notebookOff' : 'notebookOn'), 'notebook', { 'aria-pressed': String(s.notebook), onclick: act({ type: 'notebook', on: !s.notebook }) })],
+    money: [
       stepper('household', s.plan.household, 500, t('household'), 0, 10000),
       s.household.unmet ? h('p', { class: 'warn', text: t('unmet', { amount: money(s.household.unmet) }) }) : null,
       s.loan ? h('p', { text: t('loan', { amount: money(s.loan.balance), principal: money(P.loan.principal), interest: money(P.loan.interest) }) }) : null,
@@ -3688,10 +3748,35 @@ function board(s, highlight) {
         : h('div', {}, btn(t('borrow', { amount: money(P.loan.amount) }), 'borrow', { disabled: !can(s, { type: 'borrow' }), onclick: act({ type: 'borrow' }) }),
           h('p', { class: 'small', text: t('terms', { principal: money(P.loan.principal), interest: money(P.loan.interest) }) })),
       arrears.map(x => h('p', { class: 'warn', text: t('arrears', { who: who(x.who), amount: money(x.amount), n: x.due }) })),
-      h('details', {}, h('summary', { text: t('closeBiz') }), btn(t('closeBiz'), 'close', { class: 'danger', onclick: () => confirm(t('closeAsk')) && act({ type: 'close' })() }))),
-  ];
-  for (const el of tiles) el.querySelector('.icon').append(icon(el.dataset.tile));
-  return h('div', { class: 'board' }, tiles);
+      h('details', {}, h('summary', { text: t('closeBiz') }), btn(t('closeBiz'), 'close', { class: 'danger', onclick: () => confirm(t('closeAsk')) && act({ type: 'close' })() }))],
+  };
+}
+
+// The stall is the menu: sacks, pots, customers, clipboard and tin open their panel in a
+// sheet over the lower screen, so the picture above shows what each action changes.
+const SPOTS = ['buy', 'cook', 'collect', 'money', 'sell'];
+function renderSpots(highlight) {
+  const nav = $('spots'), s = rec.state;
+  nav.setAttribute('aria-label', t('spots'));
+  nav.hidden = blocked || !['plan', 'event'].includes(s.phase);
+  nav.replaceChildren(...SPOTS.map(key => h('button', { type: 'button', class: `spot${highlight === key ? ' limit' : ''}`, 'data-spot': key,
+    'aria-label': t(`manage.${key}`), title: t(`manage.${key}`), 'aria-haspopup': 'dialog', onclick: () => openSheet(key) }, h('span', { class: 'badge' }, icon(key)))));
+  if (nav.hidden && $('sheet').open) $('sheet').close();
+}
+function openSheet(key) {
+  sheetKey = key;
+  if (document.querySelector('.stage').getBoundingClientRect().top < 0) scrollTo(0, 0);
+  const sheet = $('sheet');
+  sheet.style.maxHeight = `${Math.max(innerHeight / 2, innerHeight - document.querySelector('.stage').getBoundingClientRect().bottom - 4)}px`;
+  fillSheet();
+  if (!sheet.open) sheet.showModal();
+  $('sheet-title').focus({ preventScroll: true });
+}
+function fillSheet() {
+  $('sheet-title').replaceChildren(h('span', { class: 'icon', 'aria-hidden': 'true' }, icon(sheetKey)), t(`manage.${sheetKey}`));
+  $('sheet-close').textContent = t('sheet.done');
+  $('sheet-body').replaceChildren(h('div', { 'data-panel': sheetKey }, panels(rec.state)[sheetKey]));
+  if (status !== 'ok') for (const control of $('sheet-body').querySelectorAll('button, input')) control.disabled = true;
 }
 function icon(key) {
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -3733,21 +3818,23 @@ function render(focusResult = false) {
   clearTimeout(timer);
   $('scene').classList.remove('playing');
   $('skip').hidden = true;
-  const expanded = [...document.querySelectorAll('.tile[open]')].map(el => el.dataset.tile);
   const planOpen = document.querySelector('[data-testid=plan-editor]')?.open;
   const active = document.activeElement;
-  const focused = active?.dataset.field ? `[data-field="${active.dataset.field}"]${active.type === 'radio' ? `[value="${active.value}"]` : ''}` : active?.dataset.for ? `[data-action="${active.dataset.action}"][data-for="${active.dataset.for}"]` : null;
+  const focused = active?.dataset.field ? `[data-field="${active.dataset.field}"]${active.type === 'radio' ? `[value="${active.value}"]` : ''}` : active?.dataset.for ? `[data-action="${active.dataset.action}"][data-for="${active.dataset.for}"]`
+    : active?.dataset.action && $('sheet').contains(active) ? `[data-action="${active.dataset.action}"]${active.dataset.who ? `[data-who="${active.dataset.who}"]` : ''}` : null;
   document.title = t('title');
   $('title').textContent = t('title'); $('sub').textContent = t('sub');
   for (const el of document.querySelectorAll('[data-i18n]')) el.textContent = t(el.dataset.i18n);
   $('lang').textContent = t('otherLang'); $('lang').lang = getLanguage() === 'en' ? 'sw' : 'en';
   $('guide-lang').textContent = t('otherLang'); $('guide-lang').lang = $('lang').lang;
   const main = $('main');
+  let spotHighlight = '';
   document.body.classList.toggle('opening', !blocked && !rec.state.history.length);
   main.replaceChildren();
   renderStatus();
   if (blocked) {
     $('history-open').hidden = true;
+    renderSpots('');
     main.append(h('section', { class: 'card' }, h('p', { text: t('unreadable') }), btn(t('export'), 'export', { class: 'primary', onclick: exportRecord }),
       btn(t('newRun'), 'new', { onclick: newRun })));
     renderFoot(); return;
@@ -3771,7 +3858,7 @@ function render(focusResult = false) {
     if (shown?.kind === 'result') main.append(resultCard(shown.results, true));
     main.append(eventCard(s));
     if (shown?.kind === 'outcome') main.append(outcomeCard(shown));
-    main.append(h('details', { 'data-testid': 'plan-editor', open: planOpen }, h('summary', { text: t('plan.change') }), dailyPlan(s)), board(s, ''));
+    main.append(h('details', { 'data-testid': 'plan-editor', open: planOpen }, h('summary', { text: t('plan.change') }), dailyPlan(s)));
   }
   else if (s.phase === 'review') { if (shown?.kind === 'result') main.append(resultCard(shown.results, true)); main.append(reviewCard(s)); }
   else {
@@ -3782,7 +3869,6 @@ function render(focusResult = false) {
     const hint = limitCard(s, forced); if (hint) main.append(hint);
     const last = s.history.at(-1);
     const highlight = last && (s.history.length <= 3 || forced) ? TILE[last.limit] : '';
-    const controls = board(s, highlight);
     const trays = Math.min(s.plan.trays, capacity(s).trays);
     const warn = s.cash < Math.max(0, trays * P.days - stock(s)) * (P.pack + (s.week >= P.riseWeek ? P.rise : 0)) + s.plan.household;
     const daily = dailyPlan(s);
@@ -3795,10 +3881,11 @@ function render(focusResult = false) {
       s.history.length > 3 ? btn(t('help'), 'help', { class: 'link', onclick: act({ type: 'help' }) }) : null,
       s.history.length > 3 ? h('p', { class: 'small', text: t('helpNote') }) : null));
     main.append(daily);
-    main.append(controls);
+    spotHighlight = highlight;
   }
-  for (const key of expanded) main.querySelector(`[data-tile="${key}"]`)?.setAttribute('open', '');
-  if (focused) main.querySelector(focused)?.focus({ preventScroll: true });
+  renderSpots(spotHighlight);
+  if ($('sheet').open) fillSheet();
+  if (focused) (main.querySelector(focused) || $('sheet-body').querySelector(focused))?.focus({ preventScroll: true });
   if (status !== 'ok') for (const control of main.querySelectorAll('button, input')) control.disabled = true;
   renderFoot();
   if (focusResult) main.querySelector('[data-testid="result"]')?.focus({ preventScroll: false });
@@ -3909,9 +3996,11 @@ async function init() {
   $('reload').onclick = () => location.reload();
   $('skip').onclick = stop;
   $('history').addEventListener('close', () => $('history-body').replaceChildren());
-  // Large text must not let the summary cover the operating controls.
-  const fitSummary = () => document.body.classList.toggle('tall-summary', document.querySelector('.strip').offsetHeight > innerHeight / 3);
-  new ResizeObserver(fitSummary).observe(document.querySelector('.strip'));
+  $('sheet-close').onclick = () => $('sheet').close();
+  $('sheet').addEventListener('close', () => { const key = sheetKey; sheetKey = null; $('sheet-body').replaceChildren(); document.querySelector(`[data-spot="${key}"]`)?.focus({ preventScroll: true }); });
+  // Large text must not let the summary and stall cover the operating controls.
+  const fitSummary = () => document.body.classList.toggle('tall-summary', document.querySelector('.stage').offsetHeight > innerHeight * .45);
+  new ResizeObserver(fitSummary).observe(document.querySelector('.stage'));
   addEventListener('resize', fitSummary);
   let saved = null;
   try { await store.open(); saved = await store.active(); } catch { status = 'failed'; }

@@ -45,9 +45,10 @@ try {
   await page.locator('#guide-open').click();
   assert(await page.evaluate(() => document.querySelector('#guide').scrollWidth <= document.querySelector('#guide').clientWidth), 'Controls guide fits at 200% text');
   await page.locator('#guide-close').click();
-  await page.locator('[data-tile=collect] > summary').click();
-  assert(await page.locator('[data-tile=collect]').getAttribute('open') !== null, 'Large-text controls are not covered by fixed panels');
-  await page.locator('[data-tile=collect] > summary').click();
+  await page.locator('[data-spot=collect]').click();
+  assert(await page.locator('#sheet[open]').count() === 1 && await page.locator('#sheet-close').isVisible(), 'Large-text panels open with a reachable close');
+  assert(await page.evaluate(() => document.querySelector('#sheet').scrollWidth <= document.querySelector('#sheet').clientWidth), 'Panel sheet fits at 200% text');
+  await page.locator('#sheet-close').click();
   await enlarged.evaluate(el => el.remove()); await page.evaluate(() => scrollTo(0, 0));
   await page.screenshot({ path: `/tmp/MV-BS-SEASON-opening-${lang}.png`, fullPage: true });
   await ctx.setOffline(true); await page.reload(); await page.locator('[data-action=run]').waitFor();
@@ -57,10 +58,14 @@ try {
   assert(await page.locator('[data-field=trays]').isVisible());
   assert(await page.locator('[data-field=price]').first().isVisible());
   assert.equal(await page.locator('[data-action=runUntil]').count(), 0);
-  await page.locator('[data-tile=buy] > summary').click();
+  await page.locator('[data-spot=buy]').click();
+  await clickSaved(page, page.locator('#sheet [data-field=buyWeeks][value="2"]'));
+  assert.equal(await page.locator('#sheet[open]').count(), 1, 'The panel stays open while its plan changes');
+  assert.equal(await page.locator('#sheet [data-field=buyWeeks][value="2"]').isChecked(), true);
+  await clickSaved(page, page.locator('#sheet [data-field=buyWeeks][value="1"]'));
+  await page.keyboard.press('Escape');
+  await page.waitForFunction(() => document.activeElement.dataset.spot === 'buy'); // Closing a panel returns to its stall part.
   await clickSaved(page, page.locator('[data-action=more][data-for=trays]'));
-  assert(await page.locator('[data-tile=buy]').getAttribute('open') !== null);
-  await page.locator('[data-tile=buy] > summary').click();
   let screens = 0;
   while ((await record(page)).state.week <= 24) {
    const s = (await record(page)).state;
@@ -74,8 +79,9 @@ try {
      assert.deepEqual(await record(page), saved, 'Restoring feedback never commits a second action');
     }
     if (s.pending === 'notebook') {
-     await page.locator('[data-tile=collect] > summary').click();
-     await clickSaved(page, page.locator('[data-action=chase][data-who=neema]'));
+     await page.locator('[data-spot=collect]').click();
+     await clickSaved(page, page.locator('#sheet [data-action=chase][data-who=neema]'));
+     await page.locator('#sheet-close').click();
      const saved = await record(page), feedback = await page.locator('#main [role=status]').innerText();
      await page.locator('#lang').click();
      assert.notEqual(await page.locator('#main [role=status]').innerText(), feedback, 'Collection feedback translates immediately');
