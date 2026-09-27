@@ -16,6 +16,7 @@ const ONLINE = 'https://arnoroh.github.io/business_simulator/';
 let content, rec = null, status = 'ok', blocked = false, busy = false, offline = false, legacyFound = false, runs = [];
 let shown = null; // What the last action showed. Not stored: the record holds the facts.
 let timer = 0;
+let saving = Promise.resolve();
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const sum = list => list.reduce((a, b) => a + b, 0);
 const fill = (text, params = {}) => text.replace(/\{(\w+)\}/g, (m, k) => (k in params ? params[k] : m));
@@ -66,8 +67,8 @@ async function commit(actions) {
     }
   } catch { busy = false; render(); return null; }
   rec = { ...rec, state: s, log };
-  await persist();
-  await refreshRuns();
+  saving = persist().then(refreshRuns);
+  await saving;
   busy = false;
   return results;
 }
@@ -89,6 +90,7 @@ const act = action => async () => {
 const plan = (patch) => act({ type: 'plan', patch });
 
 async function runWeeks(until) {
+  await saving;
   const actions = [{ type: 'run' }];
   if (!can(rec.state, actions[0])) return;
   let s = step(rec.state, actions[0]).state;
@@ -124,6 +126,7 @@ function renderTop() {
   $('profit').textContent = last ? money(last.profit) : '—';
   $('sales').textContent = last ? money(last.sales) : '—';
   $('week').textContent = t(s.week > WEEKS ? 'weekExtra' : 'week', { n: s.week, total: WEEKS });
+  $('week').closest('.meta').hidden = !last;
   const due = s.payments.find(p => p.status === 'due');
   $('due').textContent = due ? t('nextDue', { amount: money(due.amount), n: due.due }) : '';
   $('hours').textContent = t('hours', { n: hours(capacity(s), Math.min(s.plan.trays, capacity(s).trays)) });
@@ -221,10 +224,21 @@ function notes(r) {
   return out;
 }
 
-function resultCard(results) {
+function resultCard(results, compact = false) {
   const r = results.at(-1);
   const change = r.cashEnd - r.cashStart;
   const lines = notes(r);
+  if (compact) {
+    const full = resultCard(results);
+    full.removeAttribute('data-testid'); full.querySelector('h2').remove();
+    const sold = sum(r.days.map(d => d.pieces)) - r.waste - r.rejected;
+    return h('section', { class: 'card result recap', 'data-testid': 'result', tabindex: '-1' },
+      h('h2', { text: t('result', { n: r.week }) }),
+      h('p', { text: t('recap.sold', { sold, waste: r.waste }) }),
+      h('p', { class: 'compare', text: t('compare', { profit: money(r.profit), change: moneySigned(change) }) }),
+      h('ul', { class: 'notes' }, lines.slice(0, Math.max(1, r.notes.length + new Set(r.late).size)).map(text => h('li', { text }))),
+      h('details', {}, h('summary', { text: t('recap.details') }), full));
+  }
   const visible = Math.max(3, r.notes.length + new Set(r.late).size);
   const pnlOrder = ['materials', 'chai', 'fee', 'wages', 'interest', 'depreciation', 'other'];
   return h('section', { class: 'card result', 'data-testid': 'result', tabindex: '-1' },
@@ -262,15 +276,6 @@ function tradingPicture(r) {
     lost ? h('p', { class: 'small', text: t('trade.unfilled', { n: lost }) }) : null,
     h('p', { class: 'small', text: t('trade.sales', { amount: money(r.sales) }) }), splitBar(sales),
     h('div', { class: 'bar-key' }, sales.map(p => h('span', { class: p.key, text: t(`trade.${p.key}`, { amount: money(p.value) }) }))));
-}
-
-function openTile(key) {
-  stop();
-  const tile = document.querySelector(`[data-tile="${key}"]`);
-  if (!tile) return;
-  tile.open = true;
-  tile.querySelector('summary').focus({ preventScroll: true });
-  tile.scrollIntoView({ block: 'start', behavior: reduced() ? 'auto' : 'smooth' });
 }
 
 // The complete audit is learning feedback. It does not fabricate business receipts
@@ -384,7 +389,18 @@ const ICON = {
 };
 function tile(key, limited, ...body) {
   return h('details', { class: `tile${limited ? ' limit' : ''}`, 'data-tile': key },
-    h('summary', {}, h('span', { class: 'icon', 'aria-hidden': 'true' }), t(key)), body);
+    h('summary', {}, h('span', { class: 'icon', 'aria-hidden': 'true' }), t(`manage.${key}`)), body);
+}
+
+function dailyPlan(s) {
+  const cap = capacity(s);
+  return h('section', { class: 'card daily-plan', 'data-testid': 'daily-plan' },
+    h('h2', { text: t('plan.title', { n: s.week }) }),
+    !s.history.length ? h('p', { class: 'small', text: t('plan.start') }) : null,
+    stepper('trays', s.plan.trays, 1, t('trays'), 0, 15),
+    h('p', { class: 'small', text: t('plan.pieces', { n: s.plan.trays * (s.small ? P.smallPieces : P.pieces), per: s.small ? P.smallPieces : P.pieces }) }),
+    s.plan.trays > cap.trays ? h('p', { class: 'warn', text: t('canCook', { n: cap.trays }) }) : null,
+    radios('price', ['low', 'normal', 'high'].map(k => [k, money(P.price[k])]), s.plan.price, t('price')));
 }
 
 function board(s, highlight) {
@@ -401,7 +417,6 @@ function board(s, highlight) {
       owedBakari ? h('p', { text: t('supplierOwed', { amount: money(owedBakari) }) }) : null,
       s.blocked ? h('p', { class: 'warn', text: t('blocked') }) : null),
     tile('cook', highlight === 'cook',
-      stepper('trays', s.plan.trays, 1, t('trays'), 0, 15),
       h('p', { text: t('canCook', { n: cap.trays }) + ' ' + t(`by.${cap.by}`) }),
       committed(s) ? h('p', { text: t('ordersNeed', { n: committed(s) }) }) : null,
       h('p', { text: t('pots', { n: s.pots }) }),
@@ -411,7 +426,6 @@ function board(s, highlight) {
       s.helper ? h('div', { class: 'row' }, btn(t('trainHelper', { amount: money(P.training) }), 'trainHelper', { disabled: !can(s, { type: 'trainHelper' }), onclick: act({ type: 'trainHelper' }) }), btn(t('endHelper'), 'endHelper', { onclick: act({ type: 'endHelper' }) })) : null,
       s.helper ? radios('check', ['none', 'batch', 'every'].map(k => [k, t(`check.${k}`)]), s.plan.check, t('checks')) : null),
     tile('sell', highlight === 'sell',
-      radios('price', ['low', 'normal', 'high'].map(k => [k, `${t(`price.${k}`)} ${money(P.price[k])}`]), s.plan.price, t('price')),
       h('h4', { text: t('buyers') }), h('ul', {}, h('li', { text: t('ch.stall') }), s.office ? h('li', { text: t('ch.office') }) : null,
         s.school ? h('li', { text: t('ch.school', { n: s.school.pieces }) }) : null, s.kiosk ? h('li', { text: t('ch.kiosk', { n: P.kiosk.pieces }) }) : null,
         credit.filter(([, c]) => c.credit).map(([id]) => h('li', { text: t('ch.credit', { who: who(id) }) })))),
@@ -478,6 +492,7 @@ function render(focusResult = false) {
   $('scene').classList.remove('playing');
   $('skip').hidden = true;
   const expanded = [...document.querySelectorAll('.tile[open]')].map(el => el.dataset.tile);
+  const planOpen = document.querySelector('[data-testid=plan-editor]')?.open;
   const active = document.activeElement;
   const focused = active?.dataset.field ? `[data-field="${active.dataset.field}"]${active.type === 'radio' ? `[value="${active.value}"]` : ''}` : active?.dataset.for ? `[data-action="${active.dataset.action}"][data-for="${active.dataset.for}"]` : null;
   document.title = t('title');
@@ -485,21 +500,17 @@ function render(focusResult = false) {
   for (const el of document.querySelectorAll('[data-i18n]')) el.textContent = t(el.dataset.i18n);
   $('lang').textContent = t('otherLang'); $('lang').lang = getLanguage() === 'en' ? 'sw' : 'en';
   const main = $('main');
-  document.body.classList.toggle('trading', !blocked && rec.state.phase === 'plan');
+  document.body.classList.toggle('opening', !blocked && !rec.state.history.length);
   main.replaceChildren();
   renderStatus();
   if (blocked) {
-    $('desk').replaceChildren(); $('history-open').hidden = true;
+    $('history-open').hidden = true;
     main.append(h('section', { class: 'card' }, h('p', { text: t('unreadable') }), btn(t('export'), 'export', { class: 'primary', onclick: exportRecord }),
       btn(t('newRun'), 'new', { onclick: newRun })));
     renderFoot(); return;
   }
   renderTop();
   const s = rec.state;
-  const desk = $('desk'); desk.replaceChildren(); desk.setAttribute('aria-label', t('desk'));
-  if (s.phase === 'plan' || s.phase === 'event') for (const key of ['buy', 'cook', 'sell', 'collect']) {
-    desk.append(btn(t(key), 'open-tile', { 'data-target': key, onclick: () => openTile(key) }));
-  }
   $('history-open').hidden = !s.history.length;
   $('history-open').textContent = t('history.open');
   $('history-open').onclick = () => showHistory();
@@ -513,12 +524,16 @@ function render(focusResult = false) {
       rows([[t('f.cash'), money(f.cash)], [t('f.profit'), money(f.profit)], [t('f.owedToYou'), money(f.owedToYou)], [t('f.owedByYou'), money(f.owedByYou)], [t('f.drawings'), money(f.drawings)]]),
       h('p', { class: 'small', text: t('limits') }), btn(t('newRun'), 'new', { class: 'primary', onclick: newRun })));
   }
-  else if (s.phase === 'event') { if (shown?.kind === 'outcome') main.append(outcomeCard(shown)); if (shown?.kind === 'result') main.append(resultCard(shown.results)); main.append(eventCard(s), board(s, '')); }
+  else if (s.phase === 'event') {
+    if (shown?.kind === 'result') main.append(resultCard(shown.results, true));
+    main.append(eventCard(s));
+    if (shown?.kind === 'outcome') main.append(outcomeCard(shown));
+    main.append(h('details', { 'data-testid': 'plan-editor', open: planOpen }, h('summary', { text: t('plan.change') }), dailyPlan(s)), board(s, ''));
+  }
   else if (s.phase === 'review') { if (shown?.kind === 'result') main.append(h('details', {}, h('summary', { text: t('result', { n: s.week - 1 }) }), resultCard(shown.results))); main.append(reviewCard(s)); }
   else {
-    if (shown?.kind === 'result') main.append(resultCard(shown.results));
+    if (shown?.kind === 'result') main.append(resultCard(shown.results, true));
     if (shown?.kind === 'outcome') main.append(outcomeCard(shown));
-    if (!s.history.length) main.append(h('p', { class: 'small', text: t('goalLine') }));
     if (s.goal) main.append(h('p', { class: 'goal-line', text: t('yourGoal', { goal: t(`goal.${s.goal}`) }) }));
     const forced = shown?.kind === 'help';
     const hint = limitCard(s, forced); if (hint) main.append(hint);
@@ -527,13 +542,15 @@ function render(focusResult = false) {
     const controls = board(s, highlight);
     const trays = Math.min(s.plan.trays, capacity(s).trays);
     const warn = s.cash < Math.max(0, trays * P.days - stock(s)) * (P.pack + (s.week >= P.riseWeek ? P.rise : 0)) + s.plan.household;
-    main.append(h('p', { class: 'plan-summary', text: t('standingPlan', { trays: s.plan.trays, price: money(P.price[s.plan.price]), home: money(s.plan.household) }) }));
-    main.append(h('div', { class: 'run' },
+    const daily = dailyPlan(s);
+    daily.append(h('div', { class: 'run' },
       warn ? h('p', { class: 'warn', role: 'alert', text: t('cashWarning') }) : null,
+      h('p', { class: 'small', text: t('plan.trade', { n: P.days }) }),
       btn(t('run', { n: s.week }), 'run', { class: 'primary', onclick: () => runWeeks(false) }),
-      btn(t('runUntil'), 'runUntil', { onclick: () => runWeeks(true) }),
+      s.history.length > 0 ? btn(t('runUntil'), 'runUntil', { onclick: () => runWeeks(true) }) : null,
       s.history.length > 3 ? btn(t('help'), 'help', { class: 'link', onclick: act({ type: 'help' }) }) : null,
       s.history.length > 3 ? h('p', { class: 'small', text: t('helpNote') }) : null));
+    main.append(daily);
     main.append(controls);
   }
   for (const key of expanded) main.querySelector(`[data-tile="${key}"]`)?.setAttribute('open', '');
@@ -638,7 +655,7 @@ async function init() {
   $('reload').onclick = () => location.reload();
   $('skip').onclick = stop;
   $('history').addEventListener('close', () => $('history-body').replaceChildren());
-  // Large text must not leave the controls trapped between two fixed panels.
+  // Large text must not let the summary cover the operating controls.
   const fitSummary = () => document.body.classList.toggle('tall-summary', document.querySelector('.strip').offsetHeight > innerHeight / 3);
   new ResizeObserver(fitSummary).observe(document.querySelector('.strip'));
   addEventListener('resize', fitSummary);

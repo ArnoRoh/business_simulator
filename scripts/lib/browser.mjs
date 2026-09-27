@@ -15,7 +15,7 @@ export async function browserApp(entry = false) {
     if (!file.startsWith(root)) { res.writeHead(403).end(); return; }
     try {
       let bytes = await readFile(file);
-      if (pathname === '/sw.js') bytes = Buffer.from(bytes.toString().replace("const CACHE = 'business-simulator-v1'", `const CACHE = '${workerVersion}'`));
+      if (pathname === '/sw.js') bytes = Buffer.from(bytes.toString().replace(/const CACHE = '[^']*'/, `const CACHE = '${workerVersion}'`));
       const type = { '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.html': 'text/html', '.webmanifest': 'application/manifest+json' }[extname(file)] || 'application/octet-stream';
       res.writeHead(200, { 'Content-Type': type, 'Cache-Control': 'no-store' }); res.end(bytes);
     } catch { res.writeHead(404).end(); }

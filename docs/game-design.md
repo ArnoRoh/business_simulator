@@ -12,10 +12,16 @@ transaction. Feedback follows the selected language. Payment delays and broken
 commitments stay visible above routine trading notes. Automatic trading stops at
 these setbacks so the player can respond. A new action ends any previous animation.
 
-Four controls below the stall open buying, cooking, selling and collection. The weekly
-trading button stays in reach while the player reads results or changes the plan.
-Each result shows pieces sold, wasted or rejected, plus cash and credit sales. The
-credit segment uses a pattern as well as colour. The figures come from completed play.
+The opening shows the daily batch, its piece count and the selling price together.
+The trade button explains that it buys ingredients, then cooks and sells for six days.
+It waits for an edited batch to save before it trades. There is no forecast question.
+Automatic multi-week trading appears after the first completed week.
+
+Management panels are named for their contents: ingredients/supplier, equipment/people,
+customers/orders, money owed and household/borrowing. The calendar and historical
+accounts sit below play. A short weekly recap shows quantities sold, waste, profit,
+cash change and payment/commitment problems. Full production/payment graphics and
+receipts remain available in its details. These displays use completed results.
 
 The business history compares weekly sales, weekly profit and cash at each week end
 on the same money scale. A week selector gives exact figures, the decisions made before

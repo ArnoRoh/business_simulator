@@ -5,10 +5,18 @@ import { createSeason, step, can, eventOptions, quiet } from '../app/js/season.j
 const content = JSON.parse(await readFile(new URL('../app/content/season.json', import.meta.url), 'utf8'));
 const app = await browserApp('season');
 const record = page => page.evaluate(async () => (await import('./js/seasonstore.js')).active());
+async function waitRecord(page, ready) {
+ for (let n = 0; n < 200; n++) {
+  const r = await record(page);
+  if (ready(r)) return r;
+  await page.waitForTimeout(25);
+ }
+ assert.fail('Saved record did not reach the expected state');
+}
 async function clickSaved(page, locator) {
  const before = (await record(page)).rev;
  await locator.click();
- await page.waitForFunction(async rev => (await (await import('./js/seasonstore.js')).active()).rev > rev, before);
+ await waitRecord(page, r => r.rev > before);
 }
 const choose = { pot: 'buy', neema: 'yes', notebook: 'start', office: 'trial', officeResult: 'flask', neighbours: 'yes', payment: 'pay', school: 'small', schoolCounter: 'full', kiosk: 'yes', helper: 'train', away: 'cover', flour: 'price' };
 try {
@@ -23,18 +31,20 @@ try {
   await page.screenshot({ path: `/tmp/MV-BS-SEASON-opening-${lang}.png`, fullPage: true });
   const runBox = await page.locator('[data-action=run]').boundingBox(); assert(runBox.y + runBox.height <= 740, `First action must fit on the small screen: ${JSON.stringify(runBox)}`);
   const enlarged = await page.addStyleTag({ content: 'html { font-size: 34px !important; }' });
-  await page.locator('#desk [data-target=collect]').click();
+  await page.locator('[data-tile=collect] > summary').click();
   assert(await page.locator('[data-tile=collect]').getAttribute('open') !== null, 'Large-text controls are not covered by fixed panels');
   await page.locator('[data-tile=collect] > summary').click();
   await enlarged.evaluate(el => el.remove()); await page.evaluate(() => scrollTo(0, 0));
   await page.screenshot({ path: `/tmp/MV-BS-SEASON-opening-${lang}.png`, fullPage: true });
   await ctx.setOffline(true); await page.reload(); await page.locator('[data-action=run]').waitFor();
-  // A standing plan control remains open after saving; it must not demand another click.
-  await page.locator('#desk [data-target=cook]').click();
-  assert.equal(await page.evaluate(() => document.activeElement.closest('[data-tile]')?.dataset.tile), 'cook', 'Desk opens and focuses the real business control');
+  // The two daily decisions are usable without opening any settings.
+  assert(await page.locator('[data-field=trays]').isVisible());
+  assert(await page.locator('[data-field=price]').first().isVisible());
+  assert.equal(await page.locator('[data-action=runUntil]').count(), 0);
+  await page.locator('[data-tile=buy] > summary').click();
   await clickSaved(page, page.locator('[data-action=more][data-for=trays]'));
-  assert(await page.locator('[data-tile=cook]').getAttribute('open') !== null);
-  await page.locator('[data-tile=cook] > summary').click();
+  assert(await page.locator('[data-tile=buy]').getAttribute('open') !== null);
+  await page.locator('[data-tile=buy] > summary').click();
   let screens = 0;
   while ((await record(page)).state.week <= 24) {
    const s = (await record(page)).state;
@@ -62,13 +72,21 @@ try {
     await clickSaved(page, page.locator('[data-action=review]'));
    } else {
     if (s.week === 3) {
-     await page.locator('[data-tile=cook] > summary').click();
-     const before = (await record(page)).rev;
-     await page.locator('[data-field=trays]').fill('8'); await page.locator('[data-field=trays]').press('Tab');
-     await page.waitForFunction(async rev => (await (await import('./js/seasonstore.js')).active()).rev > rev, before);
-     await page.locator('[data-tile=cook] > summary').click();
+     // Delay save completion: one trade click must wait for the typed plan, not vanish.
+     await page.evaluate(() => {
+      const d = Object.getOwnPropertyDescriptor(IDBTransaction.prototype, 'oncomplete');
+      window.restoreSaveTiming = () => Object.defineProperty(IDBTransaction.prototype, 'oncomplete', d);
+      Object.defineProperty(IDBTransaction.prototype, 'oncomplete', { ...d, set(fn) { d.set.call(this, this.mode === 'readwrite' ? e => setTimeout(() => fn.call(this, e), 100) : fn); } });
+     });
+     await page.locator('[data-field=trays]').fill('8');
     }
     await clickSaved(page, page.locator('[data-action=run]'));
+    await waitRecord(page, r => r.state.week === s.week + 1);
+    if (s.week === 3) {
+     await page.evaluate(() => window.restoreSaveTiming());
+     const typed = await record(page);
+     assert.equal(typed.state.history.at(-1).planned, 8, `Trade uses the typed plan: ${JSON.stringify(typed.log.slice(-5).map(x => x.action))}`);
+    }
     const last = (await record(page)).state.history.at(-1);
     await page.getByRole('heading', { name: content.ui.result[lang].replace('{n}', last.week), exact: true, includeHidden: true }).waitFor({ state: 'attached' });
     const visibleNotes = await page.locator('[data-testid=result] > .notes').textContent();

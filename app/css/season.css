@@ -164,10 +164,6 @@ button, summary, .links a { overflow-wrap: anywhere; max-width: 100%; }
 .board { grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)); }
 .tile:not([open]) .icon { display: none; }
 
-/* The stall leads straight to its controls. All targets remain keyboard controls. */
-.desk { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 4rem), 1fr)); gap: 4px; margin-top: 6px; }
-.desk:empty { display: none; }
-.desk button { padding: 6px 0; font-size: .78rem; border-width: 1px; }
 .history-open { width: 100%; margin-top: 6px; font-size: .88rem; }
 .history-open[hidden] { display: none; }
 .tile { scroll-margin-top: 170px; }
@@ -209,8 +205,16 @@ dialog::backdrop { background: rgb(31 22 14 / .65); }
 .history-controls button { flex: 0 0 48px; padding: 8px 2px; }
 select:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
 
-/* A routine week remains one tap even while its results or controls are in view. */
-.trading .app { padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px)); }
-.trading .run > .primary { position: fixed; bottom: max(8px, env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); width: min(536px, calc(100% - 24px)); z-index: 3; box-shadow: 0 2px 16px rgb(31 22 14 / .25); }
 .tall-summary .strip { position: static; }
-.tall-summary .run > .primary { position: static; transform: none; width: 100%; }
+
+/* The editable plan and its action stay together. */
+.opening .scene svg { height: 100px; }
+.daily-plan .seg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.daily-plan .seg legend { grid-column: 1 / -1; }
+.daily-plan .seg span { justify-content: center; padding: 6px 2px; font-size: .9rem; }
+.daily-plan .stepper { margin: 4px 0; }
+.recap .compare { font-size: .95rem; }
+.recap details .result { padding: 0; border: 0; }
+.board { grid-template-columns: 1fr; }
+
+.strip .meta[hidden] { display: none; }
