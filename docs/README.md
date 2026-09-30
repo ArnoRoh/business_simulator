@@ -14,6 +14,9 @@ The owner accepted this direction under ADR-0014. A local implementation has pas
 [ADR-0015](./adr/0015-season-records-and-preserved-games.md) specifies the separate
 season record and its limits. No learner or deployment acceptance follows from this build.
 
+**Business plan proposal (for review):** [MV-BS-DES-003 — business plan questions](./MV-BS-DES-003-business-plan-questions.md).
+Research basis and proposed questions for the stage-1 plan form. Not accepted.
+
 | # | Document | What it covers |
 |---|---|---|
 | 1 | [`context/transformational-entrepreneurship.md`](./context/transformational-entrepreneurship.md) | **The project owner's background note.** The intellectual foundation. Where other docs disagree with it, the note is right. |
