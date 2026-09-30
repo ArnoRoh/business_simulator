@@ -90,10 +90,10 @@ function feedback(action, result, before) {
   return null;
 }
 
-// ---- opt-in progress reports (D-068) ------------------------------------------
-// Sent only if this host accepts them and the player said yes. Anonymous: a random id
-// that is not the record id, the step reached, the week and the language. No money,
-// plans, answers, names or device details. Saying no or turning it off sends nothing.
+// ---- progress reports (D-068, owner decision 2026-09-30: on by default) ----------
+// Sent only if this host accepts them, unless the player turned them off under Records.
+// Anonymous: a random id that is not the record id, the step reached, the week and the
+// language. No money, plans, answers, names or device details. Turned off sends nothing.
 const REPORT = 'mv-bs-season-telemetry';
 function consent() { try { return JSON.parse(localStorage.getItem(REPORT)); } catch { return null; } }
 function setConsent(yes) {
@@ -102,7 +102,9 @@ function setConsent(yes) {
   render();
 }
 function report(step, extra = {}) {
-  const id = reportable && consent()?.id;
+  if (!reportable) return;
+  if (consent() === null) try { localStorage.setItem(REPORT, JSON.stringify({ id: crypto.randomUUID() })); } catch { return; }
+  const id = consent()?.id;
   if (!id || !navigator.sendBeacon) return;
   // ponytail: fire-and-forget; reports made offline are lost. Queue them if offline drop-off matters.
   navigator.sendBeacon('./telemetry', JSON.stringify({ id, step, week: rec?.state.week, run: rec?.run, lang: getLanguage(), v: `${content.version}-${CALC_VERSION}`, ...extra }));
@@ -114,12 +116,6 @@ function reportAction(action, before, after, result) {
   else if (action.type === 'review') report('review', { week: before.week });
   else if (action.type === 'close') report('closed');
   if (after.finished && !before.finished) report('finished');
-}
-function consentCard() {
-  return h('section', { class: 'card consent', 'data-testid': 'consent' }, h('h2', { text: t('report.ask') }), h('p', { text: t('report.what') }),
-    h('p', { class: 'small', text: t('report.not') }),
-    h('div', { class: 'row' }, btn(t('report.yes'), 'report-yes', { class: 'primary', onclick: () => setConsent(true) }),
-      btn(t('report.no'), 'report-no', { onclick: () => setConsent(false) })));
 }
 
 const act = action => async () => {
@@ -673,7 +669,6 @@ function render(focusResult = false) {
   $('history-open').hidden = !s.history.length;
   $('history-open').textContent = t('history.open');
   $('history-open').onclick = () => showHistory();
-  if (reportable && consent() === null) main.append(consentCard());
   if (shown?.kind === 'notice') {
     const r = shown.result;
     main.append(h('p', { class: 'card', role: 'status', text: t(r.paid ? 'chasePaid' : 'chaseWaiting', { who: who(r.who), amount: money(r.amount) }) }));
@@ -727,7 +722,7 @@ function render(focusResult = false) {
 function renderFoot() {
   $('records-tools').textContent = t('recordsTools');
   $('export').textContent = t('export'); $('export').onclick = exportRecord;
-  const reporting = !!consent()?.id;
+  const reporting = consent()?.id !== null;
   $('report-toggle').hidden = !reportable;
   $('report-toggle').textContent = t(reporting ? 'report.off' : 'report.on');
   $('report-toggle').onclick = () => setConsent(!reporting);
@@ -746,7 +741,7 @@ function renderFoot() {
   $('chapters-link').textContent = t('chapters'); $('chapters-link').href = (FILE ? ONLINE : './') + 'practice.html';
   $('offline-file').textContent = t('offlineFile'); $('offline-file').hidden = FILE;
   $('sample').textContent = t('sample'); $('draft').textContent = getLanguage() === 'sw' ? t('draft') : '';
-  $('privacy').textContent = t('privacy');
+  $('privacy').textContent = t(reportable && consent()?.id !== null ? 'privacy.notes' : 'privacy');
   $('skip').textContent = t('skip');
 }
 

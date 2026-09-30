@@ -1,6 +1,6 @@
-# ADR-0016 — Opt-in anonymous progress notes on the preview host
+# ADR-0016 — Anonymous progress notes on the preview host
 
-**Status:** Proposed; implemented locally on the owner's request
+**Status:** Accepted by the owner for the preview, on by default (amended 2026-09-30)
 
 **Date:** 2026-09-30
 
@@ -13,7 +13,20 @@ local-first. `SECURITY.md` rules out transmission because a connection exists, t
 analytics and device fingerprinting. ADR-0011 says silent telemetry breaks the
 explicit-sharing boundary.
 
-## Decision
+## Amendment 2026-09-30: on by default
+
+The owner decided not to ask first: "No trim that opt in. For now let's collect the
+data." Notes are now sent by default on hosts that accept them.
+- This is an owner exception to `SECURITY.md` ("Sharing is opt-in", "Explain before
+  collecting") and to ADR-0011. Before any wider use, review it against those rules and
+  against the data-protection law where players live.
+- The footer states that notes are sent and what they hold. Players can turn them off
+  under Records; a player who turns them off sends nothing more.
+- The random note ID is saved on the phone when the first note is sent.
+- The data limits below are unchanged. The Decision section records the original opt-in
+  design; where it says players are asked first, this amendment replaces it.
+
+## Decision (original, opt-in)
 
 Ask first, and send nothing unless the player says yes.
 

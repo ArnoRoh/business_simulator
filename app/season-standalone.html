@@ -1751,26 +1751,6 @@ dialog::backdrop { background: rgb(43 26 14 / .6); }
       "en": "went away hungry",
       "sw": "waliondoka bila kula"
     },
-    "report.ask": {
-      "en": "Help improve this game?",
-      "sw": "Saidia kuboresha mchezo huu?"
-    },
-    "report.what": {
-      "en": "If you say yes, this phone sends a short note when you trade a week, answer an event, open a panel or finish. It says only the step and the week, with a random number that is not your name.",
-      "sw": "Ukikubali, simu hii itatuma ujumbe mfupi unapofanya biashara ya wiki, kujibu tukio, kufungua sehemu au kumaliza. Unasema hatua na wiki tu, pamoja na namba ya bahati nasibu isiyo jina lako."
-    },
-    "report.not": {
-      "en": "It never sends your money figures, your choices, your name or your phone details. You can play fully if you say no, and turn it off at any time under Records.",
-      "sw": "Hautumi kamwe takwimu zako za pesa, machaguo yako, jina lako wala taarifa za simu yako. Unaweza kucheza kikamilifu ukikataa, na kuzima wakati wowote chini ya Rekodi."
-    },
-    "report.yes": {
-      "en": "Yes, send progress notes",
-      "sw": "Ndiyo, tuma ujumbe wa hatua"
-    },
-    "report.no": {
-      "en": "No, thank you",
-      "sw": "Hapana, asante"
-    },
     "report.on": {
       "en": "Send anonymous progress notes",
       "sw": "Tuma ujumbe wa hatua bila jina"
@@ -1778,6 +1758,10 @@ dialog::backdrop { background: rgb(43 26 14 / .6); }
     "report.off": {
       "en": "Stop sending progress notes",
       "sw": "Acha kutuma ujumbe wa hatua"
+    },
+    "privacy.notes": {
+      "en": "Your record stays on this phone. To improve the game, this phone sends short anonymous notes: the step and week you reach, with a random number. Never your money figures, choices or name. Turn them off under Records.",
+      "sw": "Rekodi yako inabaki kwenye simu hii. Ili kuboresha mchezo, simu hii inatuma ujumbe mfupi bila jina: hatua na wiki uliyofikia, pamoja na namba ya bahati nasibu. Kamwe si takwimu za pesa, machaguo wala jina lako. Zima chini ya Rekodi."
     }
   },
   "events": {
@@ -3776,10 +3760,10 @@ function feedback(action, result, before) {
   return null;
 }
 
-// ---- opt-in progress reports (D-068) ------------------------------------------
-// Sent only if this host accepts them and the player said yes. Anonymous: a random id
-// that is not the record id, the step reached, the week and the language. No money,
-// plans, answers, names or device details. Saying no or turning it off sends nothing.
+// ---- progress reports (D-068, owner decision 2026-09-30: on by default) ----------
+// Sent only if this host accepts them, unless the player turned them off under Records.
+// Anonymous: a random id that is not the record id, the step reached, the week and the
+// language. No money, plans, answers, names or device details. Turned off sends nothing.
 const REPORT = 'mv-bs-season-telemetry';
 function consent() { try { return JSON.parse(localStorage.getItem(REPORT)); } catch { return null; } }
 function setConsent(yes) {
@@ -3788,7 +3772,9 @@ function setConsent(yes) {
   render();
 }
 function report(step, extra = {}) {
-  const id = reportable && consent()?.id;
+  if (!reportable) return;
+  if (consent() === null) try { localStorage.setItem(REPORT, JSON.stringify({ id: crypto.randomUUID() })); } catch { return; }
+  const id = consent()?.id;
   if (!id || !navigator.sendBeacon) return;
   // ponytail: fire-and-forget; reports made offline are lost. Queue them if offline drop-off matters.
   navigator.sendBeacon('./telemetry', JSON.stringify({ id, step, week: rec?.state.week, run: rec?.run, lang: getLanguage(), v: `${content.version}-${CALC_VERSION}`, ...extra }));
@@ -3800,12 +3786,6 @@ function reportAction(action, before, after, result) {
   else if (action.type === 'review') report('review', { week: before.week });
   else if (action.type === 'close') report('closed');
   if (after.finished && !before.finished) report('finished');
-}
-function consentCard() {
-  return h('section', { class: 'card consent', 'data-testid': 'consent' }, h('h2', { text: t('report.ask') }), h('p', { text: t('report.what') }),
-    h('p', { class: 'small', text: t('report.not') }),
-    h('div', { class: 'row' }, btn(t('report.yes'), 'report-yes', { class: 'primary', onclick: () => setConsent(true) }),
-      btn(t('report.no'), 'report-no', { onclick: () => setConsent(false) })));
 }
 
 const act = action => async () => {
@@ -4359,7 +4339,6 @@ function render(focusResult = false) {
   $('history-open').hidden = !s.history.length;
   $('history-open').textContent = t('history.open');
   $('history-open').onclick = () => showHistory();
-  if (reportable && consent() === null) main.append(consentCard());
   if (shown?.kind === 'notice') {
     const r = shown.result;
     main.append(h('p', { class: 'card', role: 'status', text: t(r.paid ? 'chasePaid' : 'chaseWaiting', { who: who(r.who), amount: money(r.amount) }) }));
@@ -4413,7 +4392,7 @@ function render(focusResult = false) {
 function renderFoot() {
   $('records-tools').textContent = t('recordsTools');
   $('export').textContent = t('export'); $('export').onclick = exportRecord;
-  const reporting = !!consent()?.id;
+  const reporting = consent()?.id !== null;
   $('report-toggle').hidden = !reportable;
   $('report-toggle').textContent = t(reporting ? 'report.off' : 'report.on');
   $('report-toggle').onclick = () => setConsent(!reporting);
@@ -4432,7 +4411,7 @@ function renderFoot() {
   $('chapters-link').textContent = t('chapters'); $('chapters-link').href = (FILE ? ONLINE : './') + 'practice.html';
   $('offline-file').textContent = t('offlineFile'); $('offline-file').hidden = FILE;
   $('sample').textContent = t('sample'); $('draft').textContent = getLanguage() === 'sw' ? t('draft') : '';
-  $('privacy').textContent = t('privacy');
+  $('privacy').textContent = t(reportable && consent()?.id !== null ? 'privacy.notes' : 'privacy');
   $('skip').textContent = t('skip');
 }
 

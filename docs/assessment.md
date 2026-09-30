@@ -93,8 +93,8 @@ a cash-book task and does not assert that its first answer was correct.
 ## Learner access and retention
 
 Attempts and profiles live in native IndexedDB. No background transmission, analytics or
-account is required. On a host that accepts them, a player may opt in to anonymous progress
-notes for drop-off analysis (ADR-0016). They carry no money, choices or picks and are not
+account is required. On a host that accepts them (the preview), anonymous progress notes for
+drop-off analysis are sent by default and can be turned off (ADR-0016). They carry no money, choices or picks and are not
 part of the record or any assessment. A learner can open a partial record during play, return to the task,
 view earlier attempts, and deliberately download, share or print a record. Partial records
 must remain labelled partial. Completion is saved after all authored and recovery turns.

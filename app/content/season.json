@@ -1337,26 +1337,6 @@
       "en": "went away hungry",
       "sw": "waliondoka bila kula"
     },
-    "report.ask": {
-      "en": "Help improve this game?",
-      "sw": "Saidia kuboresha mchezo huu?"
-    },
-    "report.what": {
-      "en": "If you say yes, this phone sends a short note when you trade a week, answer an event, open a panel or finish. It says only the step and the week, with a random number that is not your name.",
-      "sw": "Ukikubali, simu hii itatuma ujumbe mfupi unapofanya biashara ya wiki, kujibu tukio, kufungua sehemu au kumaliza. Unasema hatua na wiki tu, pamoja na namba ya bahati nasibu isiyo jina lako."
-    },
-    "report.not": {
-      "en": "It never sends your money figures, your choices, your name or your phone details. You can play fully if you say no, and turn it off at any time under Records.",
-      "sw": "Hautumi kamwe takwimu zako za pesa, machaguo yako, jina lako wala taarifa za simu yako. Unaweza kucheza kikamilifu ukikataa, na kuzima wakati wowote chini ya Rekodi."
-    },
-    "report.yes": {
-      "en": "Yes, send progress notes",
-      "sw": "Ndiyo, tuma ujumbe wa hatua"
-    },
-    "report.no": {
-      "en": "No, thank you",
-      "sw": "Hapana, asante"
-    },
     "report.on": {
       "en": "Send anonymous progress notes",
       "sw": "Tuma ujumbe wa hatua bila jina"
@@ -1364,6 +1344,10 @@
     "report.off": {
       "en": "Stop sending progress notes",
       "sw": "Acha kutuma ujumbe wa hatua"
+    },
+    "privacy.notes": {
+      "en": "Your record stays on this phone. To improve the game, this phone sends short anonymous notes: the step and week you reach, with a random number. Never your money figures, choices or name. Turn them off under Records.",
+      "sw": "Rekodi yako inabaki kwenye simu hii. Ili kuboresha mchezo, simu hii inatuma ujumbe mfupi bila jina: hatua na wiki uliyofikia, pamoja na namba ya bahati nasibu. Kamwe si takwimu za pesa, machaguo wala jina lako. Zima chini ya Rekodi."
     }
   },
   "events": {
