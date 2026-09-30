@@ -4,7 +4,7 @@
 // (cash, profit, sales, week, event, saved, result).
 import { createSeason, step, can, causes, gapParts, WHY, quiet, capacity, hours, committed, needs, facts, goalProgress, eventOptions, stock, replay, SAMPLE, WEEKS, CALC_VERSION } from './season.js';
 import { loadStrings, setLanguage, getLanguage, t, localised } from './i18n.js';
-import { setCurrency, money, moneySigned } from './format.js';
+import { setCurrency, money, moneySigned, count } from './format.js';
 import * as store from './seasonstore.js';
 import { drawScene, animateWeek, level, portrait } from './seasonscene.js';
 
@@ -19,6 +19,8 @@ let shown = null; // What the last action showed. Not stored: the record holds t
 let timer = 0;
 let lastView = null, motion = false; // The previous stall picture; motion: the last action may animate.
 let sheetKey = null; // The stall part whose panel is open.
+let resultOpen = true; // The latest week's result card is expanded until the learner moves on.
+let counting = 0; // Animation frame of the cash counter during playback.
 let saving = Promise.resolve();
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const sum = list => list.reduce((a, b) => a + b, 0);
@@ -102,7 +104,7 @@ async function runWeeks(until) {
   while (until && quiet(s) && !s.history.at(-1).late.length && !s.history.at(-1).notes.length && actions.length < 8) { actions.push({ type: 'run' }); s = step(s, { type: 'run' }).state; }
   const results = await commit(actions);
   if (!results) return;
-  shown = { kind: 'result', results };
+  shown = { kind: 'result', results }; resultOpen = true;
   render(reduced());
   play(results.at(-1));
   if (!reduced()) $('scene').scrollIntoView({ block: 'start', behavior: 'auto' });
@@ -115,23 +117,35 @@ function play(result) {
   const ms = animateWeek(scene, result, { day: n => t('day', { n }), soldOut: t('soldOut') });
   $('skip').hidden = false;
   timer = setTimeout(stop, ms);
+  // The cash counter runs from the week's opening to its closing cash, like the tin.
+  const start = performance.now(), span = ms - 500;
+  const tick = now => {
+    const f = Math.min(1, (now - start) / span);
+    $('cash').textContent = count(Math.round((result.cashStart + (result.cashEnd - result.cashStart) * f) / 10) * 10);
+    if (f < 1) counting = requestAnimationFrame(tick);
+  };
+  counting = requestAnimationFrame(tick);
 }
 function stop() {
   const playing = $('scene').classList.contains('playing');
-  clearTimeout(timer);
+  clearTimeout(timer); cancelAnimationFrame(counting);
   $('scene').classList.remove('playing'); $('scene').classList.add('done');
   $('skip').hidden = true;
   if (rec) renderTop();
-  if (playing) document.querySelector('#main [data-testid=result]')?.focus();
+  if (playing) {
+    for (const el of document.querySelectorAll('.strip .pill')) { el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); }
+    document.querySelector('#main [data-testid=result]')?.focus();
+  }
 }
 
 // ---- top: summary strip, calendar, scene ---------------------------------------
 
 function renderTop() {
   const s = rec.state, last = s.history.at(-1);
-  $('cash').textContent = money(s.cash);
-  $('profit').textContent = last ? money(last.profit) : '—';
-  $('sales').textContent = last ? money(last.sales) : '—';
+  // Counters show amounts without the currency code to fit; the full text is the title.
+  for (const [id, n] of [['cash', s.cash], ['profit', last?.profit], ['sales', last?.sales]]) {
+    $(id).textContent = n === undefined ? '—' : count(n); $(id).title = n === undefined ? '' : money(n);
+  }
   $('week').textContent = t(s.week > WEEKS ? 'weekExtra' : 'week', { n: s.week, total: WEEKS });
   $('week').closest('.meta').hidden = !last;
   const due = s.payments.find(p => p.status === 'due');
@@ -197,7 +211,8 @@ function eventCard(s) {
   const id = s.pending, params = eventParams(s);
   const card = h('section', { class: 'card event', 'data-testid': 'event', 'data-event': id, id: 'next-step', tabindex: '-1' },
     h('p', { class: 'kicker', text: t('next.event') }),
-    h('div', { class: 'event-head' }, h('span', { class: 'portrait' }), h('h2', { text: fill(ev(id, 'title'), params) })), h('p', { text: fill(ev(id, 'body'), params) }));
+    h('div', { class: 'event-head' }, h('span', { class: 'portrait' }),
+      h('div', { class: 'bubble' }, h('h2', { text: fill(ev(id, 'title'), params) }), h('p', { text: fill(ev(id, 'body'), params) }))));
   card.querySelector('.portrait').innerHTML = portrait(id);
   if (id.startsWith('school')) {
     const need = needs(s, P.school.full);
@@ -249,9 +264,11 @@ function resultCard(results, compact = false) {
     const full = resultCard(results);
     full.removeAttribute('data-testid'); full.querySelector('h2').remove();
     const sold = sum(r.days.map(d => d.pieces)) - r.waste - r.rejected;
-    return h('section', { class: 'card result recap', 'data-testid': 'result', tabindex: '-1' },
-      h('h2', { text: t('result', { n: r.week }) }),
-      h('p', { text: t('recap.sold', { sold, waste: r.waste }) }),
+    const lost = sum(r.days.map(d => Math.max(0, d.demand - d.stall)));
+    return h('section', { class: 'card result recap', 'data-testid': 'result', tabindex: '-1', hidden: !resultOpen },
+      h('h2', { class: 'ribbon', text: t('result', { n: r.week }) }),
+      h('ul', { class: 'tiles', 'aria-label': t('recap.sold', { sold, waste: r.waste }) }, [['coin', sold, 'tile.sold'], ['bin', r.waste, 'tile.waste'], ['leave', lost, 'tile.lost']].map(([key, n, label]) =>
+        h('li', { class: key }, pic(key), h('strong', { text: n }), h('span', { text: t(label) })))),
       h('dl', { class: 'receipt' }, [
         ['sales', money(r.sales), t('receipt.sales', { cash: money(r.cashSales), credit: money(r.creditSales) })],
         ['profit', money(r.profit), t('receipt.profit', { sales: money(r.sales), costs: money(sum(Object.entries(r.pnl).filter(([k]) => k !== 'revenue').map(([, v]) => v))) })],
@@ -260,7 +277,7 @@ function resultCard(results, compact = false) {
       h('ul', { class: 'notes' }, lines.slice(0, Math.max(1, r.notes.length + new Set(r.late).size)).map(noteItem)),
       r.week === rec.state.history.at(-1)?.week ? causes(rec.state.history).map(c => whyBox(c, r)) : null,
       h('details', {}, h('summary', { text: t('recap.details') }), full),
-      btn(t(`next.${rec.state.phase === 'event' ? 'choice' : rec.state.phase === 'review' ? 'review' : 'plan'}`, { n: rec.state.week }), 'next-step', { class: 'primary', onclick: () => $('next-step')?.focus() }));
+      btn(t(`next.${rec.state.phase === 'event' ? 'choice' : rec.state.phase === 'review' ? 'review' : 'plan'}`, { n: rec.state.week }), 'next-step', { class: 'primary', onclick: () => { resultOpen = false; render(); $('next-step')?.focus(); } }));
   }
   const visible = Math.max(3, r.notes.length + new Set(r.late).size);
   const pnlOrder = ['materials', 'chai', 'fee', 'wages', 'interest', 'depreciation', 'other'];
@@ -307,6 +324,22 @@ function whyBox(c, r) {
   box.append(h('p', { class: 'answer' }, pic(c.kind === 'held' ? { buy: 'buy', cook: 'cook', plan: 'cook', demand: 'bin', collect: 'collect' }[c.key] : { credit: 'paper', household: 'home', stock: 'buy', other: 'money' }[c.key]),
     h('strong', { text: t(`why.${c.kind}.${c.key}`) })), h('ol', { class: 'chain' }, whyChain(c, r).map(text => h('li', { text }))));
   return box;
+}
+
+// The latest result, or a chip that reopens it once the learner has moved on.
+function recap(results) {
+  const r = results.at(-1);
+  return [resultOpen ? null : btn(`${t('result', { n: r.week })} ▸`, 'result-open', { class: 'chip', onclick: () => { resultOpen = true; render(); $('main').querySelector('[data-testid=result]')?.focus(); } }),
+    resultCard(results, true)].filter(Boolean);
+}
+
+// The fixed game bar holds the trade action; events and reviews carry their own buttons.
+function renderBar(s) {
+  const bar = $('bar');
+  bar.replaceChildren(...(blocked || s.phase !== 'plan' ? [] : [
+    btn(h('span', {}, '▶ ', t('run', { n: s.week })), 'run', { class: 'primary go', disabled: status !== 'ok', onclick: () => runWeeks(false) }),
+    s.history.length > 0 ? btn(icon('fast'), 'runUntil', { class: 'secondary fast', 'aria-label': t('runUntil'), title: t('runUntil'), disabled: status !== 'ok', onclick: () => runWeeks(true) }) : null,
+  ].filter(Boolean)));
 }
 
 // Bars show quantities from a completed week, never a forecast or a score.
@@ -444,7 +477,7 @@ const ICON = {
   clock: 'M12 3 a9 9 0 1 0 .1 0 z M12 7 v5 l3 3', cross: 'M12 3 a9 9 0 1 0 .1 0 z M6 6 l12 12',
   school: 'M3 10 l9 -6 l9 6 z M5 10 v10 h14 v-10 M10 20 v-5 h4 v5', kiosk: 'M5 5 h14 l1 4 h-16 z M6 9 v11 h12 v-11',
   office: 'M6 3 h12 v18 h-12 z M9 7 h2 M13 7 h2 M9 11 h2 M13 11 h2 M9 15 h2 M13 15 h2', travel: 'M4 8 h16 v12 h-16 z M9 8 v-3 h6 v3',
-  profit: 'M3 12 h7 M6.5 8.5 v7 M14 12 h7', check: 'M12 3 a9 9 0 1 0 .1 0 z M7 12 l3 3 l7 -7',
+  profit: 'M3 12 h7 M6.5 8.5 v7 M14 12 h7', fast: 'M3 6 l8 6 l-8 6 z M12 6 l8 6 l-8 6 z', check: 'M12 3 a9 9 0 1 0 .1 0 z M7 12 l3 3 l7 -7',
 };
 const NOTE_ICON = { soldOut: 'leave', waste: 'bin', rejected: 'cross', blocked: 'cross', schoolShort: 'school', schoolLost: 'school', kioskShort: 'kiosk', kioskLost: 'kiosk', householdShort: 'home' };
 const pic = key => h('span', { class: 'icon', 'aria-hidden': 'true' }, icon(key));
@@ -516,8 +549,11 @@ function renderSpots(highlight) {
   const nav = $('spots'), s = rec.state;
   nav.setAttribute('aria-label', t('spots'));
   nav.hidden = blocked || !['plan', 'event'].includes(s.phase);
+  // A red count marks something waiting: debts due to collect, bills or payments due.
+  const due = { collect: s.receivables.filter(x => x.due <= s.week).length, money: s.payables.filter(x => x.who !== 'bakari').length + s.payments.filter(p => p.status === 'due' && p.due <= s.week).length };
   nav.replaceChildren(...SPOTS.map(key => h('button', { type: 'button', class: `spot${highlight === key ? ' limit' : ''}`, 'data-spot': key,
-    'aria-label': t(`manage.${key}`), title: t(`manage.${key}`), 'aria-haspopup': 'dialog', onclick: () => openSheet(key) }, h('span', { class: 'badge' }, icon(key)))));
+    'aria-label': t(`manage.${key}`), title: t(`manage.${key}`), 'aria-haspopup': 'dialog', onclick: () => openSheet(key) },
+    h('span', { class: 'badge' }, icon(key), due[key] ? h('b', { class: 'count', text: due[key] }) : null), h('span', { class: 'spot-label', text: t(`spot.${key}`) }))));
   if (nav.hidden && $('sheet').open) $('sheet').close();
 }
 function openSheet(key) {
@@ -583,6 +619,7 @@ function render(focusResult = false) {
   $('title').textContent = t('title'); $('sub').textContent = t('sub');
   for (const el of document.querySelectorAll('[data-i18n]')) el.textContent = t(el.dataset.i18n);
   $('lang').textContent = t('otherLang'); $('lang').lang = getLanguage() === 'en' ? 'sw' : 'en';
+  $('guide-open').setAttribute('aria-label', t('guide.open')); $('guide-open').title = t('guide.open');
   $('guide-lang').textContent = t('otherLang'); $('guide-lang').lang = $('lang').lang;
   const main = $('main');
   let spotHighlight = '';
@@ -591,7 +628,7 @@ function render(focusResult = false) {
   renderStatus();
   if (blocked) {
     $('history-open').hidden = true;
-    renderSpots('');
+    renderSpots(''); $('bar').replaceChildren();
     main.append(h('section', { class: 'card' }, h('p', { text: t('unreadable') }), btn(t('export'), 'export', { class: 'primary', onclick: exportRecord }),
       btn(t('newRun'), 'new', { onclick: newRun })));
     renderFoot(); return;
@@ -612,14 +649,14 @@ function render(focusResult = false) {
       h('p', { class: 'small', text: t('limits') }), btn(t('newRun'), 'new', { class: 'primary', onclick: newRun })));
   }
   else if (s.phase === 'event') {
-    if (shown?.kind === 'result') main.append(resultCard(shown.results, true));
+    if (shown?.kind === 'result') main.append(...recap(shown.results));
     main.append(eventCard(s));
     if (shown?.kind === 'outcome') main.append(outcomeCard(shown));
     main.append(h('details', { 'data-testid': 'plan-editor', open: planOpen }, h('summary', { text: t('plan.change') }), dailyPlan(s)));
   }
-  else if (s.phase === 'review') { if (shown?.kind === 'result') main.append(resultCard(shown.results, true)); main.append(reviewCard(s)); }
+  else if (s.phase === 'review') { if (shown?.kind === 'result') main.append(...recap(shown.results)); main.append(reviewCard(s)); }
   else {
-    if (shown?.kind === 'result') main.append(resultCard(shown.results, true));
+    if (shown?.kind === 'result') main.append(...recap(shown.results));
     if (shown?.kind === 'outcome') main.append(outcomeCard(shown));
     if (s.goal) main.append(h('p', { class: 'goal-line', text: t('yourGoal', { goal: t(`goal.${s.goal}`) }) }));
     const forced = shown?.kind === 'help';
@@ -635,14 +672,13 @@ function render(focusResult = false) {
     daily.append(h('div', { class: 'run' },
       warn ? h('p', { class: 'warn', role: 'alert', text: t('cashWarning') }) : null,
       h('p', { class: 'small', text: t('plan.trade', { n: P.days }) }),
-      btn(t('run', { n: s.week }), 'run', { class: 'primary', onclick: () => runWeeks(false) }),
-      s.history.length > 0 ? btn(t('runUntil'), 'runUntil', { onclick: () => runWeeks(true) }) : null,
       s.history.length > 3 ? btn(t('help'), 'help', { class: 'link', onclick: act({ type: 'help' }) }) : null,
       s.history.length > 3 ? h('p', { class: 'small', text: t('helpNote') }) : null));
     main.append(daily);
     spotHighlight = highlight;
   }
   renderSpots(spotHighlight);
+  renderBar(s);
   if ($('sheet').open) fillSheet();
   if (focused) (main.querySelector(focused) || $('sheet-body').querySelector(focused))?.focus({ preventScroll: true });
   if (status !== 'ok') for (const control of main.querySelectorAll('button, input')) control.disabled = true;
@@ -758,12 +794,13 @@ async function init() {
   $('sheet-close').onclick = () => $('sheet').close();
   $('sheet').addEventListener('close', () => { const key = sheetKey; sheetKey = null; $('sheet-body').replaceChildren(); document.querySelector(`[data-spot="${key}"]`)?.focus({ preventScroll: true }); });
   // Large text must not let the summary and stall cover the operating controls.
-  const fitSummary = () => document.body.classList.toggle('tall-summary', document.querySelector('.stage').offsetHeight > innerHeight * .45);
-  new ResizeObserver(fitSummary).observe(document.querySelector('.stage'));
+  // Decided by text size, not by measured heights, which change with the mode itself.
+  const fitSummary = () => document.body.classList.toggle('tall-summary', parseFloat(getComputedStyle(document.documentElement).fontSize) >= 26);
+  new ResizeObserver(fitSummary).observe(document.querySelector('.strip'));
   addEventListener('resize', fitSummary);
   let saved = null;
   try { await store.open(); saved = await store.active(); } catch { status = 'failed'; }
-  if (saved) load(saved);
+  if (saved) { load(saved); resultOpen = true; }
   else { rec = newRecord(1); await persist(); }
   await refreshRuns();
   legacyFound = await store.legacy();

@@ -1094,8 +1094,8 @@
       "sw": "Mchezo unanunua malighafi, unapika na kuuza kwa siku sita. Soma matokeo, kisha amua tena. Hakuna kikomo cha muda."
     },
     "guide.manage": {
-      "en": "Tap the round signs on the stall: sacks for stock, pots for equipment and people, customers for orders, the clipboard for debts, the tin for home money and loans.",
-      "sw": "Gusa alama za duara kwenye kibanda: magunia kwa akiba, sufuria kwa vifaa na watu, wateja kwa oda, ubao wa karatasi kwa madeni, kopo kwa pesa za nyumbani na mikopo."
+      "en": "The round buttons under the street open your stock, kitchen, buyers, debts and money. A red number shows something waiting.",
+      "sw": "Vitufe vya duara chini ya mtaa vinafungua akiba, jiko, wanunuzi, madeni na pesa. Namba nyekundu inaonyesha jambo linalosubiri."
     },
     "guide.accounts": {
       "en": "What do the three money figures mean?",
@@ -1304,6 +1304,38 @@
     "why.done": {
       "en": "Why?",
       "sw": "Kwa nini?"
+    },
+    "spot.buy": {
+      "en": "Stock",
+      "sw": "Akiba"
+    },
+    "spot.cook": {
+      "en": "Kitchen",
+      "sw": "Jiko"
+    },
+    "spot.sell": {
+      "en": "Buyers",
+      "sw": "Wanunuzi"
+    },
+    "spot.collect": {
+      "en": "Debts",
+      "sw": "Madeni"
+    },
+    "spot.money": {
+      "en": "Money",
+      "sw": "Pesa"
+    },
+    "tile.sold": {
+      "en": "sold",
+      "sw": "zimeuzwa"
+    },
+    "tile.waste": {
+      "en": "thrown away",
+      "sw": "zimetupwa"
+    },
+    "tile.lost": {
+      "en": "went away hungry",
+      "sw": "waliondoka bila kula"
     }
   },
   "events": {

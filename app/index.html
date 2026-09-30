@@ -16,22 +16,23 @@
   <header class="top">
     <div><h1 id="title">The mandazi stall</h1><p id="sub"></p></div>
     <div class="top-controls"><button id="lang" type="button" data-action="lang" class="secondary">Kiswahili</button>
-      <button id="guide-open" type="button" class="link" data-i18n="guide.open"></button></div>
+      <button id="guide-open" type="button" class="link">?</button></div>
   </header>
   <div class="stage">
-  <section class="strip" aria-live="polite">
-    <div><span class="label" data-i18n="cash"></span><strong id="cash" data-testid="cash"></strong></div>
-    <div><span class="label" data-i18n="profit"></span><strong id="profit" data-testid="profit"></strong></div>
-    <div><span class="label" data-i18n="sales"></span><strong id="sales" data-testid="sales"></strong></div>
-    <p class="meta"><span id="week" data-testid="week"></span> <span id="due"></span> <span id="hours"></span></p>
-  </section>
   <div class="scene-wrap">
     <div id="scene" class="scene" role="img"></div>
-    <nav id="spots" class="spots"></nav>
+    <section class="strip" aria-live="polite">
+      <div class="pill cash"><svg class="pill-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7 v10 M9 9 h5 M9 15 h5"/></svg><span><span class="label" data-i18n="cash"></span><strong id="cash" data-testid="cash"></strong></span></div>
+      <div class="pill"><svg class="pill-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17 l6 -6 l4 4 l8 -8 M15 7 h6 v6"/></svg><span><span class="label" data-i18n="profit"></span><strong id="profit" data-testid="profit"></strong></span></div>
+      <div class="pill"><svg class="pill-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9 h16 l-2 11 h-12 z M8 9 l4 -5 l4 5"/></svg><span><span class="label" data-i18n="sales"></span><strong id="sales" data-testid="sales"></strong></span></div>
+    </section>
     <button id="skip" type="button" data-action="skip" class="skip" hidden></button>
   </div>
+  <nav id="spots" class="spots"></nav>
+  <p class="meta"><span id="week" data-testid="week"></span> <span id="due"></span> <span id="hours"></span></p>
   </div>
   <main id="main" class="main"><p>Opening the game… / Mchezo unafunguka…</p></main>
+  <div id="bar" class="bar"></div>
   <footer class="foot">
     <button id="history-open" type="button" class="history-open secondary" hidden></button>
     <details><summary data-i18n="calendar"></summary><ol id="calendar" class="calendar"></ol></details>

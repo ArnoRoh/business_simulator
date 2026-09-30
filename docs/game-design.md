@@ -24,13 +24,18 @@ It waits for an edited batch to save before it trades. There is no forecast ques
 Automatic multi-week trading appears after the first completed week.
 
 Management panels are named for their contents: ingredients/supplier, equipment/people,
-customers/orders, money owed and household/borrowing. The stall picture is the menu:
-round signs on the sacks, pots, customers, clipboard and cash tin open each panel as a
-sheet on the lower screen. The summary and stall stay at the top, so the learner sees
-each action change the picture: trays, pots, sacks, helper, notebook and price enter
-with short motion, and cash moved outside trading flies into or out of the tin. Event
-cards show who the event is about; result lines and receipt figures have small icons.
-All pictures are inline SVG.
+customers/orders, money owed and household/borrowing. The screen follows cooking
+games: an illustrated street scene with the owner, helper, jikos, basket, cash tin and
+queue, with cash, profit and sales counters over the sky. Five round buttons under the
+scene (stock, kitchen, debts, money, buyers) open each panel as a bottom sheet. A red
+number shows debts due or bills and payments waiting. A fixed bar holds the trade
+action. Parts added by an action pop in, the price board flips, and cash moved outside
+trading flies to or from the tin. The replay of a week shows each day: served customers,
+coins, credit papers, a sold-out stamp, people leaving hungry and leftovers going to
+the bin, while the cash counter runs from opening to closing cash. The result card has a
+ribbon and three tiles (sold, thrown away, went away hungry) and folds away when the
+learner moves on. Event cards show the character speaking. All pictures are inline SVG.
+Motion is decoration only: outcomes come from the model, not from tapping speed.
 
 After each week, a "why" section can explain what held trading back (the stage from
 `limit`) and why the tin moved differently from profit (credit, home money, stock, or
