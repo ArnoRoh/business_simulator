@@ -22,6 +22,7 @@ let sheetKey = null; // The stall part whose panel is open.
 let resultOpen = true; // The latest week's result card is expanded until the learner moves on.
 let counting = 0; // Animation frame of the cash counter during playback.
 let saving = Promise.resolve();
+let reportable = false; // This host accepts progress reports (GET ./telemetry answered 204).
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const sum = list => list.reduce((a, b) => a + b, 0);
 const fill = (text, params = {}) => text.replace(/\{(\w+)\}/g, (m, k) => (k in params ? params[k] : m));
@@ -68,6 +69,7 @@ async function commit(actions) {
       const out = step(s, action);
       log.push({ n: log.length + 1, at: new Date().toISOString(), week: s.week, language: getLanguage(), phase: s.phase, event: s.pending, automaticHelp: Boolean(document.querySelector('.limit-note')), action, result: out.result });
       shown = feedback(action, out.result, s);
+      reportAction(action, s, out.state, out.result);
       s = out.state; results.push(out.result);
     }
   } catch { busy = false; render(); return null; }
@@ -86,6 +88,38 @@ function feedback(action, result, before) {
   if (action.type === 'help') return { kind: 'help' };
   if (action.type === 'why') return { kind: 'result', results: [before.history.at(-1)] };
   return null;
+}
+
+// ---- opt-in progress reports (D-068) ------------------------------------------
+// Sent only if this host accepts them and the player said yes. Anonymous: a random id
+// that is not the record id, the step reached, the week and the language. No money,
+// plans, answers, names or device details. Saying no or turning it off sends nothing.
+const REPORT = 'mv-bs-season-telemetry';
+function consent() { try { return JSON.parse(localStorage.getItem(REPORT)); } catch { return null; } }
+function setConsent(yes) {
+  try { localStorage.setItem(REPORT, JSON.stringify({ id: yes ? crypto.randomUUID() : null })); } catch { /* Stays unanswered. */ }
+  if (yes) report('open');
+  render();
+}
+function report(step, extra = {}) {
+  const id = reportable && consent()?.id;
+  if (!id || !navigator.sendBeacon) return;
+  // ponytail: fire-and-forget; reports made offline are lost. Queue them if offline drop-off matters.
+  navigator.sendBeacon('./telemetry', JSON.stringify({ id, step, week: rec?.state.week, run: rec?.run, lang: getLanguage(), v: `${content.version}-${CALC_VERSION}`, ...extra }));
+}
+// One report per committed action that marks progress.
+function reportAction(action, before, after, result) {
+  if (action.type === 'run') report('trade', { week: result.week });
+  else if (action.type === 'answer') report('event', { week: before.week, detail: before.pending });
+  else if (action.type === 'review') report('review', { week: before.week });
+  else if (action.type === 'close') report('closed');
+  if (after.finished && !before.finished) report('finished');
+}
+function consentCard() {
+  return h('section', { class: 'card consent', 'data-testid': 'consent' }, h('h2', { text: t('report.ask') }), h('p', { text: t('report.what') }),
+    h('p', { class: 'small', text: t('report.not') }),
+    h('div', { class: 'row' }, btn(t('report.yes'), 'report-yes', { class: 'primary', onclick: () => setConsent(true) }),
+      btn(t('report.no'), 'report-no', { onclick: () => setConsent(false) })));
 }
 
 const act = action => async () => {
@@ -558,6 +592,7 @@ function renderSpots(highlight) {
 }
 function openSheet(key) {
   sheetKey = key;
+  report('panel', { detail: key });
   if (document.querySelector('.stage').getBoundingClientRect().top < 0) scrollTo(0, 0);
   const sheet = $('sheet');
   sheet.style.maxHeight = `${Math.max(innerHeight / 2, innerHeight - document.querySelector('.stage').getBoundingClientRect().bottom - 4)}px`;
@@ -638,6 +673,7 @@ function render(focusResult = false) {
   $('history-open').hidden = !s.history.length;
   $('history-open').textContent = t('history.open');
   $('history-open').onclick = () => showHistory();
+  if (reportable && consent() === null) main.append(consentCard());
   if (shown?.kind === 'notice') {
     const r = shown.result;
     main.append(h('p', { class: 'card', role: 'status', text: t(r.paid ? 'chasePaid' : 'chaseWaiting', { who: who(r.who), amount: money(r.amount) }) }));
@@ -691,6 +727,10 @@ function render(focusResult = false) {
 function renderFoot() {
   $('records-tools').textContent = t('recordsTools');
   $('export').textContent = t('export'); $('export').onclick = exportRecord;
+  const reporting = !!consent()?.id;
+  $('report-toggle').hidden = !reportable;
+  $('report-toggle').textContent = t(reporting ? 'report.off' : 'report.on');
+  $('report-toggle').onclick = () => setConsent(!reporting);
   $('runs-title').textContent = t('runs');
   const list = $('runs'); list.replaceChildren();
   for (const r of runs.sort((a, b) => a.run - b.run)) {
@@ -725,6 +765,7 @@ async function newRun() {
   if (rec && !blocked && !confirm(t('newRunAsk'))) return;
   await refreshRuns();
   rec = newRecord(Math.max(0, ...runs.map(r => r.run)) + 1);
+  report('newRun');
   blocked = false; shown = null; status = 'ok';
   await persist(); await refreshRuns(); render();
 }
@@ -780,7 +821,7 @@ async function init() {
   $('guide-lang').onclick = $('lang').onclick;
   $('guide-open').onclick = () => $('guide').showModal();
   const rememberGuide = () => {
-    try { localStorage.setItem(GUIDE, '1'); } catch { /* Controls still work without preferences. */ }
+    try { if (localStorage.getItem(GUIDE) !== '1') report('guide'); localStorage.setItem(GUIDE, '1'); } catch { /* Controls still work without preferences. */ }
   };
   $('guide-close').onclick = () => { rememberGuide(); $('guide').close(); };
   $('guide').addEventListener('cancel', rememberGuide);
@@ -809,5 +850,9 @@ async function init() {
   try { guideSeen = localStorage.getItem(GUIDE) === '1'; } catch { /* Show the guide without storage. */ }
   if (!blocked && !guideSeen) $('guide').showModal();
   checkOffline().catch(() => {});
+  fetch('./telemetry', { cache: 'no-store' }).then(r => {
+    reportable = r.status === 204;
+    if (reportable) { report('open'); render(); }
+  }).catch(() => { /* No reports from this host. */ });
 }
 init().catch(() => { $('main').textContent = 'Could not open the game. Reconnect and reload. / Mchezo haujafunguka. Unganisha intaneti na upakie upya.'; });

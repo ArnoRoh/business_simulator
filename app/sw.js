@@ -1,5 +1,5 @@
 // Shell updates wait for existing tabs to close. Downloaded chapters survive updates.
-const CACHE = 'business-simulator-preview-20260930-game'; // Deploy-stamped shell version.
+const CACHE = 'business-simulator-preview-20260930-notes'; // Deploy-stamped shell version.
 const SCOPE = new URL(self.registration.scope).pathname;
 const PREFIX = `business-simulator:${SCOPE}:`;
 const SHELL_CACHE = PREFIX + CACHE;
@@ -75,7 +75,7 @@ self.addEventListener('message', event => {
 self.addEventListener('fetch', event => {
   const request = event.request;
   const url = new URL(request.url);
-  if (url.pathname.startsWith('/api/') || request.headers.has('Authorization') || request.method !== 'GET' || url.origin !== self.location.origin || !url.pathname.startsWith(SCOPE) || url.pathname.endsWith('/build-info.json')) return;
+  if (url.pathname.startsWith('/api/') || request.headers.has('Authorization') || request.method !== 'GET' || url.origin !== self.location.origin || !url.pathname.startsWith(SCOPE) || url.pathname.endsWith('/build-info.json') || url.pathname.endsWith('/telemetry')) return;
   if (url.pathname.includes('/content/scenario-')) {
     event.respondWith(content(request));
     return;

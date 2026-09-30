@@ -267,5 +267,23 @@ try {
  await file.locator('[data-action=run]').click(); await file.locator('[data-testid=result]').waitFor();
  const cash = await file.locator('#cash').innerText(); await file.reload(); await file.locator('[data-testid=result]').waitFor(); assert.equal(await file.locator('#cash').innerText(), cash);
  await fileCtx.close();
+ // Opt-in progress notes: asked only where the host accepts them; nothing after no; only whitelisted fields after yes.
+ app.acceptTelemetry();
+ const tctx = await app.browser.newContext({ viewport: { width: 360, height: 740 }, reducedMotion: 'reduce' });
+ const tp = await tctx.newPage(); await tp.goto(app.url); await tp.locator('#guide-close').click();
+ await tp.locator('[data-testid=consent]').waitFor();
+ await tp.locator('[data-action=report-no]').click();
+ await clickSaved(tp, tp.locator('[data-action=run]'));
+ await tp.locator('[data-spot=buy]').click(); await tp.locator('#sheet-close').click();
+ await tp.waitForTimeout(300);
+ assert.equal(app.notes.length, 0, 'Saying no sends nothing');
+ assert.equal(await tp.locator('[data-testid=consent]').count(), 0);
+ await tp.locator('#records-tools').click(); await tp.locator('[data-action=report-toggle]').click();
+ await tp.locator('[data-spot=buy]').click(); await tp.locator('#sheet-close').click();
+ for (let n = 0; n < 40 && app.notes.length < 2; n++) await tp.waitForTimeout(50);
+ assert.deepEqual(app.notes.map(x => x.step), ['open', 'panel']);
+ for (const note of app.notes) assert(Object.keys(note).every(k => ['id', 'step', 'week', 'run', 'detail', 'lang', 'v'].includes(k)), JSON.stringify(note));
+ assert.notEqual(app.notes[0].id, (await record(tp)).id, 'The note id is not the record id');
+ await tctx.close();
  console.log('Season: motion/skip, concurrent tabs, save recovery, retained attempts and standalone passed.');
 } finally { await app.close(); }

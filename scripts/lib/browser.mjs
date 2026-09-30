@@ -7,9 +7,15 @@ import { chromium } from 'playwright';
 export async function browserApp(entry = false) {
   const root = fileURLToPath(new URL('../../app/', import.meta.url));
   let workerVersion = 'test-a';
-  let contentFailure = 0;
+  let contentFailure = 0, telemetry = false;
+  const notes = []; // Progress notes received while telemetry is accepted.
   const server = createServer(async (req, res) => {
     const pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
+    if (pathname === '/telemetry') {
+      if (!telemetry) { res.writeHead(404).end(); return; }
+      if (req.method === 'POST') { let body = ''; for await (const chunk of req) body += chunk; notes.push(JSON.parse(body)); }
+      res.writeHead(204).end(); return;
+    }
     if (contentFailure && pathname.includes('/content/scenario-')) { res.writeHead(contentFailure).end(); return; }
     const file = resolve(root, '.' + pathname + (pathname.endsWith('/') ? 'index.html' : ''));
     if (!file.startsWith(root)) { res.writeHead(403).end(); return; }
@@ -25,6 +31,7 @@ export async function browserApp(entry = false) {
   return { browser, url: `http://127.0.0.1:${server.address().port}/${entry === 'season' ? '' : entry ? 'intro.html' : 'practice.html'}`,
     failContent: status => { contentFailure = status; },
     updateWorker: () => { workerVersion = 'test-b'; },
+    acceptTelemetry: () => { telemetry = true; }, notes,
     close: async () => { await browser.close(); await new Promise(resolve => server.close(resolve)); },
   };
 }
