@@ -16,6 +16,8 @@ season record and its limits. No learner or deployment acceptance follows from t
 
 **Business plan proposal (for review):** [MV-BS-DES-003 — business plan questions](./MV-BS-DES-003-business-plan-questions.md).
 Research basis and proposed questions for the stage-1 plan form. Not accepted.
+[MV-BS-DES-004 — finding and growing founders](./MV-BS-DES-004-finding-and-growing-founders.md)
+gives the wider funnel synthesis: selection, learning, support and retention. Not accepted.
 
 | # | Document | What it covers |
 |---|---|---|

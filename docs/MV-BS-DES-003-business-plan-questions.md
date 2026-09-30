@@ -3,6 +3,8 @@
 **Business Simulator · Masika Ventures**
 
 **Status:** Proposal for owner review. Not accepted. No code change.
+[MV-BS-DES-004](./MV-BS-DES-004-finding-and-growing-founders.md) §11 proposes four more
+baseline questions (hiring, delegation, registration, earlier businesses).
 
 **Date:** 2026-09-30
 
